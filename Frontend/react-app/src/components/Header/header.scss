@@ -1,0 +1,22 @@
+.menu {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .menu__logo {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .menu__container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    .menu_left {
+      flex: 1;
+    }
+  }
+}
