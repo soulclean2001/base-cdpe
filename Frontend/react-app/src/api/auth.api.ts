@@ -6,5 +6,5 @@ export class auth {
     return client.post('/api/v1/auth/authenticate', data)
   }
 }
-
+//phong_lo
 export default auth
