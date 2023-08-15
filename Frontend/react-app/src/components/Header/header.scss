@@ -1,14 +1,39 @@
+$COLOR_MENU_HOVER: rgb(2, 182, 2);
 .menu {
+  // margin: 20px 0;
+  padding: 20px;
+  // border: 1px solid red;
+  // background-color: bisque;
   width: 100%;
   display: flex;
   align-items: center;
+  // height: 60px;
 
+ 
   .menu__logo {
-    padding-left: 20px;
-    padding-right: 20px;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    font-family: "Rubik";
+    height: 100%;
+    font-weight: 800;
+    font-size: 30px;
+    
+    .header_logo{
+      color: black;
+      &:active{
+        color: rgb(103, 103, 103);
+      }
+      &:hover{
+        color: rgb(2, 182, 2);
+      }
+    }
+    
   }
 
   .menu__container {
+    height: 100%;
     width: 100%;
     display: flex;
     align-items: center;
@@ -17,6 +42,69 @@
     padding: 0 10px;
     .menu_left {
       flex: 1;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      .left_menu_container{
+        font-size: 16px;
+        font-weight: 600;
+        height: 100%;
+        flex: 1;
+        // border: 1px solid red;
+        border: none;
+        .ant-menu-submenu-horizontal{
+          height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .ant-menu-submenu-active{
+            color: $COLOR_MENU_HOVER;
+            &::after{
+              border-bottom-color: $COLOR_MENU_HOVER;
+            }
+          
+          
+        }
+        .ant-menu-submenu-open{
+          color: $COLOR_MENU_HOVER;
+            border-bottom-color: $COLOR_MENU_HOVER;
+          &:after{
+            color: $COLOR_MENU_HOVER;
+            border-bottom-color: $COLOR_MENU_HOVER;
+          }
+          &:hover{
+            color: $COLOR_MENU_HOVER;
+            border-bottom-color: $COLOR_MENU_HOVER;
+          }
+
+        }
+        .ant-menu-submenu-selected >.ant-menu-submenu-title {
+          color: $COLOR_MENU_HOVER;
+
+        }
+      :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal 
+        >.ant-menu-submenu-selected::after, 
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
+        >.ant-menu.ant-menu-horizontal 
+        >.ant-menu-submenu-selected::after {
+          border-bottom-color: $COLOR_MENU_HOVER;
+      }
+        
+      }
+      
+
+    }
+    .menu_rigth{
+      // height: 100%;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      .menu_rigth_container{
+        height: 100%;
+      }
     }
   }
 }

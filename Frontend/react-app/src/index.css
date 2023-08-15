@@ -1,5 +1,6 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: "Rubik"; */
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,39 +12,42 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
-
+a{
+  text-decoration: none;
+}
 .container {
   position: relative;
-  margin-left: auto;
-  margin-right: auto;
-  padding-right: 15px;
-  padding-left: 15px;
+  /* padding: 15px; */
+  /* margin-left: auto;
+  margin-right: auto; */
+  /* padding-right: 15px;
+  padding-left: 15px; */
 }
-@media (min-width: 476px) {
+/* @media (min-width: 476px) {
   .container {
     padding-right: 15px;
     padding-left: 15px;
   }
-}
-@media (min-width: 768px) {
+} */
+/* @media (min-width: 768px) {
   .container {
     padding-right: 15px;
     padding-left: 15px;
   }
-}
-@media (min-width: 992px) {
+} */
+/* @media (min-width: 992px) {
   .container {
     padding-right: 15px;
     padding-left: 15px;
   }
-}
-@media (min-width: 1200px) {
+} */
+/* @media (min-width: 1200px) {
   .container {
     padding-right: 15px;
     padding-left: 15px;
   }
-}
-@media (min-width: 476px) {
+} */
+/* @media (min-width: 476px) {
   .container {
     width: 100%;
   }
@@ -71,4 +75,4 @@
     width: 1340px;
     max-width: 100%;
   }
-}
+} */
