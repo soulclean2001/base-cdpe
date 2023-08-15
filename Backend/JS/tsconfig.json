@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
+    "strictPropertyInitialization": false,
     "module": "CommonJS", // Quy định output module được sử dụng
     "moduleResolution": "node", //
-    "target": "ES2020", // Target ouput cho code
+    "target": "ES6", // Target ouput cho code
     "outDir": "dist", // Đường dẫn output cho thư mục build
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
     "strict": true /* Enable all strict type-checking options. */,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": ".", // Đường dẫn base cho các import
     "paths": {
