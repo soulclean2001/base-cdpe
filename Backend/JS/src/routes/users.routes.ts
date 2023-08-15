@@ -14,5 +14,6 @@ usersRouter.post('/login', loginValidator, wrapAsync(authController.login))
 usersRouter.post('/register', registerValidator, wrapAsync(authController.register))
 usersRouter.post('/logout', accessTokenValidator, refreshTokenValidator, wrapAsync(authController.logout))
 usersRouter.post('/verify-email', wrapAsync(authController.logout))
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapAsync(authController.refreshToken))
 
 export default usersRouter

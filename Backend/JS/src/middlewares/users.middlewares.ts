@@ -320,41 +320,41 @@ export const refreshTokenValidator = validate(
   )
 )
 
-// export const emailVerifyTokenValidator = validate(
-//   checkSchema(
-//     {
-//       email_verify_token: {
-//         trim: true,
-//         custom: {
-//           options: async (value: string, { req }) => {
-//             if (!value) {
-//               throw new ErrorWithStatus({
-//                 message: USERS_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
-//                 status: HTTP_STATUS.UNAUTHORIZED
-//               })
-//             }
-//             try {
-//               const decoded_email_verify_token = await verifyToken({
-//                 token: value,
-//                 secretOrPublicKey: envConfig.jwtSecretEmailVerifyToken
-//               })
+export const emailVerifyTokenValidator = validate(
+  checkSchema(
+    {
+      email_verify_token: {
+        trim: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            if (!value) {
+              throw new ErrorWithStatus({
+                message: USERS_MESSAGES.EMAIL_VERIFY_TOKEN_IS_REQUIRED,
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
+            try {
+              const decoded_email_verify_token = await verifyToken({
+                token: value,
+                secretOrPublicKey: envConfig.jwtSecretEmailVerifyToken
+              })
 
-//               ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
-//             } catch (error) {
-//               throw new ErrorWithStatus({
-//                 message: capitalize((error as JsonWebTokenError).message),
-//                 status: HTTP_STATUS.UNAUTHORIZED
-//               })
-//             }
+              ;(req as Request).decoded_email_verify_token = decoded_email_verify_token
+            } catch (error) {
+              throw new ErrorWithStatus({
+                message: capitalize((error as JsonWebTokenError).message),
+                status: HTTP_STATUS.UNAUTHORIZED
+              })
+            }
 
-//             return true
-//           }
-//         }
-//       }
-//     },
-//     ['body']
-//   )
-// )
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
 
 export const forgotPasswordValidator = validate(
   checkSchema(

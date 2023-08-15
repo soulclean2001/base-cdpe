@@ -151,7 +151,7 @@ export interface VerifyForgotPasswordReqBody {
 export interface TokenPayload extends JwtPayload {
   user_id: string
   token_type: TokenType
-  role?: UserRole
+  role: UserRole
   verify: UserVerifyStatus
   exp: number
   iat: number
