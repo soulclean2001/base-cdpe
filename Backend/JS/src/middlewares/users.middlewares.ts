@@ -11,11 +11,11 @@ import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
 import { capitalize } from 'lodash'
 import { ObjectId } from 'mongodb'
-import { TokenPayload } from '~/models/requests/User.request'
-import { UserVerifyStatus } from '~/constants/enums'
 import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
 import { envConfig } from '~/constants/config'
+import { TokenPayload } from '~/models/requests/User.request'
+import { UserVerifyStatus } from '~/constants/enums'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -402,18 +402,19 @@ export const resetPasswordValidator = validate(
   )
 )
 
-// export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
-//   const { verify } = req.decoded_authorization as TokenPayload
-//   if (verify !== UserVerifyStatus.Verified) {
-//     return next(
-//       new ErrorWithStatus({
-//         message: USERS_MESSAGES.USER_NOT_VERIFIED,
-//         status: HTTP_STATUS.FORBIDDEN
-//       })
-//     )
-//   }
-//   next()
-// }
+export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
+  const { verify } = req.decoded_authorization as TokenPayload
+  if (verify !== UserVerifyStatus.Verified) {
+    return next(
+      new ErrorWithStatus({
+        message: USERS_MESSAGES.USER_NOT_VERIFIED,
+        status: HTTP_STATUS.FORBIDDEN
+      })
+    )
+  }
+  next()
+}
+
 export const updateMeValidator = validate(
   checkSchema(
     {
@@ -425,48 +426,6 @@ export const updateMeValidator = validate(
       date_of_birth: {
         ...dateOfBirthSchema,
         optional: true
-      },
-      bio: {
-        optional: true,
-        isString: {
-          errorMessage: USERS_MESSAGES.BIO_MUST_BE_STRING
-        },
-        trim: true,
-        isLength: {
-          options: {
-            min: 1,
-            max: 200
-          },
-          errorMessage: USERS_MESSAGES.BIO_LENGTH
-        }
-      },
-      location: {
-        optional: true,
-        isString: {
-          errorMessage: USERS_MESSAGES.LOCATION_MUST_BE_STRING
-        },
-        trim: true,
-        isLength: {
-          options: {
-            min: 1,
-            max: 200
-          },
-          errorMessage: USERS_MESSAGES.LOCATION_LENGTH
-        }
-      },
-      website: {
-        optional: true,
-        isString: {
-          errorMessage: USERS_MESSAGES.WEBSITE_MUST_BE_STRING
-        },
-        trim: true,
-        isLength: {
-          options: {
-            min: 1,
-            max: 200
-          },
-          errorMessage: USERS_MESSAGES.WEBSITE_LENGTH
-        }
       },
       username: {
         optional: true,
@@ -520,35 +479,35 @@ export const unfollowValidator = validate(
   )
 )
 
-// export const changePasswordValidator = validate(
-//   checkSchema({
-//     old_password: {
-//       ...passwordSchema,
-//       custom: {
-//         options: async (value: string, { req }) => {
-//           const { user_id } = (req as Request).decoded_authorization as TokenPayload
-//           const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
-//           if (!user) {
-//             throw new ErrorWithStatus({
-//               message: USERS_MESSAGES.USER_NOT_FOUND,
-//               status: HTTP_STATUS.NOT_FOUND
-//             })
-//           }
-//           const { password } = user
-//           const isMatch = hashPassword(value) === password
-//           if (!isMatch) {
-//             throw new ErrorWithStatus({
-//               message: USERS_MESSAGES.OLD_PASSWORD_NOT_MATCH,
-//               status: HTTP_STATUS.UNAUTHORIZED
-//             })
-//           }
-//         }
-//       }
-//     },
-//     new_password: passwordSchema,
-//     confirm_new_password: confirmPasswordSchema
-//   })
-// )
+export const changePasswordValidator = validate(
+  checkSchema({
+    old_password: {
+      ...passwordSchema,
+      custom: {
+        options: async (value: string, { req }) => {
+          const { user_id } = (req as Request).decoded_authorization as TokenPayload
+          const user = await databaseService.users.findOne({ _id: new ObjectId(user_id) })
+          if (!user) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.USER_NOT_FOUND,
+              status: HTTP_STATUS.NOT_FOUND
+            })
+          }
+          const { password } = user
+          const isMatch = hashPassword(value) === password
+          if (!isMatch) {
+            throw new ErrorWithStatus({
+              message: USERS_MESSAGES.OLD_PASSWORD_NOT_MATCH,
+              status: HTTP_STATUS.UNAUTHORIZED
+            })
+          }
+        }
+      }
+    },
+    password: passwordSchema,
+    confirm_new_password: confirmPasswordSchema
+  })
+)
 
 export const isUserLoggedInValidator = (middleware: (req: Request, res: Response, next: NextFunction) => void) => {
   return (req: Request, res: Response, next: NextFunction) => {
