@@ -1,4 +1,4 @@
-import { LoginData } from '~/features/Account/pages/Login'
+import { LoginData } from '~/features/Login/pages/LoginCandidate'
 import client from './client'
 
 export class auth {

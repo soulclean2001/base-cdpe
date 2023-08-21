@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { LoginData } from '../Account/pages/Login'
+import { LoginData } from '../JobSeeker/pages/LoginCandidate'
 import auth from '~/api/auth.api'
 import { RootState } from '~/app/store'
 

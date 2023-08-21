@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'
 import counterReducer from '../features/counter/counterSlice'
 import userReducer from '../features/User/userSlice'
 import authReducer from '../features/Auth/authSlice'
+import employerReducer from '../features/Employer/employerSlice'
 const persistConfig = {
   key: 'root',
   version: 1,
@@ -13,7 +14,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   counter: counterReducer,
   user: userReducer,
-  auth: authReducer
+  auth: authReducer,
+  employer: employerReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
