@@ -1,0 +1,64 @@
+.top-carrer-container{
+    background-color: whitesmoke;
+    border-radius: 10px;
+    height: 330px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 40px;
+    
+    .title{
+        border-radius: 10px 10px 0 0 ;
+        background-color: #f2f7ff;
+        border: 1px solid #ccdeff;
+        padding: 20px 0 20px 30px;
+        width: 100%;
+        color: black;
+        font-weight: 700;
+        font-size: 22px;
+    }
+    .top-carrer-content{
+        // display: flex;
+        padding: 20px;
+        height: 60%;
+        
+        .carrer-item{
+            height: 66.66%;
+            
+            color: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1rem;
+            align-items: center;
+            position: relative;
+            // box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            
+            border-radius: 6px;
+            background-color: rgba(0,90,255,.05);
+            
+            padding: 20px;
+            position: relative;
+            .img-carrer{
+                width: 72px;
+                height: 72px;
+                // position: absolute;
+               
+            }
+            .name-carrer{
+                // max-height: 70px;
+                text-align: center;
+                min-height: 50px;
+                font-size: 18px;
+                font-weight: 700;
+                color: #333;
+                margin-bottom: 0;
+                line-height: 1.5;
+                text-transform: uppercase;
+            }
+            .total-job{
+                color: #757575;
+                font-size: 14px;
+            }
+        }
+    }
+}
