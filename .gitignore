@@ -1,8 +1,7 @@
-.env
-node_modules
-Backend/**/*.env
-Backend/**/*.env.*
-Backend/**/node_modules
-Frontend/**/*.env
-Frontend/**/*.env.*
-Frontend/**/node_modules
+/Backend/JS/.env
+/Backend/JS/.env.development
+/Backend/JS/node_modules/
+
+/Frontend/react-app/.env
+/Frontend/react-app/.env.development
+/Frontend/react-app/node_modules/
