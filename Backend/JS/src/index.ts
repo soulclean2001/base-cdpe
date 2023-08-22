@@ -5,10 +5,10 @@ import compression from 'compression'
 import cors, { CorsOptions } from 'cors'
 import router from './routes'
 import databaseServices from './services/database.services'
-import { defaultErrorHandler } from './middlewares/error.middlewares'
+import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import { initFolder } from './utils/file'
 import rateLimit from 'express-rate-limit'
-import { envConfig, isProduction } from './constants/config'
+import { envConfig, isProduction } from '~/constants/config'
 
 initFolder()
 
