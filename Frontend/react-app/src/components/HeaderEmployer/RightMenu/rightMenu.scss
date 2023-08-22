@@ -1,0 +1,49 @@
+.right_menu_container {
+  .right_menu_container_pc {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .btn {
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    height: 50px;
+    cursor: pointer;
+  }
+  .btn-notification {
+    // border-radius: 50px;
+  }
+  .btn-login {
+    border: 1px solid rgb(2, 182, 2);
+    min-width: 120px;
+    // width: 120px;
+    background: white;
+    color: rgb(2, 182, 2);
+  }
+  .btn-sign-up {
+    min-width: 100px;
+    background: rgb(2, 182, 2);
+    color: white;
+    border: none;
+  }
+  .btn-tab-employer {
+    min-width: 200px;
+    padding: 10px;
+    border: none;
+    background: #212f3f;
+    color: white;
+  }
+  .right_menu_container_phone {
+    display: none;
+  }
+
+  @media (max-width: 950px) {
+    .right_menu_container_pc {
+      display: none;
+    }
+    .right_menu_container_phone {
+      display: block;
+    }
+  }
+}

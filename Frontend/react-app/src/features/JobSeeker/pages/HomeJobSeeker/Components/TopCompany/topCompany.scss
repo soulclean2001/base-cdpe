@@ -1,0 +1,67 @@
+.top-company-container{
+    cursor: pointer;
+    padding: 0 40px;
+    margin-top: 40px;
+     background: linear-gradient(270deg,#005aff,#001744);
+
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .title-top-company{
+        padding: 10px 0 20px 0;
+        width: 100%;
+        color: white;
+        font-weight: 700;
+        font-size: 22px;
+    }
+    .top-company-content{
+        .top-company-item{
+            background-color: white;
+            border-radius: 15px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .logo-company{
+                width:172px;
+                height:172px;
+                margin-top:10px;
+            }
+           
+            .name-company{
+                font-style: bold;
+                font-size: 16px;
+                font-weight: 700;
+                height: 40px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+            }
+            .btn-detail{
+                background: rgb(2, 182, 2);
+                border-radius: 0 0 15px 15px;
+                border: 1px solid rgb(2, 182, 2);
+                height: 40px;
+                width: 100%;
+                color: white;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            @media(max-width:992px){
+                .logo-company{
+                    width:100px;
+                    height:100px;
+                    
+                }
+                .name-company{
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+    
+}

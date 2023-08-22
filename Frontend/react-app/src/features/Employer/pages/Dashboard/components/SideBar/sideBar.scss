@@ -1,0 +1,48 @@
+.employer-sidebar-container {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: auto;
+  ::-webkit-scrollbar {
+    border-radius: 25px;
+    width: 4px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 15px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 15px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  //   width: 100%;
+}
+// .pro-sidebar {
+//   .pro-sidebar-inner {
+//     background: linear-gradient(270deg, #005aff, #001744);
+//   }
+// }
+@media (max-width: 768px) {
+  .pro-sidebar {
+    &.md {
+      position: static;
+      left: 0;
+    }
+  }
+}
+@media (max-width: 576px) {
+  .pro-sidebar {
+    &.md {
+      position: static;
+      left: 0;
+    }
+  }
+}
