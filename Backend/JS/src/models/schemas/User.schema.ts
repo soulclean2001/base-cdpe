@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb'
-import { UserRole, UserVerifyStatus } from '~/constants/enums'
+import { Gender, UserRole, UserVerifyStatus } from '~/constants/enums'
 
 interface UserType {
   _id?: ObjectId
@@ -14,6 +14,12 @@ interface UserType {
   avatar?: string
   cover_photo?: string
   role?: UserRole
+  phone_number?: string
+  gender?: Gender
+  company_name?: string
+  position?: string
+  province?: string
+  district?: string
   created_at?: Date
   updated_at?: Date
 }
@@ -31,6 +37,12 @@ export default class User {
   avatar: string
   cover_photo: string
   role: UserRole
+  phone_number: string
+  gender: Gender
+  company_name: string
+  position: string
+  province: string
+  district: string
   created_at: Date
   updated_at: Date
 
@@ -49,6 +61,16 @@ export default class User {
     this.verify = user.verify || UserVerifyStatus.Unverified
     this.avatar = user.avatar || ''
     this.cover_photo = user.cover_photo || ''
-    this.role = user.role || UserRole.Candidate
+
+    this.role = this.isIn(UserRole, user.role) ? (user.role as number) : UserRole.Candidate
+    this.phone_number = user.phone_number || ''
+    this.position = user.position || ''
+    ;(this.gender = this.isIn(Gender, user.gender) ? (user.gender as number) : Gender.Other),
+      (this.company_name = user.company_name || '')
+    ;(this.province = user.province || ''), (this.district = user.district || '')
+  }
+
+  private isIn<T, V>(object: T, value: V): boolean {
+    return Object.values(object as any).includes(value)
   }
 }

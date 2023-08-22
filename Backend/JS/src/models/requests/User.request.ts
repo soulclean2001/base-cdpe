@@ -1,5 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
-import { TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { Gender, TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ParamsDictionary } from 'express-serve-static-core'
 
 /**
@@ -92,6 +92,12 @@ export interface UpdateMeReqBody {
   username?: string
   avatar?: string
   cover_photo?: string
+  province?: string
+  district?: string
+  position?: string
+  gender?: number
+  company_name?: string
+  phone_number?: string
 }
 export interface ChangePasswordReqBody {
   old_password: string
@@ -132,6 +138,12 @@ export interface RegisterReqBody {
   confirm_password: string
   date_of_birth: string
   role: UserRole
+  phone_number?: string
+  gender?: Gender
+  company_name?: string
+  position?: string
+  province?: string
+  district?: string
 }
 
 export interface LogoutReqBody {

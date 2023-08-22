@@ -12,6 +12,7 @@ import { omit } from 'lodash'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import axios from 'axios'
+import { sendVerifyRegisterEmail, sendForgotPasswordEmail } from '~/utils/email'
 
 class UsersService {
   private signAccessToken({ user_id, verify, role }: { user_id: string; verify: UserVerifyStatus; role: UserRole }) {
@@ -113,7 +114,7 @@ class UsersService {
     const [access_token, refresh_token] = await this.signTokenKeyPair({
       user_id: user_id.toString(),
       verify: UserVerifyStatus.Unverified,
-      role: UserRole.Candidate
+      role: payload.role
     })
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
     await databaseServices.refreshTokens.insertOne(new RefreshToken({ user_id, token: refresh_token, iat, exp }))
@@ -124,8 +125,8 @@ class UsersService {
     // 3. Client send request to server with email_verify_token
     // 4. Server verify email_verify_token
     // 5. Client receive access_token and refresh_token
-    // await sendVerifyRegisterEmail(payload.email, email_verify_token)
-    console.log('gửi token verification email:', email_verify_token)
+    // console.log('gửi token verification email:', email_verify_token)
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
 
     return {
       access_token,
@@ -161,8 +162,8 @@ class UsersService {
     return Boolean(user)
   }
 
-  async login({ user_id, verify }: { user_id: string; verify: UserVerifyStatus }) {
-    const [access_token, refresh_token] = await this.signTokenKeyPair({ user_id, verify, role: UserRole.Candidate })
+  async login({ user_id, verify, role }: { user_id: string; verify: UserVerifyStatus; role: UserRole }) {
+    const [access_token, refresh_token] = await this.signTokenKeyPair({ user_id, verify, role })
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
@@ -318,8 +319,7 @@ class UsersService {
 
   async resendVerifyEmail(user_id: string, email: string) {
     const email_verify_token = await this.signEmailVerifyToken({ user_id, verify: UserVerifyStatus.Unverified })
-    await this.sendVerifyRegisterEmail(email, email_verify_token)
-    console.log('gửi token verification email:', email_verify_token)
+    await sendVerifyRegisterEmail(email, email_verify_token)
 
     await databaseServices.users.updateOne(
       { _id: new ObjectId(user_id) },
@@ -338,10 +338,6 @@ class UsersService {
     }
   }
 
-  async sendVerifyRegisterEmail(email: string, email_verify_token: string) {
-    return {}
-  }
-
   async forgotPassword({ user_id, verify, email }: { user_id: string; verify: UserVerifyStatus; email: string }) {
     const forgot_password_token = await this.signForgotPasswordToken({ user_id, verify })
     await databaseServices.users.updateOne(
@@ -358,7 +354,7 @@ class UsersService {
       ]
     )
 
-    console.log('Send token to email for reset password: ', forgot_password_token)
+    await sendForgotPasswordEmail(email, forgot_password_token)
 
     return {
       message: USERS_MESSAGES.CHECK_EMAIL_TO_RESET_PASSWORD

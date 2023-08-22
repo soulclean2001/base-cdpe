@@ -48,7 +48,19 @@ usersRouter.patch(
   accessTokenValidator,
   verifiedUserValidator,
   updateMeValidator,
-  filterMiddleware<UpdateMeReqBody>(['name', 'date_of_birth', 'username', 'avatar', 'cover_photo']),
+  filterMiddleware<UpdateMeReqBody>([
+    'name',
+    'date_of_birth',
+    'username',
+    'avatar',
+    'cover_photo',
+    'phone_number',
+    'district',
+    'province',
+    'company_name',
+    'gender',
+    'position'
+  ]),
   wrapAsync(authController.updateMe)
 )
 // login with google

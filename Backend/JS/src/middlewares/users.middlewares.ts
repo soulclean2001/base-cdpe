@@ -15,7 +15,7 @@ import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
 import { envConfig } from '~/constants/config'
 import { TokenPayload } from '~/models/requests/User.request'
-import { UserVerifyStatus } from '~/constants/enums'
+import { Gender, UserVerifyStatus } from '~/constants/enums'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -255,7 +255,58 @@ export const registerValidator = validate(
       },
       password: passwordSchema,
       confirm_password: confirmPasswordSchema,
-      date_of_birth: dateOfBirthSchema
+      date_of_birth: dateOfBirthSchema,
+      phone_number: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            const regexPhoneNumber = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g
+            if (!regexPhoneNumber.test(value)) {
+              throw new Error(USERS_MESSAGES.PHONE_NUMBER_INVALID)
+            }
+            return true
+          }
+        }
+      },
+      gender: {
+        optional: true,
+        notEmpty: true,
+        isNumeric: true,
+        custom: {
+          options: async (value: number, { req }) => {
+            if (!Object.values(Gender).includes(value)) {
+              throw new Error(USERS_MESSAGES.GENDER_INVALID)
+            }
+            return true
+          }
+        }
+      },
+      company_name: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a company name valid'
+      },
+      position: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a position name valid'
+      },
+      district: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a district name valid'
+      },
+      province: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a province name valid'
+      }
     },
     ['body']
   )
@@ -446,7 +497,58 @@ export const updateMeValidator = validate(
         }
       },
       avatar: imageSchema,
-      cover_photo: imageSchema
+      cover_photo: imageSchema,
+      phone_number: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        custom: {
+          options: async (value: string, { req }) => {
+            const regexPhoneNumber = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g
+            if (!regexPhoneNumber.test(value)) {
+              throw new Error(USERS_MESSAGES.PHONE_NUMBER_INVALID)
+            }
+            return true
+          }
+        }
+      },
+      gender: {
+        optional: true,
+        notEmpty: true,
+        isNumeric: true,
+        custom: {
+          options: async (value: number, { req }) => {
+            if (!Object.values(Gender).includes(value)) {
+              throw new Error(USERS_MESSAGES.GENDER_INVALID)
+            }
+            return true
+          }
+        }
+      },
+      company_name: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a company name valid'
+      },
+      position: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a position name valid'
+      },
+      district: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a district name valid'
+      },
+      province: {
+        optional: true,
+        notEmpty: true,
+        isString: true,
+        errorMessage: 'Please enter a province name valid'
+      }
     },
     ['body']
   )
