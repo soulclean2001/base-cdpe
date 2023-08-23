@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   FacebookOutlined,
   GooglePlusOutlined,
@@ -11,37 +11,70 @@ import {
 import { Button, Checkbox, Form, Input } from 'antd'
 import './login.scss'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
-import { useDispatch, useSelector } from 'react-redux'
-import { AuthState, postLogin } from '~/features/Auth/authSlice'
+import { useSelector } from 'react-redux'
+import { AuthState, postLogin, setAccountStatus } from '~/features/Auth/authSlice'
 import { RootState } from '~/app/store'
 import { NavLink } from 'react-router-dom'
+import { decodeToken, isExpired } from '~/utils/jwt'
+
+const getGoogleAuthUrl = () => {
+  const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
+  const url = `https://accounts.google.com/o/oauth2/v2/auth`
+  const query = {
+    client_id: VITE_GOOGLE_CLIENT_ID,
+    redirect_uri: VITE_GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'].join(
+      ' '
+    ),
+    prompt: 'consent',
+    access_type: 'offline'
+  }
+  const queryString = new URLSearchParams(query).toString()
+  return `${url}?${queryString}`
+}
+const googleOAuthUrl = getGoogleAuthUrl()
 
 export interface LoginData {
   username: string
   password: string
   remember?: boolean
+  role: number
 }
 
 const Login: React.FC = () => {
   const navigate = useNavigate()
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  const dispatch = useAppDispatch()
   const handleBackHome = () => {
     navigate('/')
   }
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [loading, setLoading] = useState<boolean>(false)
+
   const [error, setError] = useState<string | undefined>(undefined)
   useEffect(() => {
     setLoading(auth.loading)
     setError(auth.error)
+    decodeUser()
   }, [auth])
 
-  const dispatch: AppThunkDispatch = useAppDispatch()
+  const decodeUser = async () => {
+    if (auth.accessToken) {
+      const payload = await decodeToken(auth.accessToken)
+      dispatch(setAccountStatus(payload))
+    }
+  }
+
+  // useEffect(() => {
+  //   if (auth.isLogin && !isExpired(auth.accessToken)) {
+  //     handleBackHome()
+  //   }
+  // }, [])
 
   const onFinish = (values: LoginData) => {
     delete values.remember
-    console.log(values)
-
-    dispatch(postLogin(values))
+    dispatchAsync(postLogin(values))
   }
   if (loading) return <div>Loadinng...</div>
   return (
@@ -58,7 +91,7 @@ const Login: React.FC = () => {
         </div>
         <div>
           <Form name='normal_login' className='login-form' initialValues={{ remember: true }} onFinish={onFinish}>
-            <Form.Item name='mail' rules={[{ required: true, message: 'Vui lòng nhập Email của bạn!' }]}>
+            <Form.Item name='username' rules={[{ required: true, message: 'Vui lòng nhập Email của bạn!' }]}>
               <Input
                 size='large'
                 className='mail-input'
@@ -95,43 +128,42 @@ const Login: React.FC = () => {
                 Đăng nhập
               </Button>
             </Form.Item>
-            <p className='or-login-title'>Hoặc đăng nhập bằng</p>
-
-            <Form.Item>
-              <div className='or-login-container'>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  className='btn login-google-button'
-                  icon={<GooglePlusOutlined />}
-                >
-                  Google
-                </Button>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  className='btn login-facebook-button'
-                  icon={<FacebookOutlined />}
-                >
-                  Facebook
-                </Button>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  className='btn login-linkedin-button'
-                  icon={<LinkedinOutlined />}
-                >
-                  Linkedin
-                </Button>
-              </div>
-            </Form.Item>
-            <div className='or-tab-sign-up'>
-              <p style={{ textAlign: 'center' }}>
-                <span>Bạn chưa có tài khoản?</span>
-                <NavLink to={'/candidate-sign-up'}>Đăng ký ngay</NavLink>
-              </p>
-            </div>
           </Form>
+          <p className='or-login-title'>Hoặc đăng nhập bằng</p>
+          <Form.Item>
+            <div className='or-login-container'>
+              <Button
+                type='primary'
+                htmlType='submit'
+                className='btn login-google-button'
+                icon={<GooglePlusOutlined />}
+              >
+                <Link to={googleOAuthUrl}>Google</Link>
+              </Button>
+              <Button
+                type='primary'
+                htmlType='submit'
+                className='btn login-facebook-button'
+                icon={<FacebookOutlined />}
+              >
+                Facebook
+              </Button>
+              <Button
+                type='primary'
+                htmlType='submit'
+                className='btn login-linkedin-button'
+                icon={<LinkedinOutlined />}
+              >
+                Linkedin
+              </Button>
+            </div>
+          </Form.Item>
+          <div className='or-tab-sign-up'>
+            <p style={{ textAlign: 'center' }}>
+              <span>Bạn chưa có tài khoản?</span>
+              <NavLink to={'/candidate-sign-up'}>Đăng ký ngay</NavLink>
+            </p>
+          </div>
         </div>
       </div>
     </div>

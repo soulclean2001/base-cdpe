@@ -1,4 +1,4 @@
-import Login from '../Login/pages/LoginCandidate'
+import Login from '../JobSeeker/pages/LoginJobSeeker'
 
 export const Account = () => {
   return (

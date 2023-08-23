@@ -1,10 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import axios, { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios'
 import { EnhancedStore } from '@reduxjs/toolkit'
+import Auth from './auth.api'
+import { logout, setToken } from '~/features/Auth/authSlice'
+
 let store: EnhancedStore
+export const cancelTokenSource = axios.CancelToken.source()
+interface AuthResponse {
+  message: string
+  result: {
+    access_token: string
+    refresh_token: string
+  }
+}
 
 const instance: AxiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'http://localhost:4000/api/v1',
   timeout: 1000,
   headers: {
     'content-type': 'application/json'
@@ -15,82 +26,52 @@ export const injectStore = (_store: EnhancedStore) => {
   store = _store
 }
 
-const logOnDev = (message: string) => {
-  if (import.meta.env.MODE === 'development') {
-    console.log(message)
-  }
-}
-
-const onRequest = (config: AxiosRequestConfig): AxiosRequestConfig => {
-  const { method, url } = config
-  // Set Headers Here
-  // Check Authentication Here
-  // Set Loading Start Here
-  logOnDev(`🚀 [API] ${method?.toUpperCase()} ${config.baseURL}${url} | Request`)
-
-  if (method === 'get') {
-    config.timeout = 15000
+instance.interceptors.request.use(async (config) => {
+  const accessToken = store.getState().auth.accessToken
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`
   }
   return config
-}
+})
 
-const onResponse = (response: AxiosResponse): AxiosResponse => {
-  const { method, url } = response.config
-  const { status } = response
-
-  // Set Loading End Here
-  // Handle Response Data Here
-  // Error Handling When Return Success with Error Code Here
-  logOnDev(`🚀 [API] ${method?.toUpperCase()} ${response.config.baseURL}${url} | Response ${status}`)
-
-  if (response && response.data) return response.data
-
-  return response
-}
-
-const onErrorResponse = (error: AxiosError | Error): Promise<AxiosError> => {
-  if (axios.isAxiosError(error)) {
-    const { message } = error
-    const { method, url } = error.config as AxiosRequestConfig
-    const { statusText, status } = (error.response as AxiosResponse) ?? {}
-
-    logOnDev(`🚨 [API] ${method?.toUpperCase()} ${url} | Error ${status} ${message}`)
-
-    switch (status) {
-      case 401: {
-        // "Login required"
-        break
-      }
-      case 403: {
-        // "Permission denied"
-        break
-      }
-      case 404: {
-        // "Invalid request"
-        break
-      }
-      case 500: {
-        // "Server error"
-        break
-      }
-      default: {
-        // "Unknown error occurred"
-        break
-      }
+const responseInterceptorId = instance.interceptors.response.use(
+  (response) => {
+    if (response && response.data) {
+      return response.data
     }
 
-    if (status === 401) {
-      // Delete Token & Go To Login Page if you required.
-      sessionStorage.removeItem('token')
+    return response
+  },
+  async (error) => {
+    const refreshToken = store.getState().auth.refreshToken
+    if (error.response.status !== 401) {
+      return Promise.reject(error)
     }
-  } else {
-    logOnDev(`🚨 [API] | Error ${error.message}`)
+
+    if (responseInterceptorId) axios.interceptors.response.eject(responseInterceptorId)
+
+    return Auth.refreshToken(refreshToken)
+      .then((response) => {
+        const data = response as AuthResponse
+        const { access_token, refresh_token } = data.result
+        store.dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
+        error.response.config.headers['Authorization'] = 'Bearer ' + access_token
+        error.response.config.refreshed = true
+        return instance(error.response.config)
+      })
+      .catch((error) => {
+        store.dispatch(logout())
+
+        if (error.response && error.response.data && error.response.data.message) {
+          const data = error.response.data
+          console.log(data)
+
+          return Promise.reject(data) // Thông điệp lỗi từ server (dưới dạng JSON)
+        }
+
+        return Promise.reject(error)
+      })
+      .finally()
   }
-
-  return Promise.reject(error)
-}
-
-instance.interceptors.response.use(onResponse, onErrorResponse)
-instance.interceptors.request.use(onRequest, onErrorResponse)
-
+)
 export default instance
