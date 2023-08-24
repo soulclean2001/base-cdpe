@@ -5,6 +5,7 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 import { Button, Col, Form, Input, Row } from 'antd'
 import './loginEmployer.scss'
 import { Link } from 'react-router-dom'
+import { UserRole } from '~/types'
 
 const LoginEmployer = (props: any) => {
   const { hiddenTabSignUp, titleForm } = props
@@ -18,7 +19,8 @@ const LoginEmployer = (props: any) => {
   const handleSubmitLogin = () => {
     const data = {
       email,
-      password
+      password,
+      role: UserRole.Candidate
     }
     console.log('form data login', data)
   }

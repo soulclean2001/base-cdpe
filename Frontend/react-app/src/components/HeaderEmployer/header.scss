@@ -1,8 +1,7 @@
-$COLOR_MENU_HOVER: rgb(2, 182, 2);
+// $COLOR_MENU_HOVERR: rgb(2, 182, 2);
 #employer-header-container {
   // margin: 20px 0;
   padding: 20px;
-  // border: 1px solid red;
   // background-color: bisque;
   width: 100%;
   display: flex;
@@ -49,7 +48,6 @@ $COLOR_MENU_HOVER: rgb(2, 182, 2);
         font-weight: 600;
         height: 100%;
         flex: 1;
-        // border: 1px solid red;
         border: none;
         .ant-menu-submenu-horizontal {
           height: 100%;
@@ -58,32 +56,32 @@ $COLOR_MENU_HOVER: rgb(2, 182, 2);
           align-items: center;
         }
         .ant-menu-submenu-active {
-          color: $COLOR_MENU_HOVER;
+          color: rgb(2, 182, 2);
           &::after {
-            border-bottom-color: $COLOR_MENU_HOVER;
+            border-bottom-color: rgb(2, 182, 2);
           }
         }
         .ant-menu-submenu-open {
-          color: $COLOR_MENU_HOVER;
-          border-bottom-color: $COLOR_MENU_HOVER;
+          color: rgb(2, 182, 2);
+          border-bottom-color: rgb(2, 182, 2);
           &:after {
-            color: $COLOR_MENU_HOVER;
-            border-bottom-color: $COLOR_MENU_HOVER;
+            color: rgb(2, 182, 2);
+            border-bottom-color: rgb(2, 182, 2);
           }
           &:hover {
-            color: $COLOR_MENU_HOVER;
-            border-bottom-color: $COLOR_MENU_HOVER;
+            color: rgb(2, 182, 2);
+            border-bottom-color: rgb(2, 182, 2);
           }
         }
         .ant-menu-submenu-selected > .ant-menu-submenu-title {
-          color: $COLOR_MENU_HOVER;
+          color: rgb(2, 182, 2);
         }
         :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal
           > .ant-menu-submenu-selected::after,
         :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
           > .ant-menu.ant-menu-horizontal
           > .ant-menu-submenu-selected::after {
-          border-bottom-color: $COLOR_MENU_HOVER;
+          border-bottom-color: rgb(2, 182, 2);
         }
       }
     }
