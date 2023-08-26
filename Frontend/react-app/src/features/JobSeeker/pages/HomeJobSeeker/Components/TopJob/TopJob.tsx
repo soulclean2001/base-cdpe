@@ -1,6 +1,7 @@
 import iconReact from '../../../../../../assets/react.svg'
 import { NavLink } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import { useState, useEffect } from 'react'
 
 import 'swiper/css'
 import 'swiper/css/grid'
@@ -68,7 +69,30 @@ const TopJob = () => {
       area: 'TP. Hồ Chí Minh'
     }
   ]
-
+  const getWindowSize = () => {
+    const { innerWidth, innerHeight } = window
+    return { innerWidth, innerHeight }
+  }
+  const [windowSize, setWindowSize] = useState(getWindowSize())
+  const [slidesPerView, setSlidesPerView] = useState(3)
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setWindowSize(getWindowSize())
+    }
+    window.addEventListener('resize', handleWindowResize)
+    if (windowSize.innerWidth > 786) {
+      setSlidesPerView(3)
+    }
+    if (windowSize.innerWidth <= 786) {
+      setSlidesPerView(2)
+    }
+    if (windowSize.innerWidth <= 576) {
+      setSlidesPerView(1)
+    }
+    return () => {
+      window.removeEventListener('resize', handleWindowResize)
+    }
+  }, [windowSize])
   return (
     <div className='top-job-container'>
       <div className='title-top-job-container'>
@@ -79,7 +103,7 @@ const TopJob = () => {
       </div>
       <div className='top-job-content'>
         <Swiper
-          slidesPerView={3}
+          slidesPerView={slidesPerView}
           grid={{
             rows: 2
           }}

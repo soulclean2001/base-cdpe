@@ -15,11 +15,15 @@ export interface AuthState {
   newUser: number
 }
 
-interface AuthPayload {
+export interface AuthPayload {
   accessToken: string
   refreshToken: string
 }
-
+export interface AuthLogin {
+  isLogin: boolean
+  loading: boolean
+  error: string | undefined
+}
 const initialState: AuthState = {
   role: 0,
   loading: false,
@@ -55,27 +59,29 @@ const authSlice = createSlice({
       state.error = payload
     })
     builder.addCase(postLogin.fulfilled, (state, action) => {
-      const { result, message } = action.payload.data || action.payload
-
-      const { access_token, refresh_token, role } = result
-      console.log('action', action)
-      console.log('role', role)
-      state.accessToken = access_token
+      const { result, message } = action.payload
+      const { access_token, refresh_token } = result
+      state.accessToken = access_token as string
       // const cookies = new Cookies()
       // cookies.set('refresh_token', refresh_token, {
       // secure: true,
       //   httpOnly: true
       // })
       // console.log(cookies.get('myCat')) // Pacman
-      state.refreshToken = refresh_token
+      state.refreshToken = refresh_token as string
       state.isLogin = true
       state.loading = false
-      state.role = role
       state.error = ''
       return state
     })
   },
   reducers: {
+    setStateLogin(state, action: PayloadAction<AuthLogin>) {
+      state.isLogin = action.payload.isLogin
+      state.loading = action.payload.loading
+      state.error = action.payload.error
+      return state
+    },
     setAccountStatus(state, action: PayloadAction<TokenPayload>) {
       const { role, verify, token_type } = action.payload
       state.role = role
@@ -107,6 +113,6 @@ const authSlice = createSlice({
   }
 })
 
-export const { setAccountStatus, setToken, logout, oauth } = authSlice.actions
+export const { setStateLogin, setAccountStatus, setToken, logout, oauth } = authSlice.actions
 
 export default authSlice.reducer

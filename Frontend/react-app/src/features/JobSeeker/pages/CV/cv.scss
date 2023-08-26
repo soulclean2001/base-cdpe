@@ -1,0 +1,12 @@
+.wrap {
+  display: flex;
+  .left {
+    flex: 1;
+    padding: 20px 40px;
+  }
+
+  .right {
+    flex: 1;
+    padding: 20px 40px;
+  }
+}

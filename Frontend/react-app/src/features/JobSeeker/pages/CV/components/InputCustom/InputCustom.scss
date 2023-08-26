@@ -1,0 +1,35 @@
+.wrap-input {
+  width: 362px;
+  position: relative;
+
+  input {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: rgb(239, 242, 249);
+    color: rgb(30, 37, 50);
+    outline: none;
+    border: none;
+    border-radius: 5px;
+  }
+
+  // &:hover {
+  //   &::after {
+  //     width: 100%;
+  //   }
+  // }
+
+  &:focus-within:after {
+    width: 100%;
+  }
+
+  &::after {
+    content: '';
+    background-color: rgb(26, 145, 240);
+    height: 2px;
+    position: absolute;
+    width: 0;
+    left: 0;
+    transition: width 0.3s linear;
+    bottom: 0;
+  }
+}

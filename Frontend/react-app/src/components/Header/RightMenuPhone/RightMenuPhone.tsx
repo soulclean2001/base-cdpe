@@ -3,10 +3,13 @@ import { Button, Drawer, Dropdown, MenuProps } from 'antd'
 import { NavLink } from 'react-router-dom'
 import './rightMenuPhone.scss'
 import { useState } from 'react'
+import { InfoMeState } from '~/features/JobSeeker/jobSeekerSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
 const items: MenuProps['items'] = [
   {
     label: (
-      <NavLink to='https://www.antgroup.com' className='drop-children phone-login'>
+      <NavLink to='/login' className='drop-children phone-login'>
         Đăng nhập
       </NavLink>
     ),
@@ -14,7 +17,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: (
-      <NavLink to='https://www.aliyun.com' className={'drop-children phone-sign-up'}>
+      <NavLink to='/sign-up' className={'drop-children phone-sign-up'}>
         Đăng ký
       </NavLink>
     ),
@@ -22,7 +25,7 @@ const items: MenuProps['items'] = [
   },
   {
     label: (
-      <NavLink to='https://www.aliyun.com' className={' drop-children phone-tab-employer'}>
+      <NavLink to='/employer' className={' drop-children phone-tab-employer'}>
         Đăng tuyển & Tìm hồ sơ
       </NavLink>
     ),
@@ -30,6 +33,7 @@ const items: MenuProps['items'] = [
   }
 ]
 const RightMenuPhone = () => {
+  const me: InfoMeState = useSelector((state: RootState) => state.jobSeeker)
   const [open, setOpen] = useState(false)
 
   const showDrawer = () => {
@@ -51,15 +55,31 @@ const RightMenuPhone = () => {
       <MenuOutlined onClick={showDrawer} />
       <Drawer title='HFWork' placement='right' onClose={onClose} open={open}>
         <div className='menu-content'>
-          <NavLink to={'/candidate-login'}>
-            <p>Đăng nhập</p>
-          </NavLink>
-          <NavLink to={'/candidate-sign-up'}>
-            <p>Đăng ký</p>
-          </NavLink>
-          <NavLink to={'/employer'}>
-            <p>Đăng tuyển & Tìm hồ sơ</p>
-          </NavLink>
+          {me && me.id ? (
+            <>
+              <NavLink to={'/setting-info'}>
+                <p>Cài đặt thông tin cá nhân</p>
+              </NavLink>
+              <NavLink to={'/change-password'}>
+                <p>Đổi mật khẩu</p>
+              </NavLink>
+              <NavLink to={'/logout'}>
+                <p>Đăng xuất</p>
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink to={'/candidate-login'}>
+                <p>Đăng nhập</p>
+              </NavLink>
+              <NavLink to={'/candidate-sign-up'}>
+                <p>Đăng ký</p>
+              </NavLink>
+              <NavLink to={'/employer'}>
+                <p>Đăng tuyển & Tìm hồ sơ</p>
+              </NavLink>
+            </>
+          )}
         </div>
       </Drawer>
     </div>

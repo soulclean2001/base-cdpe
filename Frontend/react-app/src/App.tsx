@@ -18,7 +18,9 @@ import OauthGoogleLogin from './features/JobSeeker/pages/LoginJobSeeker/OauthGoo
 import { VerifyEmail } from './VerifyEmail'
 import { VerifyForgotPasswordToken } from './VerifyForgotPasswordToken'
 import ResetPassword from './ResetPassword'
-
+import CompanyPage from './features/JobSeeker/pages/CompanyPage'
+import 'react-toastify/dist/ReactToastify.css'
+import CV from './features/JobSeeker/pages/CV'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -30,6 +32,8 @@ function App() {
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
           <Route index element={<Home />}></Route>
           <Route path='jobs' element={<Job />} />
+          <Route path='companies' element={<CompanyPage />} />
+          <Route path='CV' element={<CV />} />
         </Route>
         <Route path='/candidate-login' element={<Login />} />
         <Route path='/candidate-sign-up' element={<SignUp />} />

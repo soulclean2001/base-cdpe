@@ -9,10 +9,13 @@ import { MdOutlineLogout } from 'react-icons/md'
 import { GrUserSettings } from 'react-icons/gr'
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
+import { useDispatch } from 'react-redux'
+import { logout } from '~/features/Auth/authSlice'
 const RightMenu = (props: any) => {
   const { isLogin } = props
 
   const navigate = useNavigate()
+  const disPatch = useDispatch()
   const handleLogin = () => {
     navigate('/employer-login')
   }
@@ -41,7 +44,10 @@ const RightMenu = (props: any) => {
     }
   ]
   const handleMenuClick: MenuProps['onClick'] = (e) => {
-    if (e.key === 'key_logout') alert('Bạn có chắc muốn đăng xuất?')
+    if (e.key === 'key_logout') {
+      alert('Bạn có chắc muốn đăng xuất?')
+      // disPatch(logout())
+    }
     console.log('handle click', e)
   }
   const menuProps = {

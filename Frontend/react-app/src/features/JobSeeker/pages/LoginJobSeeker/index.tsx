@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  FacebookOutlined,
-  GooglePlusOutlined,
-  LinkedinOutlined,
-  LockOutlined,
-  MailOutlined,
-  UserOutlined
-} from '@ant-design/icons'
+import { FacebookOutlined, GooglePlusOutlined, LinkedinOutlined, LockOutlined, MailOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input } from 'antd'
 import './login.scss'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 import { useSelector } from 'react-redux'
-import { AuthState, postLogin, setAccountStatus } from '~/features/Auth/authSlice'
+import {
+  AuthLogin,
+  AuthPayload,
+  AuthState,
+  postLogin,
+  setAccountStatus,
+  setStateLogin,
+  setToken
+} from '~/features/Auth/authSlice'
 import { RootState } from '~/app/store'
 import { NavLink } from 'react-router-dom'
 import { decodeToken, isExpired } from '~/utils/jwt'
-
+import Auth from '~/api/auth.api'
+// import { getMe } from '~/api/users.api'
+import { getMe } from '../../jobSeekerSlice'
+import { ToastContainer, toast } from 'react-toastify'
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
   const url = `https://accounts.google.com/o/oauth2/v2/auth`
@@ -52,33 +56,70 @@ const Login: React.FC = () => {
 
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [loading, setLoading] = useState<boolean>(false)
-
   const [error, setError] = useState<string | undefined>(undefined)
+  const [token, setTokenLogin] = useState<AuthPayload>()
+  //old code
+  // useEffect(() => {
+  //   setLoading(auth.loading)
+  //   setError(auth.error)
+  //   decodeUser()
+  // }, [auth])
+  //
   useEffect(() => {
-    setLoading(auth.loading)
-    setError(auth.error)
     decodeUser()
-  }, [auth])
-
+  }, [token])
   const decodeUser = async () => {
-    if (auth.accessToken) {
-      const payload = await decodeToken(auth.accessToken)
-      console.log('ui decode', payload)
-      dispatch(setAccountStatus(payload))
+    //old code
+    // if (auth.accessToken) {
+    //   const payload = await decodeToken(auth.accessToken)
+    //   dispatch(setAccountStatus(payload))
+    // }
+    //
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.role && dataDecode.role === 2) {
+        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(setToken(token))
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin(action))
+      } else {
+        toast.error('Tài khoản không tồn tại')
+        setLoading(false)
+      }
     }
   }
 
   useEffect(() => {
-    if (auth.isLogin && !isExpired(auth.accessToken) && auth.role === 2) {
+    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
+      getProfile()
       handleBackHome()
     }
   }, [auth])
-
-  const onFinish = (values: LoginData) => {
-    delete values.remember
-    dispatchAsync(postLogin(values))
+  const getProfile = async () => {
+    await dispatchAsync(getMe())
   }
-  if (loading) return <div>Loadinng...</div>
+  const onFinish = async (values: LoginData) => {
+    delete values.remember
+    setLoading(true)
+    setTimeout(async () => {
+      await Auth.loginApi(values)
+        .then((response) => {
+          if (response.result && response.result.access_token && response.result.refresh_token) {
+            setTokenLogin({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+          }
+        })
+        .catch((error) => {
+          console.log('error', error)
+          toast.error('Tài khoản hoặc mật khẩu không đúng')
+          setLoading(false)
+        })
+    }, 1000)
+    //old code
+    // dispatchAsync(postLogin(values))
+    //
+  }
+
+  // if (loading) return <div>Loadinng...</div>
   return (
     <div id='components-form-login'>
       <div className='login-container'>
@@ -126,40 +167,53 @@ const Login: React.FC = () => {
             </Form.Item>
 
             <Form.Item>
-              <Button type='primary' htmlType='submit' className='login-form-button'>
+              <Button disabled={loading} type='primary' htmlType='submit' className='login-form-button'>
                 Đăng nhập
               </Button>
             </Form.Item>
+            <ToastContainer
+              position='top-right'
+              autoClose={1500}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme='light'
+            />
+
+            <p className='or-login-title'>Hoặc đăng nhập bằng</p>
+            <Form.Item>
+              <div className='or-login-container'>
+                <Button
+                  type='primary'
+                  htmlType='submit'
+                  className='btn login-google-button'
+                  icon={<GooglePlusOutlined />}
+                >
+                  <Link to={googleOAuthUrl}>Google</Link>
+                </Button>
+                <Button
+                  type='primary'
+                  htmlType='submit'
+                  className='btn login-facebook-button'
+                  icon={<FacebookOutlined />}
+                >
+                  Facebook
+                </Button>
+                <Button
+                  type='primary'
+                  htmlType='submit'
+                  className='btn login-linkedin-button'
+                  icon={<LinkedinOutlined />}
+                >
+                  Linkedin
+                </Button>
+              </div>
+            </Form.Item>
           </Form>
-          <p className='or-login-title'>Hoặc đăng nhập bằng</p>
-          <Form.Item>
-            <div className='or-login-container'>
-              <Button
-                type='primary'
-                htmlType='submit'
-                className='btn login-google-button'
-                icon={<GooglePlusOutlined />}
-              >
-                <Link to={googleOAuthUrl}>Google</Link>
-              </Button>
-              <Button
-                type='primary'
-                htmlType='submit'
-                className='btn login-facebook-button'
-                icon={<FacebookOutlined />}
-              >
-                Facebook
-              </Button>
-              <Button
-                type='primary'
-                htmlType='submit'
-                className='btn login-linkedin-button'
-                icon={<LinkedinOutlined />}
-              >
-                Linkedin
-              </Button>
-            </div>
-          </Form.Item>
           <div className='or-tab-sign-up'>
             <p style={{ textAlign: 'center' }}>
               <span>Bạn chưa có tài khoản?</span>
