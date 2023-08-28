@@ -1,4 +1,54 @@
 .employer-services-container {
-  height: 100vh;
-  border: 1px solid red;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .services-top-banner {
+    height: 400px;
+    width: 100%;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  @media (max-width: 992px) {
+    .services-top-banner {
+      height: 300px;
+    }
+  }
+  @media (max-width: 576px) {
+    .services-top-banner {
+      height: 180px;
+    }
+  }
+  .services-content {
+    padding-top: 40px;
+    padding-bottom: 80px;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .services-page-title-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+    }
+    .infinite-scroll-component__outerdiv {
+      width: 100%;
+      .infinite-scroll-custom {
+        width: 100%;
+        margin-top: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 140px;
+      }
+    }
+  }
 }

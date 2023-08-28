@@ -21,12 +21,17 @@ const items: MenuProps['items'] = [
 const LeftMenu = (props: any) => {
   const { isLogin, clearActiveMenu } = props
   const navigate = useNavigate()
+
   if (isLogin && items[0]?.key !== 'dashboard') {
     items.unshift({
       label: 'Dashboard',
       key: 'dashboard'
     })
   }
+  if (!isLogin && items[0]?.key === 'dashboard') {
+    items.shift()
+  }
+
   //set active select menu
   const [current, setCurrent] = useState('none')
   useEffect(() => {
