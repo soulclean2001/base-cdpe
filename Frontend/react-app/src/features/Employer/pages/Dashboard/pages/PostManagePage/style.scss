@@ -1,0 +1,39 @@
+.post-manage-page-container {
+  width: 100%;
+  padding: 20px;
+  .title-container {
+    // padding: 20px 0;
+    .post-manage-title {
+      width: 100%;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+    }
+  }
+  .show-modal-add-post-container {
+    padding: 10px 0;
+  }
+
+  .tabs-post-manage-container {
+    .tabs-post-manage {
+      .ant-tabs-nav-list {
+        .ant-tabs-tab {
+          color: #c2c2c2;
+        }
+        .ant-tabs-tab-active {
+          color: #005aff;
+        }
+        .ant-tabs-ink-bar {
+          height: 2px;
+          background: #005aff !important;
+        }
+      }
+
+      .tab-item {
+        // color: #c2c2c2;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+}

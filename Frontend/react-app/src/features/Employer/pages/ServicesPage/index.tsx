@@ -49,7 +49,7 @@ const ServicesPage = () => {
       if (items && items.length === 0) setItems([services[0]])
       if (items && items.length === 1) setItems([...items, services[1]])
       if (items && items.length === 2) setItems([...items, services[2]])
-    }, 0)
+    }, 100)
   }
   return (
     <div className='employer-services-container'>
@@ -77,12 +77,12 @@ const ServicesPage = () => {
           {items &&
             items.map((item: any, index: number) => (
               <ServiceItem
-                key={index}
+                key={item.title}
                 title={item.title}
                 price={item.price}
                 img={item.img}
                 descriptions={item.descriptions}
-                swap={index % 2 !== 0 ? false : true}
+                swap={index % 2 === 0 ? false : true}
               />
             ))}
         </InfiniteScroll>

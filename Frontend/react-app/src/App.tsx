@@ -21,6 +21,7 @@ import ResetPassword from './ResetPassword'
 import CompanyPage from './features/JobSeeker/pages/CompanyPage'
 import 'react-toastify/dist/ReactToastify.css'
 import CV from './features/JobSeeker/pages/CV'
+import PostManagePage from './features/Employer/pages/Dashboard/pages/PostManagePage/PostManagePage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -47,11 +48,13 @@ function App() {
           <Route
             path='dashboard'
             element={
-              <Auth role={UserRole.Employer}>
-                <DashboardEmployer />
-              </Auth>
+              // <Auth role={UserRole.Employer}>
+              <DashboardEmployer />
+              // </Auth>
             }
-          />
+          >
+            <Route path='post-manage' element={<PostManagePage />} />
+          </Route>
         </Route>
         <Route path='/employer-sign-up' element={<SignUpEmployer />} />
         <Route path='/employer-login' element={<LoginEmployer />} />

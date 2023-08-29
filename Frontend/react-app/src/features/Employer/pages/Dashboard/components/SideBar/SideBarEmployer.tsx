@@ -22,7 +22,7 @@ import { RootState } from '~/app/store'
 import { handleAutoChangeSideBarByWidth } from '../../../../employerSlice'
 const SideBarEmployer = (props: any) => {
   const dispatch = useDispatch()
-  const { image, collapsed, toggled, handleToggleSidebar } = props
+  const { image, collapsed, toggled, handleToggleSidebar, hidden } = props
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
@@ -47,6 +47,7 @@ const SideBarEmployer = (props: any) => {
 
   return (
     <ProSidebar
+      hidden={hidden}
       className='employer-sidebar-container'
       collapsed={collap ? collap : false}
       toggled={toggled}
@@ -78,19 +79,19 @@ const SideBarEmployer = (props: any) => {
         <Menu iconShape='circle'>
           <MenuItem icon={<FundFilled />}>
             Thống kê
-            <Link to={'/employer/dashboar'} />
+            <Link to={'/employer/dashboard'} />
           </MenuItem>
         </Menu>
         <Menu iconShape='circle'>
           <MenuItem icon={<BookFilled />}>
             Quản lý bài đăng
-            <Link to={'/employer/manage-post'} />
+            <Link to={'/employer/dashboard/post-manage'} />
           </MenuItem>
         </Menu>
         <Menu iconShape='circle'>
           <MenuItem icon={<FileSearchOutlined />}>
             Tìm kiếm ứng viên
-            <Link to={'/employer/find-candidate'} />
+            <Link to={'/employer/dashboard/find-candidate'} />
           </MenuItem>
         </Menu>
         <Menu iconShape='circle'>

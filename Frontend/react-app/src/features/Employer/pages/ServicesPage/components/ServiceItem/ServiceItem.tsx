@@ -10,13 +10,15 @@ const ServiceItem = (props: any) => {
   const swap: boolean = props.swap
 
   const [style, setStyle] = useState<any>({})
-  useEffect(() => {
-    if (swap) {
-      setStyle({ ...style, flexDirection: 'row-reverse' })
-    }
-  }, [swap])
+  // useEffect(() => {
+  //   if (swap) {
+  //     setStyle({ ...style, flexDirection: 'row-reverse' })
+  //   }
+  // }, [swap])
   const handleOnLoad = () => {
-    setStyle({ width: '100%' })
+    if (swap) {
+      setStyle({ flexDirection: 'row-reverse', width: '100%' })
+    } else setStyle({ width: '100%' })
   }
   return (
     <div className='wapper-services' onLoad={handleOnLoad}>
