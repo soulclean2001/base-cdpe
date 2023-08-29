@@ -15,7 +15,7 @@ import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
 import { envConfig } from '~/constants/config'
 import { TokenPayload } from '~/models/requests/User.request'
-import { Gender, UserVerifyStatus } from '~/constants/enums'
+import { Gender, UserRole, UserVerifyStatus } from '~/constants/enums'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -283,29 +283,60 @@ export const registerValidator = validate(
           }
         }
       },
-      company_name: {
+      role: {
         optional: true,
         notEmpty: true,
-        isString: true,
-        errorMessage: 'Please enter a company name valid'
+        isNumeric: true,
+        custom: {
+          options: async (value: number, { req }) => {
+            if (!Object.values(UserRole).includes(value)) {
+              throw new Error('User role invalid: ' + value)
+            }
+            return true
+          }
+        }
       },
-      position: {
-        optional: true,
-        notEmpty: true,
-        isString: true,
-        errorMessage: 'Please enter a position name valid'
+      company_name: {
+        custom: {
+          options: async (value: string, { req }) => {
+            if (req.body.role && req.body.role === UserRole.Employer) {
+              if (!value) {
+                throw new Error('company_name is not empty')
+              } else if (typeof value !== 'string') {
+                throw new Error('company_name must be string')
+              }
+            }
+            return true
+          }
+        }
       },
       district: {
-        optional: true,
-        notEmpty: true,
-        isString: true,
-        errorMessage: 'Please enter a district name valid'
+        custom: {
+          options: async (value: string, { req }) => {
+            if (req.body.role && req.body.role === UserRole.Employer) {
+              if (!value) {
+                throw new Error('district is not empty')
+              } else if (typeof value !== 'string') {
+                throw new Error('district must be string')
+              }
+            }
+            return true
+          }
+        }
       },
       province: {
-        optional: true,
-        notEmpty: true,
-        isString: true,
-        errorMessage: 'Please enter a province name valid'
+        custom: {
+          options: async (value: string, { req }) => {
+            if (req.body.role && req.body.role === UserRole.Employer) {
+              if (!value) {
+                throw new Error('province is not empty')
+              } else if (typeof value !== 'string') {
+                throw new Error('province must be string')
+              }
+            }
+            return true
+          }
+        }
       }
     },
     ['body']
@@ -618,4 +649,14 @@ export const isUserLoggedInValidator = (middleware: (req: Request, res: Response
     }
     next()
   }
+}
+
+export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (req.decoded_authorization) {
+    const { role } = req.decoded_authorization
+    if (role === UserRole.Administrators) {
+      return next()
+    }
+  }
+  throw new ErrorWithStatus({ message: 'Invalid authorization', status: 401 })
 }

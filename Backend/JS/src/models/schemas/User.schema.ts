@@ -16,10 +16,6 @@ interface UserType {
   role?: UserRole
   phone_number?: string
   gender?: Gender
-  company_name?: string
-  position?: string
-  province?: string
-  district?: string
   created_at?: Date
   updated_at?: Date
 }
@@ -39,10 +35,6 @@ export default class User {
   role: UserRole
   phone_number: string
   gender: Gender
-  company_name: string
-  position: string
-  province: string
-  district: string
   created_at: Date
   updated_at: Date
 
@@ -64,10 +56,6 @@ export default class User {
 
     this.role = this.isIn(UserRole, user.role) ? (user.role as number) : UserRole.Candidate
     this.phone_number = user.phone_number || ''
-    this.position = user.position || ''
-    ;(this.gender = this.isIn(Gender, user.gender) ? (user.gender as number) : Gender.Other),
-      (this.company_name = user.company_name || '')
-    ;(this.province = user.province || ''), (this.district = user.district || '')
   }
 
   private isIn<T, V>(object: T, value: V): boolean {

@@ -3,6 +3,12 @@ import { envConfig } from '~/constants/config'
 import User from '../models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import VideoStatus from '~/models/schemas/VideoStatus.schemas'
+import Company from '~/models/schemas/Company.schema'
+import UserCompanyFollow from '~/models/schemas/RecruiterFollowedResumes.schema'
+import UserResumeFollow from '~/models/schemas/CompanyFollowers.schema'
+import RecruiterFollowedResumes from '~/models/schemas/RecruiterFollowedResumes.schema'
+import CompanyFollowers from '~/models/schemas/CompanyFollowers.schema'
+import Job from '~/models/schemas/Job.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -63,6 +69,22 @@ class DatabaseService {
 
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(envConfig.dbVideoStatusCollection)
+  }
+
+  get company(): Collection<Company> {
+    return this.db.collection(envConfig.dbCompany)
+  }
+
+  get job(): Collection<Job> {
+    return this.db.collection(envConfig.dbJob)
+  }
+
+  get recruiterFollowedResumes(): Collection<RecruiterFollowedResumes> {
+    return this.db.collection(envConfig.dbUserCompanyFollow)
+  }
+
+  get companyFollowers(): Collection<CompanyFollowers> {
+    return this.db.collection(envConfig.dbUserResumeFollow)
   }
 }
 
