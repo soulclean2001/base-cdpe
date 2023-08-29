@@ -2,7 +2,8 @@ import { config } from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 const env = process.env.NODE_ENV || 'development'
-const envFilename = `.env.${env}`
+// const envFilename = `.env.${env}`
+const envFilename = `.env`
 if (!env) {
   console.log(`Bạn chưa cung cấp biến môi trường NODE_ENV (ví dụ: development, production)`)
   console.log(`Phát hiện NODE_ENV = ${env}`)
