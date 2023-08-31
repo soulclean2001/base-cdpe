@@ -9,6 +9,7 @@ import UserResumeFollow from '~/models/schemas/CompanyFollowers.schema'
 import RecruiterFollowedResumes from '~/models/schemas/RecruiterFollowedResumes.schema'
 import CompanyFollowers from '~/models/schemas/CompanyFollowers.schema'
 import Job from '~/models/schemas/Job.schema'
+import Resume from '~/models/schemas/Resume.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -85,6 +86,10 @@ class DatabaseService {
 
   get companyFollowers(): Collection<CompanyFollowers> {
     return this.db.collection(envConfig.dbUserResumeFollow)
+  }
+
+  get resume(): Collection<Resume> {
+    return this.db.collection(envConfig.dbResume)
   }
 }
 

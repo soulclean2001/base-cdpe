@@ -4,6 +4,7 @@ import { JobStatus } from '../requests/Job.request'
 export interface WorkingLocation {
   lat: number
   lon: number
+  branch_name: string
   address: string
   district: string
   city_name: string
@@ -12,6 +13,11 @@ export interface WorkingLocation {
 export interface SalararyRange {
   min: number
   max: number
+}
+
+export interface Benefit {
+  type: string
+  value: string
 }
 
 export interface JobType {
@@ -34,7 +40,7 @@ export interface JobType {
   job_type: string
   status: JobStatus
   visibility: boolean // hiển thị
-  benefit: string // phúc lợi
+  benefits: Benefit[] // phúc lợi
   created_at?: Date
   updated_at?: Date
 }
@@ -57,7 +63,7 @@ export default class Job {
   job_description: string
   job_requirement: string
   visibility: boolean // hiển thị
-  benefit: string // phúc lợi
+  benefits: Benefit[] // phúc lợi
   created_at: Date
   updated_at: Date
 
@@ -80,7 +86,7 @@ export default class Job {
     this.job_description = data.job_description
     this.job_requirement = data.job_requirement
     this.visibility = data.visibility
-    this.benefit = data.benefit
+    this.benefits = data.benefits
     this.created_at = data.created_at || date
     this.updated_at = data.updated_at || date
   }

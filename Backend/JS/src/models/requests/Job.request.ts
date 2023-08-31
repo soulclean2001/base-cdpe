@@ -1,4 +1,4 @@
-import { SalararyRange, WorkingLocation } from '../schemas/Job.schema'
+import { Benefit, SalararyRange, WorkingLocation } from '../schemas/Job.schema'
 
 export interface CreateJobBody {
   job_title: string
@@ -13,7 +13,7 @@ export interface CreateJobBody {
   job_description: string
   job_requirement: string
   visibility: boolean
-  benefit: string
+  benefits: Benefit[]
   job_type: string
 }
 
@@ -41,6 +41,6 @@ export interface UpdateJobReqBody {
   job_description?: string
   job_requirement?: string
   visibility?: boolean
-  benefit?: string
+  benefits?: Benefit[]
   job_type?: string
 }

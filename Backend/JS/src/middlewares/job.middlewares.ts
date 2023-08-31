@@ -30,7 +30,7 @@ const workingLocationsSchema: ParamSchema = {
         if (typeof location !== 'object' || location === null || Array.isArray(location)) {
           throw new Error('Each element in working_locations must be an object')
         }
-        const requiredKeys = ['lat', 'lon', 'address', 'district', 'city_name']
+        const requiredKeys = ['lat', 'lon', 'address', 'district', 'city_name', 'branch_name']
 
         for (const key of requiredKeys) {
           if (!(key in location)) {
@@ -42,6 +42,7 @@ const workingLocationsSchema: ParamSchema = {
         if (
           typeof location.lat !== 'number' ||
           typeof location.lon !== 'number' ||
+          typeof location.branch_name !== 'string' ||
           typeof location.address !== 'string' ||
           typeof location.district !== 'string' ||
           typeof location.city_name !== 'string'
@@ -137,7 +138,13 @@ export const createJobValidator = validate(
           errorMessage: 'Company id must be a string'
         }
       },
-      is_salary_visible: isStringNotEmpty('pretty_salary'),
+      is_salary_visible: {
+        isBoolean: true
+      },
+      pretty_salary: {
+        ...isStringNotEmpty('pretty_salary'),
+        optional: true
+      },
       working_locations: {
         ...workingLocationsSchema,
         optional: true
@@ -170,9 +177,31 @@ export const createJobValidator = validate(
         isBoolean: true,
         optional: true
       },
-      benefit: {
-        ...isStringNotEmpty('Job benefit'),
-        optional: true
+      benefits: {
+        optional: true,
+        custom: {
+          options: (values: any) => {
+            if (!Array.isArray(values)) {
+              throw new Error('Invalid array benefits')
+            }
+            const expectedFields = ['type', 'value']
+            const errors = []
+            for (let i = 0; i < values.length; i++) {
+              for (const key in values[i]) {
+                if (!expectedFields.includes(key)) {
+                  errors.push(`${key} not contained in benefits[${i}]`)
+                }
+                if (expectedFields.includes(key) && values[i][key] !== 'string') {
+                  errors.push(`${key} contained in benefits[${i}] must be a string`)
+                }
+              }
+              if (errors.length > 0) {
+                throw new Error(errors.toString())
+              }
+            }
+            return true
+          }
+        }
       }
     },
     ['body']
@@ -214,6 +243,10 @@ export const updateJobValidator = validate(
         }
       },
       is_salary_visible: {
+        isBoolean: true,
+        optional: true
+      },
+      pretty_salary: {
         ...isStringNotEmpty('pretty_salary'),
         optional: true
       },
@@ -249,9 +282,31 @@ export const updateJobValidator = validate(
         isBoolean: true,
         optional: true
       },
-      benefit: {
-        ...isStringNotEmpty('Job benefit'),
-        optional: true
+      benefits: {
+        optional: true,
+        custom: {
+          options: (values: any) => {
+            if (!Array.isArray(values)) {
+              throw new Error('Invalid array benefits')
+            }
+            const expectedFields = ['type', 'value']
+            const errors = []
+            for (let i = 0; i < values.length; i++) {
+              for (const key in values[i]) {
+                if (!expectedFields.includes(key)) {
+                  errors.push(`${key} not contained in benefits[${i}]`)
+                }
+                if (expectedFields.includes(key) && values[i][key] !== 'string') {
+                  errors.push(`${key} contained in benefits[${i}] must be a string`)
+                }
+              }
+              if (errors.length > 0) {
+                throw new Error(errors.toString())
+              }
+            }
+            return true
+          }
+        }
       }
     },
     ['body']

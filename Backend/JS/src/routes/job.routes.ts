@@ -24,7 +24,7 @@ jobRouter.patch(
   updateJobValidator,
   filterMiddleware<UpdateJobReqBody>([
     'alias',
-    'benefit',
+    'benefits',
     'industries',
     'is_salary_visible',
     'job_description',

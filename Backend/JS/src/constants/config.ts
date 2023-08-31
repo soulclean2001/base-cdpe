@@ -33,6 +33,7 @@ export const envConfig = {
   dbUserCompanyFollow: process.env.DB_USER_COMPANY_FOLLOW_COLLECTION as string,
   dbUserResumeFollow: process.env.DB_USER_RESUME_FOLLOW_COLLECTION as string,
   dbJob: process.env.DB_JOB_COLLECTION as string,
+  dbResume: process.env.DB_RESUME_COLLECTION as string,
   passwordSecret: process.env.PASSWORD_SECRET as string,
   jwtSecretAccessToken: process.env.JWT_SECRET_ACCESS_TOKEN as string,
   jwtSecretRefreshToken: process.env.JWT_SECRET_REFRESH_TOKEN as string,
