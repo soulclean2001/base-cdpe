@@ -18,7 +18,7 @@ import {
   UserInfo
 } from '../schemas/Resume.schema'
 
-enum StatusResume {
+export enum StatusResume {
   Active = 'active',
   Draft = 'draft'
 }
@@ -61,4 +61,5 @@ export interface ResumeRequestBody {
     data: CustomePropertyResume[]
   } & PropertyName)[]
   status?: string
+  is_show?: boolean
 }

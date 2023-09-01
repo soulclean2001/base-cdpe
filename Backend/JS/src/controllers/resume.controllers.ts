@@ -16,6 +16,59 @@ class ResumeController {
       result
     })
   }
+
+  async updateResume(req: Request<ParamsDictionary, any, ResumeRequestBody>, res: Response, next: NextFunction) {
+    const { body } = req
+    const { resume_id } = req.params
+    const { user_id } = req.decoded_authorization
+    const result = await ResumeService.updateResume(user_id, resume_id, body)
+
+    return res.json({
+      message: 'updated resume',
+      result
+    })
+  }
+
+  async deleteResume(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { resume_id } = req.params
+    const { user_id } = req.decoded_authorization
+    const result = await ResumeService.deleteResume(user_id, resume_id)
+
+    return res.json({
+      message: 'deleted resume',
+      result
+    })
+  }
+
+  async getResumeByMe(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { resume_id } = req.params
+    const { user_id } = req.decoded_authorization
+    const result = await ResumeService.getResumeByMe(user_id, resume_id)
+
+    return res.json({
+      message: 'get resume',
+      result
+    })
+  }
+
+  async getAllResumesByMe(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+    const result = await ResumeService.getAllResumesByMe(user_id)
+
+    return res.json({
+      message: 'get all resume',
+      result
+    })
+  }
+
+  async getAllResumes(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const result = await ResumeService.getAllResumes()
+
+    return res.json({
+      message: 'get all resume',
+      result
+    })
+  }
 }
 
 export default new ResumeController()

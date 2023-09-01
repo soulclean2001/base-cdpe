@@ -15,6 +15,7 @@ import {
   UserInfo
 } from '~/models/schemas/Resume.schema'
 import { ErrorWithStatus } from '~/models/Errors'
+import { StatusResume } from '~/models/requests/Resume.request'
 
 // export const createResumeValidator = (req: Request, res: Response, next: NextFunction) => {
 //   const { body } = req
@@ -165,6 +166,9 @@ const checkNestedSchema = (values: any, fieldName: string, listProperties1: stri
     if (expectedFields.includes(key) && key === 'property_name' && typeof values[key] !== 'string') {
       errors.push(`Field ${key} must be a string`)
     }
+    if (expectedFields.includes(key) && key === 'is_show' && typeof values[key] !== 'boolean') {
+      errors.push(`Field ${key} must be a boolean value`)
+    }
   }
 
   if (!Array.isArray(values['data'])) {
@@ -176,6 +180,9 @@ const checkNestedSchema = (values: any, fieldName: string, listProperties1: stri
     for (const key in values.data[i]) {
       if (!expectedDataFields.includes(key)) {
         errors.push(`Field data[${i}].${key} not found in ${fieldName}`)
+      }
+      if (expectedDataFields.includes(key) && typeof values.data[i][key] !== 'string' && key !== 'is_show') {
+        errors.push(`Field data[${i}].${key} must be a string value`)
       }
     }
   }
@@ -228,7 +235,7 @@ const skillsSchema: ParamSchema = {
   optional: true,
   custom: {
     options: (values: any) => {
-      checkNestedSchema(values, 'skills', ['data', 'property_name'], ['skill_name', 'level'])
+      checkNestedSchema(values, 'skills', ['data', 'property_name', 'is_show'], ['skill_name', 'level'])
       return true
     }
   }
@@ -268,7 +275,12 @@ const referencesSchema: ParamSchema = {
   optional: true,
   custom: {
     options: (values: any) => {
-      checkNestedSchema(values, 'references', ['data', 'property_name'], ['name', 'company', 'phone', 'email'])
+      checkNestedSchema(
+        values,
+        'references',
+        ['data', 'property_name', 'is_show'],
+        ['name', 'company', 'phone', 'email']
+      )
       return true
     }
   }
@@ -347,7 +359,15 @@ export const createResumeValidator = validate(
       status: {
         optional: true,
         isString: true,
-        notEmpty: true
+        notEmpty: true,
+        custom: {
+          options: (value: any) => {
+            if (!Object.values(StatusResume).includes(value)) {
+              throw new Error("status must be in ['active', 'draft']")
+            }
+            return true
+          }
+        }
       },
       additional_info: {
         optional: true,
@@ -367,6 +387,10 @@ export const createResumeValidator = validate(
             return true
           }
         }
+      },
+      is_show: {
+        optional: true,
+        isBoolean: true
       }
     },
     ['body']

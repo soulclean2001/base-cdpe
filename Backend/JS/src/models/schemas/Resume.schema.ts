@@ -86,7 +86,6 @@ export interface Skill {
 
 export interface Hobbies {
   description: string
-  property_name: string
 }
 
 export interface Reference {
@@ -97,7 +96,7 @@ export interface Reference {
 }
 
 export interface Show {
-  isShow: boolean
+  is_show: boolean
 }
 
 export enum LanguageLevel {
@@ -159,6 +158,9 @@ export interface ResumeType {
     data: CustomePropertyResume[]
   } & PropertyName)[]
   status?: string
+  is_show?: boolean
+  created_at?: Date
+  updated_at?: Date
 }
 
 enum StatusResume {
@@ -206,7 +208,12 @@ export default class Resume {
     data: CustomePropertyResume[]
   } & PropertyName)[]
   status?: string
+  is_show: boolean
+  created_at?: Date
+  updated_at?: Date
+
   constructor(data: ResumeType) {
+    const date = new Date()
     this._id = data._id
     this.user_id = data.user_id
     this.user_info = data.user_info
@@ -223,5 +230,8 @@ export default class Resume {
     this.extra_curricular_activities = data.extra_curricular_activities
     this.additional_info = data.additional_info
     this.status = data.status || StatusResume.Draft
+    this.created_at = data.created_at || date
+    this.updated_at = data.updated_at || date
+    this.is_show = data.is_show || false
   }
 }
