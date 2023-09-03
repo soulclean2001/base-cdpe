@@ -24,6 +24,7 @@ export enum StatusResume {
 }
 
 export interface ResumeRequestBody {
+  ['user_info.avatar']?: string
   user_info?: UserInfo & PropertyName
   professional_summary?: ProfessionalSummary & PropertyName
   employment_histories?: {

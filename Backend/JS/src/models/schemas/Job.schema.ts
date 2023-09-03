@@ -41,6 +41,8 @@ export interface JobType {
   status: JobStatus
   visibility: boolean // hiển thị
   benefits: Benefit[] // phúc lợi
+  number_of_employees_needed: number
+  application_email: string
   created_at?: Date
   updated_at?: Date
 }
@@ -64,6 +66,8 @@ export default class Job {
   job_requirement: string
   visibility: boolean // hiển thị
   benefits: Benefit[] // phúc lợi
+  number_of_employees_needed: number
+  application_email: string
   created_at: Date
   updated_at: Date
 
@@ -89,5 +93,7 @@ export default class Job {
     this.benefits = data.benefits
     this.created_at = data.created_at || date
     this.updated_at = data.updated_at || date
+    this.number_of_employees_needed = data.number_of_employees_needed || 10
+    this.application_email = data.application_email
   }
 }

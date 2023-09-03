@@ -15,6 +15,8 @@ export interface CreateJobBody {
   visibility: boolean
   benefits: Benefit[]
   job_type: string
+  number_of_employees_needed: number
+  application_email: string
 }
 
 export interface PublishJobBody {
@@ -43,4 +45,6 @@ export interface UpdateJobReqBody {
   visibility?: boolean
   benefits?: Benefit[]
   job_type?: string
+  number_of_employees_needed?: number
+  application_email?: string
 }

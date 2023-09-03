@@ -10,6 +10,8 @@ import RecruiterFollowedResumes from '~/models/schemas/RecruiterFollowedResumes.
 import CompanyFollowers from '~/models/schemas/CompanyFollowers.schema'
 import Job from '~/models/schemas/Job.schema'
 import Resume from '~/models/schemas/Resume.schema'
+import Package from '~/models/schemas/Package.schema'
+import Cart, { CartItem } from '~/models/schemas/Cart.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -81,15 +83,27 @@ class DatabaseService {
   }
 
   get recruiterFollowedResumes(): Collection<RecruiterFollowedResumes> {
-    return this.db.collection(envConfig.dbUserCompanyFollow)
+    return this.db.collection(envConfig.dbCompanyResumeFollow)
   }
 
   get companyFollowers(): Collection<CompanyFollowers> {
-    return this.db.collection(envConfig.dbUserResumeFollow)
+    return this.db.collection(envConfig.dbUserCompanyFollow)
   }
 
   get resume(): Collection<Resume> {
     return this.db.collection(envConfig.dbResume)
+  }
+
+  get package(): Collection<Package> {
+    return this.db.collection(envConfig.dbPackage)
+  }
+
+  get cart(): Collection<Cart> {
+    return this.db.collection(envConfig.dbCart)
+  }
+
+  get cartItem(): Collection<CartItem> {
+    return this.db.collection(envConfig.dbCartItem)
   }
 }
 

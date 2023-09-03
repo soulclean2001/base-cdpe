@@ -127,6 +127,30 @@ const salaryRangeSchema: ParamSchema = {
   }
 }
 
+const applicationEmail: ParamSchema = {
+  isString: {
+    errorMessage: 'email must be a string'
+  },
+  custom: {
+    options: (value: string) => {
+      const cleanArrEmail = value.replace(/\s+/g, '').trim()
+      const newArrEmail = cleanArrEmail.split(',')
+
+      for (const email of newArrEmail) {
+        const isEmail = String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          )
+        if (!isEmail) {
+          throw new Error('valid email address')
+        }
+      }
+      return true
+    }
+  }
+}
+
 export const createJobValidator = validate(
   checkSchema(
     {
@@ -202,6 +226,11 @@ export const createJobValidator = validate(
             return true
           }
         }
+      },
+      application_email: applicationEmail,
+      number_of_employees_needed: {
+        optional: true,
+        isNumeric: true
       }
     },
     ['body']
@@ -281,6 +310,14 @@ export const updateJobValidator = validate(
       visibility: {
         isBoolean: true,
         optional: true
+      },
+      application_email: {
+        ...applicationEmail,
+        optional: true
+      },
+      number_of_employees_needed: {
+        optional: true,
+        isNumeric: true
       },
       benefits: {
         optional: true,

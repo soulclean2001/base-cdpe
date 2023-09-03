@@ -20,4 +20,6 @@ export interface UpdateCompanyReqBody {
   logo?: string
   company_info?: string
   company_size?: string
+  logo_image_file?: File
+  background_image_file?: File
 }

@@ -660,3 +660,23 @@ export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   }
   throw new ErrorWithStatus({ message: 'Invalid authorization', status: 401 })
 }
+
+export const isEmployer = (req: Request, res: Response, next: NextFunction) => {
+  if (req.decoded_authorization) {
+    const { role } = req.decoded_authorization
+    if (role === UserRole.Employer) {
+      return next()
+    }
+  }
+  throw new ErrorWithStatus({ message: 'Invalid authorization', status: 401 })
+}
+
+export const isCandidate = (req: Request, res: Response, next: NextFunction) => {
+  if (req.decoded_authorization) {
+    const { role } = req.decoded_authorization
+    if (role === UserRole.Candidate) {
+      return next()
+    }
+  }
+  throw new ErrorWithStatus({ message: 'Invalid authorization', status: 401 })
+}

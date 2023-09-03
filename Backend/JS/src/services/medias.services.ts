@@ -15,6 +15,7 @@ import VideoStatus from '~/models/schemas/VideoStatus.schemas'
 import { encodeHLSWithMultipleVideoStreams } from '~/utils/video'
 import { rimrafSync } from 'rimraf'
 import { envConfig, isProduction } from '~/constants/config'
+import { File } from 'formidable'
 
 class Queue {
   items: string[]
