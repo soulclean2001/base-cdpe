@@ -12,6 +12,7 @@ import Job from '~/models/schemas/Job.schema'
 import Resume from '~/models/schemas/Resume.schema'
 import Package from '~/models/schemas/Package.schema'
 import Cart, { CartItem } from '~/models/schemas/Cart.schema'
+import Conversation from '~/models/schemas/Conversation.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -104,6 +105,10 @@ class DatabaseService {
 
   get cartItem(): Collection<CartItem> {
     return this.db.collection(envConfig.dbCartItem)
+  }
+
+  get conversations(): Collection<Conversation> {
+    return this.db.collection(envConfig.dbConversationCollection)
   }
 }
 

@@ -8,6 +8,7 @@ export interface CreateJobBody {
   working_locations: WorkingLocation[]
   industries: [string]
   skills: [string]
+  expired_date?: string
   job_level: string
   salary_range: SalararyRange
   job_description: string
@@ -43,6 +44,8 @@ export interface UpdateJobReqBody {
   job_description?: string
   job_requirement?: string
   visibility?: boolean
+  expired_date?: string
+
   benefits?: Benefit[]
   job_type?: string
   number_of_employees_needed?: number

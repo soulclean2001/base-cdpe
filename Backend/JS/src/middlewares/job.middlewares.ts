@@ -231,6 +231,16 @@ export const createJobValidator = validate(
       number_of_employees_needed: {
         optional: true,
         isNumeric: true
+      },
+      expired_date: {
+        optional: true,
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'expired_date must be a valid ISO8601'
+        }
       }
     },
     ['body']
@@ -343,6 +353,16 @@ export const updateJobValidator = validate(
             }
             return true
           }
+        }
+      },
+      expired_date: {
+        optional: true,
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'expired_date must be a valid ISO8601'
         }
       }
     },

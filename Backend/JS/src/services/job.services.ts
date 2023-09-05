@@ -1,6 +1,6 @@
 import { CreateJobBody, JobStatus, UpdateJobReqBody } from '~/models/requests/Job.request'
 import databaseServices from './database.services'
-import Job from '~/models/schemas/Job.schema'
+import Job, { JobType } from '~/models/schemas/Job.schema'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 export default class JobService {
@@ -15,13 +15,18 @@ export default class JobService {
       })
     }
 
+    const _payload = (
+      payload.expired_date
+        ? { ...payload, expires: new Date(payload.expired_date), status: JobStatus.Pending }
+        : { ...payload, status: JobStatus.Unapproved }
+    ) as JobType
+
     const result = await databaseServices.job.insertOne(
       new Job({
-        ...payload,
+        ..._payload,
         user_id: new ObjectId(userId),
         company_id: company._id,
-        visibility: false,
-        status: JobStatus.Unapproved
+        visibility: false
       })
     )
 
@@ -69,6 +74,12 @@ export default class JobService {
       })
     }
 
+    const _payload = (
+      payload.expired_date
+        ? { ...payload, expires: new Date(payload.expired_date), status: JobStatus.Pending }
+        : { ...payload, status: JobStatus.Unapproved }
+    ) as JobType
+
     const result = await databaseServices.job.findOneAndUpdate(
       {
         _id: new ObjectId(jobId),
@@ -76,9 +87,8 @@ export default class JobService {
       },
       {
         $set: {
-          ...payload,
-          visibility: false,
-          status: JobStatus.Unapproved
+          ..._payload,
+          visibility: false
         },
         $currentDate: {
           updated_at: true
@@ -189,7 +199,7 @@ export default class JobService {
     }
   }
 
-  static async publish({ userId, jobId, expiredDate }: { userId: string; jobId: string; expiredDate: string }) {
+  static async publish({ userId, jobId, expiredDate }: { userId: string; jobId: string; expiredDate?: string }) {
     const company = await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
     })
@@ -200,6 +210,8 @@ export default class JobService {
       })
     }
 
+    const dataUpdate = expiredDate ? { expired_date: new Date(expiredDate) } : {}
+
     const result = await databaseServices.job.findOneAndUpdate(
       {
         _id: new ObjectId(jobId),
@@ -207,7 +219,7 @@ export default class JobService {
       },
       {
         $set: {
-          expired_date: new Date(expiredDate),
+          ...dataUpdate,
           visibility: true,
           status: JobStatus.Pending
         },

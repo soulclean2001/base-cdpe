@@ -186,6 +186,7 @@ class UsersService {
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
     )
+
     return {
       access_token,
       refresh_token
@@ -287,12 +288,11 @@ class UsersService {
   }) {
     const [new_access_token, new_refresh_token] = await Promise.all([
       this.signAccessToken({ user_id, verify, role }),
-      this.signRefreshToken({ user_id, verify, exp }),
-      databaseServices.refreshTokens.deleteOne({ token: refresh_token })
+      this.signRefreshToken({ user_id, verify, exp })
     ])
 
+    await databaseServices.refreshTokens.deleteOne({ token: refresh_token })
     const decoded_refresh_token = await this.decodeRefreshToken(new_refresh_token)
-
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -301,6 +301,7 @@ class UsersService {
         exp: decoded_refresh_token.exp
       })
     )
+
     return {
       access_token: new_access_token,
       refresh_token: new_refresh_token

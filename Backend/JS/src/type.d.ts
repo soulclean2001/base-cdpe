@@ -9,3 +9,9 @@ declare module 'express' {
     decoded_forgot_password_token?: TokenPayload
   }
 }
+
+declare module 'socket.io' {
+  interface Socket {
+    userId: string
+  }
+}

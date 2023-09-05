@@ -9,6 +9,10 @@ import { defaultErrorHandler } from '~/middlewares/error.middlewares'
 import { initFolder } from './utils/file'
 import rateLimit from 'express-rate-limit'
 import { envConfig, isProduction } from '~/constants/config'
+import http from 'http'
+import { Server } from 'socket.io'
+import socket from './app/socket'
+import { redis } from './app/redis'
 
 initFolder()
 
@@ -46,10 +50,21 @@ const corsOptions: CorsOptions = {
 }
 app.use(cors(corsOptions))
 
+const httpServer = http.createServer(app)
+
+export const io = new Server(httpServer, {
+  cors: {
+    origin: '*'
+  }
+})
+
+socket(io)
+redis.client.connect()
+
 app.use('/api/v1', router)
 
 app.use(defaultErrorHandler)
 
-app.listen(port, () => {
+httpServer.listen(port, () => {
   console.log(`server is started on port http://localhost:${port}`)
 })
