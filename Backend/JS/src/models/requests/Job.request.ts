@@ -21,7 +21,7 @@ export interface CreateJobBody {
 }
 
 export interface PublishJobBody {
-  expired_date: string
+  expired_date?: string
 }
 
 export enum JobStatus {

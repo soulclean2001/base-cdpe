@@ -35,7 +35,8 @@ jobRouter.patch(
     'salary_range',
     'skills',
     'visibility',
-    'working_locations'
+    'working_locations',
+    'expired_date'
   ]),
 
   wrapAsync(jobControllers.updateJob)

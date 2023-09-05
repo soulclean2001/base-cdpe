@@ -251,6 +251,7 @@ export const publishJobValidator = validate(
   checkSchema(
     {
       expired_date: {
+        optional: true,
         isISO8601: {
           options: {
             strict: true,

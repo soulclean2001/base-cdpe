@@ -210,7 +210,18 @@ export default class JobService {
       })
     }
 
-    const dataUpdate = expiredDate ? { expired_date: new Date(expiredDate) } : {}
+    const oldJob = await databaseServices.job.findOne({
+      _id: new ObjectId(jobId),
+      company_id: company._id
+    })
+
+    if (!oldJob?.expired_date && !expiredDate) {
+      throw new ErrorWithStatus({
+        message: 'expired date not valid',
+        status: 422
+      })
+    }
+    const dataUpdate = expiredDate ? { expired_date: new Date(expiredDate) } : { expired_date: oldJob?.expired_date }
 
     const result = await databaseServices.job.findOneAndUpdate(
       {
