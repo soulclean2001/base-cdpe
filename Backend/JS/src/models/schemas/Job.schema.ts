@@ -70,10 +70,12 @@ export default class Job {
   application_email: string
   created_at: Date
   updated_at: Date
+  status: JobStatus
 
   constructor(data: JobType) {
     const date = new Date()
     this._id = data._id
+    this.status = data.status
     this.company_id = data.company_id
     this.alias = data.alias
     this.job_title = data.job_title
@@ -92,6 +94,7 @@ export default class Job {
     this.visibility = data.visibility
     this.benefits = data.benefits
     this.created_at = data.created_at || date
+    this.expired_date = data.expired_date || date
     this.updated_at = data.updated_at || date
     this.number_of_employees_needed = data.number_of_employees_needed || 10
     this.application_email = data.application_email
