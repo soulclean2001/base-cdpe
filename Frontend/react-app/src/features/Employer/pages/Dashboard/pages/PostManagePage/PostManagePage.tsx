@@ -2,6 +2,8 @@ import { Button, Col, Row, Tabs, TabsProps } from 'antd'
 import './style.scss'
 import { AiFillPlusCircle } from 'react-icons/ai'
 import TableCustom from '../../components/TableCustom/TableCustom'
+import { useState } from 'react'
+import ModalInfoPost from '../../components/ModalInfoPost/ModalInfoPost'
 const PostManagePage = () => {
   const onChange = (key: string) => {
     console.log(key)
@@ -34,15 +36,20 @@ const PostManagePage = () => {
       children: 'Content of Tab Pane 3'
     }
   ]
+  const [openModalAddPost, setOpenModalAddPost] = useState(false)
+  const handleCloseModal = () => {
+    setOpenModalAddPost(false)
+  }
   return (
     <div className='post-manage-page-container'>
       <div className='title-container'>
         <div className='post-manage-title'>QUẢN LÝ BÀI ĐĂNG</div>
       </div>
       <div className='show-modal-add-post-container'>
-        <Button size='large' icon={<AiFillPlusCircle />}>
+        <Button size='large' icon={<AiFillPlusCircle />} onClick={() => setOpenModalAddPost(true)}>
           Tạo bài đăng
         </Button>
+        <ModalInfoPost open={openModalAddPost} handleClose={handleCloseModal} title='TẠO BÀI ĐĂNG' />
       </div>
 
       <div className='tabs-post-manage-container'>

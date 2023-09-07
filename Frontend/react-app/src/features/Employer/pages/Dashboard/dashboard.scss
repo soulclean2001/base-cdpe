@@ -8,9 +8,32 @@
   // max-height: 100vh;
 
   .employer-dashboard-content {
-    border: 1px solid red;
-    // width: 100%;
+    border-top: 1px solid rgb(215, 214, 214);
     height: 100vh;
     max-height: 100vh;
+
+    overflow: auto;
+    ::-webkit-scrollbar {
+      border-radius: 25px;
+      width: 4px;
+    }
+
+    /* Track */
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 15px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 15px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    // width: 100%;
   }
 }

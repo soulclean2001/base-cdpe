@@ -1,0 +1,65 @@
+.my-account-manage-page-container {
+  padding: 20px;
+  .title {
+    font-size: 26px;
+    font-weight: 700;
+    padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .info-container {
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .info-content {
+      padding: 20px;
+      box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px;
+      border-radius: 10px;
+      .label {
+        font-weight: 500;
+      }
+      .edit-name {
+        cursor: pointer;
+      }
+      .collapse-change-password-container {
+        border: none;
+        width: 50%;
+        // .collapse-change-password {
+        // }
+        // .ant-collapse-item {
+        //   border: none;
+        // }
+        // .ant-collapse-content-box {
+        //   padding: 0;
+        // }
+        // .ant-collapse {
+        //   border: none;
+        //   border-radius: 0px;
+
+        //   box-shadow: none;
+        //   .ant-collapse-content {
+        //     border: none;
+        //     border-radius: 0px;
+
+        //     box-shadow: none;
+        //   }
+        // }
+        .ant-collapse-header {
+          border: none;
+          border-radius: 0px;
+          background: white;
+          box-shadow: none;
+          color: #005aff;
+          padding: 10px 0;
+        }
+      }
+      @media (max-width: 768px) {
+        .collapse-change-password-container {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

@@ -18,7 +18,7 @@ const getItems: (panelStyle: CSSProperties) => CollapseProps['items'] = (panelSt
   {
     key: '1',
     label: (
-      <span className='title-regulations' style={{ fontSize: '19px', fontWeight: 700, color: '#00b14f' }}>
+      <span className='title-regulations' style={{ fontSize: '19px', fontWeight: 700, color: 'rgb(255, 125, 85)' }}>
         Quy định
       </span>
     ),
@@ -35,7 +35,7 @@ const getItems: (panelStyle: CSSProperties) => CollapseProps['items'] = (panelSt
           giấy phép kinh doanh.
         </p>
         <p>Mọi thắc mắc vui lòng liên hệ Hotline CSKH:</p>
-        <p style={{ color: '#00b14f', fontWeight: 700, fontSize: '18px' }}>
+        <p style={{ color: 'rgb(255, 125, 85)', fontWeight: 700, fontSize: '18px' }}>
           {' '}
           <PhoneOutlined /> 0365887759
         </p>
@@ -143,7 +143,7 @@ const SignUpEmployer = () => {
               bordered={false}
               defaultActiveKey={['1']}
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
-              style={{ border: '1px solid #00b14f' }}
+              style={{ border: '1px solid rgb(255, 125, 85)' }}
               items={getItems(panelStyle)}
             />
             <Form
@@ -167,7 +167,7 @@ const SignUpEmployer = () => {
                 <Input
                   size='large'
                   className='email-input'
-                  prefix={<MailOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                  prefix={<MailOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                   placeholder='Nhập Email'
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -186,7 +186,7 @@ const SignUpEmployer = () => {
               >
                 <Input.Password
                   size='large'
-                  prefix={<LockOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                  prefix={<LockOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                   type='password'
                   placeholder='Nhập mật khẩu'
                   onChange={(e) => setPassword(e.target.value)}
@@ -211,7 +211,7 @@ const SignUpEmployer = () => {
               >
                 <Input.Password
                   size='large'
-                  prefix={<LockOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                  prefix={<LockOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                   type='password'
                   placeholder='Nhập lại mật khẩu'
                   onChange={(e) => setRePassword(e.target.value)}
@@ -228,7 +228,7 @@ const SignUpEmployer = () => {
                     <Input
                       size='large'
                       className='name-input'
-                      prefix={<UserOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                      prefix={<UserOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                       placeholder='Nhập họ tên'
                       onChange={(e) => setName(e.target.value)}
                     />
@@ -266,7 +266,7 @@ const SignUpEmployer = () => {
                 <Input
                   size='large'
                   maxLength={10}
-                  prefix={<PhoneOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                  prefix={<PhoneOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                   placeholder='Nhập số điện thoại'
                   onChange={(e) => setPhone(e.target.value)}
                 />
@@ -281,7 +281,7 @@ const SignUpEmployer = () => {
                   >
                     <Input
                       size='large'
-                      prefix={<BankOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                      prefix={<BankOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                       placeholder='Nhập tên công ty'
                       onChange={(e) => setNameCompany(e.target.value)}
                     />

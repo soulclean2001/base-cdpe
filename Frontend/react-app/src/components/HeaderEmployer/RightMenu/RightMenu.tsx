@@ -11,6 +11,7 @@ import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import { useDispatch } from 'react-redux'
 import { logout } from '~/features/Auth/authSlice'
+import { BsFillCartFill } from 'react-icons/bs'
 const RightMenu = (props: any) => {
   const { isLogin } = props
 
@@ -24,6 +25,9 @@ const RightMenu = (props: any) => {
   }
   const handleTabDashboar = () => {
     navigate('/employer/dashboard')
+  }
+  const handleTabPageCart = () => {
+    navigate('/employer/cart')
   }
   const items: MenuProps['items'] = [
     {
@@ -70,6 +74,13 @@ const RightMenu = (props: any) => {
               icon={<AiFillMessage />}
               className='btn-message'
               onClick={handleTabDashboar}
+              shape='circle'
+              size='large'
+            />
+            <Button
+              icon={<BsFillCartFill />}
+              className='btn-cart'
+              onClick={handleTabPageCart}
               shape='circle'
               size='large'
             />

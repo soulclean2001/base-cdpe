@@ -127,7 +127,7 @@ const Login: React.FC = () => {
           <h1 className='title' onClick={handleBackHome}>
             HFWork
           </h1>
-          <h3 style={{ fontSize: '22px', color: '#00b14f' }}>Chào mừng bạn đã quay trở lại</h3>
+          <h3 style={{ fontSize: '22px', color: 'rgb(255, 125, 85)' }}>Chào mừng bạn đã quay trở lại</h3>
           <span style={{ fontSize: '14px', color: '#999' }}>
             Cùng xây dựng một hồ sơ nổi bật và nhận được các cơ hội sự nghiệp lý tưởng
           </span>
@@ -138,7 +138,7 @@ const Login: React.FC = () => {
               <Input
                 size='large'
                 className='mail-input'
-                prefix={<MailOutlined style={{ color: 'green' }} className='site-form-item-icon' />}
+                prefix={<MailOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                 placeholder='Tài khoản'
               />
             </Form.Item>
@@ -149,7 +149,7 @@ const Login: React.FC = () => {
             >
               <Input.Password
                 size='large'
-                prefix={<LockOutlined style={{ color: 'green' }} className='site-form-item-icon' />}
+                prefix={<LockOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                 type='password'
                 placeholder='Mật khẩu'
               />

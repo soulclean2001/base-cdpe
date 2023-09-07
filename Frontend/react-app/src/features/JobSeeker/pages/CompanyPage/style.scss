@@ -35,6 +35,11 @@
         width: 120px;
       }
     }
+    @media (max-width: 768px) {
+      .company-search-container {
+        width: 100%;
+      }
+    }
     .list-company-container {
       position: relative;
       background-color: rgb(255, 255, 255);

@@ -24,7 +24,7 @@
         color: rgb(103, 103, 103);
       }
       &:hover {
-        color: rgb(2, 182, 2);
+        color: rgb(255, 125, 85);
       }
     }
   }
@@ -56,32 +56,32 @@
           align-items: center;
         }
         .ant-menu-submenu-active {
-          color: rgb(2, 182, 2);
+          color: rgb(255, 125, 85);
           &::after {
-            border-bottom-color: rgb(2, 182, 2);
+            border-bottom-color: rgb(255, 125, 85);
           }
         }
         .ant-menu-submenu-open {
-          color: rgb(2, 182, 2);
-          border-bottom-color: rgb(2, 182, 2);
+          color: rgb(255, 125, 85);
+          border-bottom-color: rgb(255, 125, 85);
           &:after {
-            color: rgb(2, 182, 2);
-            border-bottom-color: rgb(2, 182, 2);
+            color: rgb(255, 125, 85);
+            border-bottom-color: rgb(255, 125, 85);
           }
           &:hover {
-            color: rgb(2, 182, 2);
-            border-bottom-color: rgb(2, 182, 2);
+            color: rgb(255, 125, 85);
+            border-bottom-color: rgb(255, 125, 85);
           }
         }
         .ant-menu-submenu-selected > .ant-menu-submenu-title {
-          color: rgb(2, 182, 2);
+          color: rgb(255, 125, 85);
         }
         :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal
           > .ant-menu-submenu-selected::after,
         :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
           > .ant-menu.ant-menu-horizontal
           > .ant-menu-submenu-selected::after {
-          border-bottom-color: rgb(2, 182, 2);
+          border-bottom-color: rgb(255, 125, 85);
         }
       }
     }
