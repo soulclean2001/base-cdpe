@@ -13,6 +13,10 @@ import Resume from '~/models/schemas/Resume.schema'
 import Package from '~/models/schemas/Package.schema'
 import Cart, { CartItem } from '~/models/schemas/Cart.schema'
 import Conversation from '~/models/schemas/Conversation.schema'
+import Candidate from '~/models/schemas/Candidate.schema'
+import PotentialCandidate from '~/models/schemas/PotentialCandidate.schema'
+import TrackedCandidate from '~/models/schemas/TrackedCandidate.schema'
+import JobApplication from '~/models/schemas/JobApplication.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -109,6 +113,18 @@ class DatabaseService {
 
   get conversations(): Collection<Conversation> {
     return this.db.collection(envConfig.dbConversationCollection)
+  }
+
+  get candidate(): Collection<Candidate> {
+    return this.db.collection(envConfig.dbCandidate)
+  }
+
+  get trackedCandidate(): Collection<TrackedCandidate> {
+    return this.db.collection(envConfig.dbTrackedCandidate)
+  }
+
+  get jobApplication(): Collection<JobApplication> {
+    return this.db.collection(envConfig.dbJobApplication)
   }
 }
 

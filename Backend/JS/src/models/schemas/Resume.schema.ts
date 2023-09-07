@@ -120,6 +120,7 @@ export interface Language {
 
 export interface ResumeType {
   _id?: ObjectId
+  title?: string
   user_id: ObjectId
   user_info?: UserInfo & PropertyName
   professional_summary?: ProfessionalSummary & PropertyName
@@ -170,6 +171,7 @@ enum StatusResume {
 
 export default class Resume {
   _id?: ObjectId
+  title: string
   user_id: ObjectId
   user_info?: UserInfo & PropertyName
   professional_summary?: ProfessionalSummary & PropertyName
@@ -217,6 +219,7 @@ export default class Resume {
     this._id = data._id
     this.user_id = data.user_id
     this.user_info = data.user_info
+    this.title = data.title || 'Untitled'
     this.professional_summary = data.professional_summary
     this.employment_histories = data.employment_histories
     this.educations = data.educations

@@ -8,6 +8,8 @@ import followerRouter from './follower.routes'
 import packageRouter from './package.routes'
 import cartRouter from './cart.routes'
 import conversationsRouter from './conversations.routes'
+import candidateRoute from './candidate.routes'
+import jobApplicationRouter from './jobApplication.routes'
 
 const router = express.Router()
 
@@ -20,5 +22,6 @@ router.use('/followers', followerRouter)
 router.use('/packages', packageRouter)
 router.use('/carts', cartRouter)
 router.use('/conversations', conversationsRouter)
-
+router.use('/candidates', candidateRoute)
+router.use('/job-applications', jobApplicationRouter)
 export default router
