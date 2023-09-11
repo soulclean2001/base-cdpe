@@ -28,6 +28,8 @@ import CartPage from './features/Employer/pages/CartPage'
 import SettingsPage from './features/JobSeeker/pages/SettingsPage'
 import Overview from './features/JobSeeker/pages/SettingsPage/components/Content/Overview/Overview'
 import ManageCV from './features/Employer/pages/Dashboard/pages/ManageCV/ManageCV'
+import JobDetailPage from './features/JobSeeker/pages/Job/page/JobDetailPage'
+import ListJob from './features/JobSeeker/pages/Job/page/ListJob/ListJob'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -38,7 +40,11 @@ function App() {
       <Routes>
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
           <Route index element={<Home />}></Route>
-          <Route path='jobs' element={<Job />} />
+          <Route path='jobs' element={<Job />}>
+            <Route index element={<ListJob />} />
+            <Route path='job-detail' element={<JobDetailPage />} />
+          </Route>
+
           <Route path='companies' element={<CompanyPage />} />
           <Route path='CV' element={<CV />} />
           <Route

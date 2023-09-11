@@ -7,7 +7,7 @@ const Footer = () => {
       <>
         <Row className='footer-content'>
           <Col md={5}>
-            <div className='title'>HFWork</div>
+            <div className='footer-title'>HFWork</div>
             <div>
               <NavLink to={''}>Về HFWork</NavLink>
             </div>
@@ -28,7 +28,7 @@ const Footer = () => {
             </div>
           </Col>
           <Col md={5}>
-            <div className='title'>Dành cho Nhà tuyển dụng</div>
+            <div className='footer-title'>Dành cho Nhà tuyển dụng</div>
             <div>
               <NavLink to={''}>Đăng tin tuyển dụng</NavLink>
             </div>
@@ -41,7 +41,7 @@ const Footer = () => {
           </Col>
           <Col md={5}>
             <div>
-              <div className='title'>Việc làm theo khu vực</div>
+              <div className='footer-title'>Việc làm theo khu vực</div>
               <div>
                 <NavLink to={''}>Hồ Chí Minh</NavLink>
               </div>
@@ -65,7 +65,7 @@ const Footer = () => {
           </Col>
           <Col md={5}>
             <div>
-              <div className='title'>Việc làm theo ngành nghề</div>
+              <div className='footer-title'>Việc làm theo ngành nghề</div>
               <div>
                 <NavLink to={''}>Kế toán</NavLink>
               </div>
@@ -87,7 +87,7 @@ const Footer = () => {
             </div>
           </Col>
           <Col md={4}>
-            <div className='title'>Ứng dụng di động</div>
+            <div className='footer-title'>Ứng dụng di động</div>
           </Col>
         </Row>
       </>

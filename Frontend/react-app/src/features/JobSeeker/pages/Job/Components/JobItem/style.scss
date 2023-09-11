@@ -5,6 +5,7 @@
   border: 1px solid rgb(160, 193, 255);
   background-color: rgb(239, 245, 255);
   margin: 15px;
+
   .job-item-image {
     padding: 15px;
     display: flex;
@@ -45,5 +46,8 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+  }
+  &:hover {
+    background-color: rgb(239, 243, 246);
   }
 }
