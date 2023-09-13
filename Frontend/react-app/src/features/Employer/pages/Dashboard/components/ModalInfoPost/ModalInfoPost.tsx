@@ -378,7 +378,7 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   label={<span style={{ fontWeight: '500' }}>Cấp Bật</span>}
                   name='level'
-                  rules={[{ required: true, message: 'Vui lòng nhập tên công ty' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn cấp bật' }]}
                 >
                   <Select
                     showSearch

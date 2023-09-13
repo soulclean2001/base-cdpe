@@ -194,7 +194,7 @@ const ListJob = () => {
           </Col>
         </Row>
         <Row className='list-job-container'>
-          <Col md={17} sm={24} xs={24}>
+          <Col md={16} sm={24} xs={24}>
             <div className='sort-list-job'>
               <span>Sắp xếp theo </span>
               <div id='sort-container'>

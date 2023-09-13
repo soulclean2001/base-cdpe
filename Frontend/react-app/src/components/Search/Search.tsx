@@ -22,6 +22,7 @@ const Search = () => {
       <Row className='search-content' justify={'center'}>
         <Col xs={14} sm={14} md={12}>
           <Input
+            allowClear
             size='large'
             className='search-input-left'
             placeholder='Tìm kiếm việc làm, công ty, chức vụ ...'

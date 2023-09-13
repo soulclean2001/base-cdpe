@@ -30,6 +30,9 @@ import Overview from './features/JobSeeker/pages/SettingsPage/components/Content
 import ManageCV from './features/Employer/pages/Dashboard/pages/ManageCV/ManageCV'
 import JobDetailPage from './features/JobSeeker/pages/Job/page/JobDetailPage'
 import ListJob from './features/JobSeeker/pages/Job/page/ListJob/ListJob'
+import ListCompany from './features/JobSeeker/pages/CompanyPage/pages/ListCompany/ListCompany'
+import CompanyDetail from './features/JobSeeker/pages/CompanyPage/pages/CompanyDetail/CompanyDetail'
+import FindCandidatePage from './features/Employer/pages/Dashboard/pages/FindCandidatePage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -45,7 +48,10 @@ function App() {
             <Route path='job-detail' element={<JobDetailPage />} />
           </Route>
 
-          <Route path='companies' element={<CompanyPage />} />
+          <Route path='companies' element={<CompanyPage />}>
+            <Route index element={<ListCompany />} />
+            <Route path='company-detail' element={<CompanyDetail />} />
+          </Route>
           <Route path='CV' element={<CV />} />
           <Route
             path='settings'
@@ -89,6 +95,7 @@ function App() {
             <Route path='post-manage' element={<PostManagePage />} />
             <Route path='my-account-info' element={<MyAccountManagePage />} />
             <Route path='company-general' element={<CompanyManagePage />} />
+            <Route path='find-candidate' element={<FindCandidatePage />} />
           </Route>
         </Route>
         <Route path='/employer-sign-up' element={<SignUpEmployer />} />
