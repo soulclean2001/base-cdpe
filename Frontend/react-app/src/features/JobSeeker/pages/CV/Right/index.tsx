@@ -91,7 +91,7 @@ const Right = (props: RightPropsType) => {
             <p className='preview__info'>github.com/hirosaki217</p> */}
             <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
 
-            {skills && skills.data.length > 0 && (
+            {skills && Array.isArray(data.skills.data) && skills.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{skills.property_name}</h4>
                 {skills.data.map((skill, index) => (
@@ -104,7 +104,7 @@ const Right = (props: RightPropsType) => {
               </>
             )}
 
-            {data.languages && data.languages.data.length > 0 && (
+            {data.languages && Array.isArray(data.languages.data) && data.languages.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{data.languages.property_name}</h4>
                 {data.languages.data.map((e, index) => (
@@ -116,7 +116,7 @@ const Right = (props: RightPropsType) => {
               </>
             )}
 
-            {hobbie && hobbie.description.length > 0 && (
+            {hobbie && hobbie.description && hobbie.description.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{hobbie.property_name}</h4>
                 <p className='preview__info'>{hobbie.description}</p>
@@ -132,35 +132,37 @@ const Right = (props: RightPropsType) => {
               </>
             )}
 
-            {data.employment_histories && data.employment_histories.data.length > 0 && (
-              <>
-                <h4 className='preview__title-info'>{data.employment_histories.property_name}</h4>
-                {data.employment_histories.data.map((e, index) => {
-                  const temp = [e.job_title, e.employer, e.city].filter((it) => it.length > 0)
+            {data.employment_histories &&
+              Array.isArray(data.employment_histories.data) &&
+              data.employment_histories.data.length > 0 && (
+                <>
+                  <h4 className='preview__title-info'>{data.employment_histories.property_name}</h4>
+                  {data.employment_histories.data.map((e, index) => {
+                    const temp = [e.job_title, e.employer, e.city].filter((it) => it.length > 0)
 
-                  const str = temp.length === 1 ? temp[0] : temp.join(', ')
-                  const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
-                  const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
+                    const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                    const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
+                    const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
 
-                  return (
-                    <div key={e.job_title + index} style={{ paddingBottom: '10px' }}>
-                      <p className='preview__info'>
-                        <b>{str}</b>
-                      </p>
+                    return (
+                      <div key={e.job_title + index} style={{ paddingBottom: '10px' }}>
+                        <p className='preview__info'>
+                          <b>{str}</b>
+                        </p>
 
-                      <p className='preview__info'>
-                        <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
-                      </p>
+                        <p className='preview__info'>
+                          <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                        </p>
 
-                      <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
-                    </div>
-                  )
-                })}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
-              </>
-            )}
+                        <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                      </div>
+                    )
+                  })}
+                  <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                </>
+              )}
 
-            {data.educations && data.educations.data.length > 0 && (
+            {data.educations && Array.isArray(data.educations.data) && data.educations.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{data.educations.property_name}</h4>
                 {data.educations.data.map((e, index) => {
@@ -188,23 +190,25 @@ const Right = (props: RightPropsType) => {
               </>
             )}
 
-            {data.social_or_website && data.social_or_website.data.length > 0 && (
-              <>
-                <h4 className='preview__title-info'>{data.social_or_website.property_name}</h4>
-                {data.social_or_website.data.map((e, index) => {
-                  return (
-                    <div key={e.label + index} style={{ paddingBottom: '10px' }}>
-                      <p className='preview__info'>
-                        <b>{e.label}</b> <a href={e.link}>{e.link}</a>
-                      </p>
-                    </div>
-                  )
-                })}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
-              </>
-            )}
+            {data.social_or_website &&
+              Array.isArray(data.social_or_website.data) &&
+              data.social_or_website.data.length > 0 && (
+                <>
+                  <h4 className='preview__title-info'>{data.social_or_website.property_name}</h4>
+                  {data.social_or_website.data.map((e, index) => {
+                    return (
+                      <div key={e.label + index} style={{ paddingBottom: '10px' }}>
+                        <p className='preview__info'>
+                          <b>{e.label}</b> <a href={e.link}>{e.link}</a>
+                        </p>
+                      </div>
+                    )
+                  })}
+                  <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                </>
+              )}
 
-            {data.courses && data.courses.data.length > 0 && (
+            {data.courses && Array.isArray(data.courses.data) && data.courses.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{data.courses.property_name}</h4>
                 {data.courses.data.map((e, index) => {
@@ -230,7 +234,7 @@ const Right = (props: RightPropsType) => {
               </>
             )}
 
-            {data.references && data.references.data.length > 0 && (
+            {data.references && Array.isArray(data.references.data) && data.references.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{data.references.property_name}</h4>
                 {data.references.data.map((e, index) => {
@@ -254,7 +258,7 @@ const Right = (props: RightPropsType) => {
               </>
             )}
 
-            {data.internships && data.internships.data.length > 0 && (
+            {data.internships && Array.isArray(data.internships.data) && data.internships.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{data.internships.property_name}</h4>
                 {data.internships.data.map((e, index) => {
@@ -281,6 +285,42 @@ const Right = (props: RightPropsType) => {
                 <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
+
+            {data.additional_info &&
+              data.additional_info.length > 0 &&
+              data.additional_info.map((parent, pindex) => {
+                return (
+                  <div key={pindex}>
+                    {parent && parent.data.length > 0 && (
+                      <>
+                        <h4 className='preview__title-info'>{parent.property_name}</h4>
+                        {parent.data.map((e, index) => {
+                          const temp = [e.title, e.city].filter((it) => it.length > 0)
+
+                          const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                          const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
+                          const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
+
+                          return (
+                            <div key={e.job_title + '' + index + '-' + pindex} style={{ paddingBottom: '10px' }}>
+                              <p className='preview__info'>
+                                <b>{str}</b>
+                              </p>
+
+                              <p className='preview__info'>
+                                <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                              </p>
+
+                              <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                            </div>
+                          )
+                        })}
+                        <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                      </>
+                    )}
+                  </div>
+                )
+              })}
           </div>
         </div>
       </div>

@@ -415,6 +415,8 @@ const CV = () => {
   }
 
   const handleSetSubDataArray = (parentIndex: number, parentKey: string, index: number, key: string, value: string) => {
+    console.log(parentIndex, parentKey)
+
     setData((prevData) => {
       let arrObj = prevData[parentKey]
       let arrData = arrObj[parentIndex].data || []
@@ -1250,13 +1252,13 @@ const CV = () => {
                         }
                       })
                     }}
-                    value={infos.property_name || ''}
+                    value={infos.property_name + pIndex || ''}
                     defaultstring={'Untitled'}
                     onChange={(e) => handleSetSubData(pIndex, 'additional_info', 'property_name', e.target.value)}
                     setdefaultdata={(value) => {
                       handleSetSubData(pIndex, 'additional_info', 'property_name', value)
                     }}
-                    id='8'
+                    id={'8' + pIndex}
                     width='auto'
                   />
                   <div className='employment-history'>
@@ -1270,7 +1272,7 @@ const CV = () => {
                             size='large'
                             items={[
                               {
-                                key: '1',
+                                key: '1' + '8' + pIndex + '' + index,
                                 label: CustomTitle(info.title, info.city, info.start_date, info.end_date),
                                 children: (
                                   <div className='personal-detail'>
