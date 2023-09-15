@@ -20,9 +20,10 @@ import { AiOutlineLogout } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { handleAutoChangeSideBarByWidth } from '../../../../employerSlice'
+import { FaIndustry } from 'react-icons/fa'
 const SideBarEmployer = (props: any) => {
   const dispatch = useDispatch()
-  const { image, collapsed, toggled, handleToggleSidebar } = props
+  const { image, collapsed, toggled, handleToggleSidebar, hidden } = props
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
@@ -47,6 +48,8 @@ const SideBarEmployer = (props: any) => {
 
   return (
     <ProSidebar
+      style={{ zIndex: 500 }}
+      hidden={hidden}
       className='employer-sidebar-container'
       collapsed={collap ? collap : false}
       toggled={toggled}
@@ -78,19 +81,59 @@ const SideBarEmployer = (props: any) => {
         <Menu iconShape='circle'>
           <MenuItem icon={<FundFilled />}>
             Thống kê
-            <Link to={'/employer/dashboar'} />
+            <Link to={'/employer/dashboard'} />
           </MenuItem>
+        </Menu>
+        <Menu iconShape='circle'>
+          <SubMenu
+            // suffix={<span className="features-menu">count num</span>}  thong bao number++
+            title={'Thiết lập tài khoản'}
+            icon={<SettingFilled />}
+          >
+            <MenuItem>
+              Thông tin tài khoản
+              <Link to={'/employer/dashboard/my-account-info'} />
+            </MenuItem>
+            <MenuItem>
+              Lịch sử hoạt động
+              <Link to={'/employer/dashboard/history'} />
+            </MenuItem>
+          </SubMenu>
+        </Menu>
+        <Menu iconShape='circle'>
+          <SubMenu
+            // suffix={<span className="features-menu">count num</span>}  thong bao number++
+            title={'Thiết lập công ty'}
+            icon={<FaIndustry />}
+          >
+            <MenuItem>
+              Thông tin chung
+              <Link to={'/employer/dashboard/company-general'} />
+            </MenuItem>
+            <MenuItem>
+              Địa điểm làm việc
+              <Link to={'/employer/dashboard/company-location'} />
+            </MenuItem>
+            <MenuItem>
+              Mẫu email
+              <Link to={'/employer/dashboard/email-template'} />
+            </MenuItem>
+            <MenuItem>
+              Thông tin pháp nhân
+              <Link to={'/employer/dashboard/legal-info'} />
+            </MenuItem>
+          </SubMenu>
         </Menu>
         <Menu iconShape='circle'>
           <MenuItem icon={<BookFilled />}>
             Quản lý bài đăng
-            <Link to={'/employer/manage-post'} />
+            <Link to={'/employer/dashboard/post-manage'} />
           </MenuItem>
         </Menu>
         <Menu iconShape='circle'>
           <MenuItem icon={<FileSearchOutlined />}>
             Tìm kiếm ứng viên
-            <Link to={'/employer/find-candidate'} />
+            <Link to={'/employer/dashboard/find-candidate'} />
           </MenuItem>
         </Menu>
         <Menu iconShape='circle'>
@@ -99,6 +142,10 @@ const SideBarEmployer = (props: any) => {
             title={'Quản lý CV'}
             icon={<SnippetsFilled />}
           >
+            <MenuItem>
+              Hồ sơ đã ứng tuyển
+              <Link to={'/employer/dashboard/cv-applied-manage'} />
+            </MenuItem>
             <MenuItem>
               Hồ sơ đã lưu
               <Link to={'/employer/manage-save-cv'} />
@@ -129,12 +176,6 @@ const SideBarEmployer = (props: any) => {
           <MenuItem icon={<BsFillCartCheckFill />}>
             Theo dõi đơn hàng
             <Link to={'/employer/follow-order'} />
-          </MenuItem>
-        </Menu>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<SettingFilled />}>
-            Cài đặt tài khoản
-            <Link to={'/employer/account-settings'} />
           </MenuItem>
         </Menu>
       </SidebarContent>

@@ -5,6 +5,7 @@ import counterReducer from '../features/counter/counterSlice'
 import userReducer from '../features/User/userSlice'
 import authReducer from '../features/Auth/authSlice'
 import employerReducer from '../features/Employer/employerSlice'
+import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
 const persistConfig = {
   key: 'root',
   version: 1,
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   counter: counterReducer,
   user: userReducer,
   auth: authReducer,
-  employer: employerReducer
+  employer: employerReducer,
+  jobSeeker: jobSeekerReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

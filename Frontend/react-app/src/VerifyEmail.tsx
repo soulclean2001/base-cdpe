@@ -7,6 +7,7 @@ import { cancelTokenSource } from './api/client'
 
 export const VerifyEmail = () => {
   const [message, setMessage] = useState('')
+  // email-verifications?token=
   const { token } = useQueryParams()
   const dispatch = useDispatch()
 
@@ -24,7 +25,9 @@ export const VerifyEmail = () => {
     const data = await Auth.verifyEmail(token)
     if (data.result) {
       const { refresh_token, access_token } = data.result
-      dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
+      if (typeof access_token === 'string' && typeof refresh_token === 'string') {
+        dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
+      }
     }
     if (data.message) {
       setMessage(data.message)

@@ -63,7 +63,7 @@ const LoginEmployer = (props: any) => {
                 <Input
                   size='large'
                   className='email-input'
-                  prefix={<MailOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                  prefix={<MailOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                   placeholder='Nhập Email'
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -82,7 +82,7 @@ const LoginEmployer = (props: any) => {
               >
                 <Input.Password
                   size='large'
-                  prefix={<LockOutlined style={{ color: '#00b14f' }} className='site-form-item-icon' />}
+                  prefix={<LockOutlined style={{ color: 'rgb(255, 125, 85)' }} className='site-form-item-icon' />}
                   type='password'
                   placeholder='Nhập mật khẩu'
                   onChange={(e) => setPassword(e.target.value)}

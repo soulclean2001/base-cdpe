@@ -1,4 +1,5 @@
 import logo from '../../../../../../assets/react.svg'
+import { useState, useEffect } from 'react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -14,12 +15,36 @@ const TopCompany = () => {
     { id: '4', img: logo, name: 'KIMBERLY-CLARK 4' },
     { id: '5', img: logo, name: 'KIMBERLY-CLARK 5' }
   ]
+  const getWindowSize = () => {
+    const { innerWidth, innerHeight } = window
+    return { innerWidth, innerHeight }
+  }
+  const [windowSize, setWindowSize] = useState(getWindowSize())
+  const [slidesPerView, setSlidesPerView] = useState(4)
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setWindowSize(getWindowSize())
+    }
+    window.addEventListener('resize', handleWindowResize)
+    if (windowSize.innerWidth > 786) {
+      setSlidesPerView(4)
+    }
+    if (windowSize.innerWidth <= 786) {
+      setSlidesPerView(2)
+    }
+    if (windowSize.innerWidth <= 576) {
+      setSlidesPerView(1)
+    }
+    return () => {
+      window.removeEventListener('resize', handleWindowResize)
+    }
+  }, [windowSize])
   return (
     <div className='top-company-container'>
       <div className='title-top-company'>Các Công Ty Hàng Đầu</div>
       <div className='top-company-content'>
         <Swiper
-          slidesPerView={4}
+          slidesPerView={slidesPerView}
           // grid={{
           //   rows: 2
           // }}

@@ -1,0 +1,61 @@
+.side-bar-settings-container {
+  padding: 15px;
+  height: 100vh;
+  max-height: 100vh;
+  background-color: rgb(247, 248, 250);
+  .sider-settings-page-container {
+    background-color: rgb(247, 248, 250);
+    .header-side-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      //   height: 100px;
+      background: rgb(74, 128, 248);
+      border-radius: 6px;
+      .user-header-side-bar {
+        padding-left: 22px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        .avatar-header-side-bar {
+          color: white;
+          background-color: aqua;
+        }
+        .name-header-side-bar {
+          color: white;
+          font-weight: 700;
+          font-size: 17px;
+        }
+      }
+    }
+
+    .ant-menu-item {
+      font-size: 16px;
+      height: 60px;
+      //   padding-top: 10px;
+      margin-bottom: 10px;
+      background-color: white;
+      color: black;
+      &:hover {
+        border: none;
+        background-color: rgb(235, 242, 255);
+        font-weight: 600;
+      }
+    }
+    .ant-menu-item-active {
+      border: none;
+      background-color: rgb(235, 242, 255);
+      font-weight: 600;
+    }
+    .ant-menu-item-selected {
+      border: 1px solid rgb(217, 230, 255);
+      background-color: rgb(235, 242, 255);
+
+      font-weight: 600;
+    }
+  }
+  .menu-side-bar-settings {
+    height: 100vh;
+  }
+}

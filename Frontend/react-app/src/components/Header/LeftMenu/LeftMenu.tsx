@@ -30,7 +30,7 @@ const items: MenuProps['items'] = [
     key: 'companySubmenu',
     children: [
       {
-        label: 'Danh sách công ty ',
+        label: <NavLink to={'/companies'}>Danh sách công ty</NavLink>,
         key: 'listCompany'
       },
       {

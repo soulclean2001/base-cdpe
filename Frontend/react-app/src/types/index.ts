@@ -1,5 +1,10 @@
 import { JwtPayload } from 'jwt-decode'
-
+export interface ApiResponse {
+  message: string
+  result: {
+    [key: string]: any
+  }
+}
 export enum UserRole {
   Administrators,
   Employer,

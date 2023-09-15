@@ -6,7 +6,7 @@ export interface EmployerState {
 }
 
 const initialState: EmployerState = {
-  collapsed: true
+  collapsed: false
 }
 
 export const employerSlice = createSlice({

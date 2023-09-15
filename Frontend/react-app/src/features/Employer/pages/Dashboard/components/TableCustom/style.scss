@@ -1,0 +1,11 @@
+.table-custom {
+  max-width: 100%;
+  ::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+    background: gray;
+  }
+  ::-webkit-scrollbar-thumb:horizontal {
+    border-radius: 10px;
+  }
+}

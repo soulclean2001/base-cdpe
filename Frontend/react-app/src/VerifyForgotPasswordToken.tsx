@@ -33,3 +33,7 @@ export const VerifyForgotPasswordToken = () => {
 
   return <div>{message}</div>
 }
+
+// click quen mat khau -> goi api gui email
+// bam vao button trong email -> redirect to localhost:3001/forgot-password?token=
+//
