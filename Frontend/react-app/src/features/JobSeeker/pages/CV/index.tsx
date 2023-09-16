@@ -609,7 +609,7 @@ const CV = () => {
               <div className='personal-detail-row'>
                 <div className='personal-detail-col-left'>
                   <div style={{ width: '90%' }}>
-                    <p className='title-name'>Thành phố</p>
+                    <p className='title-name'>Thành phố sinh sống</p>
                     <InputCustom
                       type='text'
                       // value={user_info.city || ''}
@@ -627,17 +627,17 @@ const CV = () => {
               {isAddInfo && (
                 <>
                   <div className='personal-detail-row'>
-                    <div className='personal-detail-col-left'>
-                      <div style={{ width: '90%' }}>
-                        <p className='title-name'>Địa chỉ</p>
-                        <InputCustom
-                          type='text'
-                          // value={user_info.address || ''}
-                          onChange={(e) => handleSetData('user_info', 'address', e.target.value)}
-                        />
-                      </div>
+                    {/* <div className='personal-detail-col-left'> */}
+                    <div style={{ width: '100%' }}>
+                      <p className='title-name'>Địa chỉ</p>
+                      <InputCustom
+                        type='text'
+                        // value={user_info.address || ''}
+                        onChange={(e) => handleSetData('user_info', 'address', e.target.value)}
+                      />
                     </div>
-                    <div className='personal-detail-col-right'>
+                    {/* </div> */}
+                    {/* <div className='personal-detail-col-right'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Mã bưu điện</p>
                         <InputCustom
@@ -646,16 +646,35 @@ const CV = () => {
                           onChange={(e) => handleSetData('user_info', 'postal_code', e.target.value)}
                         />
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className='personal-detail-row'>
-                    <div className='personal-detail-col-left'>
+                    {/* <div className='personal-detail-col-left'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Bằng lái xe</p>
                         <InputCustom
                           type='text'
                           // value={user_info.driving_license || ''}
                           onChange={(e) => handleSetData('user_info', 'driving_license', e.target.value)}
+                        />
+                      </div>
+                    </div> */}
+                    <div className='personal-detail-col-left'>
+                      <div style={{ width: '90%' }}>
+                        <p className='title-name'>Ngày sinh</p>
+                        {/* <InputCustom
+                          type='text'
+                          // value={user_info.date_of_birth || ''}
+                          onChange={(e) => handleSetData('user_info', 'date_of_birth', e.target.value)}
+                        /> */}
+                        <DatePicker
+                          value={user_info.date_of_birth ? dayjs(user_info.date_of_birth, 'DD/MM/YYYY') : undefined}
+                          onChange={(e) => {
+                            handleSetData('user_info', 'date_of_birth', e?.format('DD/MM/YYYY') || '')
+                          }}
+                          className='input-date'
+                          placeholder='DD/MM/YYYY'
+                          format='DD/MM/YYYY'
                         />
                       </div>
                     </div>
@@ -670,7 +689,7 @@ const CV = () => {
                       </div>
                     </div>
                   </div>
-                  <div className='personal-detail-row'>
+                  {/* <div className='personal-detail-row'>
                     <div className='personal-detail-col-left'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Nơi sinh</p>
@@ -681,17 +700,8 @@ const CV = () => {
                         />
                       </div>
                     </div>
-                    <div className='personal-detail-col-right'>
-                      <div style={{ width: '90%' }}>
-                        <p className='title-name'>Ngày sinh</p>
-                        <InputCustom
-                          type='text'
-                          // value={user_info.date_of_birth || ''}
-                          onChange={(e) => handleSetData('user_info', 'date_of_birth', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    
+                  </div> */}
                 </>
               )}
 
@@ -784,7 +794,7 @@ const CV = () => {
                               </div>
                               <div className='personal-detail-row'>
                                 <div className='personal-detail-col-left'>
-                                  <div style={{ width: '95%' }}>
+                                  <div style={{ width: '48%' }}>
                                     <p className='title-name'>Start & End Date</p>
                                     <div className='start-end-date'>
                                       <DatePicker
@@ -819,7 +829,7 @@ const CV = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className='personal-detail-col-right'>
+                                {/* <div className='personal-detail-col-right'>
                                   <div style={{ width: '95%' }}>
                                     <p className='title-name'>City</p>
                                     <InputCustom
@@ -830,7 +840,7 @@ const CV = () => {
                                       }
                                     />
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                               <div className='personal-detail-row'>
                                 <div style={{ width: '100%' }}>
@@ -931,7 +941,7 @@ const CV = () => {
                               </div>
                               <div className='personal-detail-row'>
                                 <div className='personal-detail-col-left'>
-                                  <div style={{ width: '95%' }}>
+                                  <div style={{ width: '48%' }}>
                                     <p className='title-name'>Start & End Date</p>
                                     <div className='start-end-date'>
                                       <DatePicker
@@ -961,7 +971,7 @@ const CV = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className='personal-detail-col-right'>
+                                {/* <div className='personal-detail-col-right'>
                                   <div style={{ width: '95%' }}>
                                     <p className='title-name'>City</p>
                                     <InputCustom
@@ -970,7 +980,7 @@ const CV = () => {
                                       type='text'
                                     />
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                               <div className='personal-detail-row'>
                                 <div style={{ width: '100%' }}>
@@ -1278,7 +1288,7 @@ const CV = () => {
                                   <div className='personal-detail'>
                                     <div className='personal-detail-row'>
                                       <div className='personal-detail-col-left'>
-                                        <div style={{ width: '95%' }}>
+                                        <div style={{ width: '100%' }}>
                                           <p className='title-name'>Activity name, job title, book title, etc.</p>
                                           <InputCustom
                                             value={info.title}
@@ -1295,7 +1305,7 @@ const CV = () => {
                                           />
                                         </div>
                                       </div>
-                                      <div className='personal-detail-col-right'>
+                                      {/* <div className='personal-detail-col-right'>
                                         <div style={{ width: '95%' }}>
                                           <p className='title-name'>City</p>
                                           <InputCustom
@@ -1312,7 +1322,7 @@ const CV = () => {
                                             }
                                           />
                                         </div>
-                                      </div>
+                                      </div> */}
                                     </div>
                                     <div className='personal-detail-row'>
                                       <div className='personal-detail-col-left'>
@@ -1603,7 +1613,7 @@ const CV = () => {
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
-                                      <div style={{ width: '95%' }}>
+                                      <div style={{ width: '48%' }}>
                                         <p className='title-name'>Start & End Date</p>
                                         <div className='start-end-date'>
                                           <DatePicker
@@ -1638,7 +1648,7 @@ const CV = () => {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className='personal-detail-col-right'>
+                                    {/* <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
                                         <p className='title-name'>City</p>
                                         <InputCustom
@@ -1649,7 +1659,7 @@ const CV = () => {
                                           type='text'
                                         />
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div style={{ width: '100%' }}>
@@ -1926,7 +1936,7 @@ const CV = () => {
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
-                                      <div style={{ width: '95%' }}>
+                                      <div style={{ width: '48%' }}>
                                         <p className='title-name'>Start & End Date</p>
                                         <div className='start-end-date'>
                                           <DatePicker
@@ -1961,7 +1971,7 @@ const CV = () => {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className='personal-detail-col-right'>
+                                    {/* <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
                                         <p className='title-name'>City</p>
                                         <InputCustom
@@ -1977,7 +1987,7 @@ const CV = () => {
                                           type='text'
                                         />
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div style={{ width: '100%' }}>
@@ -2175,7 +2185,7 @@ const CV = () => {
                       handleAddDataArray('references', newData)
                     }}
                   >
-                    <PlusOutlined /> Thêm việc làm
+                    <PlusOutlined /> Thêm người giới thiệu
                   </button>
                 </div>
               </>

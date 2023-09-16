@@ -1,10 +1,10 @@
 .wrap-preview-cv {
+  word-wrap: break-word;
   background-color: rgb(101, 110, 131);
   width: 100%;
   flex: 1;
   font-family: roboto, Arial, sans-serif !important;
   font-size: 14px;
-
   .download-cv {
     padding: 10px;
     text-align: end;
@@ -33,16 +33,22 @@
       }
 
       .preview__info {
+        gap: 5px;
         margin: 0;
         margin-top: 6px;
         color: #666;
         font-size: 14px;
-        p {
-          margin-bottom: 0;
+        word-break: break-word;
+        b {
+          font-size: 17px;
+        }
+        span {
+          padding-top: 2px;
         }
       }
 
       .preview-left {
+        max-width: 40%;
         flex: 4;
         background-color: #f2f8fe;
         padding: 30px 2%;
@@ -60,6 +66,8 @@
         }
 
         .preview-user-wanted-job {
+          word-wrap: break-word;
+          max-width: 100%;
           font-size: 16px;
           font-weight: 400;
           color: #777;
@@ -77,6 +85,7 @@
       }
 
       .preview-right {
+        max-width: 60%;
         flex: 6;
         padding: 30px 2%;
       }

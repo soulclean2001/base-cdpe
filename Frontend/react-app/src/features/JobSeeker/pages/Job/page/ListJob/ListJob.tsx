@@ -121,7 +121,7 @@ const ListJob = () => {
   }
   //
   return (
-    <>
+    <div className='list-job-page-container'>
       <div className='title'>
         <div>
           <span>Dánh sách việc làm</span>
@@ -260,7 +260,7 @@ const ListJob = () => {
           </Col>
         </Row>
       </div>
-    </>
+    </div>
   )
 }
 

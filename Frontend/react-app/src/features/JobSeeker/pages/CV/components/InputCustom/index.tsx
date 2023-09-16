@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes } from 'react'
+import { InputHTMLAttributes } from 'react'
 import './InputCustom.scss'
 
 interface InputCustomProps extends InputHTMLAttributes<HTMLInputElement> {}
