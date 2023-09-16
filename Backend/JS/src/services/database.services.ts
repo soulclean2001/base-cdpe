@@ -3,6 +3,20 @@ import { envConfig } from '~/constants/config'
 import User from '../models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import VideoStatus from '~/models/schemas/VideoStatus.schemas'
+import Company from '~/models/schemas/Company.schema'
+import UserCompanyFollow from '~/models/schemas/RecruiterFollowedResumes.schema'
+import UserResumeFollow from '~/models/schemas/CompanyFollowers.schema'
+import RecruiterFollowedResumes from '~/models/schemas/RecruiterFollowedResumes.schema'
+import CompanyFollowers from '~/models/schemas/CompanyFollowers.schema'
+import Job from '~/models/schemas/Job.schema'
+import Resume from '~/models/schemas/Resume.schema'
+import Package from '~/models/schemas/Package.schema'
+import Cart, { CartItem } from '~/models/schemas/Cart.schema'
+import Conversation from '~/models/schemas/Conversation.schema'
+import Candidate from '~/models/schemas/Candidate.schema'
+import PotentialCandidate from '~/models/schemas/PotentialCandidate.schema'
+import TrackedCandidate from '~/models/schemas/TrackedCandidate.schema'
+import JobApplication from '~/models/schemas/JobApplication.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -63,6 +77,54 @@ class DatabaseService {
 
   get videoStatus(): Collection<VideoStatus> {
     return this.db.collection(envConfig.dbVideoStatusCollection)
+  }
+
+  get company(): Collection<Company> {
+    return this.db.collection(envConfig.dbCompany)
+  }
+
+  get job(): Collection<Job> {
+    return this.db.collection(envConfig.dbJob)
+  }
+
+  get recruiterFollowedResumes(): Collection<RecruiterFollowedResumes> {
+    return this.db.collection(envConfig.dbCompanyResumeFollow)
+  }
+
+  get companyFollowers(): Collection<CompanyFollowers> {
+    return this.db.collection(envConfig.dbUserCompanyFollow)
+  }
+
+  get resume(): Collection<Resume> {
+    return this.db.collection(envConfig.dbResume)
+  }
+
+  get package(): Collection<Package> {
+    return this.db.collection(envConfig.dbPackage)
+  }
+
+  get cart(): Collection<Cart> {
+    return this.db.collection(envConfig.dbCart)
+  }
+
+  get cartItem(): Collection<CartItem> {
+    return this.db.collection(envConfig.dbCartItem)
+  }
+
+  get conversations(): Collection<Conversation> {
+    return this.db.collection(envConfig.dbConversationCollection)
+  }
+
+  get candidate(): Collection<Candidate> {
+    return this.db.collection(envConfig.dbCandidate)
+  }
+
+  get trackedCandidate(): Collection<TrackedCandidate> {
+    return this.db.collection(envConfig.dbTrackedCandidate)
+  }
+
+  get jobApplication(): Collection<JobApplication> {
+    return this.db.collection(envConfig.dbJobApplication)
   }
 }
 

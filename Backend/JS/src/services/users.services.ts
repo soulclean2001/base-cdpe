@@ -13,6 +13,8 @@ import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import axios from 'axios'
 import { sendVerifyRegisterEmail, sendForgotPasswordEmail } from '~/utils/email'
+import Company from '~/models/schemas/Company.schema'
+import { PositionType } from '~/models/requests/Company.request'
 
 class UsersService {
   private signAccessToken({ user_id, verify, role }: { user_id: string; verify: UserVerifyStatus; role: UserRole }) {
@@ -111,6 +113,22 @@ class UsersService {
       })
     )
 
+    if (payload.role === UserRole.Employer) {
+      await databaseServices.company.insertOne(
+        new Company({
+          company_name: payload.company_name as string,
+          district: payload.district as string,
+          province: payload.province as string,
+          users: [
+            {
+              user_id,
+              position: PositionType.Admin
+            }
+          ]
+        })
+      )
+    }
+
     const [access_token, refresh_token] = await this.signTokenKeyPair({
       user_id: user_id.toString(),
       verify: UserVerifyStatus.Unverified,
@@ -126,7 +144,7 @@ class UsersService {
     // 4. Server verify email_verify_token
     // 5. Client receive access_token and refresh_token
     // console.log('gửi token verification email:', email_verify_token)
-    await sendVerifyRegisterEmail(payload.email, email_verify_token)
+    // await sendVerifyRegisterEmail(payload.email, email_verify_token)
 
     return {
       access_token,
@@ -168,6 +186,7 @@ class UsersService {
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token, iat, exp })
     )
+
     return {
       access_token,
       refresh_token
@@ -269,12 +288,11 @@ class UsersService {
   }) {
     const [new_access_token, new_refresh_token] = await Promise.all([
       this.signAccessToken({ user_id, verify, role }),
-      this.signRefreshToken({ user_id, verify, exp }),
-      databaseServices.refreshTokens.deleteOne({ token: refresh_token })
+      this.signRefreshToken({ user_id, verify, exp })
     ])
 
+    await databaseServices.refreshTokens.deleteOne({ token: refresh_token })
     const decoded_refresh_token = await this.decodeRefreshToken(new_refresh_token)
-
     await databaseServices.refreshTokens.insertOne(
       new RefreshToken({
         user_id: new ObjectId(user_id),
@@ -283,6 +301,7 @@ class UsersService {
         exp: decoded_refresh_token.exp
       })
     )
+
     return {
       access_token: new_access_token,
       refresh_token: new_refresh_token
@@ -448,6 +467,38 @@ class UsersService {
     return {
       message: USERS_MESSAGES.CHANGE_PASSWORD_SUCCESS
     }
+  }
+
+  async userFollowResume(resumeId: string, recruiterId: string) {
+    const result = await databaseServices.recruiterFollowedResumes.insertOne({
+      resume_id: new ObjectId(resumeId),
+      recruiter_id: new ObjectId(recruiterId)
+    })
+    return result
+  }
+
+  async unfollowResume(resumeId: string, recruiterId: string) {
+    const result = await databaseServices.recruiterFollowedResumes.findOneAndDelete({
+      resume_id: new ObjectId(resumeId),
+      recruiter_id: new ObjectId(recruiterId)
+    })
+    return result
+  }
+
+  async userFollowCompany(userId: string, companyId: string) {
+    const result = await databaseServices.companyFollowers.insertOne({
+      company_id: new ObjectId(companyId),
+      user_id: new ObjectId(userId)
+    })
+    return result
+  }
+
+  async unfollowCompany(userId: string, companyId: string) {
+    const result = await databaseServices.companyFollowers.findOneAndDelete({
+      company_id: new ObjectId(companyId),
+      user_id: new ObjectId(userId)
+    })
+    return result
   }
 }
 

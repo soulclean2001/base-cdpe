@@ -1,7 +1,7 @@
 .wrap-input {
   width: 362px;
   position: relative;
-
+  padding-top: 5px;
   input {
     width: 100%;
     padding: 10px 15px;
@@ -29,7 +29,9 @@
     position: absolute;
     width: 0;
     left: 0;
-    transition: width 0.3s linear;
+    transition: width 0.15s ease-in;
     bottom: 0;
+    left: 50%; /* Đặt điểm xuất phát ở giữa */
+    transform: translateX(-50%); /* Di chuyển điểm xuất phát về trái 50% để nó giãn ra từ trung tâm */
   }
 }

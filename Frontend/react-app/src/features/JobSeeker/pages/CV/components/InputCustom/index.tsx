@@ -5,7 +5,7 @@ interface InputCustomProps extends InputHTMLAttributes<HTMLInputElement> {}
 
 const InputCustom = (props: InputCustomProps) => {
   return (
-    <div className='wrap-input'>
+    <div style={{ width: '100%' }} className='wrap-input'>
       <input {...props} />
     </div>
   )

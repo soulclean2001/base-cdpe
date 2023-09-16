@@ -13,6 +13,20 @@ const s3 = new S3({
   }
 })
 
+export const deleteFileFromS3 = async (filePath: string) => {
+  await s3.deleteObject(
+    {
+      Bucket: envConfig.s3BucketName,
+      Key: filePath
+    },
+    (err, data) => {
+      if (err) {
+        throw err
+      }
+    }
+  )
+}
+
 export const uploadFileToS3 = ({
   filename,
   filepath,
