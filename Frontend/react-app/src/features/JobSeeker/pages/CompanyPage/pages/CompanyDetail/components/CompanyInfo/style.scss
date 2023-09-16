@@ -1,0 +1,113 @@
+#tab-company-info-container-in-company-detail {
+  height: 100%;
+  margin-bottom: 40px;
+  .top-container {
+    padding: 20px 40px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 6px;
+    border: 1px solid rgba(51, 51, 51, 0.08);
+    .title-about {
+      padding-top: 20px;
+      color: rgb(51, 51, 51);
+
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .about-company-container {
+      padding-right: 40px;
+      padding-bottom: 20px;
+
+      .about-info-container {
+        // display: flex;
+        // justify-content: space-between;
+
+        padding-bottom: 7px;
+        .label-info {
+          font-size: 16px;
+          line-height: 22px;
+          font-weight: 500;
+          color: rgb(51, 51, 51);
+          width: 100px;
+          margin-bottom: 0px;
+        }
+        .info {
+          font-size: 16px;
+          margin-bottom: 0px;
+          color: rgb(51, 51, 51);
+          line-height: 22px;
+        }
+      }
+      .description {
+        font-size: 16px;
+        margin-bottom: 10px;
+        color: rgb(51, 51, 51);
+        line-height: 22px;
+      }
+    }
+    .right-img-container {
+      .img-carosel-container {
+        width: 100%;
+        height: 370px;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+  .video-company-detail-container {
+    margin-top: 20px;
+
+    background-color: rgb(255, 255, 255);
+    padding: 30px 40px 40px 40px;
+    border-radius: 6px;
+    border: 1px solid rgba(51, 51, 51, 0.08);
+    .video-title {
+    }
+    .video-content {
+      height: 167px;
+      background-color: rgb(246, 248, 251);
+      border-radius: 6px;
+      padding: 24px 40px;
+      text-align: center;
+      font-size: 34px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  .benefit-company-detail-container {
+    margin-top: 20px;
+    background-color: rgb(255, 255, 255);
+    padding: 30px 40px 40px 40px;
+    border-radius: 6px;
+    border: 1px solid rgba(51, 51, 51, 0.08);
+    .benefit-content {
+      // gap: 10px;
+      // justify-content: space-between;
+      .benefit-item {
+        .benefit-item-wapper {
+          width: 95%;
+          margin: 5px;
+          background-color: rgb(230, 239, 255);
+          border-radius: 6px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 7px;
+          min-height: 100px;
+          color: rgb(0, 23, 68);
+          .icon {
+            padding-top: 10px;
+            font-size: 30px;
+            text-align: center;
+          }
+          .value {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+}

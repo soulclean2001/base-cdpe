@@ -1,0 +1,101 @@
+.candidate-item-container {
+  border: 1px solid #e2e2e2;
+  border-radius: 6px;
+  background-color: #fff;
+
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  .left-container {
+    display: flex;
+
+    gap: 20px;
+    align-items: center;
+    .avatar-container {
+      .avatar-candidate {
+        width: 72px;
+        height: 72px;
+      }
+    }
+    .info-containerr {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      font-size: 14px;
+      .name {
+        color: #005aff;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .job-title {
+        font-weight: 600;
+      }
+      .exp-year {
+      }
+      .year-old {
+      }
+      .education {
+      }
+
+      .province {
+      }
+    }
+  }
+
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: end;
+    .update-date {
+      font-size: 12px;
+    }
+    .btn-show-detail-info {
+      font-size: 14px;
+      font-weight: 500;
+      background: rgb(255, 255, 255);
+      border-color: rgb(255, 125, 85);
+      color: rgb(255, 125, 85);
+    }
+    .btn-follow-candidate {
+      cursor: pointer;
+    }
+    .icon {
+      color: rgb(136, 136, 136);
+      font-size: 22px;
+    }
+  }
+  &:hover {
+    background-color: rgb(239, 245, 255);
+    border: 1px solid rgb(160, 193, 255);
+  }
+}
+
+@media (max-width: 576px) {
+  .candidate-item-container {
+    flex-direction: column;
+    .left-container {
+      width: 100%;
+      flex-direction: column;
+      //   .avatar-container {
+      //     .avatar-candidate {
+      //       width: 52px;
+      //       height: 52px;
+      //     }
+      //   }
+      .info-containerr {
+        font-size: 14px;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+    .right-container {
+      flex-direction: column-reverse;
+      gap: 10px;
+      .btn-show-detail-info {
+        width: 100%;
+      }
+    }
+  }
+}
