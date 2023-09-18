@@ -6,17 +6,13 @@ import RightContent from './components/RightContent'
 
 const ChatPage = () => {
   return (
-    <Row className='chat-page-container'>
-      <Col md={6}>
-        <LeftContent />
-      </Col>
-      <Col md={12}>
-        <CenterContent />
-      </Col>
-      <Col md={6}>
-        <RightContent />
-      </Col>
-    </Row>
+    <div className='chat-page-container'>
+      <LeftContent />
+
+      <CenterContent />
+
+      <RightContent />
+    </div>
   )
 }
 

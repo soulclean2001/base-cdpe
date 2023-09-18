@@ -1,0 +1,48 @@
+.center-chat-content-container {
+  width: 50%;
+  min-width: 759.6px;
+  position: relative;
+  border-bottom: 1px solid rgb(241, 242, 244);
+  min-height: 90vh;
+  .header-content {
+    border: 1px solid rgb(241, 242, 244);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    .name {
+      font-size: 18px;
+      font-weight: 500;
+    }
+  }
+  .list-chat {
+    padding: 15px;
+  }
+  .action-chat-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    background-color: #ffffff;
+    padding: 0 5px;
+    padding-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    .react-emoji {
+      flex-direction: row-reverse;
+      .react-input-emoji--container {
+        background-color: rgb(246, 246, 246);
+      }
+    }
+    .btn-send {
+      padding-right: 10px;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      &:active {
+        color: rgb(102, 147, 203);
+      }
+    }
+  }
+}

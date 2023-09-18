@@ -1,25 +1,32 @@
 .left-content-page-chat-container {
-  min-height: 100vh;
+  width: 25%;
+  min-width: 379.8px;
+  min-height: 90vh;
   background-color: white;
-  border: 1px solid red;
+  border: 1px solid rgb(241, 242, 244);
   padding: 15px;
+
   .header-container {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 17px;
     .logo {
       font-size: 24px;
       font-weight: 700;
     }
     .btn-setting {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
     }
   }
   .search-container {
     .input-search {
       border-radius: 50px;
-      background-color: rgb(241, 242, 244);
+      background-color: rgb(246, 246, 246);
       input {
-        background-color: rgb(241, 242, 244);
+        background-color: rgb(246, 246, 246);
       }
     }
   }

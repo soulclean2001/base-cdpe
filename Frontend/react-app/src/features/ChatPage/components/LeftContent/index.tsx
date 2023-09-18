@@ -3,8 +3,19 @@ import './style.scss'
 import { AiFillSetting } from 'react-icons/ai'
 import { FiSearch } from 'react-icons/fi'
 import LeftItem from '../LeftItem'
-
+import { useState } from 'react'
+const dataItemChat = [
+  { id: '1', logo: '', name: 'AA', latestChat: 'abc', latestTime: '9 phút' },
+  { id: '2', logo: '', name: 'BB', latestChat: 'XZB', latestTime: '10 phút' }
+]
 const LeftContent = () => {
+  // const [isActive,setIsActive] = useState(false)
+  const [idActive, setIdActive] = useState('')
+
+  const handleActiveItem = (id: string) => {
+    console.log('active chat id', id)
+    setIdActive(id)
+  }
   return (
     <div className='left-content-page-chat-container'>
       <div className='header-container'>
@@ -15,7 +26,11 @@ const LeftContent = () => {
         <Input className='input-search' size='large' placeholder='Nhập tên, email...' prefix={<FiSearch />} />
       </div>
       <div className='list-chat-container'>
-        <LeftItem />
+        {dataItemChat.map((item) => (
+          <div key={item.id} onClick={() => handleActiveItem(item.id)}>
+            <LeftItem data={item} isActive={idActive === item.id ? true : false} />
+          </div>
+        ))}
       </div>
     </div>
   )
