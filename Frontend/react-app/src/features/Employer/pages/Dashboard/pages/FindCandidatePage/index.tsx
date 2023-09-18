@@ -103,10 +103,18 @@ const FindCandidatePage = () => {
           </span>
           Bộ lọc
         </Button>
-        <Drawer title='BỘ LỌC' placement={'left'} closable={false} onClose={onClose} open={open} key={'left'}>
+        <Drawer
+          className='drawer-filter-container'
+          title='BỘ LỌC'
+          placement={'left'}
+          closable={false}
+          onClose={onClose}
+          open={open}
+          key={'left'}
+        >
           <Form
-            name='form-info-job'
-            className='form-info-job'
+            name='form-filter-candidate'
+            className='form-filter-candidate-container'
             initialValues={{ remember: true }}
             onFinish={handleSubmitForm}
             form={form}

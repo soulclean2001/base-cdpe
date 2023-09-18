@@ -12,6 +12,12 @@ import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import { useDispatch } from 'react-redux'
 import { logout } from '~/features/Auth/authSlice'
 import { BsFillCartFill } from 'react-icons/bs'
+import NotifyDrawer from '~/components/Header/NotifyDrawer/NotifyDrawer'
+
+const dataNotify = [
+  { id: '1', name: 'Phan Thanh Phong', actionInfo: 'Đã theo dõi bạn' },
+  { id: '2', name: 'Phan Thanh Phong', actionInfo: 'Đã cập nhật CV của anh ấy' }
+]
 const RightMenu = (props: any) => {
   const { isLogin } = props
 
@@ -22,6 +28,9 @@ const RightMenu = (props: any) => {
   }
   const handleSignUp = () => {
     navigate('/employer-sign-up')
+  }
+  const handleTabJobSeeker = () => {
+    navigate('/')
   }
   const handleTabDashboar = () => {
     navigate('/employer/dashboard')
@@ -58,6 +67,15 @@ const RightMenu = (props: any) => {
     items,
     onClick: handleMenuClick
   }
+  const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
+
+  const showDrawer = () => {
+    setOpenNotifyDrawer(true)
+  }
+
+  const onCloseDrawer = () => {
+    setOpenNotifyDrawer(false)
+  }
   return (
     <div className='right_menu_container'>
       <div className='right_menu_container_pc'>
@@ -66,10 +84,12 @@ const RightMenu = (props: any) => {
             <Button
               icon={<IoMdNotifications />}
               className=' btn-notification'
-              onClick={handleTabDashboar}
+              onClick={showDrawer}
               shape='circle'
               size='large'
             />
+            <NotifyDrawer dataNotify={dataNotify} roleType='EMPLOYER' open={openNotifyDrawer} onClose={onCloseDrawer} />
+
             <Button
               icon={<AiFillMessage />}
               className='btn-message'
@@ -101,6 +121,9 @@ const RightMenu = (props: any) => {
             </button>
             <button className='btn btn-sign-up' onClick={handleSignUp}>
               Đăng ký
+            </button>
+            <button className='btn btn-tab-job-seeker' onClick={handleTabJobSeeker}>
+              Tạo CV & Tìm việc làm
             </button>
           </>
         )}

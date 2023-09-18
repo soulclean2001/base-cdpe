@@ -119,7 +119,7 @@ const ListCompany = () => {
                 ))} */}
           {dataFake &&
             dataFake.map((item) => (
-              <Col md={8} sm={24} key={item.id} style={{ padding: '10px' }}>
+              <Col lg={8} md={12} sm={24} xs={24} key={item.id} style={{ padding: '10px' }}>
                 <CompanyItem nameCompany={item.title} followers={item.price} totalJobs={item.price} />
               </Col>
             ))}

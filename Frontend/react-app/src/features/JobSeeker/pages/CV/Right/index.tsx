@@ -1,7 +1,7 @@
 import { ResumeType } from '~/types/resume.type'
 import './Right.scss'
 import { Avatar, Button, UploadFile } from 'antd'
-import { usePDF } from 'react-to-pdf'
+import { usePDF, Margin } from 'react-to-pdf'
 import { RcFile } from 'antd/es/upload'
 import { useState, useEffect } from 'react'
 import { omit } from 'lodash'
@@ -23,7 +23,14 @@ const Right = (props: RightPropsType) => {
   const hobbie = data.hobbies
 
   const [avatar, setAvatar] = useState('')
-  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' })
+  const { toPDF, targetRef } = usePDF({
+    filename: 'page.pdf',
+    page: {
+      // margin is in MM, default is Margin.NONE = 0
+      format: 'a4'
+      // margin: { top: 5, right: 5, bottom: 5, left: 5 }
+    }
+  })
 
   const previewImage = async (file: UploadFile) => {
     let src = file.url as string

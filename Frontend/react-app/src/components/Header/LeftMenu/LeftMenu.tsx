@@ -7,51 +7,51 @@ import { NavLink } from 'react-router-dom'
 
 const items: MenuProps['items'] = [
   {
-    label: 'Việc làm',
-    key: 'jobSubmenu',
+    label: <NavLink to={'/jobs'}>Việc làm</NavLink>,
+    key: 'jobSubmenu'
 
-    children: [
-      {
-        label: <NavLink to={'/jobs'}>Tìm việc làm</NavLink>,
-        key: 'jobSearch'
-      },
-      {
-        label: 'Việc làm mới nhất',
-        key: 'newJob'
-      },
-      {
-        label: 'Việc làm đã ứng tuyển',
-        key: 'jobApplied'
-      }
-    ]
+    // children: [
+    //   {
+    //     label: <NavLink to={'/jobs'}>Tìm việc làm</NavLink>,
+    //     key: 'jobSearch'
+    //   },
+    //   {
+    //     label: 'Việc làm mới nhất',
+    //     key: 'newJob'
+    //   },
+    //   {
+    //     label: 'Việc làm đã ứng tuyển',
+    //     key: 'jobApplied'
+    //   }
+    // ]
   },
   {
-    label: 'Công ty',
-    key: 'companySubmenu',
-    children: [
-      {
-        label: <NavLink to={'/companies'}>Danh sách công ty</NavLink>,
-        key: 'listCompany'
-      },
-      {
-        label: 'Top công ty ',
-        key: 'topCompany'
-      }
-    ]
+    label: <NavLink to={'/companies'}>Công ty</NavLink>,
+    key: 'companySubmenu'
+    // children: [
+    //   {
+    //     label: <NavLink to={'/companies'}>Danh sách công ty</NavLink>,
+    //     key: 'listCompany'
+    //   },
+    //   {
+    //     label: 'Top công ty ',
+    //     key: 'topCompany'
+    //   }
+    // ]
   },
   {
-    label: 'Hồ sơ & CV',
-    key: 'CVSubmenu',
-    children: [
-      {
-        label: 'Quản lý CV',
-        key: 'controllCV'
-      },
-      {
-        label: 'Mẫu CV',
-        key: 'exampleCV'
-      }
-    ]
+    label: <NavLink to={'/CV'}>Hồ sơ & CV</NavLink>,
+    key: 'CVSubmenu'
+    // children: [
+    //   {
+    //     label: 'Quản lý CV',
+    //     key: 'controllCV'
+    //   },
+    //   {
+    //     label: 'Mẫu CV',
+    //     key: 'exampleCV'
+    //   }
+    // ]
   }
 ]
 

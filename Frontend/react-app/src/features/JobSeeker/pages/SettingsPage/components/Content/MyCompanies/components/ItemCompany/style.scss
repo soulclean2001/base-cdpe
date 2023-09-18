@@ -1,0 +1,97 @@
+.item-follow-container {
+  cursor: pointer;
+  border: 1px solid rgb(224, 224, 233);
+  border-radius: 5px;
+  padding: 15px;
+  color: #333333;
+  gap: 10px;
+  .left-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .logo-container {
+      width: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 70px;
+      min-height: 70px;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px;
+      background-color: white !important;
+      img {
+        width: 70px;
+        height: 70px;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    }
+    .info-company {
+      padding: 10px;
+      display: flex;
+      width: 100%;
+      justify-content: center;
+
+      flex-direction: column;
+
+      .name-company {
+        // width: 100%;
+        font-size: 17px;
+        font-weight: 500;
+      }
+    }
+    // @media (max-width: 576px) {
+    //   .info-company {
+    //     align-items: center;
+    //     text-align: center;
+    //   }
+    // }
+  }
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: end;
+    // text-align: end;
+    .btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      .btn-follow {
+        border: none;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        font-size: 22px;
+      }
+      .btn-show-detail {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        font-weight: 500;
+        color: rgb(255, 255, 255) !important;
+        background-color: rgb(255, 125, 85) !important;
+        border: 2px solid rgb(255, 125, 85) !important;
+        width: 100%;
+        min-width: 70px;
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    .right-container {
+      gap: 10px;
+      flex-direction: column-reverse;
+      justify-content: space-around;
+    }
+  }
+  &:hover {
+    border: 1px solid rgb(160, 193, 255);
+  }
+}

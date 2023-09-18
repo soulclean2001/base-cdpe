@@ -1,0 +1,121 @@
+.item-save-ojb-container {
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid rgb(224, 224, 233);
+  border-radius: 5px;
+  padding: 15px;
+  color: #333333;
+  gap: 5px;
+  .left-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 70px;
+      min-height: 70px;
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 10px;
+      box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px;
+      background-color: white !important;
+      img {
+        width: 70px;
+        height: 70px;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+    }
+    .info-job {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+
+      flex-direction: column;
+      font-size: 13px;
+      .name-job {
+        // width: 100%;
+        font-size: 17px;
+        font-weight: 500;
+      }
+      .name-company {
+        color: #777777;
+      }
+      .province {
+        color: #777777;
+      }
+      .salary {
+        color: rgb(255, 125, 85);
+        font-weight: 500;
+      }
+    }
+    // @media (max-width: 576px) {
+    //   .info-job {
+    //     align-items: center;
+    //     text-align: center;
+    //   }
+    // }
+  }
+  @media (max-width: 576px) {
+    .left-container {
+      align-items: start;
+    }
+  }
+  .right-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 5px;
+
+    .btn-follow {
+      border: none;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      font-size: 22px;
+    }
+    .btn-show-detail {
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      font-weight: 500;
+      color: rgb(255, 255, 255) !important;
+      background-color: rgb(255, 125, 85) !important;
+      border: 2px solid rgb(255, 125, 85) !important;
+      width: 100%;
+      min-width: 70px;
+    }
+    .status-apply-job {
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .pending {
+      color: rgb(252, 232, 58);
+    }
+    .approved {
+      color: rgb(86, 240, 0);
+    }
+    .rejected {
+      color: rgb(255, 56, 56);
+    }
+    .potential {
+      color: rgb(255, 179, 2);
+    }
+    .interview {
+      color: rgb(89, 83, 152);
+    }
+    .hired {
+      color: rgb(45, 204, 255);
+    }
+    .not-contactable {
+      color: rgb(164, 171, 182);
+    }
+  }
+  &:hover {
+    border: 1px solid rgb(160, 193, 255);
+  }
+}

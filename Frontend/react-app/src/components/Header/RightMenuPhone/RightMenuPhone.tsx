@@ -57,10 +57,25 @@ const RightMenuPhone = () => {
         <div className='menu-content'>
           {me && me.id ? (
             <>
-              <NavLink to={'/setting-info'}>
-                <p>Cài đặt thông tin cá nhân</p>
+              <NavLink to={'/settings'}>
+                <p>Tổng quan</p>
               </NavLink>
-              <NavLink to={'/change-password'}>
+              <NavLink to={'/CV'}>
+                <p>Hồ sơ của tôi</p>
+              </NavLink>
+              <NavLink to={'/settings/my-companies'}>
+                <p>Công ty của tôi</p>
+              </NavLink>
+              <NavLink to={'/settings/my-jobs'}>
+                <p>Việc làm của tôi</p>
+              </NavLink>
+              <NavLink to={'/settings/notify-jobs'}>
+                <p>Thông báo việc làm</p>
+              </NavLink>
+              <NavLink to={'/settings/my-account'}>
+                <p>Cài đặt tài khoản</p>
+              </NavLink>
+              <NavLink to={'/settings/my-account'}>
                 <p>Đổi mật khẩu</p>
               </NavLink>
               <NavLink to={'/logout'}>

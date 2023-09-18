@@ -172,12 +172,12 @@ const SideBarEmployer = (props: any) => {
             <Link to={'/employer/my-services'} />
           </MenuItem>
         </Menu>
-        <Menu iconShape='circle'>
+        {/* <Menu iconShape='circle'>
           <MenuItem icon={<BsFillCartCheckFill />}>
             Theo dõi đơn hàng
             <Link to={'/employer/follow-order'} />
           </MenuItem>
-        </Menu>
+        </Menu> */}
       </SidebarContent>
 
       <SidebarFooter style={{ textAlign: 'center' }}>

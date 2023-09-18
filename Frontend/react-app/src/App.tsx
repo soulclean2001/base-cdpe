@@ -33,6 +33,9 @@ import ListJob from './features/JobSeeker/pages/Job/page/ListJob/ListJob'
 import ListCompany from './features/JobSeeker/pages/CompanyPage/pages/ListCompany/ListCompany'
 import CompanyDetail from './features/JobSeeker/pages/CompanyPage/pages/CompanyDetail/CompanyDetail'
 import FindCandidatePage from './features/Employer/pages/Dashboard/pages/FindCandidatePage'
+import MyCompanies from './features/JobSeeker/pages/SettingsPage/components/Content/MyCompanies'
+import MyJobs from './features/JobSeeker/pages/SettingsPage/components/Content/MyJobs'
+import ChatPage from './features/ChatPage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -62,7 +65,10 @@ function App() {
             }
           >
             <Route index element={<Overview />} />
+            <Route path='my-companies' element={<MyCompanies />} />
+            <Route path='my-jobs' element={<MyJobs />} />
           </Route>
+          <Route path='chat' element={<ChatPage />} />
         </Route>
         <Route path='/candidate-login' element={<Login />} />
         <Route path='/candidate-sign-up' element={<SignUp />} />

@@ -119,7 +119,12 @@ const TopJob = () => {
               <SwiperSlide key={item.id}>
                 <Row className='top-job-item' align={'middle'}>
                   <Col span={8} className='icon-company-container'>
-                    <img className='icon-company' src={item.logo} alt='' style={{ width: '70%', height: '70%' }} />
+                    <img
+                      className='icon-company'
+                      src={item.logo}
+                      alt=''
+                      // style={{ width: 'auto', height: 'auto', objectFit: 'contain' }}
+                    />
                   </Col>
                   <Col span={16} className='job-content'>
                     <div className='name-job'>{item.nameJob}</div>

@@ -48,7 +48,7 @@ const CompanyItem = (props: any) => {
       </Col>
       <Col className='btn-follow-container' span={24}>
         <Button size='large' className='btn-follow'>
-          Theo dõi
+          Chi tiết
         </Button>
       </Col>
     </Row>

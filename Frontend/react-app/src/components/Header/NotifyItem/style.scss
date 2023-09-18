@@ -1,0 +1,36 @@
+.notify-item-container {
+  //   border: 1px solid rgb(224, 224, 233);
+  // border-bottom: 1px solid rgb(224, 224, 233);
+  box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  margin-bottom: 8px;
+
+  &:hover {
+    background: #e6efff;
+
+    .name-company {
+      color: rgb(255, 125, 85);
+    }
+  }
+  .logo {
+    z-index: 1;
+  }
+  .info-notify {
+    z-index: 1;
+    // display: flex;
+    // align-items: center;
+    // gap: 5px;
+    .name-company {
+      margin-right: 5px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+  }
+}

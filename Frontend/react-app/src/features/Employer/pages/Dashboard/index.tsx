@@ -18,9 +18,29 @@ const DashboarEmployer = () => {
     if (collap) {
       setWidthContent('100%')
     } else {
-      setWidthContent('82.2%')
+      setWidthContent('100%')
     }
   }, [collap])
+  const getWindowSize = () => {
+    const { innerWidth, innerHeight } = window
+    return { innerWidth, innerHeight }
+  }
+  const [hiddenButtonCollapsed, setHiddenButtonCollapsed] = useState(false)
+  const [windowSize, setWindowSize] = useState(getWindowSize())
+  useEffect(() => {
+    const handleWindowResize = () => {
+      setWindowSize(getWindowSize())
+    }
+    window.addEventListener('resize', handleWindowResize)
+    if (windowSize.innerWidth <= 786) {
+      setHiddenButtonCollapsed(true)
+    } else {
+      setHiddenButtonCollapsed(false)
+    }
+    return () => {
+      window.removeEventListener('resize', handleWindowResize)
+    }
+  }, [windowSize.innerWidth <= 786])
   return (
     <div className='employer-dashboard-container'>
       {/* <div style={{ width: '25%' }}> */}
@@ -28,7 +48,7 @@ const DashboarEmployer = () => {
       {/* </div> */}
 
       <div className='employer-dashboard-content' style={{ width: widthContent }}>
-        <FaBars onClick={() => dispatch(handleChangeSideBar())} />
+        <FaBars hidden={hiddenButtonCollapsed} onClick={() => dispatch(handleChangeSideBar())} />
 
         <Outlet />
       </div>

@@ -52,6 +52,31 @@ $COLOR_MENU_HOVER: rgb(255, 125, 85);
         flex: 1;
         // border: 1px solid red;
         border: none;
+        .ant-menu-item:hover {
+          /* Màu nền khi hover */
+          color: $COLOR_MENU_HOVER;
+        }
+        .ant-menu-overflow-item:hover {
+          border-bottom-color: $COLOR_MENU_HOVER;
+        }
+        .ant-menu-item-only-child:hover {
+          border-bottom-color: $COLOR_MENU_HOVER;
+        }
+
+        /* Áp dụng CSS cho mục menu khi active (được chọn) */
+        .ant-menu-item-active {
+          /* Màu nền khi active */
+          color: $COLOR_MENU_HOVER; /* Màu chữ khi active */
+          border-bottom-color: $COLOR_MENU_HOVER;
+          &:hover {
+            color: $COLOR_MENU_HOVER;
+            border-bottom-color: $COLOR_MENU_HOVER;
+          }
+          &::after {
+            color: $COLOR_MENU_HOVER;
+            border-bottom-color: $COLOR_MENU_HOVER;
+          }
+        }
         .ant-menu-submenu-horizontal {
           height: 100%;
           display: flex;
@@ -85,6 +110,28 @@ $COLOR_MENU_HOVER: rgb(255, 125, 85);
           > .ant-menu.ant-menu-horizontal
           > .ant-menu-submenu-selected::after {
           border-bottom-color: $COLOR_MENU_HOVER;
+        }
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal
+          > .ant-menu-item-selected::after,
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
+          > .ant-menu.ant-menu-horizontal
+          > .ant-menu-item-selected::after,
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal
+          > .ant-menu-submenu-selected::after,
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
+          > .ant-menu.ant-menu-horizontal
+          > .ant-menu-submenu-selected::after {
+          border-bottom-color: $COLOR_MENU_HOVER;
+        }
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal > .ant-menu-item-selected,
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
+          > .ant-menu.ant-menu-horizontal
+          > .ant-menu-item-selected,
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light.ant-menu-horizontal > .ant-menu-submenu-selected,
+        :where(.css-dev-only-do-not-override-fpg3f5).ant-menu-light
+          > .ant-menu.ant-menu-horizontal
+          > .ant-menu-submenu-selected {
+          color: $COLOR_MENU_HOVER;
         }
       }
     }

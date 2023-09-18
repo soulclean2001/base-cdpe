@@ -1,0 +1,29 @@
+.left-content-page-chat-container {
+  min-height: 100vh;
+  background-color: white;
+  border: 1px solid red;
+  padding: 15px;
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .btn-setting {
+    }
+  }
+  .search-container {
+    .input-search {
+      border-radius: 50px;
+      background-color: rgb(241, 242, 244);
+      input {
+        background-color: rgb(241, 242, 244);
+      }
+    }
+  }
+  .list-chat-container {
+    margin-top: 15px;
+  }
+}

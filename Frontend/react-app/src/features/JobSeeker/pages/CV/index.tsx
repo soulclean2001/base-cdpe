@@ -14,6 +14,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import { LanguageLevel, ResumeType, SkillLevel } from '~/types/resume.type'
 import Right from './Right'
+import { AiOutlineUpload } from 'react-icons/ai'
 
 const initResume: ResumeType = {
   _id: '',
@@ -555,10 +556,10 @@ const CV = () => {
                         onPreview={onPreview}
                         className='custom-upload'
                       >
-                        {fileList.length < 1 && '+ Upload'}
+                        {fileList.length < 1 && <AiOutlineUpload />}
                       </Upload>
                     </ImgCrop>
-                    <span style={{ marginLeft: '10px' }}>Upload photo</span>
+                    {/* <span style={{ marginLeft: '10px' }}>Upload photo</span> */}
                   </div>
                 </div>
               </div>
