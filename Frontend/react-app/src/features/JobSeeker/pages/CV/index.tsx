@@ -415,6 +415,8 @@ const CV = () => {
   }
 
   const handleSetSubDataArray = (parentIndex: number, parentKey: string, index: number, key: string, value: string) => {
+    console.log(parentIndex, parentKey)
+
     setData((prevData) => {
       let arrObj = prevData[parentKey]
       let arrData = arrObj[parentIndex].data || []

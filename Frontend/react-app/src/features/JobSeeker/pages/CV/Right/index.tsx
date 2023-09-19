@@ -1,29 +1,12 @@
 import { ResumeType } from '~/types/resume.type'
 import './Right.scss'
 import { Avatar, Button, UploadFile } from 'antd'
-import { Options, usePDF, Resolution, Margin } from 'react-to-pdf'
+import { usePDF } from 'react-to-pdf'
 import { RcFile } from 'antd/es/upload'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { omit } from 'lodash'
 import ReactHtmlParser from 'html-react-parser'
 
-const options: Options = {
-  // default is `save`
-  method: 'open',
-  // default is Resolution.MEDIUM = 3, which should be enough, higher values
-  // increases the image quality but also the size of the PDF, so be careful
-  // using values higher than 10 when having multiple pages generated, it
-  // might cause the page to crash or hang.
-  resolution: Resolution.MEDIUM,
-  page: {
-    // margin is in MM, default is Margin.NONE = 0
-    margin: Margin.LARGE,
-    // default is 'A4'
-    format: 'A4',
-    // default is 'portrait'
-    orientation: 'portrait'
-  }
-}
 interface RightPropsType {
   data: ResumeType
   file: UploadFile
@@ -31,7 +14,6 @@ interface RightPropsType {
 
 const Right = (props: RightPropsType) => {
   const { data, file } = props
-
   const personalInfo = omit(data.user_info, ['first_name', 'last_name', 'avatar', 'wanted_job_title'])
   const skills = data.skills
   const professionalSummary = data.professional_summary
@@ -66,13 +48,13 @@ const Right = (props: RightPropsType) => {
   return (
     <div className='wrap-preview-cv'>
       <div className='download-cv'>
-        <Button size='large' type='primary' onClick={() => toPDF(options)}>
+        <Button size='large' type='primary' onClick={() => toPDF()}>
           Download PDF
         </Button>
       </div>
 
       <div className='wrap-cv'>
-        <div id='preview-cv' className='preview-cv' ref={targetRef}>
+        <div className='preview-cv' ref={targetRef}>
           <div className='preview-left'>
             <h2 className='preview-user-name'>{data.user_info.first_name.concat(' ', data.user_info.last_name)}</h2>
             <h4 className='preview-user-wanted-job'>{data.user_info.wanted_job_title}</h4>
