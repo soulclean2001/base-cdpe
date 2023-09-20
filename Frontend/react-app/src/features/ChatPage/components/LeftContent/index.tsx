@@ -3,15 +3,19 @@ import './style.scss'
 import { AiFillSetting } from 'react-icons/ai'
 import { FiSearch } from 'react-icons/fi'
 import LeftItem from '../LeftItem'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 const dataItemChat = [
   { id: '1', logo: '', name: 'AA', latestChat: 'abc', latestTime: '9 phút' },
   { id: '2', logo: '', name: 'BB', latestChat: 'XZB', latestTime: '10 phút' }
 ]
-const LeftContent = () => {
-  // const [isActive,setIsActive] = useState(false)
+const LeftContent = (props: any) => {
+  const { handleSetIdChatRoom } = props
+
   const [idActive, setIdActive] = useState('')
 
+  useEffect(() => {
+    if (idActive) handleSetIdChatRoom(idActive)
+  }, [idActive])
   const handleActiveItem = (id: string) => {
     console.log('active chat id', id)
     setIdActive(id)

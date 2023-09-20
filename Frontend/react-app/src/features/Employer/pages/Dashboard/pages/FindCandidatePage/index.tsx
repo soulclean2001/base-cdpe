@@ -32,6 +32,28 @@ const listLevel = [
   { value: 'Giám đốc' },
   { value: 'Tổng giám đốc' }
 ]
+const listCandidate = [
+  {
+    id: '1',
+    avatar: 'https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg',
+    nameCandidate: 'Phan Thanh Phong',
+    jobTitle: 'Intern Web',
+    educationLevel: 'Cử nhân',
+    expYear: '1 năm',
+    provinceWanted: 'Bình Chánh,Hồ Chí Minh - Gò Vấp, Hồ Chí Minh',
+    updateDate: '23/8/2023'
+  },
+  {
+    id: '2',
+    avatar: 'https://cdn.tgdd.vn//GameApp/1340221//Anhavatardoi51.-800x800.jpg',
+    nameCandidate: 'Tran Minh Hiếu',
+    jobTitle: 'Fresher Lỏ',
+    educationLevel: 'Cử nhân',
+    expYear: '1 năm',
+    provinceWanted: 'Bình Chánh,Hồ Chí Minh - Gò Vấp, Hồ Chí Minh',
+    updateDate: '22/8/2023'
+  }
+]
 const FindCandidatePage = () => {
   const [form] = Form.useForm()
   const [open, setOpen] = useState(false)
@@ -124,8 +146,12 @@ const FindCandidatePage = () => {
             <Form.Item name='nameCandidate' label={<span style={{ fontWeight: '500' }}>Tên ứng viên</span>}>
               <Input size='middle' placeholder='Tên ứng viên' onChange={(e) => setNameCandidate(e.target.value)} />
             </Form.Item>
-            <Form.Item name='position' label={<span style={{ fontWeight: '500' }}>Chức vụ</span>}>
-              <Input size='middle' placeholder='Chức vụ của ứng viên' onChange={(e) => setPosittion(e.target.value)} />
+            <Form.Item name='position' label={<span style={{ fontWeight: '500' }}>Công việc mong muốn</span>}>
+              <Input
+                size='middle'
+                placeholder='Công việc mong muốn của ứng viên'
+                onChange={(e) => setPosittion(e.target.value)}
+              />
             </Form.Item>
             <Form.Item label={<span style={{ fontWeight: '500' }}>Ngành Nghề</span>} name='industry'>
               <Select
@@ -139,7 +165,7 @@ const FindCandidatePage = () => {
                 maxTagTextLength={10}
               />
             </Form.Item>
-            <Form.Item label={<span style={{ fontWeight: '500' }}>Khu vực</span>} name='province'>
+            <Form.Item label={<span style={{ fontWeight: '500' }}>Khu vực mong muốn</span>} name='province'>
               <Select
                 showSearch
                 mode={'multiple'}
@@ -180,10 +206,10 @@ const FindCandidatePage = () => {
                 </Col>
               </Row>
             </Form.Item>
-            <Form.Item label={<span style={{ fontWeight: '500' }}>Cấp Bật</span>} name='level'>
+            <Form.Item label={<span style={{ fontWeight: '500' }}>Cấp Bậc</span>} name='level'>
               <Select
                 showSearch
-                placeholder={'Chọn cấp bật'}
+                placeholder={'Chọn cấp bậc'}
                 size='middle'
                 options={listLevel}
                 onChange={(value) => setLevel(value)}
@@ -216,7 +242,7 @@ const FindCandidatePage = () => {
                 onChange={(value) => setEducation(value)}
               />
             </Form.Item>
-            <h4 style={{ fontWeight: '500' }}>Độ tuổi</h4>
+            {/* <h4 style={{ fontWeight: '500' }}>Độ tuổi</h4>
             <Form.Item name='rangeYearOld' rules={[{ validator: validateMinMaxOrder2 }]}>
               <Row justify={'space-between'} style={{ gap: '8px' }}>
                 <Col md={11} sm={11} xs={11}>
@@ -244,7 +270,7 @@ const FindCandidatePage = () => {
                   />
                 </Col>
               </Row>
-            </Form.Item>
+            </Form.Item> */}
             <div className='btn-container' style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button htmlType='submit' style={{ width: '49%', color: 'white', background: 'rgb(255, 125, 85)' }}>
                 Tìm kiếm
@@ -257,20 +283,33 @@ const FindCandidatePage = () => {
         </Drawer>
       </div>
       <div className='content-wapper'>
-        <div className='total-search'>{`${'2395'} kết quả được tìm thấy`}</div>
-        <CandidateItem />
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
-          <Pagination
-            onChange={handleChangePage}
-            responsive
-            defaultCurrent={1}
-            pageSize={limitOnPage}
-            //   current={totalItems}
-            //   showLessItems={false}
-            showSizeChanger={false}
-            total={totalItems}
-          />
-        </div>
+        {listCandidate ? (
+          <>
+            <div className='total-search'>{`${listCandidate.length} kết quả được tìm thấy`}</div>
+
+            {listCandidate.map((candidate) => (
+              <CandidateItem key={candidate.id} data={candidate} />
+            ))}
+
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
+              <Pagination
+                onChange={handleChangePage}
+                responsive
+                defaultCurrent={1}
+                pageSize={limitOnPage}
+                //   current={totalItems}
+                //   showLessItems={false}
+                showSizeChanger={false}
+                total={totalItems}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <div className='total-search'>{`0 kết quả được tìm thấy`}</div>
+            <div>Không tìm thấy ứng viên</div>
+          </>
+        )}
       </div>
     </div>
   )

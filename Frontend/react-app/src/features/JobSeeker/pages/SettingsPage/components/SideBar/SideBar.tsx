@@ -13,33 +13,53 @@ import { BiSolidFactory } from 'react-icons/bi'
 import { MdWork } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
+import { FaUserCog } from 'react-icons/fa'
+import CVSettings from '../Content/CVSettings'
 
 const SideBar = () => {
   const navigation = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const [hiddenHeader, setHiddenHeader] = useState(false)
   const [defaultSelected, setDefaultSelected] = useState(['1'])
+  const [checkboxCV, setCheckboxCV] = useState(false)
   const currentURL = window.location.href
   console.log('URL của trang web hiện tại:', currentURL)
-  // useEffect(() => {
-  //   handleChangeSelected()
-  //   console.log('cc', defaultSelected)
-  // }, [])
-  // const handleChangeSelected = () => {
-  //   if (currentURL === `http://127.0.0.1:3001/settings`) setDefaultSelected(['1'])
-  //   else if (currentURL === `http://127.0.0.1:3001/settings/my-companies`) setDefaultSelected(['4'])
-  //   else if (currentURL === `http://127.0.0.1:3001/settings/my-jobs`) setDefaultSelected(['5'])
-  // }
+  //check cv
+  const [dataMyCV, setDataMyCV] = useState('data my cv')
+  //
+  const [disableTurnOnFindCV, setDisableTurnOnFindCV] = useState(false)
+  useEffect(() => {
+    if (!dataMyCV) {
+      setCheckboxCV(false)
+      setDisableTurnOnFindCV(true)
+    } else setDisableTurnOnFindCV(false)
+  }, [dataMyCV])
   const onClickMenu: MenuProps['onClick'] = (e) => {
     console.log('click ', e)
     if (e.key === '1') navigation('/settings')
     if (e.key === '2') navigation('/CV')
+    if (e.key === '3') navigation('/settings/CV-settings')
     if (e.key === '4') navigation('/settings/my-companies')
     if (e.key === '5') navigation('/settings/my-jobs')
   }
   const onChangeCheckbox = (e: CheckboxChangeEvent) => {
     console.log(`checked = ${e.target.checked}`)
+    setIsModalOpenSettingCV(true)
   }
+
+  const [isModalOpenSettingCV, setIsModalOpenSettingCV] = useState(false)
+
+  // const showModal = () => {
+  //   setIsModalOpenSettingCV(true)
+  // }
+  const handleCancel = () => {
+    setIsModalOpenSettingCV(false)
+  }
+  const handleTurnOnFindCV = (isTurnOn: boolean) => {
+    console.log('on', isTurnOn)
+    setCheckboxCV(isTurnOn)
+  }
+
   return (
     <Layout className='side-bar-settings-container'>
       <Sider className='sider-settings-page-container' trigger={null} collapsible collapsed={collapsed} width={300}>
@@ -74,10 +94,18 @@ const SideBar = () => {
             </div>
           </div>
           <div hidden={hiddenHeader} className='settings-auto-finding-cv'>
-            <Checkbox disabled onChange={onChangeCheckbox}>
+            <Checkbox disabled={disableTurnOnFindCV} checked={checkboxCV} onChange={onChangeCheckbox}>
               Cho phép tìm kiếm hồ sơ
             </Checkbox>
-            <span className='show-warning-cv'>Hồ sơ chưa đủ điều kiện cho phép tìm kiếm</span>
+            <span hidden={disableTurnOnFindCV ? false : true} className='show-warning-cv'>
+              Hồ sơ chưa đủ điều kiện cho phép tìm kiếm
+            </span>
+            <CVSettings
+              handleTurnOnFindCV={handleTurnOnFindCV}
+              open={isModalOpenSettingCV}
+              handleClose={handleCancel}
+              isTurnOn={checkboxCV}
+            />
           </div>
         </div>
         <Menu
@@ -145,16 +173,16 @@ const SideBar = () => {
               label: 'Việc Làm Của Tôi',
               style: { display: 'flex', alignItems: 'center' }
             },
-            {
-              key: '6',
-              icon: (
-                <span style={{ fontSize: '22px', color: 'gray' }}>
-                  <IoNotificationsSharp />
-                </span>
-              ),
-              label: 'Thông Báo Việc Làm',
-              style: { display: 'flex', alignItems: 'center' }
-            },
+            // {
+            //   key: '6',
+            //   icon: (
+            //     <span style={{ fontSize: '22px', color: 'gray' }}>
+            //       <IoNotificationsSharp />
+            //     </span>
+            //   ),
+            //   label: 'Thông Báo Việc Làm',
+            //   style: { display: 'flex', alignItems: 'center' }
+            // },
             {
               key: '7',
               icon: (

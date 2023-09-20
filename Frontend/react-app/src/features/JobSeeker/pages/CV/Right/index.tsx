@@ -13,10 +13,11 @@ import { BiSolidCity, BiWorld } from 'react-icons/bi'
 interface RightPropsType {
   data: ResumeType
   file: UploadFile
+  hiddenButtonDownload: boolean
 }
 
 const Right = (props: RightPropsType) => {
-  const { data, file } = props
+  const { data, file, hiddenButtonDownload } = props
   const personalInfo = omit(data.user_info, ['first_name', 'last_name', 'avatar', 'wanted_job_title'])
   const skills = data.skills
   const professionalSummary = data.professional_summary
@@ -57,8 +58,8 @@ const Right = (props: RightPropsType) => {
 
   return (
     <div className='wrap-preview-cv'>
-      <div className='download-cv'>
-        <Button size='large' type='primary' onClick={() => toPDF()}>
+      <div hidden={hiddenButtonDownload} className='download-cv'>
+        <Button className='btn-download' size='large' onClick={() => toPDF()}>
           Tải xuống CV
         </Button>
       </div>

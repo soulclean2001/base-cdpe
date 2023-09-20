@@ -36,6 +36,7 @@ import FindCandidatePage from './features/Employer/pages/Dashboard/pages/FindCan
 import MyCompanies from './features/JobSeeker/pages/SettingsPage/components/Content/MyCompanies'
 import MyJobs from './features/JobSeeker/pages/SettingsPage/components/Content/MyJobs'
 import ChatPage from './features/ChatPage'
+import CandidateDetailPage from './features/Employer/pages/Dashboard/pages/CandidateDetailPage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -65,6 +66,7 @@ function App() {
             }
           >
             <Route index element={<Overview />} />
+
             <Route path='my-companies' element={<MyCompanies />} />
             <Route path='my-jobs' element={<MyJobs />} />
           </Route>
@@ -102,6 +104,7 @@ function App() {
             <Route path='my-account-info' element={<MyAccountManagePage />} />
             <Route path='company-general' element={<CompanyManagePage />} />
             <Route path='find-candidate' element={<FindCandidatePage />} />
+            <Route path='candidate-detail/:infoUrlCandidate' element={<CandidateDetailPage />} />
           </Route>
         </Route>
         <Route path='/employer-sign-up' element={<SignUpEmployer />} />

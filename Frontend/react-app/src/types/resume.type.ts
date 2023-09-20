@@ -78,6 +78,14 @@ export enum SkillLevel {
   Experienced = 'Experienced',
   Expert = 'Expert'
 }
+export enum EducationLevel {
+  HighSchool = 'HighSchool',
+  Intermediate = 'Intermediate',
+  HigherDiploma = 'HigherDiploma',
+  BachelorDegree = 'BachelorDegree',
+  Doctorate = 'Doctorate',
+  Another = 'Another'
+}
 
 export interface Skill {
   skill_name: string

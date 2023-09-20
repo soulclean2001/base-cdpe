@@ -2,16 +2,17 @@
   // padding: 15px;
   width: 25%;
   min-width: 379.8px;
-  min-height: 90vh;
+  min-height: 89vh;
+  height: 89vh;
   background-color: white;
   border: 1px solid rgb(241, 242, 244);
   .header-container {
     display: flex;
     // justify-content: center;
-
+    height: 10%;
     align-items: center;
     padding: 15px;
-    height: 72px;
+
     border-bottom: 1px solid rgb(241, 242, 244);
     h5 {
       margin-bottom: 0;

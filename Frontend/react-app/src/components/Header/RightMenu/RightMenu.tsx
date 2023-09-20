@@ -43,6 +43,9 @@ const RightMenu = (props: any) => {
   const handleTabEmployer = () => {
     navigate('/employer')
   }
+  const handleTabChat = () => {
+    navigate('/chat')
+  }
   const items: MenuProps['items'] = [
     {
       label: <NavLink to={'/settings'}>Cài đặt thông tin cá nhân</NavLink>,
@@ -100,7 +103,13 @@ const RightMenu = (props: any) => {
               open={openNotifyDrawer}
               onClose={onCloseDrawer}
             />
-            <Button icon={<AiFillMessage />} className='btn-message' shape='circle' size='large' />
+            <Button
+              icon={<AiFillMessage />}
+              onClick={handleTabChat}
+              className='btn-message'
+              shape='circle'
+              size='large'
+            />
             <Dropdown menu={menuProps}>
               <Button size='large' style={{ display: 'flex', alignItems: 'center', padding: 0, border: 'none' }}>
                 <Space>
