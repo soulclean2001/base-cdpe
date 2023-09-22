@@ -17,6 +17,7 @@ import Candidate from '~/models/schemas/Candidate.schema'
 import PotentialCandidate from '~/models/schemas/PotentialCandidate.schema'
 import TrackedCandidate from '~/models/schemas/TrackedCandidate.schema'
 import JobApplication from '~/models/schemas/JobApplication.schema'
+import PurchasedPackage from '~/models/schemas/PurchasedPackage.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -60,13 +61,22 @@ class DatabaseService {
       )
     }
   }
-  async indexVideoStatus() {
-    const exists = await this.videoStatus.indexExists(['name_1'])
+
+  async indexCandidate() {
+    const exists = await this.candidate.indexExists(['cv_id_1'])
 
     if (!exists) {
-      this.videoStatus.createIndex({ name: 1 })
+      this.candidate.createIndex({ cv_id: 1 })
     }
   }
+
+  // async indexVideoStatus() {
+  //   const exists = await this.videoStatus.indexExists(['name_1'])
+
+  //   if (!exists) {
+  //     this.videoStatus.createIndex({ name: 1 })
+  //   }
+  // }
 
   get users(): Collection<User> {
     return this.db.collection(envConfig.dbUsersCollection)
@@ -125,6 +135,10 @@ class DatabaseService {
 
   get jobApplication(): Collection<JobApplication> {
     return this.db.collection(envConfig.dbJobApplication)
+  }
+
+  get purchasedPackage(): Collection<PurchasedPackage> {
+    return this.db.collection(envConfig.dbPurchasedPackage)
   }
 }
 

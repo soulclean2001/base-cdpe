@@ -17,6 +17,21 @@ class ResumeController {
     })
   }
 
+  async updateOrCreateResume(
+    req: Request<ParamsDictionary, any, ResumeRequestBody>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { body } = req
+    const { user_id } = req.decoded_authorization
+    const result = await ResumeService.updateOrCreateResume(user_id, body)
+
+    return res.json({
+      message: 'updated resume',
+      result
+    })
+  }
+
   async updateResume(req: Request<ParamsDictionary, any, ResumeRequestBody>, res: Response, next: NextFunction) {
     const { body } = req
     const { resume_id } = req.params

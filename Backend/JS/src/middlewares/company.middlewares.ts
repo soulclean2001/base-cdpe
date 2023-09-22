@@ -1,5 +1,6 @@
 import { ParamSchema, checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
+import { workingLocationsSchema } from './job.middlewares'
 
 export const updateCompanyValidator = validate(
   checkSchema(
@@ -50,6 +51,10 @@ export const updateCompanyValidator = validate(
         isString: {
           errorMessage: 'Company size must be a string'
         }
+      },
+      working_locations: {
+        ...workingLocationsSchema,
+        optional: true
       }
     },
     ['body']

@@ -2,21 +2,22 @@ import { CreateCandidateReqBody, UpdateCandidateReqBody } from '~/models/request
 import databaseServices from './database.services'
 import Candidate, { CandidateType } from '~/models/schemas/Candidate.schema'
 import { ObjectId } from 'mongodb'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class CandidateService {
-  static async createCandidate(userId: string, payload: CreateCandidateReqBody) {
-    const result = await databaseServices.candidate.insertOne(
-      new Candidate({
-        ...payload,
-        user_id: new ObjectId(userId),
-        cv_id: new ObjectId(payload.cv_id)
-      })
-    )
+  // static async createCandidate(userId: string, payload: CreateCandidateReqBody) {
+  //   const result = await databaseServices.candidate.insertOne(
+  //     new Candidate({
+  //       ...payload,
+  //       user_id: new ObjectId(userId),
+  //       cv_id: new ObjectId(payload.cv_id)
+  //     })
+  //   )
 
-    return {
-      message: 'created candidate successfully'
-    }
-  }
+  //   return {
+  //     message: 'created candidate successfully'
+  //   }
+  // }
 
   static async getCandidate(userId: string) {
     const result = await databaseServices.candidate.findOne({
@@ -27,7 +28,19 @@ class CandidateService {
   }
 
   static async updateCandidate(userId: string, payload: UpdateCandidateReqBody) {
-    const _payload = (payload.cv_id ? { ...payload, cv_id: new ObjectId(payload.cv_id) } : payload) as CandidateType
+    const cv = await databaseServices.resume.findOne({
+      user_id: new ObjectId(userId)
+    })
+
+    if (!cv) {
+      throw new ErrorWithStatus({
+        message: 'You must be have an resume before',
+        status: 404
+      })
+    }
+
+    // const _payload = (payload.cv_id ? { ...payload, cv_id: new ObjectId(payload.cv_id) } : payload) as CandidateType
+    const _payload = { ...payload, cv_id: cv._id } as CandidateType
     const result = await databaseServices.candidate.findOneAndUpdate(
       {
         user_id: new ObjectId(userId)

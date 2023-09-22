@@ -1,17 +1,17 @@
 import { ObjectId } from 'mongodb'
 
 export interface CreateCandidateReqBody {
-  industry: string
-  work_location: string
-  experience: string
+  industry: string[]
+  work_location: string[]
+  experience: number
   cv_public: boolean
-  cv_id: string
+  education_level: string
 }
 
 export interface UpdateCandidateReqBody {
-  industry?: string
-  work_location?: string
-  experience?: string
+  industry?: string[]
+  work_location?: string[]
+  experience?: number
+  education_level?: string
   cv_public?: boolean
-  cv_id?: string
 }

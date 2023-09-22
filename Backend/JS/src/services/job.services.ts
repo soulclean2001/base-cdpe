@@ -76,7 +76,7 @@ export default class JobService {
 
     const _payload = (
       payload.expired_date
-        ? { ...payload, expires: new Date(payload.expired_date), status: JobStatus.Pending }
+        ? { ...payload, expires: new Date(payload.expired_date), status: JobStatus.Unapproved }
         : { ...payload, status: JobStatus.Unapproved }
     ) as JobType
 
@@ -221,6 +221,8 @@ export default class JobService {
         status: 422
       })
     }
+    const status = oldJob?.status === JobStatus.Approved ? JobStatus.Approved : JobStatus.Pending
+
     const dataUpdate = expiredDate ? { expired_date: new Date(expiredDate) } : { expired_date: oldJob?.expired_date }
 
     const result = await databaseServices.job.findOneAndUpdate(
@@ -231,8 +233,7 @@ export default class JobService {
       {
         $set: {
           ...dataUpdate,
-          visibility: true,
-          status: JobStatus.Pending
+          status
         },
         $currentDate: {
           posted_date: true,

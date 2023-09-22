@@ -34,3 +34,30 @@ export const verifyAccessToken = async (access_token: string, req?: Request) => 
     })
   }
 }
+
+export const updateNestedObjectParser = (object: { [key: string]: any }) => {
+  const final: { [key: string]: any } = {}
+  Object.keys(object).forEach((k) => {
+    if (typeof object[k] === 'object') {
+      const response = updateNestedObjectParser(object[k])
+      Object.keys(response).forEach((k1) => {
+        final[`${k}.${k1}`] = response[k1]
+      })
+    } else {
+      final[k] = object[k]
+    }
+  })
+
+  return final
+}
+
+export const removeUndefinedObject = (object: { [key: string]: any }) => {
+  Object.keys(object).forEach((k) => {
+    if (object[k] === undefined || object[k] === null) delete object[k]
+  })
+  return object
+}
+
+export function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}

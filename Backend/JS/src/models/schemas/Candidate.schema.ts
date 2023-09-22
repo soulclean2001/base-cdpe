@@ -2,21 +2,23 @@ import { ObjectId } from 'mongodb'
 
 export interface CandidateType {
   _id?: ObjectId
-  industry: string
-  work_location: string
-  experience: string
+  industry: string[]
+  work_location: string[]
+  experience: number
   cv_public?: boolean
   cv_id: ObjectId
+  education_level: string
   user_id: ObjectId
 }
 
 export default class Candidate {
   _id?: ObjectId
-  industry: string
-  work_location: string
-  experience: string
+  industry: string[]
+  work_location: string[]
+  experience: number
   cv_public: boolean
   cv_id: ObjectId
+  education_level: string
   user_id: ObjectId
   constructor(data: CandidateType) {
     this._id = data._id
@@ -26,5 +28,6 @@ export default class Candidate {
     this.cv_id = data.cv_id
     this.user_id = data.user_id
     this.experience = data.experience
+    this.education_level = data.education_level
   }
 }

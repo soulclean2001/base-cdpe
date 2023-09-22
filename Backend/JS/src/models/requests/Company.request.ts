@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { WorkingLocation } from '../schemas/Job.schema'
 
 export interface MemberType {
   user_id: ObjectId
@@ -13,8 +14,6 @@ export enum PositionType {
 
 export interface UpdateCompanyReqBody {
   company_name?: string
-  province?: string
-  district?: string
   background?: string
   users?: MemberType[]
   logo?: string
@@ -22,4 +21,5 @@ export interface UpdateCompanyReqBody {
   company_size?: string
   logo_image_file?: File
   background_image_file?: File
+  working_locations?: WorkingLocation[]
 }

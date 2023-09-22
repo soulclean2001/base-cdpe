@@ -19,7 +19,7 @@ const isStringNotEmpty = (field: string): ParamSchema => {
   }
 }
 
-const workingLocationsSchema: ParamSchema = {
+export const workingLocationsSchema: ParamSchema = {
   custom: {
     options: async (value, { req }) => {
       if (!Array.isArray(value)) {
