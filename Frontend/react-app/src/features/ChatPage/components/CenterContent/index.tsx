@@ -9,7 +9,12 @@ const dataChat1 = [
   { id: '2', userId: 'them', logo: '', chatValue: 'helooo' }
 ]
 const dataChat2 = [
-  { id: '1', userId: 'my', logo: '', chatValue: 'loo' },
+  {
+    id: '1',
+    userId: 'my',
+    logo: '',
+    chatValue: 'lo000000000000000000000000000000000000000000000000000000000000000000000000o'
+  },
   { id: '2', userId: 'them', logo: '', chatValue: 'lỏ' },
   { id: '3', userId: 'them', logo: '', chatValue: 'lỏ' },
   { id: '4', userId: 'them', logo: '', chatValue: 'lỏ' },
@@ -25,7 +30,12 @@ const dataChat2 = [
   { id: '14', userId: 'them', logo: '', chatValue: 'lỏ' },
   { id: '15', userId: 'them', logo: '', chatValue: 'lỏ' },
   { id: '16', userId: 'them', logo: '', chatValue: 'lỏ' },
-  { id: '17', userId: 'them', logo: '', chatValue: 'lỏooooooooooooooooooooooooooooo' },
+  {
+    id: '17',
+    userId: 'them',
+    logo: '',
+    chatValue: 'lỏoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo'
+  },
   { id: '18', userId: 'them', logo: '', chatValue: '.' }
 ]
 const CenterContent = (props: any) => {

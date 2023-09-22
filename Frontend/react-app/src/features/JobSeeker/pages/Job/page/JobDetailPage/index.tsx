@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import JobInfo from './components/JobInfo/JobInfo'
 import CompanyInfo from './components/CompanyInfo/CompanyInfo'
 import ShowMoreJob from './components/ShowMoreJob/ShowMoreJob'
+import ModalApplyCV from './components/ModalApplyCV'
 
 const onChange = (key: string) => {
   console.log(key)
@@ -33,7 +34,7 @@ const items: TabsProps['items'] = [
 ]
 const JobDetailPage = () => {
   const [isVisible, setIsVisible] = useState(false)
-
+  const [isModalOpen, setIsModalOpen] = useState(false)
   useEffect(() => {
     // Theo dõi sự kiện cuộn chuột khi component được render
     window.addEventListener('scroll', handleScroll)
@@ -48,12 +49,19 @@ const JobDetailPage = () => {
   // Hàm xử lý sự kiện cuộn chuột
   const handleScroll = () => {
     if (window.scrollY > 500) {
-      // Hiển thị thẻ div khi người dùng đã cuộn qua một số pixel (ở đây là 200)
+      // Hiển thị thẻ div khi người dùng đã cuộn qua một số pixel (ở đây là 500)
       setIsVisible(true)
     } else {
       // Ẩn thẻ div khi người dùng chưa cuộn đủ
       setIsVisible(false)
     }
+  }
+  const showModalApplyCV = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
   }
   return (
     <div className='job-detail-page-container'>
@@ -78,9 +86,10 @@ const JobDetailPage = () => {
                 </Col>
                 <Col lg={6} md={8} sm={24} xs={24} className='btn-container'>
                   <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
-                  <Button size='large' className='btn-apply'>
+                  <Button onClick={showModalApplyCV} size='large' className='btn-apply'>
                     Nộp Đơn
                   </Button>
+                  <ModalApplyCV open={isModalOpen} handleCancel={handleCancel} />
                 </Col>
               </Row>
             </Col>
@@ -103,7 +112,7 @@ const JobDetailPage = () => {
 
           <Col lg={4} md={4} sm={23} xs={23} className='btn-container'>
             <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
-            <Button size='large' className='btn-apply'>
+            <Button onClick={showModalApplyCV} size='large' className='btn-apply'>
               Nộp Đơn
             </Button>
           </Col>

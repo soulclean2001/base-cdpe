@@ -137,6 +137,12 @@ const SideBarEmployer = (props: any) => {
           </MenuItem>
         </Menu>
         <Menu iconShape='circle'>
+          <MenuItem icon={<FundFilled />}>
+            Quản lý hồ sơ ứng viên
+            <Link to={'/employer/dashboard/cv-manage'} />
+          </MenuItem>
+        </Menu>
+        {/* <Menu iconShape='circle'>
           <SubMenu
             // suffix={<span className="features-menu">count num</span>}  thong bao number++
             title={'Quản lý CV'}
@@ -159,7 +165,7 @@ const SideBarEmployer = (props: any) => {
               <Link to={'/employer/manage-deleted-cv'} />
             </MenuItem>
           </SubMenu>
-        </Menu>
+        </Menu> */}
         <Menu iconShape='circle'>
           <MenuItem icon={<ShopFilled />}>
             Mua dịch vụ

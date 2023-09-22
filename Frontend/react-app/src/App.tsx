@@ -99,7 +99,7 @@ function App() {
               // </Auth>
             }
           >
-            <Route path='cv-applied-manage' element={<ManageCV />} />
+            <Route path='cv-manage' element={<ManageCV />} />
             <Route path='post-manage' element={<PostManagePage />} />
             <Route path='my-account-info' element={<MyAccountManagePage />} />
             <Route path='company-general' element={<CompanyManagePage />} />

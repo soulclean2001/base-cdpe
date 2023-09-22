@@ -1,7 +1,7 @@
 import { Button, Col, Row, Tabs, TabsProps } from 'antd'
 import './style.scss'
 import { AiFillPlusCircle } from 'react-icons/ai'
-import TableCustom from '../../components/TableCustom/TableCustom'
+import TableCustom from './components/TableCustom/TableCustom'
 import { useState } from 'react'
 import ModalInfoPost from '../../components/ModalInfoPost/ModalInfoPost'
 const PostManagePage = () => {

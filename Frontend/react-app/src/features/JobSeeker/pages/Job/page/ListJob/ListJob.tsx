@@ -51,7 +51,7 @@ const listSalary = [
 const dataJob = [
   {
     id: '1',
-    img: 'https://images.vietnamworks.com/pictureofcompany/ed/11125246.png',
+    img: 'https://images.vietnamworks.com/pictureofcompany/be/11070617.png',
     nameJob: 'Brand Manager',
     nameCompany: 'Nestlé Vietnam Ltd.,',
     salary: 'Thương lượng',
@@ -129,7 +129,7 @@ const ListJob = () => {
       </div>
       <div className='job-content'>
         <Row className='menu-sort-job'>
-          <Col md={5} sm={0} xs={0} className='select-menu select-carrer'>
+          <Col lg={5} md={0} sm={0} xs={0} className='select-menu select-carrer'>
             <Select
               mode='tags'
               placeholder={'Tất cả ngành nghề'}
@@ -142,7 +142,7 @@ const ListJob = () => {
               options={listCareer}
             />
           </Col>
-          <Col md={6} sm={0} xs={0} className=' select-menu select-carrer-field'>
+          <Col lg={6} md={0} sm={0} xs={0} className=' select-menu select-carrer-field'>
             <Select
               placeholder={'Tất cả lĩnh vực'}
               showSearch
@@ -153,7 +153,7 @@ const ListJob = () => {
               options={listField}
             />
           </Col>
-          <Col md={4} sm={0} xs={0} className='select-menu select-level'>
+          <Col lg={4} md={0} sm={0} xs={0} className='select-menu select-level'>
             <Select
               defaultValue={'Tất cả cấp bật'}
               showSearch
@@ -164,7 +164,7 @@ const ListJob = () => {
               options={listLevel}
             />
           </Col>
-          <Col md={4} sm={0} xs={0} className='select-menu select-type-job'>
+          <Col lg={4} md={0} sm={0} xs={0} className='select-menu select-type-job'>
             <Select
               defaultValue={'Tất cả loài hình'}
               showSearch
@@ -175,7 +175,7 @@ const ListJob = () => {
               options={listTypeJobs}
             />
           </Col>
-          <Col md={4} sm={0} xs={0} className='select-menu select-salary'>
+          <Col lg={4} md={0} sm={0} xs={0} className='select-menu select-salary'>
             <Select
               defaultValue={'Tất cả mức lương'}
               showSearch
@@ -186,7 +186,7 @@ const ListJob = () => {
               options={listSalary}
             />
           </Col>
-          <Col md={0} sm={24} xs={24}>
+          <Col lg={0} md={24} sm={24} xs={24}>
             <div style={{ display: 'flex', gap: '10px' }}>
               <Button>Bộ lọc</Button>
               <Button>Sắp xếp</Button>
@@ -194,7 +194,7 @@ const ListJob = () => {
           </Col>
         </Row>
         <Row className='list-job-container'>
-          <Col md={16} sm={24} xs={24}>
+          <Col lg={16} md={24} sm={24} xs={24}>
             <div className='sort-list-job'>
               <span>Sắp xếp theo </span>
               <div id='sort-container'>
@@ -255,7 +255,7 @@ const ListJob = () => {
               </div>
             </div>
           </Col>
-          <Col md={7} sm={0} xs={0} className='right-job-content'>
+          <Col lg={7} md={0} sm={0} xs={0} className='right-job-content'>
             quảng cáo
           </Col>
         </Row>

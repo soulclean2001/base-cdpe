@@ -11,9 +11,9 @@ const TopCompany = () => {
   const dataTopCompany = [
     { id: '1', img: logo, name: 'KIMBERLY-CLARK 1' },
     { id: '2', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 2' },
-    { id: '3', img: logo, name: 'KIMBERLY-CLARK 3' },
-    { id: '4', img: logo, name: 'KIMBERLY-CLARK 4' },
-    { id: '5', img: logo, name: 'KIMBERLY-CLARK 5' }
+    { id: '3', img: 'https://images.vietnamworks.com/logo/nhck_vip_124074.jpg', name: 'KIMBERLY-CLARK 3' },
+    { id: '4', img: 'https://images.vietnamworks.com/logo/pvcom_vip_124084.png', name: 'KIMBERLY-CLARK 4' },
+    { id: '5', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' }
   ]
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window

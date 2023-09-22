@@ -79,11 +79,14 @@
         height: 100vh;
         padding: 15px;
       }
-      @media (max-width: 768px) {
+      @media (max-width: 992px) {
         .sort-list-job {
           display: none;
         }
       }
+      // @media (max-width: 768px) {
+
+      // }
     }
   }
 }

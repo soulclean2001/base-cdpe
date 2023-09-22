@@ -45,25 +45,32 @@ const JobItem = (props: any) => {
       <Col
         className='job-item-image'
         md={4}
-        sm={24}
+        sm={6}
+        xs={6}
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
       >
-        <img
-          style={{ width: '100%', height: '100%' }}
-          src={img ? img : 'https://images.vietnamworks.com/pictureofcompany/ed/11125246.png'}
-          alt=''
-        />
+        <div className='logo-wapper'>
+          <img
+            style={{ width: '100%', height: '100%' }}
+            src={img ? img : 'https://images.vietnamworks.com/pictureofcompany/be/11070617.png'}
+            alt=''
+          />
+        </div>
       </Col>
-      <Col className='job-item-info' md={18} sm={20} xs={20}>
+      <Col className='job-item-info' md={18} sm={15} xs={15}>
         <div className='name-job'>{nameJob ? nameJob : 'Tên công việc'}</div>
         <div className='name-company'>{nameCompany ? nameCompany : 'Tên công ty'}</div>
         <div className='salary-job'>
           {salary ? salary : 'Thương lượng'}
           <span className='area'>| {area ? area : 'Khu vực'}</span>
         </div>
-        <div className='time-post'>{timePost ? timePost : 'Hôm nay'}</div>
+        <div className='time-post'>
+          {timePost
+            ? timePost
+            : 'Hôm nayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'}
+        </div>
       </Col>
-      <Col className='job-item-action' md={2} sm={4} xs={4}>
+      <Col className='job-item-action' md={2} sm={3} xs={3}>
         <Button
           style={{
             display: 'flex',

@@ -1,11 +1,15 @@
-import { Button, Space, Table } from 'antd'
+import { Button, Input, Space, Table } from 'antd'
 import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
 import { FilterValue, SorterResult } from 'antd/es/table/interface'
 import { useEffect, useState } from 'react'
 import './style.scss'
-import { BsFillEyeFill, BsPencilSquare } from 'react-icons/bs'
+import { BsFillEyeFill, BsPencilSquare, BsSearch } from 'react-icons/bs'
 import { MdDelete } from 'react-icons/md'
-import ModalInfoPost from '../ModalInfoPost/ModalInfoPost'
+import ModalInfoPost from '../../../../components/ModalInfoPost/ModalInfoPost'
+import { DatePicker } from 'antd'
+// import viVN from 'antd/es/locale/vi_VN'
+
+const { RangePicker } = DatePicker
 interface DataType {
   id: string
   key: string
@@ -203,7 +207,15 @@ const TableCustom = () => {
     <>
       <ModalInfoPost idPost={idPost} open={openModalInfo} handleClose={handleCloseModalInfo} />
       <Space style={{ marginBottom: 16 }}>
-        <Button onClick={clearAll}>Clear sorters</Button>
+        {/* <Button onClick={clearAll}>Clear sorters</Button> */}
+        <Input size='large' placeholder='Tìm theo tên, id bài đăng' prefix={<BsSearch />} />
+        <RangePicker
+          style={{ width: '100%' }}
+          size='large'
+          placeholder={['Từ ngày', 'Đến ngày']}
+          format='DD-MM-YYYY'
+          // locale={viVN}
+        />
       </Space>
       <Table
         className='table-custom'

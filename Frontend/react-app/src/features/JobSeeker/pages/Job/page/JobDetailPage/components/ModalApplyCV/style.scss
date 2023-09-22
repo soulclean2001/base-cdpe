@@ -1,0 +1,169 @@
+.modal-apply-cv-container {
+  min-width: 40%;
+
+  .header-container {
+    border-radius: 7px;
+    padding: 15px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    width: 100%;
+    display: flex;
+    gap: 8px;
+
+    .logo {
+      width: 64px;
+      height: 64px;
+    }
+    .header-info-wapper {
+      width: calc(100% - 64px);
+
+      // width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      // word-wrap: break-word;
+
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      .name-job {
+        max-width: 90%;
+        font-size: 18px;
+        font-weight: 500;
+      }
+      .salary-level-wapper {
+        display: flex;
+        gap: 5px;
+        .salary {
+          max-width: 90%;
+          color: rgb(255, 125, 85);
+        }
+        .level {
+          max-width: 90%;
+        }
+      }
+      @media (max-width: 768px) {
+        .salary-level-wapper {
+          flex-direction: column;
+          .bulkhead-salary-level {
+            display: none;
+          }
+        }
+      }
+      .address {
+        max-width: 90%;
+      }
+    }
+  }
+  .modal-content-apply-cv {
+    // margin-top: 30px;
+    border: 1px solid rgb(179, 206, 255);
+    border-radius: 12px;
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    padding: 15px;
+
+    // .avatar-wapper {
+    //   .my-avatar {
+    //     width: 88px;
+    //     height: 88px;
+    //   }
+    // }
+
+    .form-info-apply-cv-wapper {
+      // width: calc(100% - 96px);
+      width: 100%;
+      .user-full-name {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+      .form-info-apply-cv {
+        .choose-type-cv-wapper {
+          margin-top: 30px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          width: 100%;
+          .select-type-cv {
+            // display: flex;
+            // justify-content: flex-end;
+          }
+          .upload-cv-wapper {
+            border: 1px dashed rgb(179, 206, 255);
+            border-radius: 8px;
+            background-color: rgb(255, 255, 255);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 12px;
+            // gap: 10px;
+
+            cursor: pointer;
+            .ant-upload-list {
+              max-width: 100%;
+            }
+
+            .upload-file-pdf-container {
+              width: 100%;
+              display: flex;
+              justify-content: center;
+              flex-direction: column;
+              align-items: center;
+
+              gap: 7px;
+
+              cursor: pointer;
+              .choose-file-wapper {
+                width: 100%;
+                display: flex;
+                gap: 5px;
+                align-items: center;
+                font-weight: 600;
+                font-size: 16px;
+              }
+              .info-support-type-file {
+                width: 100%;
+                font-size: 12px;
+                color: rgb(132, 132, 132);
+              }
+            }
+          }
+        }
+        .btn-container {
+          margin-top: 40px;
+          display: flex;
+          justify-content: flex-end;
+          gap: 7px;
+          .btn-submit-apply-cv {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgb(255, 125, 85);
+            color: white;
+            &:hover {
+              border-color: rgb(255, 125, 85);
+            }
+          }
+        }
+      }
+    }
+  }
+  @media (max-width: 768px) {
+    .modal-content-apply-cv {
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .form-info-apply-cv-wapper {
+        width: 100%;
+        .user-full-name {
+          text-align: center;
+        }
+      }
+    }
+  }
+}
