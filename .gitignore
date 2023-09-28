@@ -1,7 +1,5 @@
-/Backend/JS/.env
-/Backend/JS/.env.development
-/Backend/JS/node_modules/
-
-/Frontend/react-app/.env
-/Frontend/react-app/.env.development
-/Frontend/react-app/node_modules/
+node_modules/
+dist/
+.env.*
+.env
+.env.development

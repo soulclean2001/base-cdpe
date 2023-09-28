@@ -1,0 +1,40 @@
+name: Docker Image CICD
+
+on:
+  push:
+    branches: ['deploy-server']
+  pull_request:
+    branches: ['deploy-server']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: 'Create env file'
+        run: echo "${{ secrets.TUYENDUNG_ENV_DEV }}" > .env
+      - name: Build the Docker image
+        run: docker build --progress=plain -t hiroskai217/be-tuyendung:v0 .
+      - name: Login to Docker
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Push the docker image
+        run: docker push hiroskai217/be-tuyendung:v0
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Execute remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{secrets.HOST}}
+          username: ${{secrets.HOST_USERNAME}}
+          key: ${{secrets.HOST_KEY}}
+          port: ${{secrets.HOST_PORT}}
+          script: |
+            docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+            docker pull hiroskai217/be-tuyendung:v0
+            docker stop be-tuyendung
+            docker rm be-tuyendung
+            docker run -dp 4000:4000 --name be-tuyendung hiroskai217/be-tuyendung:v0
