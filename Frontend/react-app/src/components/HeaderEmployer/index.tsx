@@ -8,7 +8,7 @@ import '@fontsource/rubik/400.css' // Specify weight
 import '@fontsource/rubik/400-italic.css' //
 import './header.scss'
 const HeaderEmployer = () => {
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(false)
   const [clearActiveMenu, setClearActiveMenu] = useState(false)
   const handleClickLogo = () => {
     setClearActiveMenu(!clearActiveMenu)

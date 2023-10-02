@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
@@ -55,13 +55,18 @@ const items: MenuProps['items'] = [
   }
 ]
 
-const LeftMenu = () => {
+const LeftMenu = (props: any) => {
+  const { clearActiveMenu } = props
   const [current, setCurrent] = useState('mail')
 
   const onClick: MenuProps['onClick'] = (e) => {
     console.log('click ', e)
     setCurrent(e.key)
   }
+  //set active select menu
+  useEffect(() => {
+    setCurrent('none')
+  }, [clearActiveMenu])
   return (
     <Menu className='left_menu_container' onClick={onClick} selectedKeys={[current]} mode='horizontal' items={items} />
   )

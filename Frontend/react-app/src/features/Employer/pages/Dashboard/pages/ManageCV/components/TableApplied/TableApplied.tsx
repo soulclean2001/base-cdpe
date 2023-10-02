@@ -244,14 +244,25 @@ const TableApplied = () => {
       sorter: (a, b) => a.status.localeCompare(b.status),
       sortOrder: sortedInfo.columnKey === 'status' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (text, _) => (
+        <div style={{ textAlign: 'center' }}>
+          {text === 'pending' && <span className='status-apply-job pending'>{text}</span>}
+          {text === 'approved' && <span className='status-apply-job approved'>{text}</span>}
+          {text === 'reject' && <span className='status-apply-job rejected'>{text}</span>}
+          {text === 'potential' && <span className='status-apply-job potential'>{text}</span>}
+          {text === 'interview' && <span className='status-apply-job interview'>{text}</span>}
+          {text === 'hired' && <span className='status-apply-job hired'>{text}</span>}
+          {text === 'notcontactable' && <span className='status-apply-job not-contactable'>{text}</span>}
+        </div>
+      )
     },
     {
       title: 'Xử lý',
       dataIndex: 'action',
       key: 'action',
       fixed: 'right',
-      render: (text, record) => (
+      render: (_, record) => (
         <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
           <Tooltip title='Xem CV'>
             <a onClick={() => setOpenModalInfo(true)}>

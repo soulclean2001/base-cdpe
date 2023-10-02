@@ -13,6 +13,7 @@ import { RootState } from '~/app/store'
 import { logout } from '~/features/Auth/authSlice'
 import { useState } from 'react'
 import NotifyDrawer from '../NotifyDrawer/NotifyDrawer'
+import ModalProfile from '~/components/ModalProfile'
 
 const dataNotify = [
   { id: '1', name: 'VINFAT', actionInfo: 'Đã theo dõi CV của bạn' },
@@ -34,6 +35,8 @@ const RightMenu = (props: any) => {
   const me: InfoMeState = useSelector((state: RootState) => state.jobSeeker)
   const disPatch = useDispatch()
   const navigate = useNavigate()
+  const [openModalProfile, setOpenModalProfile] = useState(false)
+  const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
   const handleLogin = () => {
     navigate('/candidate-login')
   }
@@ -48,8 +51,13 @@ const RightMenu = (props: any) => {
   }
   const items: MenuProps['items'] = [
     {
-      label: <NavLink to={'/settings'}>Cài đặt thông tin cá nhân</NavLink>,
+      label: <span>Cài đặt thông tin cá nhân</span>,
       key: 'key_settings_info',
+      icon: <GrUserSettings />
+    },
+    {
+      label: <NavLink to={'/settings'}>Cài đặt chung</NavLink>,
+      key: 'key_settings_general',
       icon: <GrUserSettings />
     },
     {
@@ -70,13 +78,13 @@ const RightMenu = (props: any) => {
       disPatch(logout())
       window.location.reload()
     }
+    if (e.key === 'key_settings_info') setOpenModalProfile(true)
     console.log('handle click', e)
   }
   const menuProps = {
     items,
     onClick: handleMenuClick
   }
-  const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
 
   const showDrawer = () => {
     setOpenNotifyDrawer(true)
@@ -90,6 +98,7 @@ const RightMenu = (props: any) => {
       <div className='right_menu_container_pc'>
         {me && me.id ? (
           <>
+            <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
             <Button
               icon={<IoMdNotifications />}
               onClick={showDrawer}

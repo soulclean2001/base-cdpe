@@ -1,0 +1,90 @@
+$background-color_1: white;
+
+.modal-profile {
+  //   width: 350px;
+  //   height: 600px;
+  //   min-width: 20%;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+
+  //   min-width: 25%;
+  .ant-modal-content {
+    padding: 0;
+  }
+  .profile-cover {
+    width: 100%;
+    > img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+  }
+  .profile-avatar {
+    display: flex;
+    justify-content: center;
+    margin-top: -45px;
+    .upload-profile {
+      width: 88px;
+      height: 88px;
+    }
+  }
+  .profile-info-bao {
+    padding: 0px 15px 15px 15px;
+    > h2 {
+      text-align: center;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      margin: 0;
+    }
+    // > h6 {
+    //   padding-bottom: 10px;
+    // }
+    .info-left {
+      flex: 5;
+      display: flex;
+      flex-direction: column;
+    }
+    .info-right {
+      flex: 7;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .btn-go-update {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    width: 100%;
+    padding: 15px;
+    .btn-update {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 0px;
+      width: 100%;
+      padding: 0px 15px 0px 15px;
+      background-color: #e5e7eb;
+      &:hover {
+        color: white;
+        border-color: white;
+        background-color: #bbbbbb;
+      }
+    }
+  }
+
+  .info-gender {
+    display: flex;
+    flex-direction: column;
+  }
+  .info-birth-day {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+    span {
+      margin-bottom: 10px;
+    }
+  }
+}

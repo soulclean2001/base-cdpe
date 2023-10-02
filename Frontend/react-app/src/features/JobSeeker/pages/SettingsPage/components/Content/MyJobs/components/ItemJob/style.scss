@@ -89,33 +89,58 @@
       width: 100%;
       min-width: 70px;
     }
-    .status-apply-job {
-      font-weight: 500;
-      font-size: 13px;
-    }
-    .pending {
-      color: rgb(252, 232, 58);
-    }
-    .approved {
-      color: rgb(86, 240, 0);
-    }
-    .rejected {
-      color: rgb(255, 56, 56);
-    }
-    .potential {
-      color: rgb(255, 179, 2);
-    }
-    .interview {
-      color: rgb(89, 83, 152);
-    }
-    .hired {
-      color: rgb(45, 204, 255);
-    }
-    .not-contactable {
-      color: rgb(164, 171, 182);
-    }
+    // .status-apply-job {
+    //   font-weight: 500;
+    //   font-size: 13px;
+    // }
+    // .pending {
+    //   color: rgb(252, 232, 58);
+    // }
+    // .approved {
+    //   color: rgb(86, 240, 0);
+    // }
+    // .rejected {
+    //   color: rgb(255, 56, 56);
+    // }
+    // .potential {
+    //   color: rgb(255, 179, 2);
+    // }
+    // .interview {
+    //   color: rgb(89, 83, 152);
+    // }
+    // .hired {
+    //   color: rgb(45, 204, 255);
+    // }
+    // .not-contactable {
+    //   color: rgb(164, 171, 182);
+    // }
   }
   &:hover {
     border: 1px solid rgb(160, 193, 255);
   }
+}
+.status-apply-job {
+  font-weight: 500;
+  font-size: 13px;
+}
+.pending {
+  color: rgb(252, 232, 58);
+}
+.approved {
+  color: rgb(86, 240, 0);
+}
+.rejected {
+  color: rgb(255, 56, 56);
+}
+.potential {
+  color: rgb(255, 179, 2);
+}
+.interview {
+  color: rgb(89, 83, 152);
+}
+.hired {
+  color: rgb(45, 204, 255);
+}
+.not-contactable {
+  color: rgb(164, 171, 182);
 }

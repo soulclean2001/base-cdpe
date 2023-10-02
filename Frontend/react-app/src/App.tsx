@@ -9,7 +9,7 @@ import SignUpEmployer from './features/Employer/pages/SignUpEmployer'
 import LoginEmployer from './features/Employer/pages/LoginEmployer'
 import Login from './features/JobSeeker/pages/LoginJobSeeker'
 
-import ServicesPage from './features/Employer/pages/ServicesPage'
+import HomePage from './features/Employer/pages/HomePage'
 import DashboardEmployer from './features/Employer/pages/Dashboard'
 import Auth from './features/Auth'
 import { UserRole } from './types'
@@ -37,6 +37,7 @@ import MyCompanies from './features/JobSeeker/pages/SettingsPage/components/Cont
 import MyJobs from './features/JobSeeker/pages/SettingsPage/components/Content/MyJobs'
 import ChatPage from './features/ChatPage'
 import CandidateDetailPage from './features/Employer/pages/Dashboard/pages/CandidateDetailPage'
+import ServicesPage from './features/Employer/pages/ServicesPage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -79,7 +80,7 @@ function App() {
         <Route path='/reset-password' element={<ResetPassword />} />
         <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} />
         <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
-          <Route index element={<ServicesPage />} />
+          <Route index element={<HomePage />} />
           <Route path='services' element={<ServicesPage />} />
 
           <Route

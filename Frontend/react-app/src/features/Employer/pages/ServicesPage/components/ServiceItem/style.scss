@@ -1,59 +1,22 @@
 .service-item-container {
-  width: 0%;
-  display: flex;
-  transition: width 2s;
-  //   flex-direction: column;
-  justify-content: space-between;
-  .service-item-content {
-    .content-wapper {
-      padding: 20px;
-      .title {
-        font-size: 26px;
-        font-weight: 700;
-        font-family: sans-serif;
-        color: #333;
-      }
-      .price {
-        color: #ff7d55;
-        font-size: 26px;
-        font-weight: 700;
-      }
-      .descriptions-container {
-        padding-top: 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        .description-item {
-          display: flex;
-          //   text-align: center;
-          gap: 5px;
-          font-size: 14px;
-          color: #333;
-          font-family: sans-serif;
-        }
-      }
-      .btn-buy-now-container {
-        padding-top: 25px;
-        .btn-buy-now {
-          color: #ff7d55;
-          border: 1px solid #ff7d55;
-          font-weight: 700;
-          &:hover {
-            color: white;
-            background-color: #ff7d55;
-            font-weight: 500;
-          }
-        }
-      }
+  width: 100%;
+  // border: 1px solid #dee2e6 !important;
+  cursor: pointer;
+  .item-wapper {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    // border-bottom: 1px solid #dee2e6 !important;
+    .name {
+      font-size: 12px;
+      font-weight: 600;
     }
   }
-  .img-container {
-    padding: 15px;
-    // display: flex;
-    // justify-content: center;
-    img {
-      width: 100%;
-      height: 100%;
-    }
+  .active {
+    --tw-bg-opacity: 1 !important;
+    background-color: rgb(243 248 252 / var(--tw-bg-opacity)) !important;
+    border: 1px solid rgb(0 90 255);
   }
 }
