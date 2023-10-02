@@ -84,9 +84,8 @@ const SideBarEmployer = (props: any) => {
             <Link to={'/employer/dashboard'} />
           </MenuItem>
         </Menu>
-        <Menu iconShape='circle'>
+        {/* <Menu iconShape='circle'>
           <SubMenu
-            // suffix={<span className="features-menu">count num</span>}  thong bao number++
             title={'Thiết lập tài khoản'}
             icon={<SettingFilled />}
           >
@@ -99,7 +98,7 @@ const SideBarEmployer = (props: any) => {
               <Link to={'/employer/dashboard/history'} />
             </MenuItem>
           </SubMenu>
-        </Menu>
+        </Menu> */}
         <Menu iconShape='circle'>
           <SubMenu
             // suffix={<span className="features-menu">count num</span>}  thong bao number++
@@ -142,36 +141,13 @@ const SideBarEmployer = (props: any) => {
             <Link to={'/employer/dashboard/cv-manage'} />
           </MenuItem>
         </Menu>
+
         {/* <Menu iconShape='circle'>
-          <SubMenu
-            // suffix={<span className="features-menu">count num</span>}  thong bao number++
-            title={'Quản lý CV'}
-            icon={<SnippetsFilled />}
-          >
-            <MenuItem>
-              Hồ sơ đã ứng tuyển
-              <Link to={'/employer/dashboard/cv-applied-manage'} />
-            </MenuItem>
-            <MenuItem>
-              Hồ sơ đã lưu
-              <Link to={'/employer/manage-save-cv'} />
-            </MenuItem>
-            <MenuItem>
-              Hồ sơ trong danh sách đen
-              <Link to={'/employer/manage-back-list-cv'} />
-            </MenuItem>
-            <MenuItem>
-              Hồ sơ đã xóa
-              <Link to={'/employer/manage-deleted-cv'} />
-            </MenuItem>
-          </SubMenu>
-        </Menu> */}
-        <Menu iconShape='circle'>
           <MenuItem icon={<ShopFilled />}>
             Mua dịch vụ
             <Link to={'/employer/services'} />
           </MenuItem>
-        </Menu>
+        </Menu> */}
         <Menu iconShape='circle'>
           <MenuItem icon={<ShoppingFilled />}>
             Dịch vụ của tôi

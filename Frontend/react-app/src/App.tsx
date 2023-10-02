@@ -38,6 +38,7 @@ import MyJobs from './features/JobSeeker/pages/SettingsPage/components/Content/M
 import ChatPage from './features/ChatPage'
 import CandidateDetailPage from './features/Employer/pages/Dashboard/pages/CandidateDetailPage'
 import ServicesPage from './features/Employer/pages/ServicesPage'
+import NotFoundPage from './components/NotFound'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -122,6 +123,7 @@ function App() {
           <Route path='test' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
         </Route>
         <Route path='/admin-login' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </>
   )

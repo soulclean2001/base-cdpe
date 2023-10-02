@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux'
 import { logout } from '~/features/Auth/authSlice'
 import { BsFillCartFill } from 'react-icons/bs'
 import NotifyDrawer from '~/components/Header/NotifyDrawer/NotifyDrawer'
+import ModalProfile from '~/components/ModalProfile'
 
 const dataNotify = [
   { id: '1', name: 'Phan Thanh Phong', actionInfo: 'Đã theo dõi bạn' },
@@ -20,7 +21,8 @@ const dataNotify = [
 ]
 const RightMenu = (props: any) => {
   const { isLogin } = props
-
+  const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
+  const [openModalProfile, setOpenModalProfile] = useState(false)
   const navigate = useNavigate()
   const disPatch = useDispatch()
   const handleLogin = () => {
@@ -62,12 +64,13 @@ const RightMenu = (props: any) => {
       // disPatch(logout())
     }
     console.log('handle click', e)
+    if (e.key === 'key_settings_info') setOpenModalProfile(true)
+    console.log('handle click', e)
   }
   const menuProps = {
     items,
     onClick: handleMenuClick
   }
-  const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
 
   const showDrawer = () => {
     setOpenNotifyDrawer(true)
@@ -76,11 +79,13 @@ const RightMenu = (props: any) => {
   const onCloseDrawer = () => {
     setOpenNotifyDrawer(false)
   }
+
   return (
     <div className='right_menu_container'>
       <div className='right_menu_container_pc'>
         {isLogin ? (
           <>
+            <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
             <Button
               icon={<IoMdNotifications />}
               className=' btn-notification'

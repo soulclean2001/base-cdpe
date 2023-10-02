@@ -1,4 +1,4 @@
-.service-item-container {
+.service-item-containerr {
   width: 100%;
   // border: 1px solid #dee2e6 !important;
   cursor: pointer;
@@ -12,6 +12,10 @@
     .name {
       font-size: 12px;
       font-weight: 600;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   .active {

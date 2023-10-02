@@ -49,6 +49,31 @@
         height: 100%;
         flex: 1;
         border: none;
+        .ant-menu-item:hover {
+          /* Màu nền khi hover */
+          color: rgb(255, 125, 85);
+        }
+        .ant-menu-overflow-item:hover {
+          border-bottom-color: rgb(255, 125, 85);
+        }
+        .ant-menu-item-only-child:hover {
+          border-bottom-color: rgb(255, 125, 85);
+        }
+
+        /* Áp dụng CSS cho mục menu khi active (được chọn) */
+        .ant-menu-item-active {
+          /* Màu nền khi active */
+          color: rgb(255, 125, 85); /* Màu chữ khi active */
+          border-bottom-color: rgb(255, 125, 85);
+          &:hover {
+            color: rgb(255, 125, 85);
+            border-bottom-color: rgb(255, 125, 85);
+          }
+          &::after {
+            color: rgb(255, 125, 85);
+            border-bottom-color: rgb(255, 125, 85);
+          }
+        }
         .ant-menu-submenu-horizontal {
           height: 100%;
           display: flex;

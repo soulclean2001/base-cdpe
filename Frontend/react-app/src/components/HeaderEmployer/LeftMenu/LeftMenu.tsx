@@ -55,23 +55,12 @@ const LeftMenu = (props: any) => {
   useEffect(() => {
     setCurrent('none')
   }, [clearActiveMenu])
-  // const handleClickMenu: MenuProps['onClick'] = (e) => {
-  //   if (e.key === 'dashboard') navigate('/employer/dashboard')
-  //   if (e.key === 'services') navigate('/employer/services')
-  //   if (e.key === 'about') navigate('/employer/about')
-  //   if (e.key === 'contact') navigate('/employer/contact')
-  //   console.log('click ', e)
-  //   setCurrent(e.key)
-  //   //
-  // }
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e)
+    setCurrent(e.key)
+  }
   return (
-    <Menu
-      className='left_menu_container'
-      // onClick={handleClickMenu}
-      selectedKeys={[current]}
-      mode='horizontal'
-      items={items}
-    />
+    <Menu className='left_menu_container' onClick={onClick} selectedKeys={[current]} mode='horizontal' items={items} />
   )
 }
 

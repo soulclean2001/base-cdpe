@@ -172,7 +172,7 @@ const SideBar = () => {
               ),
               label: 'Việc Làm Của Tôi',
               style: { display: 'flex', alignItems: 'center' }
-            },
+            }
             // {
             //   key: '6',
             //   icon: (
@@ -183,16 +183,16 @@ const SideBar = () => {
             //   label: 'Thông Báo Việc Làm',
             //   style: { display: 'flex', alignItems: 'center' }
             // },
-            {
-              key: '7',
-              icon: (
-                <span style={{ fontSize: '22px', color: 'gray' }}>
-                  <AiFillSetting />
-                </span>
-              ),
-              label: 'Quản Lý Tài Khoản',
-              style: { display: 'flex', alignItems: 'center' }
-            }
+            // {
+            //   key: '7',
+            //   icon: (
+            //     <span style={{ fontSize: '22px', color: 'gray' }}>
+            //       <AiFillSetting />
+            //     </span>
+            //   ),
+            //   label: 'Quản Lý Tài Khoản',
+            //   style: { display: 'flex', alignItems: 'center' }
+            // }
           ]}
         />
       </Sider>

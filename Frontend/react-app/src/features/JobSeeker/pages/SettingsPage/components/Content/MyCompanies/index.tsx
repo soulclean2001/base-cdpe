@@ -7,14 +7,14 @@ const onChangeTab = (key: string) => {
   console.log(key)
 }
 const items: TabsProps['items'] = [
-  {
-    key: '1',
-    label: 'Nhà tuyển dụng xem hồ sơ',
-    children: <ItemCompany />
-  },
+  // {
+  //   key: '1',
+  //   label: 'Nhà tuyển dụng xem hồ sơ',
+  //   children: <ItemCompany />
+  // },
   {
     key: '2',
-    label: 'Theo dõi công ty',
+    label: 'Đang theo dõi',
     children: <ItemCompany />
   }
 ]

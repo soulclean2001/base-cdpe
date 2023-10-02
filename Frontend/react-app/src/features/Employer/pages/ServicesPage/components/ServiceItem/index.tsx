@@ -17,7 +17,7 @@ const ServiceItem = (props: PropsType) => {
 
   if (!data) return <></>
   return (
-    <div className='service-item-container'>
+    <div className='service-item-containerr'>
       <div
         className={idActive === data.id ? 'item-wapper active' : 'item-wapper'}
         style={{

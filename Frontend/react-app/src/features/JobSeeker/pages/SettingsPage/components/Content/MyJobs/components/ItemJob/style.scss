@@ -60,60 +60,44 @@
     //   }
     // }
   }
-  @media (max-width: 576px) {
+  @media (max-width: 768px) {
     .left-container {
       align-items: start;
     }
   }
   .right-container {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 5px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    // gap: 5px;
 
-    .btn-follow {
-      border: none;
+    .btn-wapper {
       display: flex;
-      justify-content: center;
-      text-align: center;
-      font-size: 22px;
+      justify-content: space-between;
+      gap: 10px;
+      .btn-follow {
+        border: none;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        font-size: 22px;
+      }
+      .btn-show-detail {
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        font-weight: 500;
+        color: rgb(255, 255, 255) !important;
+        background-color: rgb(255, 125, 85) !important;
+        border: 2px solid rgb(255, 125, 85) !important;
+        width: 100%;
+        min-width: 70px;
+      }
     }
-    .btn-show-detail {
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      font-weight: 500;
-      color: rgb(255, 255, 255) !important;
-      background-color: rgb(255, 125, 85) !important;
-      border: 2px solid rgb(255, 125, 85) !important;
-      width: 100%;
-      min-width: 70px;
+    .status-apply-job {
+      text-align: end;
     }
-    // .status-apply-job {
-    //   font-weight: 500;
-    //   font-size: 13px;
-    // }
-    // .pending {
-    //   color: rgb(252, 232, 58);
-    // }
-    // .approved {
-    //   color: rgb(86, 240, 0);
-    // }
-    // .rejected {
-    //   color: rgb(255, 56, 56);
-    // }
-    // .potential {
-    //   color: rgb(255, 179, 2);
-    // }
-    // .interview {
-    //   color: rgb(89, 83, 152);
-    // }
-    // .hired {
-    //   color: rgb(45, 204, 255);
-    // }
-    // .not-contactable {
-    //   color: rgb(164, 171, 182);
-    // }
   }
   &:hover {
     border: 1px solid rgb(160, 193, 255);

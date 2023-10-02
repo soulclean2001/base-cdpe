@@ -36,7 +36,7 @@ const ItemJob = (props: any) => {
 
   return (
     <Row className='item-save-ojb-container' justify={'space-between'}>
-      <Col lg={20} md={19} sm={17} xs={24} className='left-container'>
+      <Col lg={19} md={17} sm={17} xs={24} className='left-container'>
         <div className='logo-container'>
           <img src={data.logo ? data.logo : ''} alt='' />
         </div>
@@ -47,18 +47,21 @@ const ItemJob = (props: any) => {
           <div className='salary'>{data.salary ? data.salary : 'Thương lượng'}</div>
         </div>
       </Col>
-      <Col lg={3} md={4} sm={6} xs={24} className='right-container'>
-        {type === 'ITEM_SAVE_JOB' && (
-          <>
-            <Button className='btn-follow' icon={<AiOutlineHeart />} />
-            <Button className='btn-show-detail'>Chi tiết</Button>
-          </>
-        )}
+      <Col
+        lg={4}
+        md={6}
+        sm={6}
+        xs={24}
+        className='right-container'
+        style={{ justifyContent: type === 'ITEM_SAVE_JOB' ? 'center' : 'space-between' }}
+      >
         {type === 'ITEM_APPLIED_JOB' && (
-          <>
-            <span className={`status-apply-job ${statusCSS}`}>{data.status ? data.status : 'status'}</span>
-          </>
+          <span className={`status-apply-job ${statusCSS}`}>{data.status ? data.status : 'status'}</span>
         )}
+        <div className='btn-wapper'>
+          <Button className='btn-follow' icon={<AiOutlineHeart />} />
+          <Button className='btn-show-detail'>Chi tiết</Button>
+        </div>
       </Col>
     </Row>
   )

@@ -1,9 +1,12 @@
 import { useEffect } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination as SwiperPage, Mousewheel } from 'swiper/modules'
 import { Button, Col, Pagination, Row, Select } from 'antd'
 import { useState } from 'react'
 import JobItem from '../../Components/JobItem/JobItem'
 import { getDataPage } from '~/api/fake.api'
 import './style.scss'
+import CompanyRightItem from './components/CompanyRightItem'
 const listCareer = [
   {
     value: 'An toàn lao động'
@@ -86,6 +89,19 @@ const dataJob = [
     timePost: 'Hôm nay'
   }
 ]
+const dataTopCompany = [
+  { id: '1', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 1' },
+  { id: '2', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 2' },
+  {
+    id: '3',
+    img: 'https://anhdepfree.com/wp-content/uploads/2022/11/anh-nen-co-chu-cute_60900974387-607x1080.jpg',
+    name: 'KIMBERLY-CLARK 3'
+  },
+  { id: '4', img: 'https://images.vietnamworks.com/logo/pvcom_vip_124084.png', name: 'KIMBERLY-CLARK 4' },
+  { id: '5', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' },
+  { id: '6', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' },
+  { id: '7', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' }
+]
 const ListJob = () => {
   const [activeSort, setActiveSort] = useState('defaul-sort')
   const handleActiveSort = (event: any) => {
@@ -93,7 +109,7 @@ const ListJob = () => {
   }
   //fake pagination
   const [pageClick, setPageClick] = useState(1)
-  const [limitOnPage, setLimitOnPage] = useState(5)
+  const [limitOnPage, setLimitOnPage] = useState(10)
   //call fake api
   const initDataFake = [{ id: '', title: '', price: 0 }]
   const [dataFake, setDataFake] = useState(initDataFake)
@@ -256,7 +272,29 @@ const ListJob = () => {
             </div>
           </Col>
           <Col lg={7} md={0} sm={0} xs={0} className='right-job-content'>
-            quảng cáo
+            <div className='list-top-company'>
+              <div className='title'>Các Công Ty Hàng Đầu</div>
+
+              <Swiper
+                style={{ width: '100%', height: '100%', maxHeight: '190vh' }}
+                slidesPerView={5}
+                direction={'vertical'}
+                // spaceBetween={'180px'}
+                pagination={{
+                  clickable: true
+                }}
+                mousewheel={true}
+                modules={[SwiperPage, Mousewheel]}
+                className='mySwiper'
+              >
+                {dataTopCompany &&
+                  dataTopCompany.map((item) => (
+                    <SwiperSlide key={item.id} style={{ height: '100%', width: '100%' }}>
+                      <CompanyRightItem />
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+            </div>
           </Col>
         </Row>
       </div>
