@@ -44,7 +44,7 @@ const DashboarEmployer = () => {
   return (
     <div className='employer-dashboard-container'>
       {/* <div style={{ width: '25%' }}> */}
-      <SideBarEmployer />
+      <SideBarEmployer roleType={'EMPLOYER_ROLE'} />
       {/* </div> */}
 
       <div className='employer-dashboard-content' style={{ width: widthContent }}>

@@ -5,7 +5,8 @@ import LeftContent from './components/LeftContent'
 import CenterContent from './components/CenterContent'
 import RightContent from './components/RightContent'
 
-const ChatPage = () => {
+const ChatPage = (props: any) => {
+  const { roleType } = props
   const [idRoomChat, setIdRoomChat] = useState()
   const handleSetIdChatRoom = (idActive: any) => {
     setIdRoomChat(idActive)
@@ -16,7 +17,7 @@ const ChatPage = () => {
 
       <CenterContent idRoomChatActive={idRoomChat} />
 
-      <RightContent />
+      <RightContent roleType={roleType} />
     </div>
   )
 }

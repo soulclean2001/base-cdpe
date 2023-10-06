@@ -1,6 +1,7 @@
 .employer-sidebar-container {
-  height: 100vh;
-  max-height: 100vh;
+  min-height: 100vh;
+  // max-height: 100vh;
+  height: auto;
   overflow: auto;
   ::-webkit-scrollbar {
     border-radius: 25px;

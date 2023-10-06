@@ -40,6 +40,9 @@ const RightMenu = (props: any) => {
   const handleTabPageCart = () => {
     navigate('/employer/cart')
   }
+  const handleTabPageChat = () => {
+    navigate('/employer/chat')
+  }
   const items: MenuProps['items'] = [
     {
       label: 'Cài đặt thông tin cá nhân',
@@ -98,7 +101,7 @@ const RightMenu = (props: any) => {
             <Button
               icon={<AiFillMessage />}
               className='btn-message'
-              onClick={handleTabDashboar}
+              onClick={handleTabPageChat}
               shape='circle'
               size='large'
             />

@@ -2,6 +2,8 @@ import { Outlet } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer/Footer'
 import HeaderEmployer from './components/HeaderEmployer'
+import AdminSideBar from './features/Admin/components/AdminSideBar'
+import AdminPage from './features/Admin'
 
 const Layout = (props: any) => {
   const { forRole } = props
@@ -16,16 +18,16 @@ const Layout = (props: any) => {
       )}
       {forRole && forRole === 'EMPLOYER_ROLE' && (
         <>
-          <HeaderEmployer />
+          <HeaderEmployer roleType={'EMPLOYER_ROLE'} />
           <Outlet />
           <Footer />
         </>
       )}
       {forRole && forRole === 'ADMIN_ROLE' && (
         <>
-          {/* <HeaderEmployer /> */}
-          {/* <SideBarAdmin /> */}
-          <Outlet />
+          {/* <AdminSideBar />
+          <Outlet /> */}
+          <AdminPage />
         </>
       )}
     </div>

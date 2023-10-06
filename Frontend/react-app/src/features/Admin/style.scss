@@ -1,0 +1,7 @@
+.admin-page-container {
+  display: flex;
+  justify-content: space-between;
+  .admin-content-wapper {
+    min-height: 100vh;
+  }
+}

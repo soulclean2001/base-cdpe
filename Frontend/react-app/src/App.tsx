@@ -39,6 +39,9 @@ import ChatPage from './features/ChatPage'
 import CandidateDetailPage from './features/Employer/pages/Dashboard/pages/CandidateDetailPage'
 import ServicesPage from './features/Employer/pages/ServicesPage'
 import NotFoundPage from './components/NotFound'
+import AdminDashBoard from './features/Admin/contents/Dashboard'
+import UsersManage from './features/Admin/contents/UsersManage'
+import PostReviewManage from './features/Admin/contents/PostReviewManage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -72,7 +75,7 @@ function App() {
             <Route path='my-companies' element={<MyCompanies />} />
             <Route path='my-jobs' element={<MyJobs />} />
           </Route>
-          <Route path='chat' element={<ChatPage />} />
+          <Route path='chat' element={<ChatPage roleType={'CANDIDATE_TYPE'} />} />
         </Route>
         <Route path='/candidate-login' element={<Login />} />
         <Route path='/candidate-sign-up' element={<SignUp />} />
@@ -83,7 +86,7 @@ function App() {
         <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
           <Route index element={<HomePage />} />
           <Route path='services' element={<ServicesPage />} />
-
+          <Route path='chat' element={<ChatPage roleType={'EMPLOYER_TYPE'} />} />
           <Route
             path='cart'
             element={
@@ -115,12 +118,15 @@ function App() {
         <Route
           path='/admin'
           element={
-            <Auth role={UserRole.Administrators}>
-              <Layout forRole='ADMIN_ROLE' />{' '}
-            </Auth>
+            // <Auth role={UserRole.Administrators}>
+            <Layout forRole='ADMIN_ROLE' />
+            // </Auth>
           }
         >
           <Route path='test' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
+          <Route index element={<AdminDashBoard />} />
+          <Route path='users-manage' element={<UsersManage />} />
+          <Route path='post-review-manage' element={<PostReviewManage />} />
         </Route>
         <Route path='/admin-login' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
         <Route path='*' element={<NotFoundPage />} />

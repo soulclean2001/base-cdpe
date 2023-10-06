@@ -14,6 +14,7 @@ import { logout } from '~/features/Auth/authSlice'
 import { useState } from 'react'
 import NotifyDrawer from '../NotifyDrawer/NotifyDrawer'
 import ModalProfile from '~/components/ModalProfile'
+import ModalChangePassword from '~/components/ModalChangePassword'
 
 const dataNotify = [
   { id: '1', name: 'VINFAT', actionInfo: 'Đã theo dõi CV của bạn' },
@@ -37,6 +38,7 @@ const RightMenu = (props: any) => {
   const navigate = useNavigate()
   const [openModalProfile, setOpenModalProfile] = useState(false)
   const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
+  const [openModalChangePassword, setOpenModalChangePassword] = useState(false)
   const handleLogin = () => {
     navigate('/candidate-login')
   }
@@ -79,6 +81,7 @@ const RightMenu = (props: any) => {
       window.location.reload()
     }
     if (e.key === 'key_settings_info') setOpenModalProfile(true)
+    if (e.key === 'key_changePassword') setOpenModalChangePassword(true)
     console.log('handle click', e)
   }
   const menuProps = {
@@ -98,6 +101,7 @@ const RightMenu = (props: any) => {
       <div className='right_menu_container_pc'>
         {me && me.id ? (
           <>
+            <ModalChangePassword open={openModalChangePassword} handleClose={() => setOpenModalChangePassword(false)} />
             <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
             <Button
               icon={<IoMdNotifications />}
