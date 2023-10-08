@@ -18,7 +18,7 @@ interface PropsType {
 }
 const NotifyDrawer = (props: any) => {
   const { open, onClose, roleType, dataNotify }: PropsType = props
-
+  console.log('drwa', roleType)
   return (
     <Drawer
       // closable={false}
@@ -37,16 +37,22 @@ const NotifyDrawer = (props: any) => {
     >
       <div className='content-wapper'>
         <div className='top-content'>
-          {roleType === 'CANDIDATE' && (
+          {roleType === 'CANDIDATE_ROLE' && (
             <>
               <span>Cập nhật hồ sơ để tìm thấy công việc phù hợp.</span>
               <NavLink to={'/CV'}>Cập nhật</NavLink>
             </>
           )}
-          {roleType === 'EMPLOYER' && (
+          {roleType === 'EMPLOYER_ROLE' && (
             <>
               <span>Tạo bài đăng để tìm những ứng viên phù hợp.</span>
               <NavLink to={'/employer/dashboard/post-manage'}>Quản lý bài đăng</NavLink>
+            </>
+          )}
+          {roleType === 'ADMIN_ROLE' && (
+            <>
+              <span>Xin chào Quản trị viên.</span>
+              {/* <NavLink to={'/employer/dashboard/post-manage'}>Quản lý bài đăng</NavLink> */}
             </>
           )}
         </div>

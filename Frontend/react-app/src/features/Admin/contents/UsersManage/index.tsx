@@ -1,13 +1,15 @@
-import { Col, Input, Row, Select, Space, Table, Tabs, Tag } from 'antd'
+import { Col, Input, Row, Select, Space, Table, Tabs, Tag, Tooltip } from 'antd'
 import './style.scss'
 import { TabsProps } from 'antd/lib'
 import { ColumnsType } from 'antd/es/table'
-import { MdDelete } from 'react-icons/md'
 import { BiBlock } from 'react-icons/bi'
 import { BsFillEyeFill } from 'react-icons/bs'
 import { CgUnblock } from 'react-icons/cg'
 
 import { FiSearch } from 'react-icons/fi'
+import { FaHistory } from 'react-icons/fa'
+import ModalBlockAccount from './components/ModalBlockAccount'
+import { useState } from 'react'
 interface DataType {
   key: string
   name: string
@@ -17,8 +19,15 @@ interface DataType {
   status: string | number
 }
 const UsersManage = () => {
+  const [openModalBlockAccount, setOpenModalBlockAccount] = useState(false)
+  const [selectedAccountId, setSelectedAccountId] = useState('')
   const onChangeTab = (key: string) => {
     console.log(key)
+  }
+
+  const handleOpenModalBlockAccount = (id: string) => {
+    setSelectedAccountId(id)
+    setOpenModalBlockAccount(true)
   }
   const items: TabsProps['items'] = [
     {
@@ -83,25 +92,33 @@ const UsersManage = () => {
       title: 'Xử lý',
       key: 'action',
       fixed: 'right',
-      align: 'center',
+      align: 'left',
       render: (_, record) => (
         <Space size='middle'>
-          <a>
-            <BsFillEyeFill />
-          </a>
-          {record.status !== 'Đã khóa' ? (
+          {/* <Tooltip title='Chi tiết'>
             <a>
-              <BiBlock />
+              <BsFillEyeFill />
             </a>
-          ) : (
-            <a>
-              <CgUnblock />
-            </a>
-          )}
+          </Tooltip> */}
 
-          <a>
-            <MdDelete />
-          </a>
+          {record.status !== 'Đã khóa' ? (
+            <Tooltip title='Khóa tài khoản'>
+              <a onClick={() => handleOpenModalBlockAccount(record.key)}>
+                <BiBlock />
+              </a>
+            </Tooltip>
+          ) : (
+            <Tooltip title='Bỏ khóa tài khoản'>
+              <a>
+                <CgUnblock />
+              </a>
+            </Tooltip>
+          )}
+          <Tooltip title='Lịch sử hoạt động'>
+            <a>
+              <FaHistory />
+            </a>
+          </Tooltip>
         </Space>
       )
     }
@@ -133,25 +150,33 @@ const UsersManage = () => {
       status: 'Offline'
     }
   ]
+
   return (
     <div className='admin-users-manage-container'>
-      <div className='title'>Tài khoản người dùng</div>
+      <div className='title'>Quản lý tài khoản</div>
       <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='1' items={items} />
-      <Row style={{ gap: '10px', marginBottom: '15px' }}>
-        <Col md={8} sm={16} xs={24}>
-          <Input className='input-search-user' size='large' placeholder='Email, id' prefix={<FiSearch />} />
-        </Col>
-        <Col md={4} sm={7} xs={24}>
-          <Select
-            size='large'
-            style={{ width: '100%' }}
-            defaultValue='Tất cả'
-            options={[{ value: 'Tất cả' }, { value: 'Đã khóa' }, { value: 'Online' }, { value: 'Offline' }]}
-          />
-        </Col>
-      </Row>
+      <div className='content-wapper'>
+        <Row style={{ gap: '10px', marginBottom: '15px' }}>
+          <Col md={8} sm={16} xs={24}>
+            <Input className='input-search-user' size='large' placeholder='Email, id' prefix={<FiSearch />} />
+          </Col>
+          <Col md={4} sm={7} xs={24}>
+            <Select
+              size='large'
+              style={{ width: '100%' }}
+              defaultValue='Tất cả'
+              options={[{ value: 'Tất cả' }, { value: 'Đã khóa' }, { value: 'Online' }, { value: 'Offline' }]}
+            />
+          </Col>
+        </Row>
 
-      <Table className='table-custom users-table' scroll={{ x: true }} columns={columns} dataSource={data} />
+        <Table className='table-custom users-table' scroll={{ x: true }} columns={columns} dataSource={data} />
+        <ModalBlockAccount
+          selectedAccountId={selectedAccountId}
+          open={openModalBlockAccount}
+          handleCancel={() => setOpenModalBlockAccount(false)}
+        />
+      </div>
     </div>
   )
 }

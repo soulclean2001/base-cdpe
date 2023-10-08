@@ -14,6 +14,10 @@
     .logo {
       font-size: 24px;
       font-weight: 700;
+      cursor: pointer;
+      &:hover {
+        color: rgb(255, 125, 85);
+      }
     }
     .btn-setting {
       display: flex;

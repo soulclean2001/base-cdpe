@@ -143,25 +143,25 @@ const SideBarEmployer = (props: any) => {
           <Menu iconShape='circle'>
             <MenuItem icon={<FileSearchOutlined />}>
               Quản lý tài khoản
-              <Link to={'/admin/users-manage'} />
+              <Link to={'/admin/dashboard/users-manage'} />
             </MenuItem>
           </Menu>
           <Menu iconShape='circle'>
             <MenuItem icon={<BookFilled />}>
               Kiểm duyệt bài đăng
-              <Link to={'/admin/post-review-manage'} />
+              <Link to={'/admin/dashboard/post-review-manage'} />
             </MenuItem>
           </Menu>
           <Menu iconShape='circle'>
             <MenuItem icon={<FileSearchOutlined />}>
               Quản lý gói dịch vụ
-              <Link to={'/admin/services-manage'} />
+              <Link to={'/admin/dashboard/services-manage'} />
             </MenuItem>
           </Menu>
           <Menu iconShape='circle'>
             <MenuItem icon={<FundFilled />}>
               Quản lý đơn hàng
-              <Link to={'/admin/orders-manage'} />
+              <Link to={'/admin/dashboard/orders-manage'} />
             </MenuItem>
           </Menu>
         </SidebarContent>

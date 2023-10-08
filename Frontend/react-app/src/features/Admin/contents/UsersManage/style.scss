@@ -28,15 +28,10 @@
       }
     }
   }
-  .input-search-user {
-    // margin-bottom: 15px;
+  .content-wapper {
+    padding: 0 15px;
+    .users-table {
+      max-width: 100%;
+    }
   }
-  .users-table {
-    max-width: 100%;
-  }
-  // @media (max-width: 768px) {
-  //   .input-search-user {
-  //     width: 100%;
-  //   }
-  // }
 }

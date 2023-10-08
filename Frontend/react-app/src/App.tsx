@@ -39,9 +39,15 @@ import ChatPage from './features/ChatPage'
 import CandidateDetailPage from './features/Employer/pages/Dashboard/pages/CandidateDetailPage'
 import ServicesPage from './features/Employer/pages/ServicesPage'
 import NotFoundPage from './components/NotFound'
-import AdminDashBoard from './features/Admin/contents/Dashboard'
+import AdminOverview from './features/Admin/contents/Overview'
 import UsersManage from './features/Admin/contents/UsersManage'
 import PostReviewManage from './features/Admin/contents/PostReviewManage'
+import ServicesManage from './features/Admin/contents/ServicesManage'
+import OrdersManage from './features/Admin/contents/OrdersManage'
+import AdminPage from './features/Admin'
+import OverviewEmployer from './features/Employer/pages/Dashboard/pages/OverviewPage'
+import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
+import PostDetail from './features/Admin/contents/PostReviewManage/pages/PostDetail'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -104,6 +110,7 @@ function App() {
               // </Auth>
             }
           >
+            <Route index element={<OverviewEmployer />} />
             <Route path='cv-manage' element={<ManageCV />} />
             <Route path='post-manage' element={<PostManagePage />} />
             <Route path='my-account-info' element={<MyAccountManagePage />} />
@@ -120,14 +127,26 @@ function App() {
           element={
             // <Auth role={UserRole.Administrators}>
             <Layout forRole='ADMIN_ROLE' />
+
             // </Auth>
           }
         >
           <Route path='test' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
-          <Route index element={<AdminDashBoard />} />
-          <Route path='users-manage' element={<UsersManage />} />
-          <Route path='post-review-manage' element={<PostReviewManage />} />
+          <Route index element={<AdminPage />} />
+          <Route path='dashboard' element={<AdminPage />}>
+            <Route index element={<AdminOverview />} />
+            <Route path='users-manage' element={<UsersManage />} />
+            <Route path='post-review-manage' element={<PostReviewManage />}>
+              <Route index element={<ListPostReview />} />
+              <Route path='post-detail' element={<PostDetail />} />
+            </Route>
+
+            <Route path='services-manage' element={<ServicesManage />} />
+            <Route path='orders-manage' element={<OrdersManage />} />
+          </Route>
+          <Route path='chat' element={<ChatPage roleType={'ADMIN_TYPE'} />} />
         </Route>
+
         <Route path='/admin-login' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>

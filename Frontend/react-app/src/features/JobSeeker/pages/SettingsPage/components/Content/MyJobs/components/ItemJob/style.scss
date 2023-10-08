@@ -104,27 +104,38 @@
   }
 }
 .status-apply-job {
-  font-weight: 500;
+  min-width: 80px;
+  font-weight: 400;
   font-size: 13px;
+  padding: 0 7px 4px 7px;
+  border-radius: 4px;
 }
 .pending {
-  color: rgb(252, 232, 58);
+  border: 1px solid rgb(252, 232, 58);
+  // background-color: rgb(248, 238, 150);
+  color: rgb(240, 196, 21);
 }
 .approved {
+  border: 1px solid rgb(86, 240, 0);
   color: rgb(86, 240, 0);
 }
 .rejected {
   color: rgb(255, 56, 56);
+  border: 1px solid rgb(255, 56, 56);
 }
 .potential {
   color: rgb(255, 179, 2);
+  border: 1px solid rgb(255, 179, 2);
 }
 .interview {
   color: rgb(89, 83, 152);
+  border: 1px solid rgb(89, 83, 152);
 }
 .hired {
   color: rgb(45, 204, 255);
+  border: 1px solid rgb(45, 204, 255);
 }
 .not-contactable {
   color: rgb(164, 171, 182);
+  border: 1px solid rgb(164, 171, 182);
 }

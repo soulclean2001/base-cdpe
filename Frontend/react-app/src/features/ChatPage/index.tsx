@@ -13,7 +13,7 @@ const ChatPage = (props: any) => {
   }
   return (
     <div className='chat-page-container'>
-      <LeftContent handleSetIdChatRoom={handleSetIdChatRoom} />
+      <LeftContent roleType={roleType} handleSetIdChatRoom={handleSetIdChatRoom} />
 
       <CenterContent idRoomChatActive={idRoomChat} />
 

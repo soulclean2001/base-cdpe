@@ -4,15 +4,21 @@ import { AiFillSetting } from 'react-icons/ai'
 import { FiSearch } from 'react-icons/fi'
 import LeftItem from '../LeftItem'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 const dataItemChat = [
   { id: '1', logo: '', name: 'AA', latestChat: 'abc', latestTime: '9 phút' },
   { id: '2', logo: '', name: 'BB', latestChat: 'XZB', latestTime: '10 phút' }
 ]
 const LeftContent = (props: any) => {
-  const { handleSetIdChatRoom } = props
-
+  const { handleSetIdChatRoom, roleType } = props
+  const navigate = useNavigate()
   const [idActive, setIdActive] = useState('')
-
+  const handleBackHome = () => {
+    console.log('roleType', roleType)
+    if (roleType === 'ADMIN_TYPE') navigate('/admin')
+    if (roleType === 'CANDIDATE_TYPE') navigate('/')
+    if (roleType === 'EMPLOYER_TYPE') navigate('/employer')
+  }
   useEffect(() => {
     if (idActive) handleSetIdChatRoom(idActive)
   }, [idActive])
@@ -23,7 +29,9 @@ const LeftContent = (props: any) => {
   return (
     <div className='left-content-page-chat-container'>
       <div className='header-container'>
-        <div className='logo'>Tin nhắn</div>
+        <div className='logo' onClick={handleBackHome}>
+          HFWorks
+        </div>
         <Button shape='circle' className='btn-setting' icon={<AiFillSetting />} />
       </div>
       <div className='search-container'>

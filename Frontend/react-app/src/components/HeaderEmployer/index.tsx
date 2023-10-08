@@ -14,6 +14,7 @@ import { MenuUnfoldOutlined } from '@ant-design/icons'
 // import '../Header/header.scss'
 const HeaderEmployer = (props: any) => {
   const { roleType, hiddenButtonCollapsed } = props
+  console.log(roleType)
   const [isLogin, setIsLogin] = useState(true)
   const [clearActiveMenu, setClearActiveMenu] = useState(false)
   const dispatch = useDispatch()
@@ -67,7 +68,7 @@ const HeaderEmployer = (props: any) => {
         </div>
         <div className='menu_rigth'>
           <div className='menu_rigth_container'>
-            <RightMenu isLogin={isLogin} />
+            <RightMenu isLogin={isLogin} roleType={roleType} />
           </div>
         </div>
       </div>

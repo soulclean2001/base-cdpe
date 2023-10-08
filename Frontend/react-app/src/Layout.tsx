@@ -25,9 +25,7 @@ const Layout = (props: any) => {
       )}
       {forRole && forRole === 'ADMIN_ROLE' && (
         <>
-          {/* <AdminSideBar />
-          <Outlet /> */}
-          <AdminPage />
+          <Outlet />
         </>
       )}
     </div>

@@ -1,11 +1,13 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useOutlet } from 'react-router-dom'
 import AdminSideBar from './components/AdminSideBar'
 import './style.scss'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { RootState } from '~/app/store'
 import HeaderEmployer from '~/components/HeaderEmployer'
+import AdminOverview from './contents/Overview'
 const AdminPage = () => {
+  const outlet = useOutlet()
   const [hiddenButtonCollapsed, setHiddenButtonCollapsed] = useState(false)
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   console.log('colap', collap)
@@ -42,7 +44,7 @@ const AdminPage = () => {
       <AdminSideBar />
       <div className='admin-content-wapper' style={{ width: widthContent }}>
         <HeaderEmployer roleType={'ADMIN_ROLE'} hiddenButtonCollapsed={hiddenButtonCollapsed} />
-        <Outlet />
+        {outlet ? <Outlet /> : <AdminOverview />}
       </div>
     </div>
   )

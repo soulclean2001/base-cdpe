@@ -112,7 +112,7 @@ const RightMenu = (props: any) => {
             />
             <NotifyDrawer
               dataNotify={dataNotify}
-              roleType='CANDIDATE'
+              roleType='CANDIDATE_ROLE'
               open={openNotifyDrawer}
               onClose={onCloseDrawer}
             />

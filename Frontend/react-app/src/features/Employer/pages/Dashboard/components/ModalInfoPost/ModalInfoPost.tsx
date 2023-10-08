@@ -534,6 +534,7 @@ const ModalInfoPost = (props: any) => {
               // onOk={() => console.log('xxxx')}
               onCancel={handleCloseModalLocation}
               width={'50%'}
+              footer=''
             >
               <Form
                 name='form-branch-location-job'

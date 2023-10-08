@@ -20,7 +20,7 @@ const dataNotify = [
   { id: '2', name: 'Phan Thanh Phong', actionInfo: 'Đã cập nhật CV của anh ấy' }
 ]
 const RightMenu = (props: any) => {
-  const { isLogin } = props
+  const { isLogin, roleType } = props
   const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
   const [openModalProfile, setOpenModalProfile] = useState(false)
   const navigate = useNavigate()
@@ -41,7 +41,8 @@ const RightMenu = (props: any) => {
     navigate('/employer/cart')
   }
   const handleTabPageChat = () => {
-    navigate('/employer/chat')
+    if (roleType === 'EMPLOYER_ROLE') navigate('/employer/chat')
+    else navigate('/admin/chat')
   }
   const items: MenuProps['items'] = [
     {
@@ -96,7 +97,7 @@ const RightMenu = (props: any) => {
               shape='circle'
               size='large'
             />
-            <NotifyDrawer dataNotify={dataNotify} roleType='EMPLOYER' open={openNotifyDrawer} onClose={onCloseDrawer} />
+            <NotifyDrawer dataNotify={dataNotify} roleType={roleType} open={openNotifyDrawer} onClose={onCloseDrawer} />
 
             <Button
               icon={<AiFillMessage />}
@@ -105,13 +106,16 @@ const RightMenu = (props: any) => {
               shape='circle'
               size='large'
             />
-            <Button
-              icon={<BsFillCartFill />}
-              className='btn-cart'
-              onClick={handleTabPageCart}
-              shape='circle'
-              size='large'
-            />
+            {roleType === 'EMPLOYER_ROLE' && (
+              <Button
+                icon={<BsFillCartFill />}
+                className='btn-cart'
+                onClick={handleTabPageCart}
+                shape='circle'
+                size='large'
+              />
+            )}
+
             <Dropdown menu={menuProps}>
               <Button size='large' style={{ display: 'flex', alignItems: 'center', padding: 0, border: 'none' }}>
                 <Space>
