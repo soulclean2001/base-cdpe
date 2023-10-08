@@ -1,14 +1,20 @@
 import express from 'express'
 import jobControllers from '~/controllers/job.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
-import { createJobValidator, publishJobValidator, updateJobValidator } from '~/middlewares/job.middlewares'
+import {
+  createJobValidator,
+  jobQueryMiddleware,
+  publishJobValidator,
+  updateJobValidator
+} from '~/middlewares/job.middlewares'
 import { accessTokenValidator, isAdmin } from '~/middlewares/users.middlewares'
 import { UpdateJobReqBody } from '~/models/requests/Job.request'
 import wrapAsync from '~/utils/handlers'
 
 const jobRouter = express.Router()
 
-jobRouter.get('/company', accessTokenValidator, wrapAsync(jobControllers.getAllJobByCompany))
+jobRouter.get('/company', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getAllJobByCompany))
+jobRouter.get('/company/filter', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getJobByCompany))
 jobRouter.get('/:job_id', wrapAsync(jobControllers.getJob))
 jobRouter.get('/', wrapAsync(jobControllers.getAllJob))
 jobRouter.post('/', accessTokenValidator, createJobValidator, wrapAsync(jobControllers.createJob))

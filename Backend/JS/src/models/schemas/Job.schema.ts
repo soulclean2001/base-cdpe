@@ -30,8 +30,8 @@ export interface JobType {
   expired_date?: Date
   user_id: ObjectId
   working_locations: WorkingLocation[]
-  industries: [string] // linh vuc cong ty
-  skills: [string] // ky nang
+  industries: string[] // linh vuc cong ty
+  skills: string[] // ky nang
   job_level: string // cap bac
   posted_date?: Date // ngay dang
   salary_range: SalararyRange
@@ -57,8 +57,8 @@ export default class Job {
   expired_date: Date
   user_id: ObjectId
   working_locations: WorkingLocation[]
-  industries: [string] // linh vuc cong ty
-  skills: [string] // ky nang
+  industries: string[] // linh vuc cong ty
+  skills: string[] // ky nang
   job_level: string // cap bac
   posted_date: Date // ngay dang
   salary_range: SalararyRange

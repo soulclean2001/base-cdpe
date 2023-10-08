@@ -117,8 +117,7 @@ class UsersService {
       await databaseServices.company.insertOne(
         new Company({
           company_name: payload.company_name as string,
-          district: payload.district as string,
-          province: payload.province as string,
+          working_locations: [],
           users: [
             {
               user_id,

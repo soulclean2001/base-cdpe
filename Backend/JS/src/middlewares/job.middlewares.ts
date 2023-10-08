@@ -370,3 +370,19 @@ export const updateJobValidator = validate(
     ['body']
   )
 )
+
+export const jobQueryMiddleware = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: true,
+        optional: true
+      },
+      page: {
+        isNumeric: true,
+        optional: true
+      }
+    },
+    ['query']
+  )
+)

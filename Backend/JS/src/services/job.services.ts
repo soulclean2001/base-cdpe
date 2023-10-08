@@ -3,7 +3,39 @@ import databaseServices from './database.services'
 import Job, { JobType } from '~/models/schemas/Job.schema'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
+import { isNumber } from 'lodash'
+
+export interface JobSearchOptions {
+  visibility?: boolean
+  status?: JobStatus
+  expired_before_nday?: number
+}
+
 export default class JobService {
+  static convertOptions(options: JobSearchOptions) {
+    const opts: { [key: string]: any } = {}
+
+    if (options.expired_before_nday && isNumber(options.expired_before_nday)) {
+      const nday = options.expired_before_nday
+      const now = new Date()
+      const afterNDays = new Date(now.getTime() + nday * 24 * 60 * 60 * 1000)
+      opts['expired_date'] = {
+        $gte: now,
+        $lte: afterNDays
+      }
+    }
+
+    if (options.status) {
+      opts['status'] = options.status
+    }
+
+    if (options.visibility) {
+      opts['visibility'] = options.visibility
+    }
+
+    return opts
+  }
+
   static async createJob({ userId, payload }: { userId: string; payload: CreateJobBody }) {
     const company = await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
@@ -123,7 +155,116 @@ export default class JobService {
     return result
   }
 
-  static async getAllJobByCompany(userId: string) {
+  static async getAllJobByCompany(userId: string, limit: number = 2, page: number = 1) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company) {
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+    }
+    const sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000 // 7 ngày trong mili giây
+    const currentDateTime = new Date()
+    const [listJob, total] = await Promise.all([
+      databaseServices.job
+        .aggregate([
+          {
+            $match: {
+              company_id: new ObjectId('65167bf5e569685ca8a7f3ba')
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user_post'
+            }
+          },
+          {
+            $lookup: {
+              from: 'job_applications',
+              localField: '_id',
+              foreignField: 'post_id',
+              as: 'job_applications'
+            }
+          },
+          {
+            $unwind: {
+              path: '$user_post'
+            }
+          },
+          {
+            $addFields: {
+              id: '$_id',
+              'user.name': '$user_post.name',
+              'user.email': '$user_post.email',
+              total_applied: {
+                $size: '$job_applications'
+              },
+              salary: {
+                $concat: [
+                  {
+                    $toString: '$salary_range.min'
+                  },
+                  ' - ',
+                  {
+                    $toString: '$salary_range.max'
+                  }
+                ]
+              }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              company_id: 0,
+              user_post: 0
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+
+      databaseServices.job
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user_post'
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      data: listJob,
+      total: total[0]?.total || 0,
+      limit,
+      page: page
+    }
+  }
+
+  static async getJobByCompany(userId: string, limit: number = 2, page: number = 1, options?: JobSearchOptions) {
     const company = await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
     })
@@ -135,13 +276,104 @@ export default class JobService {
       })
     }
 
-    const listJob = await databaseServices.job
-      .find({
-        company_id: company._id
-      })
-      .toArray()
+    const opts = options ? JobService.convertOptions(options) : {}
 
-    return listJob
+    const [listJob, total] = await Promise.all([
+      databaseServices.job
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id,
+              ...opts
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user_post'
+            }
+          },
+          {
+            $lookup: {
+              from: 'job_applications',
+              localField: '_id',
+              foreignField: 'post_id',
+              as: 'job_applications'
+            }
+          },
+          {
+            $unwind: {
+              path: '$user_post'
+            }
+          },
+          {
+            $addFields: {
+              id: '$_id',
+              'user.name': '$user_post.name',
+              'user.email': '$user_post.email',
+              total_applied: {
+                $size: '$job_applications'
+              },
+              salary: {
+                $concat: [
+                  {
+                    $toString: '$salary_range.min'
+                  },
+                  ' - ',
+                  {
+                    $toString: '$salary_range.max'
+                  }
+                ]
+              }
+            }
+          },
+          {
+            $project: {
+              _id: 0,
+              company_id: 0,
+              user_post: 0
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+
+      databaseServices.job
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id,
+              ...opts
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'user_id',
+              foreignField: '_id',
+              as: 'user_post'
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      data: listJob,
+      total: total[0]?.total || 0,
+      limit,
+      page: page
+    }
   }
 
   static async approveJob(jobId: string) {

@@ -41,7 +41,7 @@ const limiter = rateLimit({
   legacyHeaders: false // Disable the `X-RateLimit-*` headers
   // store: ... , // Use an external store for more precise rate limiting
 })
-app.use(limiter)
+// app.use(limiter)
 
 // const httpServer = createServer(app)
 app.use(helmet())
