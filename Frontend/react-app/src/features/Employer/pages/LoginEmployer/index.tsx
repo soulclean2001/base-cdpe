@@ -1,13 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 
 import { Button, Col, Form, Input, Row } from 'antd'
 import './loginEmployer.scss'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { UserRole } from '~/types'
+import Auth from '~/api/auth.api'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { AuthLogin, AuthState, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
+import { decodeToken } from '~/utils/jwt'
+import { ToastContainer, toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 
 const LoginEmployer = (props: any) => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+
+  const navigate = useNavigate()
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+
   const { hiddenTabSignUp, titleForm } = props
   const [form] = Form.useForm()
 
@@ -16,18 +28,51 @@ const LoginEmployer = (props: any) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmitLogin = () => {
+  const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.role && dataDecode.role === 1) {
+        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(setToken(token))
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin(action))
+      } else {
+        toast.error('Tài khoản không tồn tại')
+        // setLoading(false)
+      }
+    }
+  }
+
+  const handleSubmitLogin = async () => {
     const data = {
-      email,
+      username: email,
       password,
       role: UserRole.Candidate
     }
-    console.log('form data login', data)
+    await Auth.loginApi(data)
+      .then(async (response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+
+        console.log(response)
+      })
+      .catch((error) => {
+        console.log('error', error)
+        toast.error('Tài khoản hoặc mật khẩu không đúng')
+        // setLoading(false)
+      })
   }
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed login:', errorInfo)
   }
+
+  useEffect(() => {
+    if (auth.isLogin) {
+      navigate('/employer')
+    }
+  }, [auth])
 
   return (
     <Row className='page-login-employer-container'>
@@ -75,7 +120,7 @@ const LoginEmployer = (props: any) => {
                 rules={[
                   { required: true, message: 'Vui lòng nhập mật khẩu' },
                   {
-                    pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
+                    pattern: new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z0-9\W]{7,}$/),
                     message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
                   }
                 ]}

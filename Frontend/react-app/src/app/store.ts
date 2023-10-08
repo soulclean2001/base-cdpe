@@ -1,15 +1,27 @@
 import { combineReducers, configureStore, EnhancedStore } from '@reduxjs/toolkit'
-import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  PersistConfig
+} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import counterReducer from '../features/counter/counterSlice'
 import userReducer from '../features/User/userSlice'
 import authReducer from '../features/Auth/authSlice'
 import employerReducer from '../features/Employer/employerSlice'
 import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
-const persistConfig = {
+
+const persistConfig: PersistConfig<any> = {
   key: 'root',
   version: 1,
-  storage
+  storage,
+  whitelist: ['auth']
 }
 
 const rootReducer = combineReducers({

@@ -9,126 +9,131 @@ import ModalInfoPost from '../../../../components/ModalInfoPost/ModalInfoPost'
 import { DatePicker } from 'antd'
 import { BiWorld } from 'react-icons/bi'
 import { AiFillLock } from 'react-icons/ai'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
+import apiClient from '~/api/client'
+import { setPosts } from '~/features/Employer/employerSlice'
 // import viVN from 'antd/es/locale/vi_VN'
 
 const { RangePicker } = DatePicker
-interface DataType {
-  id: string
-  key: string
-  nameJob: string
-  level: string
-  typeJob: string
-  career: string
-  salary: string
-  province: string
-  createdTime: string
-  lastedTimeApply: string
-  acceptedStatus: string
-  publicStatus: string
-  quantityCVApply: number
+
+export interface WorkingLocation {
+  lat: number
+  lon: number
+  branch_name: string
+  address: string
+  district: string
+  city_name: string
 }
 
-const data: DataType[] = [
-  {
-    id: 'id1',
-    key: '1',
-    nameJob: 'UX UI Designer',
-    level: 'intern lỏ',
-    typeJob: 'Toàn thời gian',
-    career: 'Thiết kế website',
-    salary: '100$-500$',
-    province: 'TP. Hồ Chí Minh',
-    createdTime: '27/08/2023 20:51:23',
-    lastedTimeApply: '30/08/2023 20:51:23',
-    acceptedStatus: 'approved',
-    publicStatus: 'publish',
-    quantityCVApply: 90
-  },
-  {
-    id: 'id2',
-    key: '2',
-    nameJob: 'Fresher Java Backend',
-    level: 'Thử việc',
-    typeJob: 'Toàn thời gian',
-    career: 'Lập trình website',
-    salary: '300$-700$',
-    province: 'TP. Hồ Chí Minh',
-    createdTime: '27/08/2023 20:51:23',
-    lastedTimeApply: '29/08/2023 20:51:23',
-    acceptedStatus: 'pending',
-    publicStatus: 'publish',
-    quantityCVApply: 44
-  },
-  {
-    id: 'id3',
-    key: '3',
-    nameJob: 'Senior FE',
-    level: 'Nhân viên',
-    typeJob: 'Toàn thời gian',
-    career: 'Lập trình website',
-    salary: '1000$-3000$',
-    province: 'Hà Nội',
-    createdTime: '27/08/2023 20:51:23',
-    lastedTimeApply: '31/08/2023 20:51:23',
-    acceptedStatus: 'rejected',
-    publicStatus: 'hidden',
-    quantityCVApply: 90
-  },
-  {
-    id: 'id4',
-    key: '4',
-    nameJob: 'Phục vụ quán cafe',
-    level: 'nhân viên',
-    typeJob: 'Toàn thời gian / Bán thời gian',
-    career: 'Dịch vụ ăn uống',
-    salary: '20k/1h',
-    province: 'TP. Đà Nẵng',
-    createdTime: '27/08/2023 20:51:23',
-    lastedTimeApply: '1/09/2023 20:51:23',
-    acceptedStatus: 'unApproved',
-    publicStatus: 'hidden',
-    quantityCVApply: 120
+export interface SalararyRange {
+  min: number
+  max: number
+}
+
+export interface Benefit {
+  type: string
+  value: string
+}
+
+export interface JobType {
+  id?: string
+  job_title: string
+  company_id: string
+  alias: string //link tren url
+  is_salary_visible: boolean // hiện mức lương
+  pretty_salary: string
+  expired_date?: Date
+  user_id: string
+  working_locations: WorkingLocation[]
+  industries: string[] // linh vuc cong ty
+  skills: string[] // ky nang
+  job_level: string // cap bac
+  posted_date?: Date // ngay dang
+  salary_range: SalararyRange
+  job_description: string
+  job_requirement: string
+  job_type: string
+  salary: string
+  status: string
+  visibility: boolean // hiển thị
+  benefits: Benefit[] // phúc lợi
+  number_of_employees_needed: number
+  application_email: string
+  created_at?: Date
+  updated_at?: Date
+  user: {
+    name: string
+    email: string
   }
-]
+  total_applied: number
+}
 
 const TableCustom = (props: any) => {
   const { tabKey } = props
-  const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({})
-
-  const handleChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter) => {
-    console.log('log data', pagination, filters, sorter)
-    setSortedInfo(sorter as SorterResult<DataType>)
+  const [sortedInfo, setSortedInfo] = useState<SorterResult<JobType>>({})
+  const dispatch = useDispatch()
+  const employer = useSelector((state: RootState) => state.employer)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [data, setData] = useState<JobType[]>([])
+  const [openModalInfo, setOpenModalInfo] = useState(false)
+  const [dataRowSelected, setDataRowSelected] = useState<JobType>()
+  const [idPost, setIdPost] = useState<string>()
+  const limit = 3
+  const total = employer.posts.total
+  const handleChange: TableProps<JobType>['onChange'] = async (pagination, filters, sorter) => {
+    // console.log('log data', pagination, filters, sorter)
+    await fetchData(pagination.pageSize, pagination.current)
+    setCurrentPage(pagination.current as number)
+    setSortedInfo(sorter as SorterResult<JobType>)
   }
 
-  // const clearAll = () => {
-  //   setSortedInfo({})
-  // }
+  // get data
+  useEffect(() => {
+    fetchData(limit)
+  }, [])
 
-  const columns: ColumnsType<DataType> = [
+  const fetchData = async (limit: number = 2, page: number = 1) => {
+    const post = (await apiClient.get(`/jobs/company?limit=${limit}&page=${page}`)) as {
+      message: string
+      result: {
+        data: any[]
+        total: number
+      }
+    }
+    console.log('Data', post)
+    dispatch(setPosts(post.result))
+  }
+  // kiểm tra data thay đổi
+  useEffect(() => {
+    setData(employer.posts.data)
+  }, [employer])
+
+  const columns: ColumnsType<JobType> = [
     {
       title: 'Chức danh',
-      dataIndex: 'nameJob',
-      key: 'nameJob',
-      sorter: (a, b) => a.nameJob.localeCompare(b.nameJob),
-      sortOrder: sortedInfo.columnKey === 'nameJob' ? sortedInfo.order : null,
+      dataIndex: 'job_title',
+      key: 'job_title',
+      sorter: (a, b) => a.job_title.localeCompare(b.job_title),
+      sortOrder: sortedInfo.columnKey === 'job_title' ? sortedInfo.order : null,
       ellipsis: true,
       showSorterTooltip: false
     },
     {
       title: 'Cấp bậc',
-      dataIndex: 'level',
-      key: 'level',
-      sorter: (a, b) => a.level.localeCompare(b.level),
-      sortOrder: sortedInfo.columnKey === 'level' ? sortedInfo.order : null,
+      dataIndex: 'job_level',
+      key: 'job_level',
+      sorter: (a, b) => a.job_level.localeCompare(b.job_level),
+      sortOrder: sortedInfo.columnKey === 'job_level' ? sortedInfo.order : null,
       ellipsis: true,
       showSorterTooltip: false
     },
     {
       title: 'Loại việc làm',
-      dataIndex: 'typeJob',
-      key: 'typeJob',
-      sorter: (a, b) => a.typeJob.localeCompare(b.typeJob),
-      sortOrder: sortedInfo.columnKey === 'typeJob' ? sortedInfo.order : null,
+      dataIndex: 'job_type',
+      key: 'job_type',
+      sorter: (a, b) => a.job_type.localeCompare(b.job_type),
+      sortOrder: sortedInfo.columnKey === 'job_type' ? sortedInfo.order : null,
       ellipsis: true,
       showSorterTooltip: false
     },
@@ -141,43 +146,50 @@ const TableCustom = (props: any) => {
       ellipsis: true,
       showSorterTooltip: false
     },
-    {
-      title: 'Khu vực',
-      dataIndex: 'province',
-      key: 'province',
-      sorter: (a, b) => a.province.localeCompare(b.province),
-      sortOrder: sortedInfo.columnKey === 'province' ? sortedInfo.order : null,
-      ellipsis: true,
-      showSorterTooltip: false
-    },
+    // {
+    //   title: 'Khu vực',
+    //   dataIndex: 'province',
+    //   key: 'province',
+    //   sorter: (a, b) => a.province.localeCompare(b.province),
+    //   sortOrder: sortedInfo.columnKey === 'province' ? sortedInfo.order : null,
+    //   ellipsis: true,
+    //   showSorterTooltip: false
+    // },
     {
       title: 'Thời gian tạo',
-      dataIndex: 'createdTime',
-      key: 'createdTime',
-      sorter: (a, b) => a.createdTime.localeCompare(b.createdTime),
-      sortOrder: sortedInfo.columnKey === 'createdTime' ? sortedInfo.order : null,
+      dataIndex: 'created_at',
+      key: 'created_at',
+      sorter: (a, b) => {
+        return a.created_at && b.created_at && a.created_at > b.created_at ? -1 : 1
+      },
+      sortOrder: sortedInfo.columnKey === 'created_at' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (date: Date) => (date ? date.toString().slice(0, 10) : '')
     },
 
     {
       title: 'Hạn nộp CV',
-      dataIndex: 'lastedTimeApply',
-      key: 'lastedTimeApply',
-      sorter: (a, b) => a.lastedTimeApply.localeCompare(b.lastedTimeApply),
-      sortOrder: sortedInfo.columnKey === 'lastedTimeApply' ? sortedInfo.order : null,
+      dataIndex: 'expired_date',
+      key: 'expired_date',
+      sorter: (a, b) => {
+        return a.expired_date && b.expired_date && a.expired_date > b.expired_date ? -1 : 1
+      },
+      sortOrder: sortedInfo.columnKey === 'expired_date' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (date: Date) => (date ? date.toString().slice(0, 10) : '')
     },
-    // {
-    //   title: 'Hồ sơ ứng tuyển',
-    //   dataIndex: 'quantityCVApply',
-    //   key: 'quantityCVApply',
-    //   sorter: (a, b) => a.quantityCVApply - b.quantityCVApply,
-    //   sortOrder: sortedInfo.columnKey === 'quantityCVApply' ? sortedInfo.order : null,
-    //   ellipsis: true,
-    //   showSorterTooltip: false
-    // },
+    {
+      title: 'Hồ sơ ứng tuyển',
+      dataIndex: 'total_applied ',
+      key: 'total_applied ',
+      sorter: (a, b) => a.total_applied - b.total_applied,
+      sortOrder: sortedInfo.columnKey === 'total_applied ' ? sortedInfo.order : null,
+      ellipsis: true,
+      showSorterTooltip: false,
+      render: (value, _) => <span>{value ? value : 0}</span>
+    },
     {
       title: 'Xử lý',
       dataIndex: 'action',
@@ -188,29 +200,17 @@ const TableCustom = (props: any) => {
           <a onClick={() => setOpenModalInfo(true)}>
             <BsFillEyeFill />
           </a>
-          {/* <a>
-            <BsPencilSquare />
-          </a> */}
+
           <a>
             <MdDelete />
           </a>
-          {/* {tabKey === 'tab-publish' && (
-            <a>
-              <AiFillLock />
-            </a>
-          )}
-          {tabKey === 'tab-hide' && (
-            <a>
-              <BiWorld />
-            </a>
-          )} */}
 
-          {item.publicStatus === 'publish' && (
+          {item.visibility && (
             <a>
               <AiFillLock />
             </a>
           )}
-          {item.publicStatus === 'hidden' && (
+          {!item.visibility && (
             <a>
               <BiWorld />
             </a>
@@ -220,44 +220,50 @@ const TableCustom = (props: any) => {
       showSorterTooltip: false
     }
   ]
-  const hiddenColumn: ColumnsType<DataType> = [
+  const hiddenColumn: ColumnsType<JobType> = [
     {
       title: 'Kiểm duyệt',
-      dataIndex: 'acceptedStatus',
-      key: 'acceptedStatus',
-      sorter: (a, b) => a.acceptedStatus.localeCompare(b.acceptedStatus),
-      sortOrder: sortedInfo.columnKey === 'acceptedStatus' ? sortedInfo.order : null,
+      dataIndex: 'status',
+      key: 'status',
+      sorter: (a, b) => a.status.localeCompare(b.status),
+      sortOrder: sortedInfo.columnKey === 'status' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (value, _) => (
+        <>
+          {console.log('value', typeof value)}
+          {value === 1 && <span>Chờ duyệt</span>} {value === 0 && <span>Chấp nhận</span>}
+          {value === 2 && <span>Từ chối</span>}
+          {value === 3 && <span>Chưa kiểm duyệt</span>}
+        </>
+      )
     }
   ]
-  const anotherColumns: ColumnsType<DataType> = [
+  const anotherColumns: ColumnsType<JobType> = [
     {
       title: 'Hiển thị',
-      dataIndex: 'publicStatus',
-      key: 'publicStatus',
-      sorter: (a, b) => a.publicStatus.localeCompare(b.publicStatus),
-      sortOrder: sortedInfo.columnKey === 'publicStatus' ? sortedInfo.order : null,
+      dataIndex: 'visibility',
+      key: 'visibility',
+      sorter: (a, b) => {
+        return a.visibility && b.visibility && a.visibility > b.visibility ? -1 : 1
+      },
+      sortOrder: sortedInfo.columnKey === 'visibility' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (value, _) => <span>{value ? 'Công khai' : 'Riêng tư'}</span>
     }
   ]
-  // const [columnsState, setColumnState] = useState<ColumnsType<DataType>>(columns)
-  const [openModalInfo, setOpenModalInfo] = useState(false)
-  const [dataRowSelected, setDataRowSelected] = useState<DataType>()
-  const [idPost, setIdPost] = useState<string>()
+
   useEffect(() => {
     console.log('data row selected', dataRowSelected)
   }, [dataRowSelected])
-  // useEffect(() => {
-  //   handleSetColumnTable()
-  // }, [tabKey])
+
   const handleSetColumnTable = () => {
     if (tabKey === 'tab-publish') {
       return columns
     }
     if (tabKey === 'tab-hide') {
-      const hideTemp: ColumnsType<DataType> = [
+      const hideTemp: ColumnsType<JobType> = [
         ...columns.slice(0, columns.length - 1),
         hiddenColumn[0],
         ...columns.slice(columns.length - 1, columns.length)
@@ -267,7 +273,7 @@ const TableCustom = (props: any) => {
       return hideTemp
     }
     if (tabKey === 'tab-over-time-7-day' || tabKey === 'tab-over-time') {
-      const anotherTemp: ColumnsType<DataType> = [
+      const anotherTemp: ColumnsType<JobType> = [
         ...columns.slice(0, columns.length - 1),
         hiddenColumn[0],
         anotherColumns[0],
@@ -329,6 +335,7 @@ const TableCustom = (props: any) => {
       </Row>
 
       <Table
+        rowKey='id'
         className='table-custom'
         scroll={{ x: true }}
         onRow={(record) => ({
@@ -340,7 +347,11 @@ const TableCustom = (props: any) => {
         columns={handleSetColumnTable()}
         dataSource={data}
         onChange={handleChange}
-        pagination={{ pageSize: 2 }}
+        pagination={{
+          current: currentPage,
+          pageSize: limit,
+          total: total
+        }}
       />
     </>
   )

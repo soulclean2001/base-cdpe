@@ -11,11 +11,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { handleChangeSideBar } from '~/features/Employer/employerSlice'
 import { Button } from 'antd'
 import { MenuUnfoldOutlined } from '@ant-design/icons'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
 // import '../Header/header.scss'
 const HeaderEmployer = (props: any) => {
   const { roleType, hiddenButtonCollapsed } = props
-  console.log(roleType)
-  const [isLogin, setIsLogin] = useState(true)
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [clearActiveMenu, setClearActiveMenu] = useState(false)
   const dispatch = useDispatch()
   const handleClickLogo = () => {
@@ -63,12 +64,16 @@ const HeaderEmployer = (props: any) => {
       <div className='menu__container'>
         <div className='menu_left'>
           <div className='left_menu_container'>
-            {roleType === 'EMPLOYER_ROLE' ? <LeftMenu clearActiveMenu={clearActiveMenu} isLogin={isLogin} /> : <></>}
+            {roleType === 'EMPLOYER_ROLE' ? (
+              <LeftMenu clearActiveMenu={clearActiveMenu} isLogin={auth.isLogin} />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <div className='menu_rigth'>
           <div className='menu_rigth_container'>
-            <RightMenu isLogin={isLogin} roleType={roleType} />
+            <RightMenu isLogin={auth.isLogin} roleType={roleType} />
           </div>
         </div>
       </div>

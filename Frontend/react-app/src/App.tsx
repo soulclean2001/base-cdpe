@@ -1,5 +1,5 @@
 import Layout from './Layout'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 
 import 'antd/dist/reset.css'
 
@@ -48,11 +48,32 @@ import AdminPage from './features/Admin'
 import OverviewEmployer from './features/Employer/pages/Dashboard/pages/OverviewPage'
 import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
 import PostDetail from './features/Admin/contents/PostReviewManage/pages/PostDetail'
+import { AppThunkDispatch, useAppDispatch } from './app/hook'
+import { AuthState } from './features/Auth/authSlice'
+import { RootState } from './app/store'
+import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { isExpired } from './utils/jwt'
+import { getMe } from './features/JobSeeker/jobSeekerSlice'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
 }
 function App() {
+  const navigate = useNavigate()
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+
+  useEffect(() => {
+    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
+      getProfile()
+      navigate('/')
+    }
+  }, [auth])
+  const getProfile = async () => {
+    await dispatchAsync(getMe())
+  }
   return (
     <>
       <Routes>

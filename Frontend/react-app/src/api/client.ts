@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import axios, { AxiosInstance, AxiosResponse, AxiosError, AxiosRequestConfig } from 'axios'
+import axios, { AxiosInstance } from 'axios'
 import { EnhancedStore } from '@reduxjs/toolkit'
 import Auth from './auth.api'
 import { logout, setToken } from '~/features/Auth/authSlice'
@@ -15,6 +15,7 @@ interface AuthResponse {
 }
 
 const instance: AxiosInstance = axios.create({
+  // baseURL: import.meta.env.VITE_SERVER_URL + '/api/v1' || 'http://localhost:4000/api/v1',
   baseURL: 'http://localhost:4000/api/v1',
   timeout: 1000,
   headers: {
@@ -44,6 +45,10 @@ const responseInterceptorId = instance.interceptors.response.use(
   },
   async (error) => {
     const refreshToken = store.getState().auth.refreshToken
+    if (!refreshToken) {
+      return
+    }
+
     if (error.response.status !== 401) {
       return Promise.reject(error)
     }
@@ -60,15 +65,13 @@ const responseInterceptorId = instance.interceptors.response.use(
         return instance(error.response.config)
       })
       .catch((error) => {
-        store.dispatch(logout())
-
         if (error.response && error.response.data && error.response.data.message) {
           const data = error.response.data
           console.log(data)
-
+          store.dispatch(logout())
           return Promise.reject(data) // Thông điệp lỗi từ server (dưới dạng JSON)
         }
-
+        store.dispatch(logout())
         return Promise.reject(error)
       })
       .finally()

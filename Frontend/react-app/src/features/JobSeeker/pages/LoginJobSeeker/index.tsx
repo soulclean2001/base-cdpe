@@ -19,8 +19,9 @@ import { NavLink } from 'react-router-dom'
 import { decodeToken, isExpired } from '~/utils/jwt'
 import Auth from '~/api/auth.api'
 // import { getMe } from '~/api/users.api'
-import { getMe } from '../../jobSeekerSlice'
+// import { getMe } from '../../jobSeekerSlice'
 import { ToastContainer, toast } from 'react-toastify'
+
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
   const url = `https://accounts.google.com/o/oauth2/v2/auth`
@@ -89,15 +90,15 @@ const Login: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
-      getProfile()
-      handleBackHome()
-    }
-  }, [auth])
-  const getProfile = async () => {
-    await dispatchAsync(getMe())
-  }
+  // useEffect(() => {
+  //   if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
+  //     getProfile()
+  //     handleBackHome()
+  //   }
+  // }, [auth])
+  // const getProfile = async () => {
+  //   await dispatchAsync(getMe())
+  // }
   const onFinish = async (values: LoginData) => {
     delete values.remember
     setLoading(true)

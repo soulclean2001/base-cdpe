@@ -10,6 +10,10 @@ import { AiTwotoneEdit } from 'react-icons/ai'
 import { toast } from 'react-toastify'
 import { BsFillAirplaneFill, BsTrashFill } from 'react-icons/bs'
 import { FaMoneyBillWave } from 'react-icons/fa'
+import { useDispatch } from 'react-redux'
+import { addPost } from '~/features/Employer/employerSlice'
+import apiClient from '~/api/client'
+
 //data lo
 const listLevel = [
   { value: 'Thực tập sinh' },
@@ -107,13 +111,55 @@ interface LocationType {
   selected: string
 }
 
+interface WorkingLocation {
+  lat: number
+  lon: number
+  branch_name: string
+  address: string
+  district: string
+  city_name: string
+}
+
+interface SalararyRange {
+  min: number
+  max: number
+}
+
+interface Benefit {
+  type: string
+  value: string
+}
+
+interface JobType {
+  job_title: string
+  alias?: string
+  is_salary_visible: boolean
+  pretty_salary?: string
+  working_locations: WorkingLocation[]
+  industries: string[]
+  skills: string[]
+  expired_date?: string
+  job_level: string
+  salary_range: SalararyRange
+  job_description: string
+  job_requirement: string
+  visibility: boolean
+  benefits: Benefit[]
+  job_type: string
+  number_of_employees_needed: number
+  application_email: string
+  created_at?: Date
+}
+
 const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
 
 const ModalInfoPost = (props: any) => {
+  const dispatch = useDispatch()
+
   const { idPost, open, handleClose, title } = props
   const [form] = Form.useForm()
   //state data form modal
-  const [nameJob, setNameJob] = useState('')
+  const [jobTitle, setJobTitle] = useState('')
   const [level, setLevel] = useState('')
   const [typeJob, setTypeJob] = useState('')
   const [industries, setIndustries] = useState([])
@@ -126,44 +172,7 @@ const ModalInfoPost = (props: any) => {
   const [quantityAccept, setQuantityAccept] = useState(1)
   const [emailAcceptCV, setEmailAcceptCV] = useState('')
   // const [locations, setLocations] = useState<Array<LocationData>>([])
-  const handleSubmitForm = () => {
-    const locations = listLocation
-      .map((location) => {
-        if (location.disabled) {
-          return typeof location.value !== undefined ? location.value : ''
-        }
-      })
-      .filter((location) => !!location)
-    const skills = arrSkills
-      .map((skill) => {
-        if (skill.value !== '') return skill.value
-      })
-      .filter((skill) => !!skill)
-    const benefits = arrBenefits
-      .map((benefit) => {
-        if (benefit.data.value !== '' && benefit.data.type !== '') return benefit.data
-      })
-      .filter((benefit) => !!benefit)
-    const data = {
-      nameJob,
-      level,
-      typeJob,
-      industries,
-      field,
-      locations,
-      jobDescription,
-      jobRequirement,
-      skills,
-      salaryRange,
-      showSalaryRange,
-      benefits,
-      quantityAccept,
-      emailAcceptCV
-    }
 
-    console.log('form data post', data)
-    handleClose()
-  }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
@@ -336,6 +345,83 @@ const ModalInfoPost = (props: any) => {
       setHiddenDeleteBenefit(true)
     }
   }, [arrBenefits])
+
+  const handleSubmitForm = async () => {
+    const locations = listLocation
+      .map((location) => {
+        if (location.disabled) {
+          return typeof location.value !== undefined ? location.value : ''
+        }
+      })
+      .filter((location) => !!location)
+    const skills = arrSkills
+      .map((skill) => {
+        if (skill.value !== '') return skill.value
+      })
+      .filter((skill) => !!skill)
+    const benefits = arrBenefits
+      .map((benefit) => {
+        if (benefit.data.value !== '' && benefit.data.type !== '') return benefit.data
+      })
+      .filter((benefit) => !!benefit)
+    const data = {
+      jobTitle,
+      level,
+      typeJob,
+      industries,
+      field,
+      locations,
+      jobDescription,
+      jobRequirement,
+      skills,
+      salaryRange,
+      showSalaryRange,
+      benefits,
+      quantityAccept,
+      emailAcceptCV
+    }
+
+    const job: JobType = {
+      job_title: jobTitle,
+      job_level: level,
+      job_type: typeJob,
+      industries: industries,
+      working_locations: listLocation.map((loc) => ({
+        lat: 0,
+        lon: 0,
+        branch_name: loc.value.branchName,
+        address: loc.value.address,
+        district: loc.value.district,
+        city_name: loc.value.province
+      })),
+      skills: skills as string[],
+      salary_range: {
+        min: !isNaN(Number(salaryRange.min)) ? Number(salaryRange.min) : 0,
+        max: !isNaN(Number(salaryRange.max)) ? Number(salaryRange.max) : 0
+      },
+      job_description: jobDescription,
+      job_requirement: jobRequirement,
+      visibility: false,
+      benefits: benefits as Benefit[],
+      number_of_employees_needed: quantityAccept,
+      application_email: emailAcceptCV,
+      is_salary_visible: showSalaryRange
+    }
+
+    console.log('form data post', job)
+
+    // call api
+    await postData(job)
+  }
+  const postData = async (job: JobType) => {
+    await apiClient.post('/jobs', job).then((response) => {
+      const newJob = { ...job } as JobType & { [key: string]: any }
+      newJob.salary = job.salary_range.min + ' - ' + job.salary_range.max
+      // custome before add to list posts
+      dispatch(addPost(job))
+      handleClose()
+    })
+  }
   //
   return (
     <>
@@ -362,7 +448,7 @@ const ModalInfoPost = (props: any) => {
           >
             <h2>Mô tả công việc</h2>
             <Form.Item
-              name='nameJob'
+              name='jobTitle'
               label={<span style={{ fontWeight: '500' }}>Chức Danh</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
             >
@@ -370,19 +456,19 @@ const ModalInfoPost = (props: any) => {
                 size='large'
                 className='name-job-input'
                 placeholder='Eg. Senior UX Designer'
-                onChange={(e) => setNameJob(e.target.value)}
+                onChange={(e) => setJobTitle(e.target.value)}
               />
             </Form.Item>
             <Row justify={'space-between'}>
               <Col md={11} sm={24} xs={24}>
                 <Form.Item
-                  label={<span style={{ fontWeight: '500' }}>Cấp Bật</span>}
+                  label={<span style={{ fontWeight: '500' }}>Cấp Bậc</span>}
                   name='level'
-                  rules={[{ required: true, message: 'Vui lòng chọn cấp bật' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn cấp bậc' }]}
                 >
                   <Select
                     showSearch
-                    placeholder={'Chọn cấp bật'}
+                    placeholder={'Chọn cấp bậc'}
                     size='large'
                     options={listLevel}
                     onChange={(value) => setLevel(value)}
@@ -534,7 +620,6 @@ const ModalInfoPost = (props: any) => {
               // onOk={() => console.log('xxxx')}
               onCancel={handleCloseModalLocation}
               width={'50%'}
-              footer=''
             >
               <Form
                 name='form-branch-location-job'

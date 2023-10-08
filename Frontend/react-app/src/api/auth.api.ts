@@ -9,7 +9,11 @@ interface AuthResponse {
   }
 }
 export class Auth {
-  public static loginApi = async (data: LoginData): Promise<AuthResponse> => {
+  public static loginApi = async (data: {
+    username: string
+    password: string
+    role: number
+  }): Promise<AuthResponse> => {
     return client.post('/users/login', {
       ...data,
       email: data.username
