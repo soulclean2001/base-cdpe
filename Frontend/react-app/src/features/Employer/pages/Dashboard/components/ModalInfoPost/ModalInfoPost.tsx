@@ -13,7 +13,7 @@ import { FaMoneyBillWave } from 'react-icons/fa'
 import { useDispatch } from 'react-redux'
 import { addPost } from '~/features/Employer/employerSlice'
 import apiClient from '~/api/client'
-
+import apiCompany from '~/api/company.api'
 //data lo
 const listLevel = [
   { value: 'Thực tập sinh' },
@@ -101,7 +101,7 @@ interface LocationData {
   province: string
 }
 interface SelectionLocationData {
-  value: LocationData
+  value: WorkingLocation
   disabled: boolean
 }
 
@@ -178,52 +178,45 @@ const ModalInfoPost = (props: any) => {
   }
   //
 
-  const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([
-    {
-      value: {
-        branchName: 'Trụ sở chính',
-        address: 'FF',
-        district: 'Gò Vấp',
-        province: 'TP. Hồ Chí Minh'
-      },
-      disabled: false
-    }
-  ])
-
+  // const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([
+  //   {
+  //     value: {
+  //       branchName: 'Trụ sở chính',
+  //       address: 'FF',
+  //       district: 'Gò Vấp',
+  //       province: 'TP. Hồ Chí Minh'
+  //     },
+  //     disabled: false
+  //   }
+  // ])
+  const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([])
+  useEffect(() => {
+    getDataWorkLocation()
+  }, [])
+  const getDataWorkLocation = async () => {
+    const dataTemp: SelectionLocationData[] = []
+    const listTemp = await apiCompany.getWorkLocations()
+    listTemp.result.map((workLocation: WorkingLocation) => dataTemp.push({ value: workLocation, disabled: false }))
+    setListLocation(dataTemp)
+  }
+  //
   const [arrLocations, setArrLocations] = useState(initLocation)
 
-  const [dataLocationBranch, setDataLocationBranch] = useState<LocationData>({
-    branchName: '',
+  const [dataLocationBranch, setDataLocationBranch] = useState<WorkingLocation>({
+    lat: 0,
+    lon: 0,
+    branch_name: '',
     address: '',
     district: '',
-    province: ''
+    city_name: ''
   })
   const [hiddenPenEditLocation, setHiddenPenEditLocation] = useState(false)
-
-  //modal location
   const [formLocation] = Form.useForm()
   const [openModalLocation, setOpenModalLocation] = useState(false)
+
   const handleCloseModalLocation = () => {
     setOpenModalLocation(false)
   }
-  //submit modal location
-  const handleSubmitLocationForm = () => {
-    const data = {
-      dataLocationBranch
-    }
-    //check exist location name branch
-    let temp = 0
-    listLocation.forEach((location) => {
-      if (location.value.branchName === data.dataLocationBranch.branchName.toString()) temp++
-    })
-    if (temp > 0) {
-      alert('Đã tồn tại tên trụ sở này')
-      return
-    }
-    setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
-  }
-
-  //
   const handleAddWorkingLocation = () => {
     if (arrLocations.length <= 2) {
       setArrLocations([
@@ -232,17 +225,34 @@ const ModalInfoPost = (props: any) => {
       ])
     }
   }
+  //submit modal location
+  const handleSubmitLocationForm = async () => {
+    const data = {
+      dataLocationBranch
+    }
+    //check exist location name branch
+    let temp = 0
+    listLocation.forEach((location) => {
+      if (location.value.branch_name === data.dataLocationBranch.branch_name.toString()) temp++
+    })
+    if (temp > 0) {
+      alert('Đã tồn tại tên trụ sở này')
+      return
+    }
+    await apiCompany.addWorkLocation(dataLocationBranch)
+    setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
+  }
 
   const handleSelectLocation = (value: any, key: number) => {
     const oldSelectedObj = arrLocations.filter((item) => item.key === key)
     const oldSelected = oldSelectedObj[0].selected
     const changeData = listLocation.map((item: SelectionLocationData) => {
-      if (item.value.branchName === value) {
+      if (item.value.branch_name === value) {
         item.disabled = true
         oldSelectedObj[0].selected = value
       }
 
-      if (item.value.branchName === oldSelected) {
+      if (item.value.branch_name === oldSelected) {
         item.disabled = false
       }
 
@@ -257,7 +267,7 @@ const ModalInfoPost = (props: any) => {
       const oldSelected = oldSelectedObj[0].selected
       if (oldSelected !== '_') {
         const changeData = listLocation.map((item: SelectionLocationData) => {
-          if (item.value.branchName === oldSelected) {
+          if (item.value.branch_name === oldSelected) {
             item.disabled = false
           }
           return item
@@ -347,13 +357,13 @@ const ModalInfoPost = (props: any) => {
   }, [arrBenefits])
 
   const handleSubmitForm = async () => {
-    const locations = listLocation
-      .map((location) => {
-        if (location.disabled) {
-          return typeof location.value !== undefined ? location.value : ''
-        }
-      })
-      .filter((location) => !!location)
+    const locationsFinal: WorkingLocation[] = []
+    listLocation.map((location) => {
+      if (location.disabled && location.value !== undefined) {
+        locationsFinal.push(location.value)
+      }
+    })
+
     const skills = arrSkills
       .map((skill) => {
         if (skill.value !== '') return skill.value
@@ -364,36 +374,37 @@ const ModalInfoPost = (props: any) => {
         if (benefit.data.value !== '' && benefit.data.type !== '') return benefit.data
       })
       .filter((benefit) => !!benefit)
-    const data = {
-      jobTitle,
-      level,
-      typeJob,
-      industries,
-      field,
-      locations,
-      jobDescription,
-      jobRequirement,
-      skills,
-      salaryRange,
-      showSalaryRange,
-      benefits,
-      quantityAccept,
-      emailAcceptCV
-    }
+    // const data = {
+    //   jobTitle,
+    //   level,
+    //   typeJob,
+    //   industries,
+    //   field,
+    //   locations,
+    //   jobDescription,
+    //   jobRequirement,
+    //   skills,
+    //   salaryRange,
+    //   showSalaryRange,
+    //   benefits,
+    //   quantityAccept,
+    //   emailAcceptCV
+    // }
 
     const job: JobType = {
       job_title: jobTitle,
       job_level: level,
       job_type: typeJob,
       industries: industries,
-      working_locations: listLocation.map((loc) => ({
-        lat: 0,
-        lon: 0,
-        branch_name: loc.value.branchName,
-        address: loc.value.address,
-        district: loc.value.district,
-        city_name: loc.value.province
-      })),
+      // working_locations: listLocation.map((loc) => ({
+      //   lat: 0,
+      //   lon: 0,
+      //   branch_name: loc.value.branch_name,
+      //   address: loc.value.address,
+      //   district: loc.value.district,
+      //   city_name: loc.value.branch_name
+      // })),
+      working_locations: locationsFinal,
       skills: skills as string[],
       salary_range: {
         min: !isNaN(Number(salaryRange.min)) ? Number(salaryRange.min) : 0,
@@ -427,7 +438,7 @@ const ModalInfoPost = (props: any) => {
     <>
       <Modal
         className='modal-container'
-        title={<h1>{idPost ? `THÔNG TIN BÀI ĐĂNG ${idPost}` : title}</h1>}
+        title={<h2>{idPost ? `THÔNG TIN BÀI ĐĂNG ${idPost}` : title}</h2>}
         centered
         open={open}
         onOk={handleClose}
@@ -580,13 +591,13 @@ const ModalInfoPost = (props: any) => {
                           label: (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                               <ImLocation />
-                              {location.value.branchName}
+                              {location.value.branch_name}
                               <div hidden={hiddenPenEditLocation}>
                                 <AiTwotoneEdit />
                               </div>
                             </div>
                           ),
-                          value: location.value.branchName,
+                          value: location.value.branch_name,
                           disabled: location.disabled
                         }))}
                       />
@@ -611,7 +622,6 @@ const ModalInfoPost = (props: any) => {
                 </Row>
               )
             })}
-
             <Modal
               className='modal-create-location'
               title={<h1>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h1>}
@@ -639,7 +649,7 @@ const ModalInfoPost = (props: any) => {
                     size='large'
                     placeholder='Trụ sở chính'
                     onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, branchName: e.target.value })
+                      setDataLocationBranch({ ...dataLocationBranch, branch_name: e.target.value })
                     }}
                   />
                 </Form.Item>
@@ -652,7 +662,7 @@ const ModalInfoPost = (props: any) => {
                     size='large'
                     placeholder='TP. Hồ Chí Minh'
                     onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, province: e.target.value })
+                      setDataLocationBranch({ ...dataLocationBranch, city_name: e.target.value })
                     }}
                   />
                 </Form.Item>

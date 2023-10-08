@@ -1,0 +1,29 @@
+.work-location-page-container {
+  padding: 20px;
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    padding: 15px;
+    // box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    color: #333333;
+  }
+  .btn-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    a {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 5px;
+      color: #005aff;
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+}
