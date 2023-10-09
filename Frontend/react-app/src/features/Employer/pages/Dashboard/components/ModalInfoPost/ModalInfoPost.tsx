@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux'
 import { addPost } from '~/features/Employer/employerSlice'
 import apiClient from '~/api/client'
 import apiCompany from '~/api/company.api'
+import apiPost from '~/api/post.api'
 //data lo
 const listLevel = [
   { value: 'Thực tập sinh' },
@@ -94,12 +95,12 @@ export const IconLabelSalary = (props: any) => {
   }
 }
 
-interface LocationData {
-  branchName: string
-  address: string
-  district: string
-  province: string
-}
+// interface LocationData {
+//   branchName: string
+//   address: string
+//   district: string
+//   province: string
+// }
 interface SelectionLocationData {
   value: WorkingLocation
   disabled: boolean
@@ -162,16 +163,14 @@ const ModalInfoPost = (props: any) => {
   const [jobTitle, setJobTitle] = useState('')
   const [level, setLevel] = useState('')
   const [typeJob, setTypeJob] = useState('')
-  const [industries, setIndustries] = useState([])
-  const [field, setField] = useState('')
+  const [industries, setIndustries] = useState<Array<string>>([])
+
   const [jobDescription, setJobDescription] = useState('')
   const [jobRequirement, setJobRequirement] = useState('')
-  const [salaryRange, setSalaryRange] = useState({ min: '', max: '' })
+  const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 })
   const [showSalaryRange, setShowSalaryRange] = useState(true)
-  // const [benefits, setBenefits] = useState([{ type: '', value: '' }])
   const [quantityAccept, setQuantityAccept] = useState(1)
   const [emailAcceptCV, setEmailAcceptCV] = useState('')
-  // const [locations, setLocations] = useState<Array<LocationData>>([])
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -300,6 +299,7 @@ const ModalInfoPost = (props: any) => {
       }
       return item
     })
+    console.log('map data', mapData)
     setArrSkills(mapData)
   }
   const [arrBenefits, setArrBenefits] = useState([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
@@ -363,7 +363,6 @@ const ModalInfoPost = (props: any) => {
         locationsFinal.push(location.value)
       }
     })
-
     const skills = arrSkills
       .map((skill) => {
         if (skill.value !== '') return skill.value
@@ -390,20 +389,11 @@ const ModalInfoPost = (props: any) => {
     //   quantityAccept,
     //   emailAcceptCV
     // }
-
     const job: JobType = {
       job_title: jobTitle,
       job_level: level,
       job_type: typeJob,
       industries: industries,
-      // working_locations: listLocation.map((loc) => ({
-      //   lat: 0,
-      //   lon: 0,
-      //   branch_name: loc.value.branch_name,
-      //   address: loc.value.address,
-      //   district: loc.value.district,
-      //   city_name: loc.value.branch_name
-      // })),
       working_locations: locationsFinal,
       skills: skills as string[],
       salary_range: {
@@ -433,6 +423,81 @@ const ModalInfoPost = (props: any) => {
       handleClose()
     })
   }
+
+  useEffect(() => {
+    getPostById()
+  }, [idPost])
+
+  const getPostById = async () => {
+    if (!idPost) {
+      return
+    }
+    await apiPost.getPostById(idPost).then((response) => {
+      const rs: JobType = response.result as JobType
+      setJobTitle(rs.job_title)
+      setLevel(rs.job_level)
+      setTypeJob(rs.job_type)
+      setIndustries(rs.industries)
+      setJobDescription(rs.job_description)
+      setJobRequirement(rs.job_requirement)
+      //set work location
+      rs.working_locations.map((locationJob, index) => {
+        if (index > 0) handleAddWorkingLocation()
+        form.setFieldsValue({
+          [`location_${index}`]: locationJob.branch_name
+        })
+      })
+      const mapLocations = listLocation.map((locationCompany) => {
+        rs.working_locations.map((locationJob) => {
+          if (locationCompany.value.branch_name === locationJob.branch_name) {
+            locationCompany.disabled = true
+          }
+        })
+        return locationCompany
+      })
+      console.log('mapLocations', mapLocations)
+      setListLocation(mapLocations)
+
+      //
+      //set skills
+      const mapSkills = rs.skills.map((skill, index) => {
+        if (index > 0) handleAddRowSkill()
+        form.setFieldsValue({
+          [`skill_${index}`]: skill
+        })
+        return { key: index, value: skill }
+      })
+      setArrSkills(mapSkills)
+      //
+      //set benifit
+      const mapBenefits = rs.benefits.map((benefit, index) => {
+        if (index > 0) handleAddRowBenefit()
+        form.setFieldsValue({
+          [`benefit_${index}`]: benefit.value
+        })
+        return { key: index, data: benefit }
+      })
+      setArrBenefits(mapBenefits)
+      console.log('arrBenefits', arrBenefits)
+      //
+      setSalaryRange(rs.salary_range)
+      setQuantityAccept(rs.number_of_employees_needed)
+      setEmailAcceptCV(rs.application_email)
+      form.setFieldsValue({
+        jobTitle: rs.job_title,
+        level: rs.job_level,
+        typeJob: rs.job_type,
+        industry: rs.industries,
+        descriptions: rs.job_description,
+        requirements: rs.job_requirement,
+        minSalary: rs.salary_range.min,
+        maxSalary: rs.salary_range.max,
+        showSalary: rs.is_salary_visible,
+        emailApplyCV: rs.application_email,
+        quantityAccept: rs.number_of_employees_needed
+      })
+    })
+  }
   //
   return (
     <>
@@ -451,13 +516,13 @@ const ModalInfoPost = (props: any) => {
           <Form
             name='form-info-job'
             className='form-info-job'
-            initialValues={{ remember: true }}
+            // initialValues={{ remember: true }}
             onFinish={handleSubmitForm}
             form={form}
             onFinishFailed={onFinishFailed}
             layout='vertical'
           >
-            <h2>Mô tả công việc</h2>
+            <h2>Mô tả công việc </h2>
             <Form.Item
               name='jobTitle'
               label={<span style={{ fontWeight: '500' }}>Chức Danh</span>}
@@ -528,30 +593,6 @@ const ModalInfoPost = (props: any) => {
                   />
                 </Form.Item>
               </Col>
-              <Col md={11} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Form.Item
-                  label={<span style={{ fontWeight: '500' }}>Lĩnh Vực Công Ty</span>}
-                  name='field'
-                  style={{ marginBottom: 0 }}
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        return value
-                          ? Promise.resolve()
-                          : Promise.reject(new Error('Vui lòng chọn lĩnh vực của Công ty'))
-                      }
-                    }
-                  ]}
-                >
-                  <Select
-                    showSearch
-                    placeholder={'Chọn lĩnh vực của công ty'}
-                    size='large'
-                    options={listFieldCompany}
-                    onChange={(value) => setField(value)}
-                  />
-                </Form.Item>
-              </Col>
             </Row>
             <h4 style={{ fontWeight: '500' }}>Địa Điểm Làm Việc</h4>
             {arrLocations.map((lcItem) => {
@@ -561,7 +602,7 @@ const ModalInfoPost = (props: any) => {
                     <Form.Item
                       style={{ margin: 0 }}
                       name={`location_${lcItem.key}`}
-                      // label={<span style={{ fontWeight: '500' }}>Địa Điểm Làm Việc</span>}
+                      // label={<span style={{ fontWeight: '500' }}>{lcItem.key}</span>}
                       rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ trụ sở' }]}
                     >
                       <Select
@@ -726,6 +767,7 @@ const ModalInfoPost = (props: any) => {
                       style={{ margin: 0 }}
                       key={sk.key}
                       name={`skill_${sk.key}`}
+                      // name={sk.key}
                       // label={<span style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</span>}
                       rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' }]}
                     >
@@ -758,7 +800,7 @@ const ModalInfoPost = (props: any) => {
                   <Input
                     size='large'
                     placeholder='Tối thiểu'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, min: e.target.value })}
+                    onChange={(e) => setSalaryRange({ ...salaryRange, min: Number(e.target.value) })}
                   />
                 </Form.Item>
               </Col>
@@ -771,7 +813,7 @@ const ModalInfoPost = (props: any) => {
                   <Input
                     size='large'
                     placeholder='Tối đa'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, max: e.target.value })}
+                    onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e.target.value) })}
                   />
                 </Form.Item>
               </Col>
@@ -798,7 +840,7 @@ const ModalInfoPost = (props: any) => {
                           onChange={(value) => handleSetTypeBenefit(value, row.key)}
                           popupMatchSelectWidth={200}
                           size='large'
-                          defaultValue={listBenefit[0].value}
+                          defaultValue={row.data ? row.data.type : listBenefit[0].value}
                           options={listBenefit.map((benefit) => ({
                             label: (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -831,13 +873,13 @@ const ModalInfoPost = (props: any) => {
               Thêm phúc lợi
             </Button>
             <Form.Item
-              // name='quantityAccept'
+              name='quantityAccept'
+              initialValue={1}
               label={<span style={{ fontWeight: '500' }}>Số lượng tuyển</span>}
               // rules={[{ required: true, message: 'Vui lòng không để trống email nhận CV' }]}
             >
               <InputNumber
                 min={1}
-                defaultValue={1}
                 size='large'
                 onKeyDown={(event) => {
                   if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {

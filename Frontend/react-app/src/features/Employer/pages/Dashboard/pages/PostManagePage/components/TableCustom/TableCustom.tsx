@@ -80,7 +80,7 @@ const TableCustom = (props: any) => {
   const [dataRowSelected, setDataRowSelected] = useState<JobType>()
   const [idPost, setIdPost] = useState<string>()
   const limit = 3
-  const [total, setTotal] = useState(employer.posts.total)
+  const total = employer.posts.total
   const handleChange: TableProps<JobType>['onChange'] = async (pagination, filters, sorter) => {
     // console.log('log data', pagination, filters, sorter)
     await fetchData(pagination.pageSize, pagination.current)
@@ -107,7 +107,6 @@ const TableCustom = (props: any) => {
   // kiểm tra data thay đổi
   useEffect(() => {
     setData(employer.posts.data)
-    setTotal(employer.posts.total)
   }, [employer])
 
   const columns: ColumnsType<JobType> = [

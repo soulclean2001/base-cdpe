@@ -3,6 +3,8 @@ import './style.scss'
 import { Space, Table, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { BsFillTrashFill } from 'react-icons/bs'
+import ModalWorkLocation from '../../components/ModalWorkLocation'
+import { useState } from 'react'
 
 interface WorkingLocation {
   lat: number
@@ -39,6 +41,7 @@ const data: WorkingLocation[] = [
   }
 ]
 const WorkLocationPage = () => {
+  const [openModalWorkLocation, setOpenModalWorkLocation] = useState(false)
   const columns: ColumnsType<WorkingLocation> = [
     {
       ellipsis: true,
@@ -92,8 +95,9 @@ const WorkLocationPage = () => {
     <div className='work-location-page-container'>
       <div className='title'>Địa điểm làm việc</div>
       <div className='work-location-content-wapper'>
+        <ModalWorkLocation open={openModalWorkLocation} handleClose={() => setOpenModalWorkLocation(false)} />
         <div className='btn-container'>
-          <a>
+          <a onClick={() => setOpenModalWorkLocation(true)}>
             <AiFillPlusCircle /> Tạo địa điểm làm việc
           </a>
         </div>

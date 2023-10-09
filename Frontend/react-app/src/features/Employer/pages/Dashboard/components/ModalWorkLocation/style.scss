@@ -1,0 +1,14 @@
+.modal-create-location {
+  width: 200;
+  .form-branch-location-job {
+    .btn-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 5px;
+      .btn-submit {
+        background-color: rgb(255, 125, 85);
+        color: white;
+      }
+    }
+  }
+}
