@@ -15,7 +15,9 @@ import { addPost } from '~/features/Employer/employerSlice'
 import apiClient from '~/api/client'
 import apiCompany from '~/api/company.api'
 import apiPost from '~/api/post.api'
+import './style.scss'
 //data lo
+
 const listLevel = [
   { value: 'Thực tập sinh' },
   { value: 'Thử việc' },
@@ -157,7 +159,8 @@ const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
 const ModalInfoPost = (props: any) => {
   const dispatch = useDispatch()
 
-  const { idPost, open, handleClose, title } = props
+  const { idPost, open, handleClose, title, roleType } = props
+
   const [form] = Form.useForm()
   //state data form modal
   const [jobTitle, setJobTitle] = useState('')
@@ -502,13 +505,13 @@ const ModalInfoPost = (props: any) => {
   return (
     <>
       <Modal
-        className='modal-container'
+        className='modal-post-detail-container'
         title={<h2>{idPost ? `THÔNG TIN BÀI ĐĂNG ${idPost}` : title}</h2>}
         centered
         open={open}
         onOk={handleClose}
         onCancel={handleClose}
-        width={'70%'}
+        width={800}
         footer={''}
       >
         <div>
@@ -529,6 +532,7 @@ const ModalInfoPost = (props: any) => {
               rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
             >
               <Input
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 size='large'
                 className='name-job-input'
                 placeholder='Eg. Senior UX Designer'
@@ -543,6 +547,7 @@ const ModalInfoPost = (props: any) => {
                   rules={[{ required: true, message: 'Vui lòng chọn cấp bậc' }]}
                 >
                   <Select
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     showSearch
                     placeholder={'Chọn cấp bậc'}
                     size='large'
@@ -565,6 +570,7 @@ const ModalInfoPost = (props: any) => {
                   ]}
                 >
                   <Select
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     showSearch
                     placeholder={'Chọn loại công việc'}
                     size='large'
@@ -582,6 +588,7 @@ const ModalInfoPost = (props: any) => {
                   rules={[{ required: true, message: 'Vui lòng chọn ngành nghề' }]}
                 >
                   <Select
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     showSearch
                     mode={'multiple'}
                     placeholder={'Chọn ngành nghề'}
@@ -606,6 +613,7 @@ const ModalInfoPost = (props: any) => {
                       rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ trụ sở' }]}
                     >
                       <Select
+                        disabled={roleType === 'ADMIN_ROLE' ? true : false}
                         onChange={(value) => handleSelectLocation(value, lcItem.key)}
                         onBlur={() => {
                           setHiddenPenEditLocation(true)
@@ -741,7 +749,12 @@ const ModalInfoPost = (props: any) => {
               </Form>
             </Modal>
 
-            <Button style={{ marginBottom: '20px' }} onClick={handleAddWorkingLocation} icon={<PlusOutlined />}>
+            <Button
+              hidden={roleType === 'ADMIN_ROLE' ? true : false}
+              style={{ marginBottom: '20px' }}
+              onClick={handleAddWorkingLocation}
+              icon={<PlusOutlined />}
+            >
               Thêm địa điểm làm việc
             </Button>
             <Form.Item
@@ -749,14 +762,22 @@ const ModalInfoPost = (props: any) => {
               label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống mô tả công việc' }]}
             >
-              <TextArea size='large' onChange={(e) => setJobDescription(e.target.value)} />
+              <TextArea
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                size='large'
+                onChange={(e) => setJobDescription(e.target.value)}
+              />
             </Form.Item>
             <Form.Item
               name='requirements'
               label={<span style={{ fontWeight: '500' }}>Yêu Cầu Công Việc</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu công việc' }]}
             >
-              <TextArea size='large' onChange={(e) => setJobRequirement(e.target.value)} />
+              <TextArea
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                size='large'
+                onChange={(e) => setJobRequirement(e.target.value)}
+              />
             </Form.Item>
             <h4 style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</h4>
             {arrSkills.map((sk) => {
@@ -771,12 +792,17 @@ const ModalInfoPost = (props: any) => {
                       // label={<span style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</span>}
                       rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' }]}
                     >
-                      <Input value={sk.value} size='large' onChange={(e) => handleSetSkill(e.target.value, sk.key)} />
+                      <Input
+                        disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                        value={sk.value}
+                        size='large'
+                        onChange={(e) => handleSetSkill(e.target.value, sk.key)}
+                      />
                     </Form.Item>
                   </Col>
                   <Col md={2} sm={4} xs={6} style={{ display: 'flex', justifyContent: 'center' }}>
                     <Button
-                      hidden={hiddenDeleteSkill}
+                      hidden={roleType === 'ADMIN_ROLE' ? true : hiddenDeleteSkill}
                       size='large'
                       icon={<BsTrashFill />}
                       onClick={() => handleDeletedRowSkill(sk.key)}
@@ -786,7 +812,12 @@ const ModalInfoPost = (props: any) => {
               )
             })}
 
-            <Button onClick={handleAddRowSkill} style={{ marginBottom: '20px' }} icon={<PlusOutlined />}>
+            <Button
+              hidden={roleType === 'ADMIN_ROLE' ? true : false}
+              onClick={handleAddRowSkill}
+              style={{ marginBottom: '20px' }}
+              icon={<PlusOutlined />}
+            >
               Thêm kỹ năng
             </Button>
             <h4 style={{ fontWeight: '500' }}>Mức Lương</h4>
@@ -798,6 +829,7 @@ const ModalInfoPost = (props: any) => {
                   rules={[{ required: true, message: 'Vui lòng nhập mức lương tối thiểu' }]}
                 >
                   <Input
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối thiểu'
                     onChange={(e) => setSalaryRange({ ...salaryRange, min: Number(e.target.value) })}
@@ -811,6 +843,7 @@ const ModalInfoPost = (props: any) => {
                   rules={[{ required: true, message: 'Vui lòng nhập mức lương tối đa' }]}
                 >
                   <Input
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối đa'
                     onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e.target.value) })}
@@ -819,7 +852,11 @@ const ModalInfoPost = (props: any) => {
               </Col>
               <Col md={6} sm={24} xs={24}>
                 <Form.Item valuePropName='checked' name='showSalary' style={{ marginBottom: 0 }}>
-                  <Checkbox defaultChecked={showSalaryRange} onClick={() => setShowSalaryRange(!showSalaryRange)}>
+                  <Checkbox
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                    defaultChecked={showSalaryRange}
+                    onClick={() => setShowSalaryRange(!showSalaryRange)}
+                  >
                     Hiển Thị Mức Lương
                   </Checkbox>
                 </Form.Item>
@@ -834,9 +871,11 @@ const ModalInfoPost = (props: any) => {
                     label={<span style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</span>}
                   >
                     <Input
+                      disabled={roleType === 'ADMIN_ROLE' ? true : false}
                       onChange={(e) => handleSetDataBenefit(e.target.value, row.key)}
                       addonBefore={
                         <Select
+                          disabled={roleType === 'ADMIN_ROLE' ? true : false}
                           onChange={(value) => handleSetTypeBenefit(value, row.key)}
                           popupMatchSelectWidth={200}
                           size='large'
@@ -860,7 +899,7 @@ const ModalInfoPost = (props: any) => {
                 </Col>
                 <Col md={2} sm={4} xs={6} style={{ paddingTop: '5px', display: 'flex', justifyContent: 'center' }}>
                   <Button
-                    hidden={hiddenDeleteBenefit}
+                    hidden={roleType === 'ADMIN_ROLE' ? true : hiddenDeleteBenefit}
                     size='large'
                     icon={<BsTrashFill />}
                     onClick={() => handleDeletedRowBenefit(row.key)}
@@ -869,16 +908,21 @@ const ModalInfoPost = (props: any) => {
               </Row>
             ))}
 
-            <Button onClick={handleAddRowBenefit} style={{ marginBottom: '20px' }} icon={<PlusOutlined />}>
+            <Button
+              hidden={roleType === 'ADMIN_ROLE' ? true : false}
+              onClick={handleAddRowBenefit}
+              style={{ marginBottom: '20px' }}
+              icon={<PlusOutlined />}
+            >
               Thêm phúc lợi
             </Button>
             <Form.Item
               name='quantityAccept'
               initialValue={1}
               label={<span style={{ fontWeight: '500' }}>Số lượng tuyển</span>}
-              // rules={[{ required: true, message: 'Vui lòng không để trống email nhận CV' }]}
             >
               <InputNumber
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 min={1}
                 size='large'
                 onKeyDown={(event) => {
@@ -894,14 +938,32 @@ const ModalInfoPost = (props: any) => {
               label={<span style={{ fontWeight: '500' }}>Địa Chỉ Email Nhận Hồ Sơ</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống email nhận CV' }]}
             >
-              <Input size='large' placeholder='mail@gmail.com' onChange={(e) => setEmailAcceptCV(e.target.value)} />
+              <Input
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                size='large'
+                placeholder='mail@gmail.com'
+                onChange={(e) => setEmailAcceptCV(e.target.value)}
+              />
             </Form.Item>
-            <div style={{ display: 'flex', justifyContent: 'end', gap: '8px' }}>
+            <div className='btn-container' style={{ display: 'flex', justifyContent: 'end', gap: '8px' }}>
               <Button size='large' style={{ width: '100px' }} onClick={handleClose}>
                 Thoát
               </Button>
+              {idPost && roleType === 'ADMIN_ROLE' ? (
+                <>
+                  <Button className='btn-reject' size='large' onClick={handleClose}>
+                    Từ chối
+                  </Button>
+                  <Button className='btn-approved' size='large' onClick={handleClose}>
+                    Chấp nhận
+                  </Button>
+                </>
+              ) : (
+                <></>
+              )}
               {idPost ? (
                 <Button
+                  hidden={roleType === 'ADMIN_ROLE' ? true : false}
                   size='large'
                   htmlType='submit'
                   style={{ background: 'rgb(255, 125, 85)', color: 'white', width: '100px' }}
@@ -910,6 +972,7 @@ const ModalInfoPost = (props: any) => {
                 </Button>
               ) : (
                 <Button
+                  disabled={roleType === 'ADMIN_ROLE' ? true : false}
                   size='large'
                   htmlType='submit'
                   style={{ background: 'rgb(255, 125, 85)', color: 'white', width: '100px' }}

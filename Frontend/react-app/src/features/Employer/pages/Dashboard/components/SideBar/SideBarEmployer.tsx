@@ -127,7 +127,7 @@ const SideBarEmployer = (props: any) => {
           <Menu iconShape='circle'>
             <MenuItem icon={<ShoppingFilled />}>
               Dịch vụ của tôi
-              <Link to={'/employer/my-services'} />
+              <Link to={'/employer/dashboard/my-services'} />
             </MenuItem>
           </Menu>
         </SidebarContent>

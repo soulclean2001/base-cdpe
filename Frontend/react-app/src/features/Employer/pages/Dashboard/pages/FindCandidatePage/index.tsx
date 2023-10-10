@@ -1,9 +1,19 @@
 import { Button, Col, Drawer, Form, Input, Pagination, Row, Select } from 'antd'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './style.scss'
 import { FiFilter } from 'react-icons/fi'
 import CandidateItem from './components/CandidateItem/CandidateItem'
+import { SearchCandidateReqBody } from '~/api/candidate.api'
+import apiSearchCandidate from '~/api/candidate.api'
+interface RangeExpYear {
+  min?: number
+  max?: number
+}
+interface AnyTypeCandidate {
+  [key: string]: any
+}
 const listIndustries = [
+  { value: 'kasd' },
   { value: 'Bảo hiểm' },
   { value: 'Chứng khoán' },
   { value: 'Kiểm toán' },
@@ -19,7 +29,7 @@ const listIndustries = [
   { value: 'IT - Phần cứng/ Mạng' }
 ]
 
-const listProvince = [{ value: 'TP. Hồ Chí Minh' }, { value: 'Hà Nội' }, { value: 'Đà Nẳng' }]
+const listProvince = [{ value: 'TP. Hồ Chí Minh' }, { value: 'Hà Nội' }, { value: 'Đà Nẳng' }, { value: 'kasd' }]
 const maxItem = [{ value: 'Bạn đã chọn tối đa 3 mục', label: 'Bạn đã chọn tối đa 3 mục', disabled: true }]
 const listLevel = [
   { value: 'Thực tập sinh' },
@@ -32,89 +42,157 @@ const listLevel = [
   { value: 'Giám đốc' },
   { value: 'Tổng giám đốc' }
 ]
-const listCandidate = [
-  {
-    id: '1',
-    avatar: 'https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg',
-    nameCandidate: 'Phan Thanh Phong',
-    jobTitle: 'Intern Web',
-    educationLevel: 'Cử nhân',
-    expYear: '1 năm',
-    provinceWanted: 'Bình Chánh,Hồ Chí Minh - Gò Vấp, Hồ Chí Minh',
-    updateDate: '23/8/2023'
-  },
-  {
-    id: '2',
-    avatar: 'https://cdn.tgdd.vn//GameApp/1340221//Anhavatardoi51.-800x800.jpg',
-    nameCandidate: 'Tran Minh Hiếu',
-    jobTitle: 'Fresher Lỏ',
-    educationLevel: 'Cử nhân',
-    expYear: '1 năm',
-    provinceWanted: 'Bình Chánh,Hồ Chí Minh - Gò Vấp, Hồ Chí Minh',
-    updateDate: '22/8/2023'
-  }
-]
+// const listCandidate = [
+//   {
+//     id: '1',
+//     avatar: 'https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg',
+//     nameCandidate: 'Phan Thanh Phong',
+//     jobTitle: 'Intern Web',
+//     educationLevel: 'Cử nhân',
+//     expYear: '1 năm',
+//     provinceWanted: 'Bình Chánh,Hồ Chí Minh - Gò Vấp, Hồ Chí Minh',
+//     updateDate: '23/8/2023'
+//   },
+//   {
+//     id: '2',
+//     avatar: 'https://cdn.tgdd.vn//GameApp/1340221//Anhavatardoi51.-800x800.jpg',
+//     nameCandidate: 'Tran Minh Hiếu',
+//     jobTitle: 'Fresher Lỏ',
+//     educationLevel: 'Cử nhân',
+//     expYear: '1 năm',
+//     provinceWanted: 'Bình Chánh,Hồ Chí Minh - Gò Vấp, Hồ Chí Minh',
+//     updateDate: '22/8/2023'
+//   }
+// ]
+
 const FindCandidatePage = () => {
   const [form] = Form.useForm()
+  //drawer search
   const [open, setOpen] = useState(false)
   const [nameCandidate, setNameCandidate] = useState('')
-  const [position, setPosittion] = useState('')
+  const [wannaJob, setWannaJob] = useState('')
+  // const [position, setPosittion] = useState('')
   const [industries, setIndustries] = useState([])
   const [province, setProvince] = useState([])
-  const [expYear, setExpYear] = useState({ min: '', max: '' })
+  const [expYear, setExpYear] = useState<RangeExpYear>()
   const [level, setLevel] = useState('')
   const [language, setLanguage] = useState('')
   const [levelLanguage, setLevelLanguage] = useState('')
   const [education, setEducation] = useState('')
-  const [rangeYearOld, setRangeYearOld] = useState({ min: '', max: '' })
+
   //page
+  const [listCandidate, setListCandidate] = useState<AnyTypeCandidate[]>([])
   const [pageClick, setPageClick] = useState(1)
-  const [limitOnPage, setLimitOnPage] = useState(5)
-  const [totalItems, setTotalItems] = useState(1)
+  const [limitOnPage, setLimitOnPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(2)
+  //
+  /*/ 
+  name?: string
+  job?: string
+  level?: string
+  industry?: string[]
+  working_location?: string[]
+  exp_year_from?: number
+  exp_year_to?: number
+  foreign_language?: string
+  foreign_language_level?: string
+  education_level?: string
+  */
+  const [dataSearch, setDataSearch] = useState<SearchCandidateReqBody>({
+    page: '1',
+    limit: '3',
+    name: nameCandidate,
+    job: wannaJob,
+    education_level: education,
+    exp_year_from: expYear?.min,
+    exp_year_to: expYear?.max,
+    foreign_language: language,
+    foreign_language_level: levelLanguage,
+    level: level,
+    industry: industries,
+    work_location: province
+  })
   //
   const showDrawer = () => {
     setOpen(true)
   }
 
-  const onClose = () => {
+  const onCloseDrawer = () => {
     setOpen(false)
   }
-  const handleSubmitForm = (value: any) => {
+  const handleClearFilter = () => {
+    setNameCandidate('')
+    setWannaJob('')
+    setIndustries([])
+    setExpYear({})
+    setEducation('')
+    setLanguage('')
+    setLevelLanguage('')
+    setLevel('')
+    setProvince([])
+    form.resetFields()
+  }
+  const handleSubmitForm = async () => {
     const data = {
       nameCandidate,
-      position,
+      wannaJob,
       industries,
       province,
       expYear,
       level,
       language,
       levelLanguage,
-      education,
-      rangeYearOld
+      education
     }
+    const dataSearch: SearchCandidateReqBody = {
+      page: pageClick.toString(),
+      limit: limitOnPage.toString(),
+      name: nameCandidate,
+      job: wannaJob,
+      education_level: education,
+      exp_year_from: expYear?.min,
+      exp_year_to: expYear?.max,
+      foreign_language: language,
+      foreign_language_level: levelLanguage,
+      level: level,
+      industry: industries,
+      work_location: province
+    }
+    await fetchGetData(dataSearch).then(() => {
+      onCloseDrawer()
+    })
     console.log('form data post', data)
+    console.log('data search', dataSearch)
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
-  const validateMinMaxOrder = (_: any, values: any) => {
-    if (expYear.min && expYear.max && parseInt(expYear.min) > parseInt(expYear.max)) {
-      return Promise.reject('Vui lòng nhập từ thấp đến cao')
+  const validateMinMaxOrder = () => {
+    if (expYear && expYear.min && expYear.max) {
+      if (expYear.min && expYear.max && expYear.min > expYear.max) {
+        return Promise.reject('Vui lòng nhập từ thấp đến cao')
+      }
     }
+
     return Promise.resolve()
   }
-  const validateMinMaxOrder2 = (_: any, values: any) => {
-    if (rangeYearOld.min && rangeYearOld.max && parseInt(rangeYearOld.min) > parseInt(rangeYearOld.max)) {
-      return Promise.reject('Vui lòng nhập từ thấp đến cao')
-    }
-    return Promise.resolve()
-  }
+
   //set value page click
   const handleChangePage = (valuePageClick: any) => {
     setPageClick(valuePageClick)
     console.log('page', valuePageClick)
   }
   //
+  useEffect(() => {
+    fetchGetData({ limit: limitOnPage.toString(), page: pageClick.toString() })
+  }, [pageClick])
+  const fetchGetData = async (data: SearchCandidateReqBody) => {
+    await apiSearchCandidate.searchCandidate(data).then((rs) => {
+      console.log(rs, rs.result)
+      setListCandidate(rs.result.cvs)
+      setTotalItems(rs.result.total)
+    })
+  }
   return (
     <div className='find-candidate-page-container'>
       <div className='title'>Tìm Kiếm Ứng Viên</div>
@@ -130,7 +208,7 @@ const FindCandidatePage = () => {
           title='BỘ LỌC'
           placement={'left'}
           closable={false}
-          onClose={onClose}
+          onClose={onCloseDrawer}
           open={open}
           key={'left'}
         >
@@ -150,7 +228,7 @@ const FindCandidatePage = () => {
               <Input
                 size='middle'
                 placeholder='Công việc mong muốn của ứng viên'
-                onChange={(e) => setPosittion(e.target.value)}
+                onChange={(e) => setWannaJob(e.target.value)}
               />
             </Form.Item>
             <Form.Item label={<span style={{ fontWeight: '500' }}>Ngành Nghề</span>} name='industry'>
@@ -189,7 +267,7 @@ const FindCandidatePage = () => {
                     }}
                     size='middle'
                     placeholder='Từ'
-                    onChange={(e) => setExpYear({ ...expYear, min: e.target.value })}
+                    onChange={(e) => setExpYear({ ...expYear, min: Number(e.target.value) })}
                   />
                 </Col>
                 <Col md={11} sm={11} xs={11} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -201,7 +279,7 @@ const FindCandidatePage = () => {
                     }}
                     size='middle'
                     placeholder='Đến'
-                    onChange={(e) => setExpYear({ ...expYear, max: e.target.value })}
+                    onChange={(e) => setExpYear({ ...expYear, max: Number(e.target.value) })}
                   />
                 </Col>
               </Row>
@@ -275,7 +353,7 @@ const FindCandidatePage = () => {
               <Button htmlType='submit' style={{ width: '49%', color: 'white', background: 'rgb(255, 125, 85)' }}>
                 Tìm kiếm
               </Button>
-              <Button style={{ width: '49%' }} onClick={() => form.resetFields()}>
+              <Button style={{ width: '49%' }} onClick={handleClearFilter}>
                 Cài đặt lại
               </Button>
             </div>
@@ -288,7 +366,20 @@ const FindCandidatePage = () => {
             <div className='total-search'>{`${listCandidate.length} kết quả được tìm thấy`}</div>
 
             {listCandidate.map((candidate) => (
-              <CandidateItem key={candidate.id} data={candidate} />
+              <CandidateItem
+                key={candidate._id}
+                data={{
+                  id: candidate._id,
+                  cv_id: candidate.cv_id,
+                  avatar: candidate.cvs.user_info.avatar,
+                  nameCandidate: `${candidate.cvs.user_info.first_name} ${candidate.cvs.user_info.last_name}`,
+                  jobTitle: candidate.cvs.user_info.wanted_job_title,
+                  educationLevel: candidate.education_level,
+                  provinceWanted: candidate.industry,
+                  expYear: candidate.experience,
+                  updateDate: candidate.cvs.updated_at.toString().slice(0, 10)
+                }}
+              />
             ))}
 
             <div style={{ width: '100%', display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
@@ -297,8 +388,6 @@ const FindCandidatePage = () => {
                 responsive
                 defaultCurrent={1}
                 pageSize={limitOnPage}
-                //   current={totalItems}
-                //   showLessItems={false}
                 showSizeChanger={false}
                 total={totalItems}
               />

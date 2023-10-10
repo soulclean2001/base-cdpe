@@ -2,18 +2,19 @@ import { Avatar, Button } from 'antd'
 import './style.scss'
 import { AiFillFlag } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom'
-interface DataType {
+export interface DataTypeCandidateItem {
   id: string
+  cv_id: string
   avatar: string
   nameCandidate: string
   jobTitle: string
   educationLevel: string
   expYear: string
-  provinceWanted: string
+  provinceWanted: string[]
   updateDate: string
 }
 interface PropsType {
-  data: DataType
+  data: DataTypeCandidateItem
 }
 const CandidateItem = (props: any) => {
   const navigate = useNavigate()

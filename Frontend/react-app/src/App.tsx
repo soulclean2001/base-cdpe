@@ -56,6 +56,7 @@ import { useEffect } from 'react'
 import { isExpired } from './utils/jwt'
 import { getMe } from './features/JobSeeker/jobSeekerSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
+import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -140,6 +141,7 @@ function App() {
             <Route path='company-location' element={<WorkLocationPage />} />
             <Route path='find-candidate' element={<FindCandidatePage />} />
             <Route path='candidate-detail/:infoUrlCandidate' element={<CandidateDetailPage />} />
+            <Route path='my-services' element={<MyServicesPage />} />
           </Route>
         </Route>
         <Route path='/employer-sign-up' element={<SignUpEmployer />} />

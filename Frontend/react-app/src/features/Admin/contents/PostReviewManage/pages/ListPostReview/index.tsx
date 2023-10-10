@@ -6,9 +6,11 @@ import { BsFillCheckCircleFill, BsFillEyeFill } from 'react-icons/bs'
 import { TiDelete } from 'react-icons/ti'
 import { FiSearch } from 'react-icons/fi'
 import { DatePicker } from 'antd'
+import ModalInfoPost from '~/features/Employer/pages/Dashboard/components/ModalInfoPost/ModalInfoPost'
 const { RangePicker } = DatePicker
+import { useState } from 'react'
 interface DataType {
-  key: string
+  id: string
   nameJob: string
   nameCompany: string
   requestDate: string
@@ -16,12 +18,18 @@ interface DataType {
   status: string | number
 }
 const ListPostReview = () => {
+  const [postID, setPostID] = useState('')
+  const [openModalDetailPost, setOpenModalDetailPost] = useState(false)
+  const handleOpenModalDetailPost = (id: string) => {
+    setPostID(id)
+    setOpenModalDetailPost(true)
+  }
   const columns: ColumnsType<DataType> = [
     {
       ellipsis: true,
       title: 'ID',
-      dataIndex: 'key',
-      key: 'key',
+      dataIndex: 'id',
+      key: 'id',
       render: (value, _) => <span key={value}>{`POST_${value}`}</span>
     },
     {
@@ -70,7 +78,10 @@ const ListPostReview = () => {
       align: 'left',
       render: (_, record) => (
         <Space size={'middle'} style={{ textAlign: 'center' }}>
-          <a style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+          <a
+            onClick={() => handleOpenModalDetailPost(record.id)}
+            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+          >
             <BsFillEyeFill />
           </a>
           {record.status !== 'Đang chờ' ? (
@@ -92,7 +103,7 @@ const ListPostReview = () => {
 
   const data: DataType[] = [
     {
-      key: '1',
+      id: '65167d32e569685ca8a7f3c0',
       nameJob: 'Web intern',
       nameCompany: 'Công ty XX',
       requestDate: '26/09/2023',
@@ -100,7 +111,7 @@ const ListPostReview = () => {
       status: 'Đang chờ'
     },
     {
-      key: '2',
+      id: '2',
       nameJob: 'Fresher',
       nameCompany: 'Công ty Y',
       requestDate: '26/09/2023',
@@ -108,7 +119,7 @@ const ListPostReview = () => {
       status: 'Chấp nhận'
     },
     {
-      key: '3',
+      id: '3',
       nameJob: 'Grab',
       nameCompany: 'GarbVN',
       requestDate: '26/09/2023',
@@ -152,8 +163,19 @@ const ListPostReview = () => {
             />
           </Col>
         </Row>
-
-        <Table className='table-custom users-table' scroll={{ x: true }} columns={columns} dataSource={data} />
+        <ModalInfoPost
+          open={openModalDetailPost}
+          idPost={postID}
+          roleType='ADMIN_ROLE'
+          handleClose={() => setOpenModalDetailPost(false)}
+        />
+        <Table
+          rowKey='id'
+          className='table-custom users-table'
+          scroll={{ x: true }}
+          columns={columns}
+          dataSource={data}
+        />
       </div>
     </div>
   )
