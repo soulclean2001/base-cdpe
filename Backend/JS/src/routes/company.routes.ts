@@ -12,7 +12,14 @@ companyRouter.patch(
   '/:id',
   accessTokenValidator,
   updateCompanyValidator,
-  filterMiddleware<UpdateCompanyReqBody>(['company_name', 'company_info', 'company_size', 'logo', 'background']),
+  filterMiddleware<UpdateCompanyReqBody>([
+    'company_name',
+    'company_info',
+    'company_size',
+    'logo',
+    'background',
+    'working_locations'
+  ]),
   wrapAsync(companyControllers.updateCompany)
 )
 

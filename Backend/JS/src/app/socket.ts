@@ -13,26 +13,29 @@ const activeConnections: {
 const init = (io: Server) => {
   // middleware for socket connection
   io.use(async (socket, next) => {
-    // const { Authorization } = socket.handshake.auth
-    // const access_token = Authorization?.split(' ')[1]
-    const token = socket.handshake.headers.access_token as string
-    const access_token = token?.split(' ')[1]
+    const { Authorization } = socket.handshake.auth
+    const access_token = Authorization?.split(' ')[1]
+
+    // header
+    // const token = socket.handshake.headers.access_token as string
+    // const access_token = token?.split(' ')[1]
 
     try {
       const decoded_authorization = await verifyAccessToken(access_token)
       const { verify } = decoded_authorization as TokenPayload
-      if (verify !== UserVerifyStatus.Verified) {
-        throw new ErrorWithStatus({
-          message: USERS_MESSAGES.USER_NOT_VERIFIED,
-          status: HTTP_STATUS.FORBIDDEN
-        })
-      }
+      // kiểm tra xem user verify
+      // if (verify !== UserVerifyStatus.Verified) {
+      //   throw new ErrorWithStatus({
+      //     message: USERS_MESSAGES.USER_NOT_VERIFIED,
+      //     status: HTTP_STATUS.FORBIDDEN
+      //   })
+      // }
       // Truyền decoded_authorization vào socket để sử dụng ở các middleware khác
       socket.handshake.auth.decoded_authorization = decoded_authorization
       socket.handshake.auth.access_token = access_token
       next()
     } catch (error) {
-      console.log(error)
+      console.log('error', error)
       next({
         message: 'Unauthorized',
         name: 'UnauthorizedError',
@@ -66,29 +69,32 @@ const init = (io: Server) => {
     })
     //
     socket.on('join', (userId: string) => {
-      socket.userId = userId
-      socket.join(userId)
-
       // lưu trạng thái kết nối người dùng
-      if (!activeConnections[userId]) {
-        activeConnections[userId] = [socket.id]
-      } else {
-        activeConnections[userId].push(socket.id)
-      }
-    })
-
-    socket.on('send_message', async (data) => {
-      const { receiver_id, sender_id, content } = data.payload
-
-      const conversation = await ConversationService.sendMessage({ sender_id, receiver_id, content })
-      if (activeConnections[receiver_id]) {
-        for (const socketid of activeConnections[receiver_id]) {
-          socket.to(socketid).emit('receive_message', {
-            payload: conversation
-          })
+      if (userId) {
+        socket.userId = userId
+        socket.join(userId)
+        if (!activeConnections[userId]) {
+          activeConnections[userId] = [socket.id]
+        } else {
+          activeConnections[userId].push(socket.id)
         }
       }
+
+      console.log(activeConnections)
     })
+
+    // socket.on('send_message', async (data) => {
+    //   const { receiver_id, sender_id, content, room_id } = data.payload
+
+    //   const conversation = await ConversationService.sendMessage({ sender_id, receiver_id, content, room_id })
+    //   if (activeConnections[receiver_id]) {
+    //     for (const socketid of activeConnections[receiver_id]) {
+    //       socket.to(socketid).emit('receive_message', {
+    //         payload: conversation
+    //       })
+    //     }
+    //   }
+    // })
 
     socket.on('disconnect', () => {
       console.log(`user ${socket.id} disconnected`)

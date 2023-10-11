@@ -9,6 +9,7 @@ class JobApplicationController {
     const { user_id } = req.decoded_authorization
 
     const result = await JobApplicationService.apply(user_id, body)
+
     return res.json({
       message: result
     })

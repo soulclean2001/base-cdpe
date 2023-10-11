@@ -69,6 +69,7 @@ export const envConfig = {
   dbCart: process.env.DB_CART_COLLECTION as string,
   dbCartItem: process.env.DB_CART_ITEM_COLLECTION as string,
   dbConversationCollection: process.env.DB_CONVERSATION_COLLECTION as string,
+  dbConversationRoomsCollection: process.env.DB_CONVERSATION_ROOMS_COLLECTION as string,
   dbTrackedCandidate: process.env.DB_TRACKED_CANDIDATES_COLLECTION as string,
   dbJobApplication: process.env.DB_JOB_APPLICATION_COLLECTION as string,
   dbCandidate: process.env.DB_CANDIDATE_COLLECTION as string,

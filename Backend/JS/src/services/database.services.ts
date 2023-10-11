@@ -18,6 +18,7 @@ import PotentialCandidate from '~/models/schemas/PotentialCandidate.schema'
 import TrackedCandidate from '~/models/schemas/TrackedCandidate.schema'
 import JobApplication from '~/models/schemas/JobApplication.schema'
 import PurchasedPackage from '~/models/schemas/PurchasedPackage.schema'
+import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -123,6 +124,10 @@ class DatabaseService {
 
   get conversations(): Collection<Conversation> {
     return this.db.collection(envConfig.dbConversationCollection)
+  }
+
+  get conversationRooms(): Collection<ConversationRoom> {
+    return this.db.collection(envConfig.dbConversationRoomsCollection)
   }
 
   get candidate(): Collection<Candidate> {

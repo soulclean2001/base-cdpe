@@ -179,6 +179,7 @@ export const userIdSchema: ParamSchema = {
           status: HTTP_STATUS.NOT_FOUND
         })
       }
+      return true
     }
   }
 }
@@ -597,7 +598,19 @@ export const followValidator = validate(
 export const getConversationsValidator = validate(
   checkSchema(
     {
-      receiver_id: userIdSchema
+      room_id: {
+        custom: {
+          options: (value: any) => {
+            if (!ObjectId.isValid(value)) {
+              throw new ErrorWithStatus({
+                message: 'invalid room id',
+                status: HTTP_STATUS.NOT_FOUND
+              })
+            }
+            return true
+          }
+        }
+      }
     },
     ['params']
   )

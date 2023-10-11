@@ -43,6 +43,15 @@ class JobApplicationService {
       })
     )
 
+    const job = await databaseServices.job.findOne({
+      _id: _payload.job_post_id
+    })
+    if (job)
+      await databaseServices.conversationRooms.insertOne({
+        company_id: job.company_id,
+        user_id: new ObjectId(userId)
+      })
+
     return {
       message: 'apply job'
     }

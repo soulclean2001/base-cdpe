@@ -98,7 +98,8 @@ class SearchService {
     const match: any = {}
 
     if (data.name && data.name.length > 0) {
-      const regex = new RegExp(data.name.split(' ').map(escapeRegExp).join('.*'), 'i')
+      const keywords = data.name.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
       data.name = data.name.trim()
       match['$or'] = [
         { 'cvs.user_info.first_name': { $regex: regex } },
