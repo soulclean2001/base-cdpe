@@ -13,6 +13,7 @@ export interface AuthState {
   role: number
   verify: number
   newUser: number
+  user_id: string
 }
 
 export interface AuthPayload {
@@ -32,7 +33,8 @@ const initialState: AuthState = {
   error: undefined,
   isLogin: false,
   verify: 0,
-  newUser: 1
+  newUser: 1,
+  user_id: ''
 }
 export const postLogin = createAsyncThunk(
   'login/postLogin',
@@ -83,9 +85,10 @@ const authSlice = createSlice({
       return state
     },
     setAccountStatus(state, action: PayloadAction<TokenPayload>) {
-      const { role, verify, token_type } = action.payload
+      const { role, verify, token_type, user_id } = action.payload
       state.role = role
       state.verify = verify
+      state.user_id = user_id
       return state
     },
     setToken(state, action: PayloadAction<AuthPayload>) {

@@ -5,12 +5,19 @@ import { FiSearch } from 'react-icons/fi'
 import LeftItem from '../LeftItem'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-const dataItemChat = [
-  { id: '1', logo: '', name: 'AA', latestChat: 'abc', latestTime: '9 phút' },
-  { id: '2', logo: '', name: 'BB', latestChat: 'XZB', latestTime: '10 phút' }
-]
+import apiClient from '~/api/client'
+import { ApiResponse, RoomType } from '~/types'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
+import { setCurrentRoom, setRooms } from '../../chatSlice'
+
 const LeftContent = (props: any) => {
-  const { handleSetIdChatRoom, roleType } = props
+  const user = useSelector((state: RootState) => state.user)
+  const chat = useSelector((state: RootState) => state.chat)
+  const dispatch = useDispatch()
+
+  const { roleType } = props
+  const [listRooms, setListRooms] = useState<RoomType[]>([])
   const navigate = useNavigate()
   const [idActive, setIdActive] = useState('')
   const handleBackHome = () => {
@@ -19,13 +26,44 @@ const LeftContent = (props: any) => {
     if (roleType === 'CANDIDATE_TYPE') navigate('/')
     if (roleType === 'EMPLOYER_TYPE') navigate('/employer')
   }
-  useEffect(() => {
-    if (idActive) handleSetIdChatRoom(idActive)
-  }, [idActive])
+
+  const handleSetCurrentRoom = (room: any) => {
+    dispatch(setCurrentRoom(room))
+    handleActiveItem(room._id)
+  }
+
   const handleActiveItem = (id: string) => {
     console.log('active chat id', id)
     setIdActive(id)
   }
+
+  useEffect(() => {
+    fetchListRooms()
+  }, [])
+
+  useEffect(() => {
+    setListRooms(chat.rooms)
+  }, [chat.rooms])
+
+  const fetchListRooms = async () => {
+    if (roleType === 'EMPLOYER_TYPE') {
+      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/company')
+      dispatch(setRooms(listRooms.result))
+    }
+
+    if (roleType === 'CANDIDATE_TYPE') {
+      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/user')
+      dispatch(setRooms(listRooms.result))
+    }
+  }
+
+  useEffect(() => {
+    if (listRooms.length > 0) {
+      const roomIds = listRooms.map((room) => room._id)
+      user.socket.emit('join-conversations', roomIds)
+    }
+  }, [listRooms.length > 0])
+
   return (
     <div className='left-content-page-chat-container'>
       <div className='header-container'>
@@ -38,11 +76,12 @@ const LeftContent = (props: any) => {
         <Input className='input-search' size='large' placeholder='Nhập tên, email...' prefix={<FiSearch />} />
       </div>
       <div className='list-chat-container'>
-        {dataItemChat.map((item) => (
-          <div key={item.id} onClick={() => handleActiveItem(item.id)}>
-            <LeftItem data={item} isActive={idActive === item.id ? true : false} />
-          </div>
-        ))}
+        {listRooms.length > 0 &&
+          listRooms.map((item) => (
+            <div key={item._id} onClick={() => handleSetCurrentRoom(item)}>
+              <LeftItem roleType={roleType} data={item} isActive={idActive === item._id ? true : false} />
+            </div>
+          ))}
       </div>
     </div>
   )

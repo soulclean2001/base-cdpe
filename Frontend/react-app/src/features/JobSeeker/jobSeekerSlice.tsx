@@ -28,7 +28,6 @@ const initialState: InfoMeState = {
 export const getMe = createAsyncThunk('me/getMe', async (_, { rejectWithValue }) => {
   try {
     const rs = await me.getMe()
-    console.log('asyn thunk ', rs)
     return rs
   } catch (error) {
     return rejectWithValue(error)
@@ -48,8 +47,7 @@ const jobSeekerSlice = createSlice({
       state.error = payload
     })
     builder.addCase(getMe.fulfilled, (state, action) => {
-      const { result, message } = action.payload.data || action.payload
-      console.log('result', result)
+      const { result, message } = action.payload
       state.email = result.email
       state.id = result._id
       state.name = result.name

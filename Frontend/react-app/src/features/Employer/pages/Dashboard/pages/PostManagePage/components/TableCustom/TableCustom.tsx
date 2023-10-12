@@ -108,6 +108,7 @@ const TableCustom = (props: any) => {
   useEffect(() => {
     setData(employer.posts.data)
     setTotal(employer.posts.total)
+    console.log('rerender abcd')
   }, [employer])
 
   const columns: ColumnsType<JobType> = [
@@ -346,7 +347,7 @@ const TableCustom = (props: any) => {
           }
         })}
         columns={handleSetColumnTable()}
-        dataSource={data}
+        dataSource={data.slice(0, limit)}
         onChange={handleChange}
         pagination={{
           current: currentPage,
