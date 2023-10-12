@@ -9,6 +9,7 @@ import JobApplication, {
   ApplyType
 } from '~/models/schemas/JobApplication.schema'
 import { omit } from 'lodash'
+import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
 
 class JobApplicationService {
   static async apply(userId: string, payload: ApplyReqBody) {
@@ -47,10 +48,12 @@ class JobApplicationService {
       _id: _payload.job_post_id
     })
     if (job)
-      await databaseServices.conversationRooms.insertOne({
-        company_id: job.company_id,
-        user_id: new ObjectId(userId)
-      })
+      await databaseServices.conversationRooms.insertOne(
+        new ConversationRoom({
+          company_id: job.company_id,
+          user_id: new ObjectId(userId)
+        })
+      )
 
     return {
       message: 'apply job'

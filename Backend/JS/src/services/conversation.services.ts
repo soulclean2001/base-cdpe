@@ -3,6 +3,7 @@ import databaseServices from './database.services'
 import Conversation from '~/models/schemas/Conversation.schema'
 import { ErrorWithStatus } from '~/models/Errors'
 import { da } from '@faker-js/faker'
+import { omit, pick } from 'lodash'
 
 export default class ConversationService {
   // static async getConversations({
@@ -59,6 +60,79 @@ export default class ConversationService {
         {
           $match: {
             company_id: company._id
+          }
+        },
+        {
+          $sort: {
+            updated_at: -1
+          }
+        },
+        {
+          $lookup: {
+            from: 'company',
+            localField: 'company_id',
+            foreignField: '_id',
+            as: 'company'
+          }
+        },
+        {
+          $unwind: {
+            path: '$company'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $project: {
+            company: 1,
+            user: {
+              email: 1,
+              username: 1,
+              name: 1,
+              avatar: 1,
+              cover_photo: 1,
+              _id: 1
+            },
+            last_message_id: 1
+          }
+        }
+      ])
+      .toArray()
+    const result = []
+    for (const room of rooms) {
+      const conversation = await databaseServices.conversations.findOne({
+        _id: room.last_message_id
+      })
+      room.last_conversation = conversation
+
+      result.push(room)
+    }
+
+    return result
+  }
+
+  static async getRoomById(roomId: string) {
+    const rooms = await databaseServices.conversationRooms
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(roomId)
+          }
+        },
+        {
+          $sort: {
+            updated_at: -1
           }
         },
         {
@@ -125,6 +199,80 @@ export default class ConversationService {
           }
         },
         {
+          $sort: {
+            updated_at: -1
+          }
+        },
+        {
+          $lookup: {
+            from: 'company',
+            localField: 'company_id',
+            foreignField: '_id',
+            as: 'company'
+          }
+        },
+        {
+          $unwind: {
+            path: '$company'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $project: {
+            company: 1,
+            user: {
+              email: 1,
+              username: 1,
+              name: 1,
+              avatar: 1,
+              cover_photo: 1,
+              _id: 1
+            },
+            last_message_id: 1
+          }
+        }
+      ])
+      .toArray()
+    const result = []
+    for (const room of rooms) {
+      const conversation = await databaseServices.conversations.findOne({
+        _id: room.last_message_id
+      })
+      room.last_conversation = conversation
+
+      result.push(room)
+    }
+
+    return result
+  }
+
+  static async getRoomByUser(userId: string, roomId: string) {
+    const rooms = await databaseServices.conversationRooms
+      .aggregate([
+        {
+          $match: {
+            user_id: new ObjectId(userId),
+            _id: new ObjectId(roomId)
+          }
+        },
+        {
+          $sort: {
+            updated_at: -1
+          }
+        },
+        {
           $lookup: {
             from: 'company',
             localField: 'company_id',
@@ -185,11 +333,11 @@ export default class ConversationService {
       user_id: new ObjectId(userId)
     })
 
-    if (!roomFromUser) {
-      const company = await databaseServices.company.findOne({
-        'users.user_id': new ObjectId(userId)
-      })
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
 
+    if (!roomFromUser) {
       if (!company) {
         throw new ErrorWithStatus({
           message: 'You are not owner this conversation and not in the company',
@@ -218,6 +366,11 @@ export default class ConversationService {
             }
           },
           {
+            $sort: {
+              created_at: -1
+            }
+          },
+          {
             $skip: limit * (page - 1)
           },
           {
@@ -238,11 +391,20 @@ export default class ConversationService {
         ])
         .toArray()
     ])
+
+    const rooms = await ConversationService.getRoomById(roomId)
+    let infor_receiver = {}
+
+    if (rooms.length > 0) {
+      infor_receiver = !roomFromUser ? rooms[0].user : rooms[0].company
+    }
+
     return {
       conversations,
       total: total[0]?.total || 0,
       limit,
-      page
+      page,
+      infor_receiver
     }
   }
 
@@ -263,6 +425,9 @@ export default class ConversationService {
       {
         $set: {
           last_message_id: result.insertedId
+        },
+        $currentDate: {
+          updated_at: true
         }
       }
     )

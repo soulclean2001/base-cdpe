@@ -83,7 +83,8 @@ class ConversationController {
     if (conversation) io.to(room_id + '').emit('new-message', conversation)
 
     return res.json({
-      message: 'send message'
+      message: 'send message',
+      result: conversation
     })
   }
 }
