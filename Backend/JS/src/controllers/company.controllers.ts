@@ -27,6 +27,17 @@ class CompanyController {
       result
     })
   }
+
+  async getCompanyByMe(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { role, user_id } = req.decoded_authorization as TokenPayload
+
+    const result = await CompanyService.getCompanyByMe(user_id)
+
+    return res.json({
+      message: 'get company',
+      result
+    })
+  }
 }
 
 export default new CompanyController()

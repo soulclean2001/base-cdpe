@@ -71,6 +71,7 @@ export default class Job {
   created_at: Date
   updated_at: Date
   status: JobStatus
+  job_type: string
 
   constructor(data: JobType) {
     const date = new Date()
@@ -98,5 +99,6 @@ export default class Job {
     this.updated_at = data.updated_at || date
     this.number_of_employees_needed = data.number_of_employees_needed || 10
     this.application_email = data.application_email
+    this.job_type = data.job_type
   }
 }

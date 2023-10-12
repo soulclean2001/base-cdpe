@@ -60,6 +60,12 @@ class CompanyService {
       _id: new ObjectId(companyId)
     })
   }
+
+  static async getCompanyByMe(userId: string) {
+    return await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+  }
 }
 
 export default CompanyService

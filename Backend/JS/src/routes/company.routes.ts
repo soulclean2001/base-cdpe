@@ -23,4 +23,6 @@ companyRouter.patch(
   wrapAsync(companyControllers.updateCompany)
 )
 
+companyRouter.get('/me', accessTokenValidator, wrapAsync(companyControllers.getCompanyByMe))
+
 export default companyRouter
