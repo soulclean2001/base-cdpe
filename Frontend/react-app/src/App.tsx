@@ -57,6 +57,9 @@ import { isExpired } from './utils/jwt'
 import { getMe } from './features/JobSeeker/jobSeekerSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
+import ActivePage from './features/ActivePage'
+import ForgotPasswordPage from './features/ForgotPasswordPage'
+import ResetPasswordPage from './features/ResetPasswordPage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -80,7 +83,9 @@ function App() {
     <>
       <Routes>
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
-          <Route index element={<Home />}></Route>
+          <Route index element={<Home />} />
+
+          <Route path='active-page' element={<ActivePage />} />
           <Route path='jobs' element={<Job />}>
             <Route index element={<ListJob />} />
             <Route path='job-detail' element={<JobDetailPage />} />
@@ -110,8 +115,10 @@ function App() {
         <Route path='/candidate-sign-up' element={<SignUp />} />
         <Route path='/login/oauth' element={<OauthGoogleLogin />} />
         <Route path='/email-verifications' element={<VerifyEmail />} />
-        <Route path='/reset-password' element={<ResetPassword />} />
-        <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} />
+        {/* <Route path='/reset-password' element={<ResetPassword />} /> */}
+        {/* <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} /> */}
+        <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+        <Route path='/reset-password' element={<ResetPasswordPage />} />
         <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
           <Route index element={<HomePage />} />
           <Route path='services' element={<ServicesPage />} />
