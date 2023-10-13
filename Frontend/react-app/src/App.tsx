@@ -12,7 +12,7 @@ import Login from './features/JobSeeker/pages/LoginJobSeeker'
 import HomePage from './features/Employer/pages/HomePage'
 import DashboardEmployer from './features/Employer/pages/Dashboard'
 import Auth from './features/Auth'
-import { UserRole } from './types'
+import { ConversationType, UserRole } from './types'
 import Home from './features/JobSeeker/pages/HomeJobSeeker'
 import OauthGoogleLogin from './features/JobSeeker/pages/LoginJobSeeker/OauthGoogleLogin'
 import { VerifyEmail } from './VerifyEmail'
@@ -51,31 +51,63 @@ import PostDetail from './features/Admin/contents/PostReviewManage/pages/PostDet
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
 import { AuthState } from './features/Auth/authSlice'
 import { RootState } from './app/store'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { isExpired } from './utils/jwt'
 import { getMe } from './features/JobSeeker/jobSeekerSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
-import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
+import { Socket, io } from 'socket.io-client'
+import { setSocket } from './features/User/userSlice'
+import { addMessage } from './features/ChatPage/chatSlice'
 import ActivePage from './features/ActivePage'
 import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
+import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
 }
+export let socket: Socket
+
 function App() {
   const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  const dispatch = useDispatch()
+  const chat = useSelector((state: RootState) => state.chat)
 
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
-      getProfile()
-      navigate('/')
+    getProfile()
+    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+      if (auth.role === 2) {
+        navigate('/')
+      }
+      connectSocket()
+      socket.on('new-message', (conversation: ConversationType) => {
+        dispatch(addMessage(conversation))
+      })
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect()
+      }
     }
   }, [auth])
+
+  const connectSocket = async () => {
+    return new Promise((resolve, reject) => {
+      socket = io(import.meta.env.VITE_API_URL, {
+        auth: {
+          Authorization: `Bearer ${auth.accessToken}`
+        }
+      })
+      socket.emit('join', auth.user_id)
+
+      dispatch(setSocket(socket))
+    })
+  }
   const getProfile = async () => {
     await dispatchAsync(getMe())
   }
@@ -84,7 +116,6 @@ function App() {
       <Routes>
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
           <Route index element={<Home />} />
-
           <Route path='active-page' element={<ActivePage />} />
           <Route path='jobs' element={<Job />}>
             <Route index element={<ListJob />} />
@@ -115,8 +146,8 @@ function App() {
         <Route path='/candidate-sign-up' element={<SignUp />} />
         <Route path='/login/oauth' element={<OauthGoogleLogin />} />
         <Route path='/email-verifications' element={<VerifyEmail />} />
-        {/* <Route path='/reset-password' element={<ResetPassword />} /> */}
-        {/* <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} /> */}
+        {/* <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} /> */}
         <Route path='/forgot-password' element={<ForgotPasswordPage />} />
         <Route path='/reset-password' element={<ResetPasswordPage />} />
         <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>

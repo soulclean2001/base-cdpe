@@ -77,4 +77,6 @@ const responseInterceptorId = instance.interceptors.response.use(
       .finally()
   }
 )
-export default instance
+
+const apiClient = instance
+export default apiClient

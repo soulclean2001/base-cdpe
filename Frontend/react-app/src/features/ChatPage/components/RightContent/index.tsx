@@ -30,6 +30,7 @@ const dataUserConnect = [
 ]
 const RightContent = (props: any) => {
   const { roleType } = props
+
   // const [dataContact,setDataContact] = useState<Array<DataType>>([])
   const getDataByRoleType = () => {
     if (roleType === 'CANDIDATE_TYPE') {

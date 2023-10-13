@@ -16,6 +16,7 @@ import userReducer from '../features/User/userSlice'
 import authReducer from '../features/Auth/authSlice'
 import employerReducer from '../features/Employer/employerSlice'
 import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
+import chatReducer from '~/features/ChatPage/chatSlice'
 
 const persistConfig: PersistConfig<any> = {
   key: 'root',
@@ -29,7 +30,8 @@ const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
   employer: employerReducer,
-  jobSeeker: jobSeekerReducer
+  jobSeeker: jobSeekerReducer,
+  chat: chatReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -38,9 +40,10 @@ export const store: EnhancedStore = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-      }
+      // serializableCheck: {
+      //   ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+      // }
+      serializableCheck: false
     })
 })
 

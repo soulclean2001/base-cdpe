@@ -80,6 +80,7 @@ const TableCustom = (props: any) => {
   const [dataRowSelected, setDataRowSelected] = useState<JobType>()
   const [idPost, setIdPost] = useState<string>()
   const limit = 3
+ 
   const total = employer.posts.total
   const handleChange: TableProps<JobType>['onChange'] = async (pagination, filters, sorter) => {
     // console.log('log data', pagination, filters, sorter)
@@ -107,6 +108,8 @@ const TableCustom = (props: any) => {
   // kiểm tra data thay đổi
   useEffect(() => {
     setData(employer.posts.data)
+    
+   
   }, [employer])
 
   const columns: ColumnsType<JobType> = [
@@ -345,7 +348,7 @@ const TableCustom = (props: any) => {
           }
         })}
         columns={handleSetColumnTable()}
-        dataSource={data}
+        dataSource={data.slice(0, limit)}
         onChange={handleChange}
         pagination={{
           current: currentPage,
