@@ -1,6 +1,6 @@
-import { Button, Col, Form, Input, Modal, Row, Select, Upload } from 'antd'
+import { Button, Col, Form, Input, Modal, Row, Select, Upload, Image as ImageAnt } from 'antd'
 import ImgCrop from 'antd-img-crop'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface'
 import './style.scss'
@@ -8,6 +8,31 @@ import { BiUpload } from 'react-icons/bi'
 import TextArea from 'antd/es/input/TextArea'
 import { imageDimensions } from '~/utils/image'
 import { toast, ToastContainer } from 'react-toastify'
+import apiCompany, { UpdateCompanyType } from '~/api/company.api'
+import apiMe from '~/api/me.api'
+import apiUpload from '~/api/upload.api'
+export interface WorkingLocation {
+  lat: number
+  lon: number
+  branch_name: string
+  address: string
+  district: string
+  city_name: string
+}
+export interface MemberType {
+  user_id: string
+  position: string
+}
+export interface CompanyType {
+  _id?: string
+  company_name: string
+  company_info?: string
+  logo?: string
+  users: MemberType[]
+  background?: string
+  company_size?: string
+  working_locations: WorkingLocation[]
+}
 const listQuantityEmployers = [
   { value: 'Ít hơn 10' },
   { value: '10-24' },
@@ -33,6 +58,7 @@ const listFieldCompany = [
 ]
 const CompanyManagePage = () => {
   const [formCompanyGeneral] = Form.useForm()
+  const [myCompany, setMyCompany] = useState<CompanyType>()
   const [nameCompany, setNameCompany] = useState('')
   const [phone, setPhone] = useState('')
   const [address, setAddress] = useState('')
@@ -40,13 +66,15 @@ const CompanyManagePage = () => {
   const [employerContact, setEmployerContact] = useState('')
   const [fieldCompany, setFieldCompany] = useState('')
   const [description, setDescription] = useState('')
-  //   const [urlLogo, setUrlLogo] = useState('')
-  //   const [urlBanner, setUrlBanner] = useState('')
+
   const [fileListLogo, setFileListLogo] = useState<UploadFile[]>([])
   const [fileListBanner, setFileListBanner] = useState<UploadFile[]>([])
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
-  const handleSubmitForm = () => {
+  const [btnDisabled, setBtnDisabled] = useState(false)
+
+  const handleSubmitForm = async () => {
+    setBtnDisabled(true)
     const logoImage =
       fileListLogo.length > 0 && fileListLogo[0].originFileObj ? fileListLogo[0].originFileObj : undefined
     const bannerImage =
@@ -61,6 +89,41 @@ const CompanyManagePage = () => {
       description,
       logoImage,
       bannerImage
+    }
+    console.log(logoImage)
+    console.log(myCompany)
+    if (myCompany && myCompany._id) {
+      let urlLogo = ''
+      let urlBanner = ''
+      if (myCompany.logo && myCompany._id === fileListLogo[0].uid) urlLogo = 'default'
+      if (myCompany.background && myCompany._id === fileListBanner[0].uid) urlBanner = 'default'
+      if (logoImage) {
+        const logoForm = new FormData()
+        logoForm.append('image', logoImage)
+        urlLogo = await apiUpload.uploadImage(logoForm).then(async (rs) => {
+          return rs.result[0].url
+        })
+      }
+      if (bannerImage) {
+        const bannerForm = new FormData()
+        bannerForm.append('image', bannerImage)
+        urlBanner = await apiUpload.uploadImage(bannerForm).then(async (rs) => {
+          return rs.result[0].url
+        })
+      }
+      console.log('urlLogo', urlLogo)
+      console.log('urlbanner', urlBanner)
+      const request: UpdateCompanyType = {
+        company_name: myCompany.company_name !== nameCompany ? nameCompany : '',
+        company_info: myCompany.company_info !== description ? description : '',
+        company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : ''
+      }
+      await apiCompany.updateCompanyById(myCompany._id, urlLogo, urlBanner, request).then((rs) => {
+        setTimeout(() => {
+          setBtnDisabled(false)
+          toast.success('Cập nhật thông tin công ty thành công')
+        }, 1000)
+      })
     }
 
     console.log('form data post', data)
@@ -77,19 +140,17 @@ const CompanyManagePage = () => {
 
   //img
   const onChangeLogo: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-    console.log('xxx', newFileList)
     setFileListLogo(newFileList)
   }
   const onChangeBanner: UploadProps['onChange'] = async ({ fileList: newFileList, file }) => {
-    console.log(file)
     let src = file.url as string
-    if (!src) {
-      src = await new Promise((resolve) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(file.originFileObj as RcFile)
-        reader.onload = () => resolve(reader.result as string)
-      })
-    }
+    // if (!src) {
+    //   src = await new Promise((resolve) => {
+    //     const reader = new FileReader()
+    //     reader.readAsDataURL(file.originFileObj as RcFile)
+    //     reader.onload = () => resolve(reader.result as string)
+    //   })
+    // }
     const image = new Image()
     image.src = src
     const list = newFileList.map((file) => {
@@ -106,11 +167,18 @@ const CompanyManagePage = () => {
   const onClickOkConfirmCropImgBanner = async (e: any) => {
     const { width, height } = await imageDimensions(e)
     console.log('w-h', width, height)
+    const listErro: UploadFile[] = []
+
+    if (e.size > 307200) {
+      toast.error('Kích thước hình ảnh tối đa: 307 kb')
+      setFileListBanner(listErro)
+      return
+    }
     if (width < 1920 && height < 510) {
-      const listErro: UploadFile[] = []
       setFileListBanner(listErro)
       console.log('img', fileListBanner)
-      toast.error('Hình ảnh không đúng kích thước')
+      toast.error('Kích thước tối thiểu: 1920px x 510px')
+      return
     }
   }
   const onPreview = async (file: UploadFile) => {
@@ -127,8 +195,50 @@ const CompanyManagePage = () => {
     setUrlImgPreview(src)
     setOpenModalReview(true)
   }
-  //
+  // get my company
+  useEffect(() => {
+    fetchGetMyCompany()
+  }, [])
+  const fetchGetMyCompany = async () => {
+    const me = await apiMe.getMe().then((rs: any) => {
+      return rs.result
+    })
+    await apiCompany.getMyCompany().then((rs: any) => {
+      setMyCompany(rs.result)
+      setNameCompany(rs.result.company_name)
+      setEmployerContact(me.name)
+      setPhone(me.phone_number)
+      setDescription(rs.result.company_info)
+      setQuantityEmployee(rs.result.company_size)
+      if (rs.result.logo) {
+        const fileLogo: UploadFile = {
+          uid: rs.result._id,
+          name: 'logo.png',
+          status: 'done',
+          url: rs.result.logo
+        }
+        setFileListLogo([fileLogo])
+      }
+      if (rs.result.background) {
+        const fileBanner: UploadFile = {
+          uid: rs.result._id,
+          name: 'banner.png',
+          status: 'done',
+          url: rs.result.background
+        }
+        setFileListBanner([fileBanner])
+      }
 
+      formCompanyGeneral.setFieldsValue({
+        nameCompany: rs.result.company_name,
+        employerContact: me.name,
+        description: rs.result.company_info,
+        phone: me.phone_number,
+        quantityEmployee: rs.result.company_size
+      })
+    })
+  }
+  //
   return (
     <div className='company-general-container'>
       <div className='title'>Thông Tin Công Ty</div>
@@ -153,7 +263,7 @@ const CompanyManagePage = () => {
               showGrid
             >
               <Upload
-                name='logo'
+                // name='logo'
                 style={{ width: 'auto' }}
                 customRequest={dummyRequest}
                 listType='picture-card'
@@ -175,13 +285,13 @@ const CompanyManagePage = () => {
             label={<span style={{ fontWeight: '500' }}>Banner Công Ty</span>}
           >
             <ImgCrop
-              quality={1}
+              // quality={1}
               modalWidth={720}
               rotationSlider
               modalTitle={'Cập nhật Banner'}
               modalOk={'Lưu'}
               modalCancel={'Hủy'}
-              onModalOk={onClickOkConfirmCropImgBanner}
+              onModalOk={(e) => onClickOkConfirmCropImgBanner(e)}
               showReset
               showGrid
               aspect={2 / 1}
@@ -202,7 +312,7 @@ const CompanyManagePage = () => {
               </Upload>
             </ImgCrop>
           </Form.Item>
-          <ToastContainer
+          {/* <ToastContainer
             position='top-right'
             autoClose={1500}
             hideProgressBar={false}
@@ -213,7 +323,7 @@ const CompanyManagePage = () => {
             draggable
             pauseOnHover
             theme='light'
-          />
+          /> */}
           <Row justify={'space-between'}>
             <Col md={16} sm={24} xs={24}>
               <Form.Item
@@ -226,6 +336,51 @@ const CompanyManagePage = () => {
                   placeholder='Nhập tên công ty'
                   onChange={(e) => {
                     setNameCompany(e.target.value)
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col md={7} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
+              <Form.Item
+                name='quantityEmployee'
+                label={<span style={{ fontWeight: '500' }}>Quy Mô Công Ty</span>}
+                // rules={[{ required: true, message: 'Vui lòng chọn quy mô công ty' }]}
+              >
+                <Select
+                  showSearch
+                  placeholder={'Chọn quy mô'}
+                  size='large'
+                  options={listQuantityEmployers}
+                  onChange={(value) => setQuantityEmployee(value)}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row justify={'space-between'}>
+            <Col md={16} sm={24} xs={24}>
+              {/* <Form.Item
+                name='address'
+                label={<span style={{ fontWeight: '500' }}>Địa Chỉ Công Ty</span>}
+                rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ công ty' }]}
+              >
+                <Input
+                  size='large'
+                  placeholder='Ví dụ: F3/2 Gò Vấp, TP. Hồ Chí Minh'
+                  onChange={(e) => {
+                    setAddress(e.target.value)
+                  }}
+                />
+              </Form.Item> */}
+              <Form.Item
+                name='employerContact'
+                label={<span style={{ fontWeight: '500' }}>Người Liên Hệ</span>}
+                rules={[{ required: true, message: 'Vui lòng không để trống người liên hệ' }]}
+              >
+                <Input
+                  size='large'
+                  placeholder='Ví dụ: Nguyễn Văn B'
+                  onChange={(e) => {
+                    setEmployerContact(e.target.value)
                   }}
                 />
               </Form.Item>
@@ -246,51 +401,7 @@ const CompanyManagePage = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Row justify={'space-between'}>
-            <Col md={16} sm={24} xs={24}>
-              <Form.Item
-                name='address'
-                label={<span style={{ fontWeight: '500' }}>Địa Chỉ Công Ty</span>}
-                rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ công ty' }]}
-              >
-                <Input
-                  size='large'
-                  placeholder='Ví dụ: F3/2 Gò Vấp, TP. Hồ Chí Minh'
-                  onChange={(e) => {
-                    setAddress(e.target.value)
-                  }}
-                />
-              </Form.Item>
-            </Col>
-            <Col md={7} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
-              <Form.Item
-                name='quantityEmployee'
-                label={<span style={{ fontWeight: '500' }}>Quy Mô Công Ty</span>}
-                rules={[{ required: true, message: 'Vui lòng chọn quy mô công ty' }]}
-              >
-                <Select
-                  showSearch
-                  placeholder={'Chọn quy mô'}
-                  size='large'
-                  options={listQuantityEmployers}
-                  onChange={(value) => setQuantityEmployee(value)}
-                />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
-            name='employerContact'
-            label={<span style={{ fontWeight: '500' }}>Người Liên Hệ</span>}
-            rules={[{ required: true, message: 'Vui lòng không để trống người liên hệ' }]}
-          >
-            <Input
-              size='large'
-              placeholder='Ví dụ: Nguyễn Văn B'
-              onChange={(e) => {
-                setEmployerContact(e.target.value)
-              }}
-            />
-          </Form.Item>
+
           <Form.Item
             label={<span style={{ fontWeight: '500' }}>Lĩnh Vực Công Ty</span>}
             name='fieldCompany'
@@ -313,7 +424,7 @@ const CompanyManagePage = () => {
           <Form.Item
             name='description'
             label={<span style={{ fontWeight: '500' }}>Sơ lượt về công ty</span>}
-            rules={[{ required: true, message: 'Vui lòng không để trống sơ lượt về công ty' }]}
+            // rules={[{ required: true, message: 'Vui lòng không để trống sơ lượt về công ty' }]}
           >
             <TextArea
               style={{ height: 210, maxHeight: 210 }}
@@ -324,6 +435,7 @@ const CompanyManagePage = () => {
 
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
+              disabled={btnDisabled}
               size='large'
               htmlType='submit'
               style={{ background: 'rgb(255, 125, 85)', color: 'white', width: '100px' }}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import iconStatic from '~/utils/icons'
 import locale from 'antd/locale/vi_VN'
 import dayjs from 'dayjs'
@@ -15,6 +15,11 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import { EducationLevel, LanguageLevel, ResumeType, SkillLevel } from '~/types/resume.type'
 import Right from './Right'
 import { AiOutlineUpload } from 'react-icons/ai'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { isExpired } from '~/utils/jwt'
 
 const initResume: ResumeType = {
   _id: '',
@@ -267,6 +272,15 @@ export const defaultResume: ResumeType = {
 }
 
 const CV = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+      if (auth.role !== 2) navigate('/candidate-login')
+    } else {
+      navigate('/candidate-login')
+    }
+  }, [auth])
   const [isAddInfo, setIsAddInfo] = useState(false)
   const [openIndex, setOpenIndex] = useState([1, 1, 1, 1, 1, 1, 1])
   // const plugin = ClassicEditor.builtinPlugins.map((plugin) => plugin.pluginName)

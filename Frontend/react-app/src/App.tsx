@@ -63,6 +63,7 @@ import ActivePage from './features/ActivePage'
 import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
+import { ToastContainer } from 'react-toastify'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -78,11 +79,8 @@ function App() {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    getProfile()
     if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
-      if (auth.role === 2) {
-        navigate('/')
-      }
+      getProfile()
       connectSocket()
       socket.on('new-message', (conversation: ConversationType) => {
         dispatch(addMessage(conversation))
@@ -113,6 +111,18 @@ function App() {
   }
   return (
     <>
+      <ToastContainer
+        position='top-right'
+        autoClose={1500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme='light'
+      />
       <Routes>
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
           <Route index element={<Home />} />

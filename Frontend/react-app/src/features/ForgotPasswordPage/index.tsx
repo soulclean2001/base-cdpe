@@ -3,8 +3,22 @@ import './style.scss'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import bg from '~/assets/alena-aenami-cold-1k.jpg'
-
+import { AuthState } from '../Auth/authSlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
+import { isExpired } from '~/utils/jwt'
+import { toast } from 'react-toastify'
 const ForgotPasswordPage = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+      if (auth.role === 2) navigate('/')
+      if (auth.role === 1) navigate('/employer')
+      if (auth.role === 0) navigate('/admin')
+      toast.error('Vui lòng đăng xuất để thực hiện thao tác này!')
+    }
+  }, [auth])
   const naviagte = useNavigate()
   const [form] = Form.useForm()
   const [email, setEmail] = useState('')

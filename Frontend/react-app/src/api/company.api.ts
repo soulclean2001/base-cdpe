@@ -1,6 +1,9 @@
 import { ApiResponse } from '~/types'
 
-// import client from './client'
+import client from './client'
+import { CompanyType } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
+import { filter } from 'lodash'
+import { filterObject } from '~/utils/filterRequestDynamic'
 interface WorkingLocation {
   lat: number
   lon: number
@@ -8,6 +11,14 @@ interface WorkingLocation {
   address: string
   district: string
   city_name: string
+}
+export interface UpdateCompanyType {
+  company_name?: string
+  company_info?: string
+  company_size?: string
+  logo?: string
+  background?: string
+  working_locations?: WorkingLocation[]
 }
 let dataWorkLocation = [
   {
@@ -41,6 +52,21 @@ export class Company {
       message: 'add thanh cong',
       result: []
     }
+    return rs
+  }
+  public static getMyCompany = async () => {
+    const rs: ApiResponse = await client.get(`/company/me`)
+    return rs
+  }
+  public static updateCompanyById = async (id: string, urlLogo: string, urlBanner: string, data: UpdateCompanyType) => {
+    console.log(data)
+    let request = {}
+
+    request = filterObject(data)
+
+    if (urlLogo !== 'default') request = { ...request, logo: urlLogo }
+    if (urlBanner !== 'default') request = { ...request, background: urlBanner }
+    const rs: ApiResponse = await client.patch(`/company/${id}`, request)
     return rs
   }
 }

@@ -1,9 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './servicesPage.scss'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import ServiceItem from './components/ServiceItem/ServiceItem'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { isExpired } from '~/utils/jwt'
 
 const HomePage = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role !== 1) {
+      navigate('/employer-login')
+    }
+  }, [auth])
   const services = [
     {
       title: 'Đăng Tuyển',

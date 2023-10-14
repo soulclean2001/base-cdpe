@@ -36,6 +36,7 @@ const LoginEmployer = (props: any) => {
         dispatchAsync(setToken(token))
         dispatchAsync(setAccountStatus(dataDecode))
         dispatchAsync(setStateLogin(action))
+        navigate('/employer')
       } else {
         toast.error('Tài khoản không tồn tại')
         // setLoading(false)
@@ -67,12 +68,6 @@ const LoginEmployer = (props: any) => {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed login:', errorInfo)
   }
-
-  useEffect(() => {
-    if (auth.isLogin) {
-      navigate('/employer')
-    }
-  }, [auth])
 
   return (
     <Row className='page-login-employer-container'>

@@ -3,10 +3,12 @@ import { FaBars } from 'react-icons/fa'
 import './dashboard.scss'
 import { handleChangeSideBar } from '../../employerSlice'
 import SideBarEmployer from './components/SideBar/SideBarEmployer'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 
 import { RootState } from '~/app/store'
 import { useEffect, useState } from 'react'
+import { AuthState } from '~/features/Auth/authSlice'
+import { isExpired } from '~/utils/jwt'
 
 // import SideBarEmployer from './components/SideBar/SideBarEmployer'
 
@@ -14,6 +16,15 @@ const DashboarEmployer = () => {
   const dispatch = useDispatch()
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const [widthContent, setWidthContent] = useState('82.2%')
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+      if (auth.role !== 1) navigate('/employer-login')
+    } else {
+      navigate('/employer-login')
+    }
+  }, [auth])
   useEffect(() => {
     if (collap) {
       setWidthContent('100%')

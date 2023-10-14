@@ -1,4 +1,4 @@
-// import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import BannerCarousel from '~/components/BannerCarousel/BannerCarousel'
 import Search from '~/components/Search/Search'
 import './home.scss'
@@ -9,11 +9,21 @@ import TopCarrer from './Components/TopCarrer/TopCarrer'
 // import { AuthState } from '~/features/Auth/authSlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-
+import { useNavigate } from 'react-router-dom'
+import { isExpired } from '~/utils/jwt'
+import { AuthState } from '~/features/Auth/authSlice'
 // import me from '~/api/me.api'
 // import { isExpired } from '~/utils/jwt'
 
 const Home = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role !== 2) {
+      navigate('/candidate-login')
+    }
+  }, [auth])
+
   // const dispatchAsync: AppThunkDispatch = useAppDispatch()
   // const auth: AuthState = useSelector((state: RootState) => state.auth)
   const userInfo = useSelector((state: RootState) => state.jobSeeker)
@@ -31,6 +41,7 @@ const Home = () => {
   //   const user2 = await getMe()
   //   console.log('use2 ', user2)
   // }
+
   return (
     <div className='home-container'>
       <div className='home-search-container'>

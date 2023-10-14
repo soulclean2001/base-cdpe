@@ -4,9 +4,24 @@ import { LockOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import bg from '~/assets/alena-aenami-cold-1k.jpg'
-
+import { AuthState } from '../Auth/authSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { isExpired } from '~/utils/jwt'
+import { toast } from 'react-toastify'
 const ResetPasswordPage = () => {
-  const naviagte = useNavigate()
+  const navigate = useNavigate()
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+      if (auth.role === 2) navigate('/')
+      if (auth.role === 1) navigate('/employer')
+      if (auth.role === 0) navigate('/admin')
+      toast.error('Vui lòng đăng xuất để thực hiện thao tác này!')
+    }
+  }, [auth])
   const [form] = Form.useForm()
   const [newPassword, setNewPassword] = useState('')
   const [rePassword, setRePassword] = useState('')
@@ -24,7 +39,7 @@ const ResetPasswordPage = () => {
     <div className='forgot-password-page-container' style={{ backgroundImage: `url(${bg})` }}>
       <div className='forgot-password-content-wapper'>
         <div className='content-wapper'>
-          <h1 onClick={() => naviagte('/')}>HFWorks</h1>
+          <h1 onClick={() => navigate('/')}>HFWorks</h1>
           <div className='first-content-container'>
             <h3>Đổi mật khẩu</h3>
             <div className='first-content-wapper'>

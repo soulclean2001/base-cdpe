@@ -97,6 +97,7 @@ const authSlice = createSlice({
       return state
     },
     logout(state) {
+      state.user_id = ''
       state.accessToken = ''
       state.refreshToken = ''
       state.isLogin = false

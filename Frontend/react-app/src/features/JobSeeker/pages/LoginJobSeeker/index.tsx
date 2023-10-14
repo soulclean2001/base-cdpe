@@ -83,6 +83,7 @@ const Login: React.FC = () => {
         dispatchAsync(setToken(token))
         dispatchAsync(setAccountStatus(dataDecode))
         dispatchAsync(setStateLogin(action))
+        navigate('/')
       } else {
         toast.error('Tài khoản không tồn tại')
         setLoading(false)
@@ -90,31 +91,22 @@ const Login: React.FC = () => {
     }
   }
 
-  // useEffect(() => {
-  //   if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
-  //     getProfile()
-  //     handleBackHome()
-  //   }
-  // }, [auth])
-  // const getProfile = async () => {
-  //   await dispatchAsync(getMe())
-  // }
   const onFinish = async (values: LoginData) => {
     delete values.remember
     setLoading(true)
-    setTimeout(async () => {
-      await Auth.loginApi(values)
-        .then((response) => {
-          if (response.result && response.result.access_token && response.result.refresh_token) {
-            setTokenLogin({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
-          }
-        })
-        .catch((error) => {
-          console.log('error', error)
-          toast.error('Tài khoản hoặc mật khẩu không đúng')
-          setLoading(false)
-        })
-    }, 1000)
+
+    await Auth.loginApi(values)
+      .then((response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          setTokenLogin({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+      })
+      .catch((error) => {
+        console.log('error', error)
+        toast.error('Tài khoản hoặc mật khẩu không đúng')
+        setLoading(false)
+      })
+
     //old code
     // dispatchAsync(postLogin(values))
     //
