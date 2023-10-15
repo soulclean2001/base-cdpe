@@ -97,8 +97,6 @@ const ModalUpdateProfile = (props: PropsType) => {
     const avatarImage =
       fileListAvatar.length > 0 && fileListAvatar[0].originFileObj ? fileListAvatar[0].originFileObj : undefined
     let urlAvatar = '_'
-    console.log(idUser)
-    console.log(fileListAvatar[0].uid.slice(5, fileListAvatar[0].uid.length))
     if (fileListAvatar.length > 0 && idUser === fileListAvatar[0].uid.slice(5, fileListAvatar[0].uid.length))
       urlAvatar = 'default'
     if (avatarImage) {
