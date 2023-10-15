@@ -15,9 +15,9 @@ import counterReducer from '../features/counter/counterSlice'
 import userReducer from '../features/User/userSlice'
 import authReducer from '../features/Auth/authSlice'
 import employerReducer from '../features/Employer/employerSlice'
-import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
+// import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
 import chatReducer from '~/features/ChatPage/chatSlice'
-
+import meReducer from '~/features/Account/meSlice'
 const persistConfig: PersistConfig<any> = {
   key: 'root',
   version: 1,
@@ -30,8 +30,9 @@ const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
   employer: employerReducer,
-  jobSeeker: jobSeekerReducer,
-  chat: chatReducer
+  // jobSeeker: jobSeekerReducer,
+  chat: chatReducer,
+  me: meReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

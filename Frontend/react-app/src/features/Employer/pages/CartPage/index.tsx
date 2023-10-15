@@ -7,12 +7,12 @@ import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { isExpired } from '~/utils/jwt'
+
 const CartPage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role !== 1) navigate('/employer-login')
     } else {
       navigate('/employer-login')

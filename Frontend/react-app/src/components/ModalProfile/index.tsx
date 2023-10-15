@@ -1,22 +1,45 @@
 import { Avatar, Button, Modal } from 'antd'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 
 import './style.scss'
 import ModalUpdateProfile from '../ModalUpdateProfile'
+import apiMe, { MeResponseType } from '~/api/me.api'
+import { InfoMeState, setMyProfile } from '~/features/Account/meSlice'
 
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 const ModalProfile = (props: any) => {
+  const dispatch = useDispatch()
   const { openModal, handleCloseModal } = props
-  const [name, setName] = useState()
-  const [birthDay, setBirthDay] = useState()
-  const [gender, setGender] = useState()
-
+  const [myInfo, setMyInfo] = useState<MeResponseType>()
+  const [idUser, setIdUser] = useState('')
+  const [avatar, setAvatar] = useState('')
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [birthDay, setBirthDay] = useState('')
+  const [gender, setGender] = useState('')
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
   const [openUpdateProfile, setOpenUpdateProfile] = useState(false)
 
   const handleOpenUpdateProfile = () => {
     setOpenUpdateProfile(true)
   }
-
+  useEffect(() => {
+    if (openModal && !openUpdateProfile) getMyInfo()
+  }, [openModal, openUpdateProfile])
+  const getMyInfo = async () => {
+    await apiMe.getMe().then((rs) => {
+      console.log('me', rs)
+      setMyInfo(rs.result)
+      setIdUser(rs.result._id)
+      setAvatar(rs.result.avatar)
+      setName(rs.result.name)
+      setPhone(rs.result.phone_number)
+      setBirthDay(rs.result.date_of_birth.slice(0, 10))
+      setGender(rs.result.gender === 0 ? 'Nam' : 'Nữ')
+      dispatch(setMyProfile({ name: rs.result.name, avatar: rs.result.avatar }))
+    })
+  }
   return (
     <Modal
       centered
@@ -32,14 +55,28 @@ const ModalProfile = (props: any) => {
       </div>
       <div className='profile-avatar'>
         <Avatar
-          style={{ width: '88px', height: '88px', border: '2px solid white' }}
-          src={'https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg'}
+          style={{
+            fontSize: '22px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            textAlign: 'center',
+            backgroundColor: 'gray',
+            width: '88px',
+            height: '88px',
+            border: '2px solid white'
+          }}
+          src={avatar && avatar !== '_' ? avatar : ''}
         >
-          {/* {profileUser.avatar ? '' : profileUser.name[0].toUpperCase()} */}
+          {avatar && avatar !== '_'
+            ? ''
+            : name && name !== '_'
+            ? name.slice(0, 1).toUpperCase()
+            : me.email.slice(0, 1).toUpperCase()}
         </Avatar>
       </div>
       <div className='profile-info-bao'>
-        <h2>{name ? name : 'ccc'}</h2>
+        <h2>{name && name !== '_' ? name : '_'}</h2>
         <h3>Thông tin cá nhân</h3>
         <div style={{ display: 'flex' }}>
           <div className='info-left'>
@@ -49,13 +86,9 @@ const ModalProfile = (props: any) => {
           </div>
 
           <div className='info-right'>
-            <p>{'cc'}</p>
-            <p>{'Nam'}</p>
-            {/* <p>
-                    {birthDay
-                      ? `${birthDay.day} / ${birthDay.month} / ${birthDay.year}`
-                      : `${profileUser.birthDay.day} / ${profileUser.birthDay.month} / ${profileUser.birthDay.year}`}
-                  </p> */}
+            <p>{phone ? phone : '_'}</p>
+            <p>{gender}</p>
+            <p>{birthDay ? birthDay : '_'}</p>
           </div>
         </div>
       </div>
@@ -63,7 +96,18 @@ const ModalProfile = (props: any) => {
         <Button className='btn-update' onClick={handleOpenUpdateProfile}>
           Cập nhật thông tin
         </Button>
-        <ModalUpdateProfile openModal={openUpdateProfile} handleCloseModal={() => setOpenUpdateProfile(false)} />
+        <ModalUpdateProfile
+          data={{
+            _id: idUser,
+            avatar: avatar,
+            date_of_birth: birthDay,
+            name: name,
+            gender: gender === 'Nam' ? 0 : 1,
+            phone_number: phone
+          }}
+          openModal={openUpdateProfile}
+          handleCloseModal={() => setOpenUpdateProfile(false)}
+        />
       </div>
     </Modal>
   )

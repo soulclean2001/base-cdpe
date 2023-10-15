@@ -2,29 +2,40 @@ import { Avatar, Button, Input, Modal, Upload } from 'antd'
 import { Radio } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { imageDimensions } from '~/utils/image'
 import '../ModalProfile/style.scss'
-
+import apiMe, { MeRequestType, MeResponseType } from '~/api/me.api'
 import { AiFillCamera } from 'react-icons/ai'
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface'
-const ModalUpdateProfile = (props: any) => {
-  const { openModal, handleCloseModal } = props
-  const disPatch = useDispatch()
+import apiUpload from '~/api/upload.api'
+import { toast } from 'react-toastify'
 
-  const [birthDay, setBirthDay] = useState()
-  const [birthDayStr, setBirthDayStr] = useState('')
-
+interface PropsType {
+  openModal: boolean
+  handleCloseModal: any
+  data: MeResponseType
+}
+const ModalUpdateProfile = (props: PropsType) => {
+  const { openModal, handleCloseModal, data }: PropsType = props
+  const [myInfo, setMyInfo] = useState<MeResponseType>()
+  const [idUser, setIdUser] = useState('')
+  const [birthDay, setBirthDay] = useState('')
+  const [phone, setPhone] = useState('')
   const [name, setName] = useState('')
   const [gender, setGender] = useState(0)
-  const [fileListAvatar, setFileListLogo] = useState<UploadFile[]>([])
+  const [fileListAvatar, setFileListAvatar] = useState<UploadFile[]>([])
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
   const handleChangeDate = (e: any) => {
+    let selectDate = e.target.value
+    let yearOld = Number(selectDate.slice(0, 4))
+    let currentYear = new Date().getFullYear()
+    if (currentYear - yearOld < 18) {
+      toast.error(`Vui lòng chọn năm sinh từ ${currentYear - 18} trở xuống`)
+      return
+    }
     setBirthDay(e.target.value)
   }
-
-  const [checkUpdate, setCheck] = useState(false)
   const dummyRequest = ({ file, onSuccess }: any) => {
     setTimeout(() => {
       onSuccess('ok')
@@ -36,7 +47,7 @@ const ModalUpdateProfile = (props: any) => {
   }
   const onChangeLogo: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     console.log('xxx', newFileList)
-    setFileListLogo(newFileList)
+    setFileListAvatar(newFileList)
   }
   const onPreview = async (file: UploadFile) => {
     let src = file.url as string
@@ -51,6 +62,62 @@ const ModalUpdateProfile = (props: any) => {
     image.src = src
     setUrlImgPreview(src)
     setOpenModalReview(true)
+  }
+  useEffect(() => {
+    if (openModal === true) getMyInfo()
+  }, [openModal])
+  const getMyInfo = async () => {
+    console.log('me', data)
+    setMyInfo(data)
+    setIdUser(data._id)
+    setName(data.name)
+    setPhone(data.phone_number)
+    setBirthDay(data.date_of_birth.slice(0, 10))
+    setGender(data.gender as number)
+
+    if (data.avatar && data.avatar !== '_') {
+      const fileAvatar: UploadFile = {
+        uid: `info_${data._id}`,
+        name: 'avatar.png',
+        status: 'done',
+        url: data.avatar
+      }
+      setFileListAvatar([fileAvatar])
+    }
+  }
+  const handleSubmitUpdate = async () => {
+    if (!myInfo) return
+    const phoneRegex = new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)
+
+    if (phone && !phoneRegex.test(phone)) {
+      toast.error('Vui lòng nhập đúng định dạng số điện thoại, Bắt đầu bằng 03-05-07-08-09 và tối đa 10 số')
+      return
+    }
+
+    const avatarImage =
+      fileListAvatar.length > 0 && fileListAvatar[0].originFileObj ? fileListAvatar[0].originFileObj : undefined
+    let urlAvatar = '_'
+    console.log(idUser)
+    console.log(fileListAvatar[0].uid.slice(5, fileListAvatar[0].uid.length))
+    if (fileListAvatar.length > 0 && idUser === fileListAvatar[0].uid.slice(5, fileListAvatar[0].uid.length))
+      urlAvatar = 'default'
+    if (avatarImage) {
+      const logoForm = new FormData()
+      logoForm.append('image', avatarImage)
+      urlAvatar = await apiUpload.uploadImage(logoForm).then(async (rs) => {
+        return rs.result[0].url
+      })
+    }
+    const request: MeRequestType = {
+      name: myInfo.name !== name ? (name ? name : '_') : '',
+      date_of_birth: myInfo.date_of_birth !== birthDay ? birthDay : '',
+      phone_number: myInfo.phone_number !== phone ? phone : '',
+      gender: myInfo.gender !== gender ? gender : ''
+    }
+    await apiMe.updateMe(request, urlAvatar).then((rs) => {
+      toast.success('Cập nhật thông tin thành công')
+      handleCloseModal()
+    })
   }
   return (
     <Modal
@@ -99,9 +166,19 @@ const ModalUpdateProfile = (props: any) => {
 
         <h3 style={{ marginTop: '10px' }}>Thông tin cá nhân</h3>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className='info-phone' style={{ paddingBottom: '15px' }}>
+            <span>Số điện thoại</span>
+            <Input value={phone} size='middle' onChange={(e) => setPhone(e.target.value)} />
+          </div>
+
           <div className='info-gender'>
             <span style={{ marginBottom: '5px' }}>Giới tính</span>
-            <Radio.Group onChange={(e) => setGender(e.target.value)} value={gender}>
+            <Radio.Group
+              onChange={(e) => {
+                setGender(e.target.value)
+              }}
+              value={gender === 0 ? 0 : 1}
+            >
               <Radio value={0}>Nam</Radio>
               <Radio value={1}>Nữ</Radio>
             </Radio.Group>
@@ -113,7 +190,7 @@ const ModalUpdateProfile = (props: any) => {
           </div>
         </div>
       </div>
-      <div onClick={props.closeUpdate} className='btn-go-update'>
+      <div onClick={handleSubmitUpdate} className='btn-go-update'>
         <Button className='btn-update' style={{ backgroundColor: '#E5E7EB' }}>
           Cập nhật thông tin
         </Button>

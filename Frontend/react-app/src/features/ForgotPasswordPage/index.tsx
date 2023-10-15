@@ -6,13 +6,13 @@ import bg from '~/assets/alena-aenami-cold-1k.jpg'
 import { AuthState } from '../Auth/authSlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { isExpired } from '~/utils/jwt'
+// import { isExpired } from '~/utils/jwt'
 import { toast } from 'react-toastify'
 const ForgotPasswordPage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role === 2) navigate('/')
       if (auth.role === 1) navigate('/employer')
       if (auth.role === 0) navigate('/admin')

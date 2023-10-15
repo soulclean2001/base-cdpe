@@ -19,7 +19,7 @@ import { AuthState } from '~/features/Auth/authSlice'
 import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { isExpired } from '~/utils/jwt'
+// import { isExpired } from '~/utils/jwt'
 
 const initResume: ResumeType = {
   _id: '',
@@ -275,7 +275,7 @@ const CV = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role !== 2) navigate('/candidate-login')
     } else {
       navigate('/candidate-login')

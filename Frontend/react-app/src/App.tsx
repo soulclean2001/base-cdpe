@@ -49,12 +49,12 @@ import OverviewEmployer from './features/Employer/pages/Dashboard/pages/Overview
 import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
 import PostDetail from './features/Admin/contents/PostReviewManage/pages/PostDetail'
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
-import { AuthState } from './features/Auth/authSlice'
+import { AuthPayload, AuthState, logout, setToken } from './features/Auth/authSlice'
 import { RootState } from './app/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { isExpired } from './utils/jwt'
-import { getMe } from './features/JobSeeker/jobSeekerSlice'
+import { getMe } from './features/Account/meSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
 import { Socket, io } from 'socket.io-client'
 import { setSocket } from './features/User/userSlice'
@@ -64,6 +64,7 @@ import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
 import { ToastContainer } from 'react-toastify'
+
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -71,9 +72,9 @@ const titleLoginAdmin = {
 export let socket: Socket
 
 function App() {
-  const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
+
   const chat = useSelector((state: RootState) => state.chat)
 
   const auth: AuthState = useSelector((state: RootState) => state.auth)

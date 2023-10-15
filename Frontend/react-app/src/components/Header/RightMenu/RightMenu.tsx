@@ -7,7 +7,7 @@ import { AiFillLock, AiFillMessage } from 'react-icons/ai'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import { GrUserSettings } from 'react-icons/gr'
 import { MdOutlineLogout } from 'react-icons/md'
-import { InfoMeState } from '~/features/JobSeeker/jobSeekerSlice'
+
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { logout } from '~/features/Auth/authSlice'
@@ -15,6 +15,7 @@ import { useState } from 'react'
 import NotifyDrawer from '../NotifyDrawer/NotifyDrawer'
 import ModalProfile from '~/components/ModalProfile'
 import ModalChangePassword from '~/components/ModalChangePassword'
+import { InfoMeState } from '~/features/Account/meSlice'
 
 const dataNotify = [
   { id: '1', name: 'VINFAT', actionInfo: 'Đã theo dõi CV của bạn' },
@@ -33,7 +34,7 @@ const dataNotify = [
   { id: '14', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' }
 ]
 const RightMenu = (props: any) => {
-  const me: InfoMeState = useSelector((state: RootState) => state.jobSeeker)
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
   const disPatch = useDispatch()
   const navigate = useNavigate()
   const [openModalProfile, setOpenModalProfile] = useState(false)

@@ -8,14 +8,14 @@ import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { AuthState } from '../Auth/authSlice'
 import { useNavigate } from 'react-router-dom'
-import { isExpired } from '~/utils/jwt'
+// import { isExpired } from '~/utils/jwt'
 
 const ChatPage = (props: any) => {
   const { roleType } = props
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role === 2) navigate('/chat')
       if (auth.role === 1) navigate('/employer/chat')
       if (auth.role === 0) navigate('/admin/chat')
@@ -26,7 +26,7 @@ const ChatPage = (props: any) => {
     }
   }, [auth])
   return (
-    <div className='chat-page-container'>
+    <div className='chat-page-container' style={{ height: auth.role === 0 ? '100vh' : '89vh' }}>
       <LeftContent roleType={roleType} />
       <CenterContent />
 

@@ -6,12 +6,12 @@ import { AuthState } from '~/features/Auth/authSlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { useEffect } from 'react'
-import { isExpired } from '~/utils/jwt'
+// import { isExpired } from '~/utils/jwt'
 const CompanyPage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role !== 2) {
+    if (auth && auth.isLogin && auth.accessToken && auth.role !== 2) {
       navigate('/candidate-login')
     }
   }, [auth])

@@ -6,13 +6,13 @@ import { AuthState } from '~/features/Auth/authSlice'
 import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { isExpired } from '~/utils/jwt'
+// import { isExpired } from '~/utils/jwt'
 
 const HomePage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role !== 1) {
+    if (auth && auth.isLogin && auth.accessToken && auth.role !== 1) {
       navigate('/employer-login')
     }
   }, [auth])

@@ -9,11 +9,13 @@ import { MdOutlineLogout } from 'react-icons/md'
 import { GrUserSettings } from 'react-icons/gr'
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { logout } from '~/features/Auth/authSlice'
 import { BsFillCartFill } from 'react-icons/bs'
 import NotifyDrawer from '~/components/Header/NotifyDrawer/NotifyDrawer'
 import ModalProfile from '~/components/ModalProfile'
+import { InfoMeState } from '~/features/Account/meSlice'
+import { RootState } from '~/app/store'
 
 const dataNotify = [
   { id: '1', name: 'Phan Thanh Phong', actionInfo: 'Đã theo dõi bạn' },
@@ -25,6 +27,7 @@ const RightMenu = (props: any) => {
   const [openModalProfile, setOpenModalProfile] = useState(false)
   const navigate = useNavigate()
   const disPatch = useDispatch()
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
   const handleLogin = () => {
     navigate('/employer-login')
   }
@@ -88,7 +91,7 @@ const RightMenu = (props: any) => {
   return (
     <div className='right_menu_container'>
       <div className='right_menu_container_pc'>
-        {isLogin ? (
+        {me && me.id ? (
           <>
             <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
             <Button
@@ -120,8 +123,15 @@ const RightMenu = (props: any) => {
             <Dropdown menu={menuProps}>
               <Button size='large' style={{ display: 'flex', alignItems: 'center', padding: 0, border: 'none' }}>
                 <Space>
-                  <Avatar icon={<UserOutlined />} />
-                  Thanh Phong
+                  <Avatar src={me.avatar && me.avatar !== '_' ? me.avatar : ''}>
+                    {!me.avatar || me.avatar === '_'
+                      ? me.name && me.name !== '_'
+                        ? me.name.slice(0, 1).toUpperCase()
+                        : me.email.slice(0, 1).toUpperCase()
+                      : ''}
+                  </Avatar>
+                  {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
+
                   <DownOutlined />
                 </Space>
               </Button>

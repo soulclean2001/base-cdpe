@@ -8,14 +8,14 @@ import { AuthState } from '../Auth/authSlice'
 import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
-import { isExpired } from '~/utils/jwt'
+// import { isExpired } from '~/utils/jwt'
 import { toast } from 'react-toastify'
 const ResetPasswordPage = () => {
   const navigate = useNavigate()
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role === 2) navigate('/')
       if (auth.role === 1) navigate('/employer')
       if (auth.role === 0) navigate('/admin')
