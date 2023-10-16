@@ -1,6 +1,7 @@
 import { JwtPayload } from 'jsonwebtoken'
 import { Gender, TokenType, UserRole, UserVerifyStatus } from '~/constants/enums'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { WorkingLocation } from '../schemas/Job.schema'
 
 /**
  * @swagger
@@ -92,8 +93,6 @@ export interface UpdateMeReqBody {
   username?: string
   avatar?: string
   cover_photo?: string
-  province?: string
-  district?: string
   position?: string
   gender?: number
   company_name?: string
@@ -142,8 +141,8 @@ export interface RegisterReqBody {
   gender?: Gender
   company_name?: string
   position?: string
-  province?: string
-  district?: string
+  fields?: string[]
+  working_locations?: WorkingLocation[]
 }
 
 export interface LogoutReqBody {

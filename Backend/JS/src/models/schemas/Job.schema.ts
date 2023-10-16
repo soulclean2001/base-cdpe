@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { JobStatus } from '../requests/Job.request'
+import { CompanyType } from './Company.schema'
 
 export interface WorkingLocation {
   lat: number
@@ -24,6 +25,7 @@ export interface JobType {
   _id?: ObjectId
   job_title: string
   company_id: ObjectId
+  company: Omit<CompanyType, '_id' | 'users'>
   alias: string //link tren url
   is_salary_visible: boolean // hiện mức lương
   pretty_salary: string
@@ -72,6 +74,7 @@ export default class Job {
   updated_at: Date
   status: JobStatus
   job_type: string
+  company: Omit<CompanyType, '_id' | 'users'>
 
   constructor(data: JobType) {
     const date = new Date()
@@ -100,5 +103,6 @@ export default class Job {
     this.number_of_employees_needed = data.number_of_employees_needed || 10
     this.application_email = data.application_email
     this.job_type = data.job_type
+    this.company = data.company
   }
 }

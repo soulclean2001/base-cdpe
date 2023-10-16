@@ -3,7 +3,7 @@ import databaseServices from './database.services'
 import Job, { JobType } from '~/models/schemas/Job.schema'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
-import { isNumber } from 'lodash'
+import { isNumber, omit } from 'lodash'
 
 export interface JobSearchOptions {
   visibility?: boolean
@@ -58,6 +58,7 @@ export default class JobService {
         ..._payload,
         user_id: new ObjectId(userId),
         company_id: company._id,
+        company: omit(company, ['_id', 'users']),
         visibility: false
       })
     )

@@ -117,7 +117,8 @@ class UsersService {
       await databaseServices.company.insertOne(
         new Company({
           company_name: payload.company_name as string,
-          working_locations: [],
+          fields: payload.fields || [],
+          working_locations: payload.working_locations || [],
           users: [
             {
               user_id,
@@ -131,7 +132,7 @@ class UsersService {
     const [access_token, refresh_token] = await this.signTokenKeyPair({
       user_id: user_id.toString(),
       verify: UserVerifyStatus.Unverified,
-      role: payload.role
+      role: payload.role || UserRole.Candidate
     })
     const { iat, exp } = await this.decodeRefreshToken(refresh_token)
     await databaseServices.refreshTokens.insertOne(new RefreshToken({ user_id, token: refresh_token, iat, exp }))

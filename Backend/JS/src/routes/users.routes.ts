@@ -55,8 +55,6 @@ usersRouter.patch(
     'avatar',
     'cover_photo',
     'phone_number',
-    'district',
-    'province',
     'company_name',
     'gender',
     'position'

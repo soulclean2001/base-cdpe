@@ -9,13 +9,14 @@ import usersService from '~/services/users.services'
 import { hashPassword } from '~/utils/crypto'
 import { verifyToken } from '~/utils/jwt'
 import { validate } from '~/utils/validation'
-import { capitalize } from 'lodash'
+import { capitalize, isArray, isString } from 'lodash'
 import { ObjectId } from 'mongodb'
 import { REGEX_USERNAME } from '~/constants/regex'
 import { verifyAccessToken } from '~/utils/commons'
 import { envConfig } from '~/constants/config'
 import { TokenPayload } from '~/models/requests/User.request'
 import { Gender, UserRole, UserVerifyStatus } from '~/constants/enums'
+import { workingLocationsSchema } from './job.middlewares'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -311,33 +312,27 @@ export const registerValidator = validate(
           }
         }
       },
-      district: {
+      fields: {
         custom: {
-          options: async (value: string, { req }) => {
+          options: async (value: any, { req }) => {
             if (req.body.role && req.body.role === UserRole.Employer) {
-              if (!value) {
-                throw new Error('district is not empty')
-              } else if (typeof value !== 'string') {
-                throw new Error('district must be string')
+              if (!isArray(value)) throw new Error('fields must be an array')
+
+              for (const v of value) {
+                if (!v) {
+                  throw new Error('each value of fields is not empty')
+                } else if (typeof v !== 'string') {
+                  throw new Error('each value of fields must be string')
+                }
               }
             }
             return true
           }
         }
       },
-      province: {
-        custom: {
-          options: async (value: string, { req }) => {
-            if (req.body.role && req.body.role === UserRole.Employer) {
-              if (!value) {
-                throw new Error('province is not empty')
-              } else if (typeof value !== 'string') {
-                throw new Error('province must be string')
-              }
-            }
-            return true
-          }
-        }
+      working_locations: {
+        ...workingLocationsSchema,
+        optional: true
       }
     },
     ['body']

@@ -2,7 +2,7 @@ import { isStringNotEmpty } from './common.middlewares'
 import { ParamSchema, checkSchema } from 'express-validator'
 import { validate } from '~/utils/validation'
 
-// export interface SearchCandidateReqBody extends Pagination {
+// export interface SearchCandidateReqParam extends Pagination {
 //   name?: string
 //   job?: string
 //   level?: string
@@ -106,6 +106,100 @@ export const searchCandidateMiddleware = validate(
             }
             return true
           }
+        },
+        optional: true
+      },
+      limit: {
+        custom: {
+          options: (value: any) => {
+            if (isNaN(value)) throw new Error('limit must be a number')
+
+            if (value < 1) throw new Error('limit not valid')
+            return true
+          }
+        },
+        optional: true
+      },
+      page: {
+        custom: {
+          options: (value: any) => {
+            if (isNaN(value)) throw new Error('page must be a number')
+            if (value < 1) throw new Error('page not valid')
+            return true
+          }
+        },
+        optional: true
+      }
+    },
+    ['query']
+  )
+)
+
+export const searchJobMiddleware = validate(
+  checkSchema(
+    {
+      content: {
+        notEmpty: {
+          errorMessage: 'content can be undefined but not empty'
+        },
+        isString: {
+          errorMessage: 'content must be a string'
+        },
+        optional: true
+      },
+      working_location: {
+        notEmpty: {
+          errorMessage: 'working_location can be undefined but not empty'
+        },
+        isString: {
+          errorMessage: 'working_location must be a string'
+        },
+        optional: true
+      },
+      limit: {
+        custom: {
+          options: (value: any) => {
+            if (isNaN(value)) throw new Error('limit must be a number')
+
+            if (value < 1) throw new Error('limit not valid')
+            return true
+          }
+        },
+        optional: true
+      },
+      page: {
+        custom: {
+          options: (value: any) => {
+            if (isNaN(value)) throw new Error('page must be a number')
+            if (value < 1) throw new Error('page not valid')
+            return true
+          }
+        },
+        optional: true
+      }
+    },
+    ['query']
+  )
+)
+
+export const searchCompanyMiddleware = validate(
+  checkSchema(
+    {
+      content: {
+        notEmpty: {
+          errorMessage: 'content can be undefined but not empty'
+        },
+        isString: {
+          errorMessage: 'content must be a string'
+        },
+        optional: true
+      },
+      field: {
+        notEmpty: {
+          errorMessage: 'field can be undefined but not empty'
+        },
+        isString: {
+          errorMessage: 'field must be a string'
         },
         optional: true
       },

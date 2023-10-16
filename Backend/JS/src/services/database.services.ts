@@ -71,6 +71,31 @@ class DatabaseService {
     }
   }
 
+  async indexJobs() {
+    const exists = await this.job.indexExists([
+      'company_id_1',
+      'job_title_text_company.company_name_text_job_level_text'
+    ])
+
+    if (!exists) {
+      this.job.createIndex({ company_id: 1 })
+      this.job.createIndex({
+        job_title: 'text',
+        'company.company_name': 'text',
+        job_level: 'text'
+      })
+    }
+  }
+
+  async indexCompany() {
+    // const exists = await this.job.indexExists(['company_name_text'])
+    // if (!exists) {
+    //   this.job.createIndex({
+    //     company_name: 'text'
+    //   })
+    // }
+  }
+
   // async indexVideoStatus() {
   //   const exists = await this.videoStatus.indexExists(['name_1'])
 

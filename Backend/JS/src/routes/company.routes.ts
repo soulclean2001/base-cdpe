@@ -18,7 +18,8 @@ companyRouter.patch(
     'company_size',
     'logo',
     'background',
-    'working_locations'
+    'working_locations',
+    'fields'
   ]),
   wrapAsync(companyControllers.updateCompany)
 )

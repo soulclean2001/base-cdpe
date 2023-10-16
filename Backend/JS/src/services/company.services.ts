@@ -37,6 +37,19 @@ class CompanyService {
         returnDocument: 'after'
       }
     )
+    if (rs.ok && rs.value) {
+      await databaseServices.job.updateMany(
+        {
+          company_id: rs.value._id
+        },
+        {
+          $set: {
+            company: omit(rs.value, ['_id', 'users'])
+          }
+        }
+      )
+    }
+
     // delete image old from s3
     if (oldCompany) {
       const oldUrls = []

@@ -6,7 +6,6 @@ import { Media } from '~/models/Other'
 import { UpdateCompanyReqBody } from '~/models/requests/Company.request'
 import { TokenPayload } from '~/models/requests/User.request'
 import CompanyService from '~/services/company.services'
-import mediasServices from '~/services/medias.services'
 
 class CompanyController {
   async updateCompany(req: Request<ParamsDictionary, any, UpdateCompanyReqBody>, res: Response, next: NextFunction) {

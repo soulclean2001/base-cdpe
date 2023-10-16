@@ -1,5 +1,5 @@
 import { escapeRegExp, isUndefined } from 'lodash'
-import { SearchCandidateReqBody } from '~/models/requests/Search.request'
+import { SearchCandidateReqParam, SearchCompanyParam, SearchJobReqParam } from '~/models/requests/Search.request'
 import { removeUndefinedObject } from '~/utils/commons'
 import databaseServices from './database.services'
 
@@ -12,7 +12,7 @@ class SearchService {
   }: {
     limit: number
     page: number
-    filter: SearchCandidateReqBody
+    filter: SearchCandidateReqParam
     user_id: string
   }) {
     const match = SearchService.convertToQuerySearchCandidate(filter)
@@ -94,7 +94,7 @@ class SearchService {
     }
   }
 
-  static convertToQuerySearchCandidate(data: SearchCandidateReqBody) {
+  static convertToQuerySearchCandidate(data: SearchCandidateReqParam) {
     const match: any = {}
 
     if (data.name && data.name.length > 0) {
@@ -161,6 +161,108 @@ class SearchService {
     }
 
     return match
+  }
+
+  static async searchJob(filter: SearchJobReqParam) {
+    const limit = Number(filter.limit) || 10
+    const page = Number(filter.page) || 1
+    const $match: {
+      [key: string]: any
+    } = {}
+    if (filter.content) {
+      $match['$text'] = {
+        $search: filter.content
+      }
+    }
+    if (filter.working_location) {
+      $match['working_locations.city_name'] = filter.working_location
+    }
+
+    const [jobs, total] = await Promise.all([
+      databaseServices.job
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.job
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+    return {
+      jobs,
+      total: total[0]?.total || total,
+      limit,
+      page
+    }
+  }
+
+  static async searchCompany(filter: SearchCompanyParam) {
+    const limit = Number(filter.limit) || 10
+    const page = Number(filter.page) || 1
+
+    const $match: {
+      [key: string]: any
+    } = {}
+
+    if (filter.content) {
+      const keyword = filter.content.trim()
+      const keywords = keyword.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
+      $match['company_name'] = {
+        $regex: regex
+      }
+    }
+
+    if (filter.field) {
+      $match['fields'] = filter.field
+    }
+
+    const [companies, total] = await Promise.all([
+      databaseServices.company
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.company
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+    return {
+      companies,
+      total: total[0]?.total || total,
+      limit,
+      page
+    }
   }
 }
 

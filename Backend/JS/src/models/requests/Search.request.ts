@@ -1,4 +1,4 @@
-export interface SearchCandidateReqBody extends Pagination {
+export interface SearchCandidateReqParam extends Pagination {
   name?: string
   job?: string
   level?: string
@@ -14,4 +14,14 @@ export interface SearchCandidateReqBody extends Pagination {
 export interface Pagination {
   limit: string
   page: string
+}
+
+export interface SearchJobReqParam extends Pagination {
+  content?: string
+  working_location?: string
+}
+
+export interface SearchCompanyParam extends Pagination {
+  content?: string
+  field?: string
 }

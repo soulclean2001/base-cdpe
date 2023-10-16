@@ -30,9 +30,11 @@ app.use(
 app.use(compression())
 
 databaseServices.connect().then(() => {
-  // databaseServices.indexUsers()
-  // databaseServices.indexRefreshTokens()
-  // databaseServices.indexVideoStatus()
+  databaseServices.indexUsers()
+  databaseServices.indexRefreshTokens()
+  //databaseServices.indexVideoStatus()
+  databaseServices.indexCompany()
+  databaseServices.indexJobs()
 })
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
