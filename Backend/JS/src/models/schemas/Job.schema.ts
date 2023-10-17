@@ -33,6 +33,7 @@ export interface JobType {
   user_id: ObjectId
   working_locations: WorkingLocation[]
   industries: string[] // linh vuc cong ty
+  careers?: string[] // nganh nghe
   skills: string[] // ky nang
   job_level: string // cap bac
   posted_date?: Date // ngay dang
@@ -62,6 +63,7 @@ export default class Job {
   industries: string[] // linh vuc cong ty
   skills: string[] // ky nang
   job_level: string // cap bac
+  careers?: string[] // nganh nghe
   posted_date: Date // ngay dang
   salary_range: SalararyRange
   job_description: string
@@ -104,5 +106,6 @@ export default class Job {
     this.application_email = data.application_email
     this.job_type = data.job_type
     this.company = data.company
+    this.careers = data.careers
   }
 }

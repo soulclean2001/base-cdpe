@@ -182,6 +182,53 @@ export const searchJobMiddleware = validate(
   )
 )
 
+export const searchJobMiddleware2 = validate(
+  checkSchema(
+    {
+      content: {
+        notEmpty: {
+          errorMessage: 'content can be undefined but not empty'
+        },
+        isString: {
+          errorMessage: 'content must be a string'
+        },
+        optional: true
+      },
+      working_location: {
+        notEmpty: {
+          errorMessage: 'working_location can be undefined but not empty'
+        },
+        isString: {
+          errorMessage: 'working_location must be a string'
+        },
+        optional: true
+      },
+      limit: {
+        custom: {
+          options: (value: any) => {
+            if (isNaN(value)) throw new Error('limit must be a number')
+
+            if (value < 1) throw new Error('limit not valid')
+            return true
+          }
+        },
+        optional: true
+      },
+      page: {
+        custom: {
+          options: (value: any) => {
+            if (isNaN(value)) throw new Error('page must be a number')
+            if (value < 1) throw new Error('page not valid')
+            return true
+          }
+        },
+        optional: true
+      }
+    },
+    ['query']
+  )
+)
+
 export const searchCompanyMiddleware = validate(
   checkSchema(
     {

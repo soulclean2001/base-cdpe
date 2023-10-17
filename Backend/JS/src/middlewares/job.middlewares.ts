@@ -241,6 +241,27 @@ export const createJobValidator = validate(
           },
           errorMessage: 'expired_date must be a valid ISO8601'
         }
+      },
+      careers: {
+        optional: true,
+        custom: {
+          options: (value, { req }) => {
+            if (!Array.isArray(value)) {
+              throw new Error('careers must be an array')
+            }
+
+            // Kiểm tra từng phần tử trong mảng
+            for (const industry of value) {
+              if (typeof industry !== 'string') {
+                throw new Error('Each careers must be a string')
+              }
+            }
+
+            // Tiếp tục kiểm tra các điều kiện khác nếu cần
+
+            return true
+          }
+        }
       }
     },
     ['body']
@@ -364,6 +385,27 @@ export const updateJobValidator = validate(
             strictSeparator: true
           },
           errorMessage: 'expired_date must be a valid ISO8601'
+        }
+      },
+      careers: {
+        optional: true,
+        custom: {
+          options: (value, { req }) => {
+            if (!Array.isArray(value)) {
+              throw new Error('careers must be an array')
+            }
+
+            // Kiểm tra từng phần tử trong mảng
+            for (const industry of value) {
+              if (typeof industry !== 'string') {
+                throw new Error('Each careers must be a string')
+              }
+            }
+
+            // Tiếp tục kiểm tra các điều kiện khác nếu cần
+
+            return true
+          }
         }
       }
     },

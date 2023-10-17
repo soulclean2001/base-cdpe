@@ -1,4 +1,4 @@
-import { escapeRegExp, isUndefined } from 'lodash'
+import { escapeRegExp, isNumber, isUndefined } from 'lodash'
 import { SearchCandidateReqParam, SearchCompanyParam, SearchJobReqParam } from '~/models/requests/Search.request'
 import { removeUndefinedObject } from '~/utils/commons'
 import databaseServices from './database.services'
@@ -163,19 +163,20 @@ class SearchService {
     return match
   }
 
-  static async searchJob(filter: SearchJobReqParam) {
-    const limit = Number(filter.limit) || 10
-    const page = Number(filter.page) || 1
+  static async searchJob(search: SearchJobReqParam) {
+    const limit = Number(search.limit) || 10
+    const page = Number(search.page) || 1
     const $match: {
       [key: string]: any
     } = {}
-    if (filter.content) {
+
+    if (search.content) {
       $match['$text'] = {
-        $search: filter.content
+        $search: search.content
       }
     }
-    if (filter.working_location) {
-      $match['working_locations.city_name'] = filter.working_location
+    if (search.working_location) {
+      $match['working_locations.city_name'] = search.working_location
     }
 
     const [jobs, total] = await Promise.all([
@@ -211,16 +212,81 @@ class SearchService {
     }
   }
 
-  static async searchCompany(filter: SearchCompanyParam) {
-    const limit = Number(filter.limit) || 10
-    const page = Number(filter.page) || 1
+  static async searchJob2({
+    limit = 10,
+    page = 1,
+    filter
+  }: {
+    limit: number
+    page: number
+    filter: SearchJobReqParam
+  }) {
+    const $match: {
+      [key: string]: any
+    } = SearchService.convertQueryToMatchJob(filter)
+
+    console.log($match)
+
+    const $sort: {
+      [key: string]: any
+    } = {}
+
+    if (filter.sort_by_salary && isNumber(Number(filter.sort_by_salary))) {
+      $sort['salary_range.max'] = Number(filter.sort_by_salary) >= 1 ? 1 : -1
+    }
+
+    if (filter.sort_by_post_date && isNumber(Number(filter.sort_by_post_date))) {
+      $sort['posted_date'] = Number(filter.sort_by_post_date) >= 1 ? 1 : -1
+    }
+
+    console.log($sort)
+
+    const [jobs, total] = await Promise.all([
+      databaseServices.job
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          },
+          {
+            $sort
+          }
+        ])
+        .toArray(),
+      databaseServices.job
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+    return {
+      jobs,
+      total: total[0]?.total || total,
+      limit,
+      page
+    }
+  }
+
+  static async searchCompany(search: SearchCompanyParam) {
+    const limit = Number(search.limit) || 10
+    const page = Number(search.page) || 1
 
     const $match: {
       [key: string]: any
     } = {}
 
-    if (filter.content) {
-      const keyword = filter.content.trim()
+    if (search.content) {
+      const keyword = search.content.trim()
       const keywords = keyword.split(' ').map(escapeRegExp).join('|')
       const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
       $match['company_name'] = {
@@ -228,8 +294,8 @@ class SearchService {
       }
     }
 
-    if (filter.field) {
-      $match['fields'] = filter.field
+    if (search.field) {
+      $match['fields'] = search.field
     }
 
     const [companies, total] = await Promise.all([
@@ -263,6 +329,64 @@ class SearchService {
       limit,
       page
     }
+  }
+
+  static convertQueryToMatchJob(filter: SearchJobReqParam) {
+    const $match: {
+      [key: string]: any
+    } = {}
+
+    if (filter.content) {
+      $match['$text'] = {
+        $search: filter.content
+      }
+    }
+
+    if (filter.working_location) {
+      $match['working_locations.city_name'] = filter.working_location
+    }
+
+    if (filter.career) {
+      $match['careers'] = filter.career
+    }
+
+    if (filter.industry) {
+      $match['industries'] = filter.industry
+    }
+
+    if (filter.job_level) {
+      $match['job_level'] = filter.job_level
+    }
+
+    if (filter.job_type) {
+      $match['job_type'] = filter.job_type
+    }
+
+    if (filter.salary) {
+      if (filter.salary.min && isNumber(Number(filter.salary.min))) {
+        const min = Number(filter.salary.min)
+        $match['salary_range.max'] = {
+          $gte: min
+        }
+      }
+
+      if (filter.salary.max && isNumber(Number(filter.salary.max))) {
+        const max = Number(filter.salary.max)
+        if ($match['salary_range.max']) {
+          const oldMatch = $match['salary_range.max']
+          $match['salary_range.max'] = {
+            ...oldMatch,
+            $lte: max
+          }
+        } else {
+          $match['salary_range.max'] = {
+            $lte: max
+          }
+        }
+      }
+    }
+
+    return $match
   }
 }
 

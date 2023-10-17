@@ -15,6 +15,7 @@ export interface CreateJobBody {
   job_requirement: string
   visibility: boolean
   benefits: Benefit[]
+  career?: string[]
   job_type: string
   number_of_employees_needed: number
   application_email: string
@@ -45,7 +46,7 @@ export interface UpdateJobReqBody {
   job_requirement?: string
   visibility?: boolean
   expired_date?: string
-
+  careers?: string[]
   benefits?: Benefit[]
   job_type?: string
   number_of_employees_needed?: number
