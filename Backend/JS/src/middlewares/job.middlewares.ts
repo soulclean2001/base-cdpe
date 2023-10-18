@@ -365,7 +365,7 @@ export const updateJobValidator = validate(
                 if (!expectedFields.includes(key)) {
                   errors.push(`${key} not contained in benefits[${i}]`)
                 }
-                if (expectedFields.includes(key) && values[i][key] !== 'string') {
+                if (expectedFields.includes(key) && typeof values[i][key] !== 'string') {
                   errors.push(`${key} contained in benefits[${i}] must be a string`)
                 }
               }

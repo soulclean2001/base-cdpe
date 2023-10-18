@@ -63,9 +63,11 @@ const init = (io: Server) => {
         socket.disconnect()
       }
     })
-    socket.on('updateToken', (newToken) => {
+    socket.on('update_token', (newToken) => {
       // Cập nhật mã token cho kết nối socket
+
       socket.handshake.auth.access_token = newToken
+      console.log('update token', socket.handshake.auth.access_token)
     })
     //
     socket.on('join', (userId: string) => {
