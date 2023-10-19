@@ -14,15 +14,20 @@ import type { CSSProperties } from 'react'
 import type { CollapseProps, RadioChangeEvent } from 'antd'
 import { Button, Checkbox, Col, Collapse, Divider, Form, Input, Modal, Radio, Row, Select, Space } from 'antd'
 import './signUpEmployer.scss'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import {
   LocationType,
   SelectionLocationData,
   WorkingLocation
 } from '../Dashboard/components/ModalInfoPost/ModalInfoPost'
 import { ImLocation } from 'react-icons/im'
-import { AiTwotoneEdit } from 'react-icons/ai'
+
 import { BsTrashFill } from 'react-icons/bs'
+import apiAuth, { AuthRequestRegistry } from '~/api/auth.api'
+import { decodeToken } from '~/utils/jwt'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { toast } from 'react-toastify'
+import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
 const getItems: (panelStyle: CSSProperties) => CollapseProps['items'] = (panelStyle) => [
   {
     key: '1',
@@ -115,7 +120,8 @@ const SignUpEmployer = () => {
 
   const [districtsData, setDistrictsData] = useState(initValue)
   const [provincesData, setProvincesData] = useState(initValue)
-
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  const navigate = useNavigate()
   useEffect(() => {
     fetchProvinces()
     formLocation.setFieldsValue({ district: '' })
@@ -131,7 +137,20 @@ const SignUpEmployer = () => {
     const res = await getOneProvincesApi(dataLocationBranch.city_name)
     setDistrictsData(res)
   }
-  const handleSubmitSignup = () => {
+  const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.role && dataDecode.role === 1) {
+        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(setToken(token))
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin(action))
+        navigate('/employer/active-page')
+        toast.success('Đăng ký thành công')
+      }
+    }
+  }
+  const handleSubmitSignup = async () => {
     const locationsFinal: WorkingLocation[] = []
     listLocation.map((location) => {
       if (location.disabled && location.value !== undefined) {
@@ -150,7 +169,30 @@ const SignUpEmployer = () => {
       locationsFinal,
       checkAccept
     }
-
+    const req: AuthRequestRegistry = {
+      email: email,
+      password: password,
+      confirm_password: rePassword,
+      name: name,
+      company_name: nameCompany,
+      position: position,
+      gender: sex,
+      role: 1,
+      phone_number: phone,
+      fields: ['_'],
+      working_locations: locationsFinal,
+      date_of_birth: '2001-01-01'
+    }
+    await apiAuth
+      .register(req)
+      .then(async (response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+      })
+      .catch(() => {
+        toast.error('Email đã tồn tại, vui lòng chọn Email khác')
+      })
     console.log('form data sign up', data)
   }
 
@@ -274,7 +316,8 @@ const SignUpEmployer = () => {
                 rules={[
                   { required: true, message: 'Vui lòng nhập mật khẩu' },
                   {
-                    pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
+                    ///^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
+                    pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
                     message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
                   }
                 ]}

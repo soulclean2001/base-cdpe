@@ -11,7 +11,11 @@ import { Button, Checkbox, Form, Input } from 'antd'
 import './signup.scss'
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
-
+import apiAuth, { AuthRequestRegistry } from '~/api/auth.api'
+import { decodeToken } from '~/utils/jwt'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { toast } from 'react-toastify'
+import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
 const SignUp = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
@@ -21,17 +25,51 @@ const SignUp = () => {
   const [password, setPassword] = useState('')
   const [rePassword, setRePassword] = useState('')
   const [checkAccept, setCheckAccept] = useState(false)
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
   //
   const handleBackHome = () => {
     navigate('/')
   }
-  const handleSubmitSignup = () => {
+  const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.role && dataDecode.role === 2) {
+        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(setToken(token))
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin(action))
+        navigate('/active-page')
+        toast.success('Đăng ký thành công')
+      }
+    }
+  }
+  const handleSubmitSignup = async () => {
     const data = {
       name,
       email,
       password,
       rePassword
     }
+    const req: AuthRequestRegistry = {
+      email: email,
+      password: password,
+      confirm_password: rePassword,
+      name: name,
+      gender: 0,
+      role: 2,
+      date_of_birth: '2001-01-01'
+    }
+    await apiAuth
+      .register(req)
+      .then(async (response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+      })
+      .catch(() => {
+        toast.error('Email đã tồn tại, vui lòng chọn Email khác')
+      })
+    console.log('form data sign up', data)
     console.log('form data sign up', data)
   }
 
@@ -74,6 +112,7 @@ const SignUp = () => {
                 { required: true, message: 'Vui lòng không để trống Email' },
                 { type: 'email', message: 'Vui lòng nhập đúng định dạng Email. Ví dụ: abc@gmail.com' }
               ]}
+              style={{ paddingTop: '10px' }}
             >
               <Input
                 size='large'
@@ -89,7 +128,7 @@ const SignUp = () => {
               rules={[
                 { required: true, message: 'Vui lòng nhập mật khẩu' },
                 {
-                  pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
+                  pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
                   message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
                 }
               ]}
@@ -128,7 +167,7 @@ const SignUp = () => {
             </Form.Item>
             <Form.Item
               name={'checkAccept'}
-              noStyle
+              // noStyle
               valuePropName='checked'
               rules={[
                 {
@@ -152,18 +191,18 @@ const SignUp = () => {
               </Checkbox>
             </Form.Item>
 
-            <Form.Item style={{ marginTop: '15px' }}>
+            <Form.Item style={{ marginTop: '40px' }}>
               <Button type='primary' htmlType='submit' className='login-form-button'>
                 Đăng ký
               </Button>
             </Form.Item>
-            <p className='or-login-title'>Hoặc đăng nhập bằng</p>
+            {/* <p className='or-login-title'>Hoặc đăng nhập bằng</p>
 
             <Form.Item>
               <div className='or-login-container'>
                 <Button
                   type='primary'
-                  htmlType='submit'
+                  // htmlType='submit'
                   className='btn login-google-button'
                   icon={<GooglePlusOutlined />}
                 >
@@ -171,7 +210,7 @@ const SignUp = () => {
                 </Button>
                 <Button
                   type='primary'
-                  htmlType='submit'
+                  // htmlType='submit'
                   className='btn login-facebook-button'
                   icon={<FacebookOutlined />}
                 >
@@ -179,14 +218,14 @@ const SignUp = () => {
                 </Button>
                 <Button
                   type='primary'
-                  htmlType='submit'
+                  // htmlType='submit'
                   className='btn login-linkedin-button'
                   icon={<LinkedinOutlined />}
                 >
                   Linkedin
                 </Button>
               </div>
-            </Form.Item>
+            </Form.Item> */}
             <div className='or-tab-login'>
               <p style={{ textAlign: 'center' }}>
                 <span>Bạn đã có tài khoản?</span>

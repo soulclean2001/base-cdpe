@@ -231,10 +231,6 @@ const ModalInfoPost = (props: any) => {
       setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
       setArrSkills([{ key: 0, value: '' }])
       setArrLocations(initLocation)
-      console.log('form.getFieldsValue()', form.getFieldsValue())
-      form.resetFields()
-      form.resetFields([`location_1`])
-      console.log('after', form.getFieldsValue())
       getDataWorkLocation()
     }
   }, [open])
@@ -476,6 +472,7 @@ const ModalInfoPost = (props: any) => {
       console.log('listFilter', listFilter)
       console.log('redux full', [...listFilter, jobFullUpdate])
       dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
+      form.resetFields()
       handleClose()
     })
   }
@@ -485,6 +482,7 @@ const ModalInfoPost = (props: any) => {
       newJob.salary = job.salary_range.min + ' - ' + job.salary_range.max
       // custome before add to list posts
       dispatch(addPost(job))
+      form.resetFields()
       handleClose()
     })
   }
@@ -497,7 +495,7 @@ const ModalInfoPost = (props: any) => {
     if (!idPost) {
       return
     }
-
+    form.resetFields()
     await apiPost.getPostById(idPost).then((response) => {
       const rs: JobTypeFull = response.result as JobTypeFull
       setJobTitle(rs.job_title)
@@ -600,7 +598,7 @@ const ModalInfoPost = (props: any) => {
         <div>
           <hr />
           <Form
-            name='form-info-job'
+            name='form-info-jobb'
             className='form-info-job'
             initialValues={{ remember: true }}
             onFinish={handleSubmitForm}

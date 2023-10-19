@@ -1,8 +1,22 @@
 import { SearchOutlined } from '@ant-design/icons'
 import { Col, Input, Row, Select, Space } from 'antd'
 import './search.scss'
-
+import { DataOptionType } from '~/features/Employer/pages/Dashboard/components/ModalWorkLocation'
+import { getAllProviencesApi } from '~/api/provinces.api'
+import { useEffect, useState } from 'react'
+const initValue: DataOptionType[] = []
 const Search = () => {
+  const [provincesData, setProvincesData] = useState<Array<DataOptionType>>([{ value: 'Tất cả khu vực' }])
+  useEffect(() => {
+    fetchProvinces()
+  }, [])
+  const fetchProvinces = async () => {
+    const res = await getAllProviencesApi().then((rs) => {
+      setProvincesData([...provincesData, ...rs])
+    })
+    console.log('res', res)
+    // setProvincesData(res)
+  }
   const optionsArea = [
     {
       value: 'All',
@@ -25,12 +39,18 @@ const Search = () => {
             allowClear
             size='large'
             className='search-input-left'
-            placeholder='Tìm kiếm việc làm, công ty, chức vụ ...'
+            placeholder='Tìm kiếm việc làm,  chức vụ ...'
             prefix={<SearchOutlined />}
           />
         </Col>
         <Col xs={8} sm={8} md={5}>
-          <Select size='large' className='search-input-right' defaultValue='All' options={optionsArea} />
+          <Select
+            showSearch
+            size='large'
+            className='search-input-right'
+            defaultValue='Tất cả khu vực'
+            options={provincesData}
+          />
         </Col>
         <Col xs={0} sm={0} md={3} className='btn-search-container'>
           <button className='btn-search'>Tìm kiếm</button>

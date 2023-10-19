@@ -217,6 +217,7 @@ function App() {
         <Route path='/reset-password' element={<ResetPasswordPage />} />
         <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
           <Route index element={<HomePage />} />
+          <Route path='active-page' element={<ActivePage />} />
           <Route path='services' element={<ServicesPage />} />
           <Route path='chat' element={<ChatPage roleType={'EMPLOYER_TYPE'} />} />
           <Route

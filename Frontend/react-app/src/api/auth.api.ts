@@ -1,4 +1,4 @@
-import { LoginData } from '~/features/JobSeeker/pages/LoginJobSeeker'
+import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
 import client, { cancelTokenSource } from './client'
 
 interface AuthResponse {
@@ -8,7 +8,25 @@ interface AuthResponse {
     refresh_token?: string
   }
 }
+
+export interface AuthRequestRegistry {
+  email: string
+  password: string
+  confirm_password: string
+  date_of_birth: string
+  role: number
+  name: string
+  gender: number
+  phone_number?: string
+  company_name?: string
+  position?: string
+  fields?: string[]
+  working_locations?: WorkingLocation[]
+}
 export class Auth {
+  public static register = async (data: AuthRequestRegistry): Promise<AuthResponse> => {
+    return client.post('/users/register', data)
+  }
   public static loginApi = async (data: {
     username: string
     password: string
