@@ -64,7 +64,8 @@ export default class JobService {
     )
 
     return {
-      message: 'Job created'
+      message: 'Job created',
+      result
     }
   }
 
