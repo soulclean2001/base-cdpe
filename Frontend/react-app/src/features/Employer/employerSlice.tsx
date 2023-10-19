@@ -39,7 +39,10 @@ export const employerSlice = createSlice({
       state.posts = action.payload
       return state
     },
-
+    setDataPosts: (state, action) => {
+      state.posts.data = action.payload
+      return state
+    },
     addPost: (state, action) => {
       action.payload.created_at = new Date().toISOString()
       state.posts.data = [...state.posts.data, action.payload]
@@ -58,7 +61,7 @@ export const employerSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { handleChangeSideBar, handleAutoChangeSideBarByWidth, setPosts, addPost, deletePost } =
+export const { handleChangeSideBar, handleAutoChangeSideBarByWidth, setPosts, addPost, deletePost, setDataPosts } =
   employerSlice.actions
 
 export default employerSlice.reducer

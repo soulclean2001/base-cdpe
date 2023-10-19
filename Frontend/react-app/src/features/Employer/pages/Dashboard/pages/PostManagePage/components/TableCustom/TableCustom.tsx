@@ -68,7 +68,7 @@ export interface JobType {
   }
   total_applied: number
 }
-
+// muon bỏ buoc call api à
 const TableCustom = (props: any) => {
   const { tabKey } = props
   const [sortedInfo, setSortedInfo] = useState<SorterResult<JobType>>({})
@@ -80,7 +80,7 @@ const TableCustom = (props: any) => {
   const [dataRowSelected, setDataRowSelected] = useState<JobType>()
   const [idPost, setIdPost] = useState<string>()
   const limit = 3
- 
+
   const total = employer.posts.total
   const handleChange: TableProps<JobType>['onChange'] = async (pagination, filters, sorter) => {
     // console.log('log data', pagination, filters, sorter)
@@ -108,8 +108,6 @@ const TableCustom = (props: any) => {
   // kiểm tra data thay đổi
   useEffect(() => {
     setData(employer.posts.data)
-    
-   
   }, [employer])
 
   const columns: ColumnsType<JobType> = [
@@ -292,7 +290,6 @@ const TableCustom = (props: any) => {
   return (
     <>
       <ModalInfoPost idPost={idPost} open={openModalInfo} handleClose={handleCloseModalInfo} />
-
       <Row style={{ width: '100%', marginBottom: '16px', gap: '10px' }}>
         <Col md={6} sm={11} xs={24}>
           <Input style={{ width: '95%' }} size='large' placeholder='Tìm theo tên, id bài đăng' prefix={<BsSearch />} />

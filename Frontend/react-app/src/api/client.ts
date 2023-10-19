@@ -62,6 +62,7 @@ const responseInterceptorId = instance.interceptors.response.use(
         store.dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
         error.response.config.headers['Authorization'] = 'Bearer ' + access_token
         error.response.config.refreshed = true
+
         return instance(error.response.config)
       })
       .catch((error) => {

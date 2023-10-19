@@ -26,3 +26,12 @@ export const isExpired = (token: string) => {
 
   return false
 }
+
+export const getTimeExpired = (token: string) => {
+  try {
+    const result = jwt_decode(token) as JwtPayload
+    return Number(result.exp) - Number(result.iat)
+  } catch (error) {
+    return -1
+  }
+}

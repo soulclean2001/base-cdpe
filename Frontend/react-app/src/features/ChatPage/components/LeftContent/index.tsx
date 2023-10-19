@@ -38,31 +38,8 @@ const LeftContent = (props: any) => {
   }
 
   useEffect(() => {
-    fetchListRooms()
-  }, [])
-
-  useEffect(() => {
     setListRooms(chat.rooms)
   }, [chat.rooms])
-
-  const fetchListRooms = async () => {
-    if (roleType === 'EMPLOYER_TYPE') {
-      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/company')
-      dispatch(setRooms(listRooms.result))
-    }
-
-    if (roleType === 'CANDIDATE_TYPE') {
-      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/user')
-      dispatch(setRooms(listRooms.result))
-    }
-  }
-
-  useEffect(() => {
-    if (listRooms.length > 0) {
-      const roomIds = listRooms.map((room) => room._id)
-      user.socket.emit('join-conversations', roomIds)
-    }
-  }, [listRooms.length > 0])
 
   return (
     <div className='left-content-page-chat-container'>

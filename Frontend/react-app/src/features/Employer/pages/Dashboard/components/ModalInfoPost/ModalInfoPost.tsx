@@ -10,12 +10,18 @@ import { AiTwotoneEdit } from 'react-icons/ai'
 import { toast } from 'react-toastify'
 import { BsFillAirplaneFill, BsTrashFill } from 'react-icons/bs'
 import { FaMoneyBillWave } from 'react-icons/fa'
-import { useDispatch } from 'react-redux'
-import { addPost } from '~/features/Employer/employerSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { addPost, setDataPosts } from '~/features/Employer/employerSlice'
 import apiClient from '~/api/client'
-import apiCompany from '~/api/company.api'
+import apiCompany, { UpdateCompanyType } from '~/api/company.api'
 import apiPost from '~/api/post.api'
 import './style.scss'
+
+import { getAllProviencesApi, getOneProvincesApi } from '~/api/provinces.api'
+import { DataOptionType } from '../ModalWorkLocation'
+import { RootState } from '~/app/store'
+import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
+import { format } from 'path'
 //data lo
 
 const listLevel = [
@@ -103,18 +109,18 @@ export const IconLabelSalary = (props: any) => {
 //   district: string
 //   province: string
 // }
-interface SelectionLocationData {
+export interface SelectionLocationData {
   value: WorkingLocation
   disabled: boolean
 }
 
-interface LocationType {
+export interface LocationType {
   checked: boolean
   key: number
   selected: string
 }
 
-interface WorkingLocation {
+export interface WorkingLocation {
   lat: number
   lon: number
   branch_name: string
@@ -133,7 +139,7 @@ interface Benefit {
   value: string
 }
 
-interface JobType {
+export interface JobType {
   job_title: string
   alias?: string
   is_salary_visible: boolean
@@ -155,13 +161,16 @@ interface JobType {
 }
 
 const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
-
+const initValue: DataOptionType[] = []
 const ModalInfoPost = (props: any) => {
+  const [form] = Form.useForm()
   const dispatch = useDispatch()
-
+  const employer = useSelector((state: RootState) => state.employer)
   const { idPost, open, handleClose, title, roleType } = props
 
-  const [form] = Form.useForm()
+  const [idCompany, setIdCompany] = useState('')
+  const [listWorkLocation, setListWorkLocation] = useState<Array<WorkingLocation>>([])
+
   //state data form modal
   const [jobTitle, setJobTitle] = useState('')
   const [level, setLevel] = useState('')
@@ -174,35 +183,17 @@ const ModalInfoPost = (props: any) => {
   const [showSalaryRange, setShowSalaryRange] = useState(true)
   const [quantityAccept, setQuantityAccept] = useState(1)
   const [emailAcceptCV, setEmailAcceptCV] = useState('')
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo)
-  }
-  //
-
-  // const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([
-  //   {
-  //     value: {
-  //       branchName: 'Trụ sở chính',
-  //       address: 'FF',
-  //       district: 'Gò Vấp',
-  //       province: 'TP. Hồ Chí Minh'
-  //     },
-  //     disabled: false
-  //   }
-  // ])
+  const [districtsData, setDistrictsData] = useState(initValue)
+  const [provincesData, setProvincesData] = useState(initValue)
   const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([])
-  useEffect(() => {
-    getDataWorkLocation()
-  }, [])
-  const getDataWorkLocation = async () => {
-    const dataTemp: SelectionLocationData[] = []
-    const listTemp = await apiCompany.getWorkLocations()
-    listTemp.result.map((workLocation: WorkingLocation) => dataTemp.push({ value: workLocation, disabled: false }))
-    setListLocation(dataTemp)
-  }
-  //
   const [arrLocations, setArrLocations] = useState(initLocation)
+  const [arrSkills, setArrSkills] = useState([{ key: 0, value: '' }])
+  const [arrBenefits, setArrBenefits] = useState([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
+
+  //
+
+  const [formLocation] = Form.useForm()
+  const [openModalLocation, setOpenModalLocation] = useState(false)
 
   const [dataLocationBranch, setDataLocationBranch] = useState<WorkingLocation>({
     lat: 0,
@@ -212,15 +203,57 @@ const ModalInfoPost = (props: any) => {
     district: '',
     city_name: ''
   })
-  const [hiddenPenEditLocation, setHiddenPenEditLocation] = useState(false)
-  const [formLocation] = Form.useForm()
-  const [openModalLocation, setOpenModalLocation] = useState(false)
+  const onFinishFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo)
+  }
+
+  useEffect(() => {
+    if (!dataLocationBranch.city_name) return
+    formLocation.setFieldsValue({ district: '' })
+    if (dataLocationBranch.city_name) fetchDistricts()
+  }, [dataLocationBranch.city_name])
+  useEffect(() => {
+    if (open === true) {
+      fetchProvinces()
+    }
+  }, [open])
+  const fetchProvinces = async () => {
+    const res = await getAllProviencesApi()
+
+    setProvincesData(res)
+  }
+  const fetchDistricts = async () => {
+    const res = await getOneProvincesApi(dataLocationBranch.city_name)
+    setDistrictsData(res)
+  }
+  useEffect(() => {
+    if (!open) {
+      setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
+      setArrSkills([{ key: 0, value: '' }])
+      setArrLocations(initLocation)
+      console.log('form.getFieldsValue()', form.getFieldsValue())
+      form.resetFields()
+      form.resetFields([`location_1`])
+      console.log('after', form.getFieldsValue())
+      getDataWorkLocation()
+    }
+  }, [open])
+  const getDataWorkLocation = async () => {
+    const dataTemp: SelectionLocationData[] = []
+    const listTemp: WorkingLocation[] = await apiCompany.getMyCompany().then((rs) => {
+      setIdCompany(rs.result._id)
+      return rs.result.working_locations
+    })
+    setListWorkLocation(listTemp)
+    listTemp.map((workLocation: WorkingLocation) => dataTemp.push({ value: workLocation, disabled: false }))
+    setListLocation(dataTemp)
+  }
 
   const handleCloseModalLocation = () => {
     setOpenModalLocation(false)
   }
   const handleAddWorkingLocation = () => {
-    if (arrLocations.length <= 2) {
+    if (arrLocations.length <= 5) {
       setArrLocations([
         ...arrLocations,
         { checked: false, key: arrLocations[arrLocations.length - 1].key + 1, selected: '_' }
@@ -241,8 +274,19 @@ const ModalInfoPost = (props: any) => {
       alert('Đã tồn tại tên trụ sở này')
       return
     }
-    await apiCompany.addWorkLocation(dataLocationBranch)
-    setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
+    const request: UpdateCompanyType = { working_locations: [...listWorkLocation, dataLocationBranch] }
+    await apiCompany
+      .updateCompanyById(idCompany, 'default', 'default', request)
+      .then(() => {
+        toast.success('Cập nhật địa điểm làm việc thành công')
+      })
+      .then(() => {
+        formLocation.resetFields()
+      })
+      .then(() => {
+        setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
+        setOpenModalLocation(false)
+      })
   }
 
   const handleSelectLocation = (value: any, key: number) => {
@@ -282,7 +326,6 @@ const ModalInfoPost = (props: any) => {
     }
   }
 
-  const [arrSkills, setArrSkills] = useState([{ key: 0, value: '' }])
   const handleAddRowSkill = () => {
     const newArr = [...arrSkills, { key: arrSkills[arrSkills.length - 1].key + 1, value: '' }]
     setArrSkills(newArr)
@@ -305,7 +348,6 @@ const ModalInfoPost = (props: any) => {
     console.log('map data', mapData)
     setArrSkills(mapData)
   }
-  const [arrBenefits, setArrBenefits] = useState([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
   const handleAddRowBenefit = () => {
     setArrBenefits([
       ...arrBenefits,
@@ -415,7 +457,27 @@ const ModalInfoPost = (props: any) => {
     console.log('form data post', job)
 
     // call api
-    await postData(job)
+    if (idPost) {
+      await updatePost(job)
+    } else await postData(job)
+  }
+  const updatePost = async (job: JobType) => {
+    await apiPost.updatePost(idPost, job).then((rs) => {
+      const postUpdate: JobTypeFull = employer.posts.data.filter((post: any) => {
+        return post.id === idPost
+      })[0]
+
+      const listFilter = employer.posts.data.filter((post: any) => {
+        return post.id !== idPost
+      })
+      console.log('postUpdate', postUpdate)
+      let jobFullUpdate = { ...postUpdate, ...job }
+      console.log('jobFullUpdate', jobFullUpdate)
+      console.log('listFilter', listFilter)
+      console.log('redux full', [...listFilter, jobFullUpdate])
+      dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
+      handleClose()
+    })
   }
   const postData = async (job: JobType) => {
     await apiClient.post('/jobs', job).then((response) => {
@@ -428,15 +490,16 @@ const ModalInfoPost = (props: any) => {
   }
 
   useEffect(() => {
-    getPostById()
-  }, [idPost])
+    if (open && idPost) getPostById()
+  }, [open, idPost])
 
   const getPostById = async () => {
     if (!idPost) {
       return
     }
+
     await apiPost.getPostById(idPost).then((response) => {
-      const rs: JobType = response.result as JobType
+      const rs: JobTypeFull = response.result as JobTypeFull
       setJobTitle(rs.job_title)
       setLevel(rs.job_level)
       setTypeJob(rs.job_type)
@@ -444,18 +507,37 @@ const ModalInfoPost = (props: any) => {
       setJobDescription(rs.job_description)
       setJobRequirement(rs.job_requirement)
       //set work location
-      rs.working_locations.map((locationJob, index) => {
-        if (index > 0) handleAddWorkingLocation()
-        form.setFieldsValue({
-          [`location_${index}`]: locationJob.branch_name
-        })
+
+      const tempLoc = rs.working_locations.map((locationJob, index) => {
+        return { checked: false, key: index + 1, selected: '_' }
       })
+      setArrLocations([...arrLocations, ...tempLoc])
+
+      for (let i = 0; i < rs.working_locations.length; i++) {
+        form.setFieldsValue({
+          [`location_${i}`]: rs.working_locations[i].branch_name
+        })
+      }
+      // rs.working_locations.map((locationJob, index) => {
+      //   // hay do cai set state n k update xong khi goi ham
+      //   if (index > 0) {
+      //     handleAddWorkingLocation()
+      //     console.log('count', index)
+      //   }
+      //   form.setFieldsValue({
+      //     [`location_${index}`]: locationJob.branch_name
+      //   })
+      // })
+
       const mapLocations = listLocation.map((locationCompany) => {
-        rs.working_locations.map((locationJob) => {
-          if (locationCompany.value.branch_name === locationJob.branch_name) {
+        for (let i = 0; i < rs.working_locations.length; ++i) {
+          if (locationCompany.value.branch_name === rs.working_locations[i].branch_name) {
             locationCompany.disabled = true
           }
-        })
+        }
+        // rs.working_locations.map((locationJob) => {
+
+        // })
         return locationCompany
       })
       console.log('mapLocations', mapLocations)
@@ -502,6 +584,7 @@ const ModalInfoPost = (props: any) => {
     })
   }
   //
+
   return (
     <>
       <Modal
@@ -519,7 +602,7 @@ const ModalInfoPost = (props: any) => {
           <Form
             name='form-info-job'
             className='form-info-job'
-            // initialValues={{ remember: true }}
+            initialValues={{ remember: true }}
             onFinish={handleSubmitForm}
             form={form}
             onFinishFailed={onFinishFailed}
@@ -609,21 +692,11 @@ const ModalInfoPost = (props: any) => {
                     <Form.Item
                       style={{ margin: 0 }}
                       name={`location_${lcItem.key}`}
-                      // label={<span style={{ fontWeight: '500' }}>{lcItem.key}</span>}
                       rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ trụ sở' }]}
                     >
                       <Select
                         disabled={roleType === 'ADMIN_ROLE' ? true : false}
                         onChange={(value) => handleSelectLocation(value, lcItem.key)}
-                        onBlur={() => {
-                          setHiddenPenEditLocation(true)
-                        }}
-                        onSelect={() => {
-                          setHiddenPenEditLocation(true)
-                        }}
-                        onMouseDown={() => {
-                          setHiddenPenEditLocation(false)
-                        }}
                         size='large'
                         dropdownRender={(menu) => (
                           <>
@@ -641,9 +714,6 @@ const ModalInfoPost = (props: any) => {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                               <ImLocation />
                               {location.value.branch_name}
-                              <div hidden={hiddenPenEditLocation}>
-                                <AiTwotoneEdit />
-                              </div>
                             </div>
                           ),
                           value: location.value.branch_name,
@@ -671,14 +741,15 @@ const ModalInfoPost = (props: any) => {
                 </Row>
               )
             })}
+
             <Modal
               className='modal-create-location'
-              title={<h1>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h1>}
+              title={<h2>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h2>}
               centered
               open={openModalLocation}
-              // onOk={() => console.log('xxxx')}
               onCancel={handleCloseModalLocation}
               width={'50%'}
+              footer=''
             >
               <Form
                 name='form-branch-location-job'
@@ -702,30 +773,44 @@ const ModalInfoPost = (props: any) => {
                     }}
                   />
                 </Form.Item>
+
                 <Form.Item
-                  name='province'
                   label={<span style={{ fontWeight: '500' }}>Tỉnh/ Thành phố</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống tỉnh thành phố' }]}
+                  name='province'
+                  // rules={[{ required: true, message: 'Vui lòng chọn tỉnh/ thành phố' }]}
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        return value ? Promise.resolve() : Promise.reject(new Error('Vui lòng chọn tỉnh/ thành phố'))
+                      }
+                    }
+                  ]}
                 >
-                  <Input
+                  <Select
+                    showSearch
                     size='large'
-                    placeholder='TP. Hồ Chí Minh'
-                    onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, city_name: e.target.value })
-                    }}
+                    options={provincesData}
+                    onChange={(value) => setDataLocationBranch({ ...dataLocationBranch, city_name: value })}
                   />
                 </Form.Item>
+
                 <Form.Item
-                  name='district'
                   label={<span style={{ fontWeight: '500' }}>Quận/ huyện</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống quận/ huyện' }]}
+                  name='district'
+                  // rules={[{ required: true, message: 'Vui lòng chọn quận/ huyện' }]}
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        return value ? Promise.resolve() : Promise.reject(new Error('Vui lòng chọn quận/ huyện'))
+                      }
+                    }
+                  ]}
                 >
-                  <Input
+                  <Select
+                    showSearch
                     size='large'
-                    placeholder='Gò Vấp'
-                    onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, district: e.target.value })
-                    }}
+                    options={districtsData}
+                    onChange={(value) => setDataLocationBranch({ ...dataLocationBranch, district: value })}
                   />
                 </Form.Item>
                 <Form.Item
@@ -741,11 +826,24 @@ const ModalInfoPost = (props: any) => {
                     }}
                   />
                 </Form.Item>
-                <Form.Item name='buttonSubmit'>
+                <div className='btn-container'>
+                  <Button
+                    onClick={() => setOpenModalLocation(false)}
+                    size='large'
+                    className='btn-cancel'
+                    htmlType='submit'
+                  >
+                    Thoát
+                  </Button>
+                  <Button size='large' className='btn-submit' htmlType='submit'>
+                    Tạo
+                  </Button>
+                </div>
+                {/* <Form.Item name='buttonSubmit'>
                   <Button style={{ float: 'right' }} htmlType='submit'>
                     Tạo
                   </Button>
-                </Form.Item>
+                </Form.Item> */}
               </Form>
             </Modal>
 
@@ -788,8 +886,6 @@ const ModalInfoPost = (props: any) => {
                       style={{ margin: 0 }}
                       key={sk.key}
                       name={`skill_${sk.key}`}
-                      // name={sk.key}
-                      // label={<span style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</span>}
                       rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' }]}
                     >
                       <Input
@@ -862,13 +958,14 @@ const ModalInfoPost = (props: any) => {
                 </Form.Item>
               </Col>
             </Row>
-
+            <h4 style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</h4>
             {arrBenefits.map((row) => (
-              <Row key={row.key} align={'middle'} justify={'space-between'}>
+              <Row key={row.key} align={'middle'} justify={'space-between'} style={{ marginBottom: '15px' }}>
                 <Col md={22} sm={20} xs={18}>
                   <Form.Item
+                    style={{ margin: 0 }}
                     name={`benefit_${row.key}`}
-                    label={<span style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</span>}
+                    // label={<span style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</span>}
                   >
                     <Input
                       disabled={roleType === 'ADMIN_ROLE' ? true : false}

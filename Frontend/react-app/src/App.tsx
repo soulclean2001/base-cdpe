@@ -12,7 +12,7 @@ import Login from './features/JobSeeker/pages/LoginJobSeeker'
 import HomePage from './features/Employer/pages/HomePage'
 import DashboardEmployer from './features/Employer/pages/Dashboard'
 import Auth from './features/Auth'
-import { ConversationType, UserRole } from './types'
+import { ApiResponse, ConversationType, RoomType, UserRole } from './types'
 import Home from './features/JobSeeker/pages/HomeJobSeeker'
 import OauthGoogleLogin from './features/JobSeeker/pages/LoginJobSeeker/OauthGoogleLogin'
 import { VerifyEmail } from './VerifyEmail'
@@ -52,18 +52,20 @@ import { AppThunkDispatch, useAppDispatch } from './app/hook'
 import { AuthPayload, AuthState, logout, setToken } from './features/Auth/authSlice'
 import { RootState } from './app/store'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react'
-import { isExpired } from './utils/jwt'
+import { useEffect, useState } from 'react'
+import { getTimeExpired, isExpired } from './utils/jwt'
 import { getMe } from './features/Account/meSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
 import { Socket, io } from 'socket.io-client'
 import { setSocket } from './features/User/userSlice'
-import { addMessage } from './features/ChatPage/chatSlice'
+import { addMessage, setRooms } from './features/ChatPage/chatSlice'
 import ActivePage from './features/ActivePage'
 import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
 import { ToastContainer } from 'react-toastify'
+import axios from 'axios'
+import apiClient from './api/client'
 
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
@@ -72,28 +74,13 @@ const titleLoginAdmin = {
 export let socket: Socket
 
 function App() {
+  const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
-
   const chat = useSelector((state: RootState) => state.chat)
-
+  const user = useSelector((state: RootState) => state.user)
+  const [loop, setLoop] = useState<any>()
   const auth: AuthState = useSelector((state: RootState) => state.auth)
-
-  useEffect(() => {
-    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
-      getProfile()
-      connectSocket()
-      socket.on('new-message', (conversation: ConversationType) => {
-        dispatch(addMessage(conversation))
-      })
-    }
-
-    return () => {
-      if (socket) {
-        socket.disconnect()
-      }
-    }
-  }, [auth])
 
   const connectSocket = async () => {
     return new Promise((resolve, reject) => {
@@ -103,13 +90,80 @@ function App() {
         }
       })
       socket.emit('join', auth.user_id)
-
       dispatch(setSocket(socket))
     })
   }
+
+  const getRefreshToken = async () => {
+    if (!auth.refreshToken || !auth.accessToken) return
+    try {
+      const response = await axios.post('http://localhost:4000/api/v1/users/refresh-token', {
+        refresh_token: auth.refreshToken
+      })
+
+      const { access_token, refresh_token } = response.data.result
+
+      dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
+
+      if (socket) {
+        socket.emit('update_token', access_token)
+      }
+    } catch (e) {}
+  }
+
   const getProfile = async () => {
     await dispatchAsync(getMe())
   }
+  useEffect(() => {
+    if (auth.refreshToken && isExpired(auth.accessToken)) {
+      getRefreshToken()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+      connectSocket()
+      socket.on('new-message', (conversation: ConversationType) => {
+        dispatch(addMessage(conversation))
+      })
+      fetchListRooms()
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect()
+      }
+    }
+  }, [auth.isLogin])
+
+  useEffect(() => {
+    if (auth.isLogin && !isExpired(auth.accessToken)) getProfile()
+
+    setTimeout(
+      async () => {
+        await getRefreshToken()
+      },
+      getTimeExpired(auth.accessToken) * 1000 - 50000 // thời gian hết hạn trừ thời gian tạo. thì ra số gì đó nhân 1000 ra milisecond. à ra second nhân 1000 ra milisecond
+    )
+  }, [auth.refreshToken])
+  const fetchListRooms = async () => {
+    let rooms: RoomType[] = []
+    if (auth.role === UserRole.Employer) {
+      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/company')
+      dispatch(setRooms(listRooms.result))
+      rooms = listRooms.result
+    }
+
+    if (auth.role === UserRole.Candidate) {
+      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/user')
+      dispatch(setRooms(listRooms.result))
+      rooms = listRooms.result
+    }
+
+    const roomIds = rooms.map((room) => room._id) // tách ra file thì kh biết tách sao nên để z luôn chứ nó sai nữa
+    socket.emit('join-conversations', roomIds)
+  }
+
   return (
     <>
       <ToastContainer
