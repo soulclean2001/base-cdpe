@@ -8,7 +8,7 @@ const JobItem = (props: any) => {
   const nameJob: string = props.nameJob
   const nameCompany: string = props.nameCompany
   const salary: string = props.salary
-  const area: string = props.area
+  const area: string[] = props.area
   const timePost: string = props.timePost
   const style: {
     backgroundColorBeforeHover: string
@@ -50,11 +50,7 @@ const JobItem = (props: any) => {
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
       >
         <div className='logo-wapper'>
-          <img
-            style={{ width: '100%', height: '100%' }}
-            src={img ? img : 'https://images.vietnamworks.com/pictureofcompany/be/11070617.png'}
-            alt=''
-          />
+          <img style={{ width: '100%', height: '100%' }} src={img ? img : ''} alt='' />
         </div>
       </Col>
       <Col className='job-item-info' md={18} sm={15} xs={15}>
@@ -62,7 +58,15 @@ const JobItem = (props: any) => {
         <div className='name-company'>{nameCompany ? nameCompany : 'Tên công ty'}</div>
         <div className='salary-job'>
           {salary ? salary : 'Thương lượng'}
-          <span className='area'>| {area ? area : 'Khu vực'}</span>
+          <span className='area'>
+            {' '}
+            {area
+              ? area.map((item, index) => {
+                  if (index === area.length - 1) return item
+                  return `${item}, `
+                })
+              : 'Khu vực'}
+          </span>
         </div>
         <div className='time-post'>
           {timePost
