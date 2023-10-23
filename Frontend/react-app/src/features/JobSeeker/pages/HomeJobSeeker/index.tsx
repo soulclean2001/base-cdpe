@@ -24,9 +24,6 @@ const Home = () => {
     }
   }, [auth])
 
-  const userInfo = useSelector((state: RootState) => state.jobSeeker)
-  console.log('info by ui', userInfo)
-
   return (
     <div className='home-container'>
       <div className='home-search-container'>

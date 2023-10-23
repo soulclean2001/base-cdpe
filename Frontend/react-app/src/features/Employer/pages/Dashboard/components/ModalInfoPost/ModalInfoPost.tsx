@@ -6,7 +6,7 @@ import { Button, Checkbox, Col, Divider, Form, Input, InputNumber, InputRef, Mod
 import TextArea from 'antd/es/input/TextArea'
 import { ImLocation } from 'react-icons/im'
 import { useState, useRef, useEffect } from 'react'
-import { AiTwotoneEdit } from 'react-icons/ai'
+
 import { toast } from 'react-toastify'
 import { BsFillAirplaneFill, BsTrashFill } from 'react-icons/bs'
 import { FaMoneyBillWave } from 'react-icons/fa'
@@ -21,7 +21,7 @@ import { getAllProviencesApi, getOneProvincesApi } from '~/api/provinces.api'
 import { DataOptionType } from '../ModalWorkLocation'
 import { RootState } from '~/app/store'
 import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
-import { format } from 'path'
+import { getAllIndustries } from '~/api/industries.api'
 //data lo
 
 const listLevel = [
@@ -44,37 +44,9 @@ const listTypeJob = [
   { value: 'Hợp đồng thời vụ' },
   { value: 'Khác' }
 ]
-const listIndustries = [
-  { value: 'Bảo hiểm' },
-  { value: 'Chứng khoán' },
-  { value: 'Kiểm toán' },
-  { value: 'Ngân hàng' },
-  { value: 'Tài chính/ Đầu tư' },
-  { value: 'In ấn/ Xuất bản' },
-  { value: 'Internet/ Online Media' },
-  { value: 'Bán sỉ/ Bán lẻ' },
-  { value: 'Hàng không/ Du lịch' },
-  { value: 'Nhà hàng/ Khách sạn' },
-  { value: 'Bất động sản' },
-  { value: 'IT - Phần mềm' },
-  { value: 'IT - Phần cứng/ Mạng' }
-]
+
 const maxItem = [{ value: 'Bạn đã chọn tối đa 3 ngành nghề', label: 'Bạn đã chọn tối đa 3 ngành nghề', disabled: true }]
-const listFieldCompany = [
-  { value: 'Bảo hiểm' },
-  { value: 'Chứng khoán' },
-  { value: 'Kiểm toán' },
-  { value: 'Ngân hàng' },
-  { value: 'Tài chính/ Đầu tư' },
-  { value: 'In ấn/ Xuất bản' },
-  { value: 'Internet/ Online Media' },
-  { value: 'Bán sỉ/ Bán lẻ' },
-  { value: 'Hàng không/ Du lịch' },
-  { value: 'Nhà hàng/ Khách sạn' },
-  { value: 'Bất động sản' },
-  { value: 'IT - Phần mềm' },
-  { value: 'IT - Phần cứng/ Mạng' }
-]
+
 const listBenefit = [
   { value: 'Thưởng' },
   { value: 'Nghỉ phép có lương' },
@@ -674,7 +646,7 @@ const ModalInfoPost = (props: any) => {
                     mode={'multiple'}
                     placeholder={'Chọn ngành nghề'}
                     size='large'
-                    options={industries.length === 3 ? maxItem : listIndustries}
+                    options={industries.length === 3 ? maxItem : getAllIndustries}
                     onChange={(value) => setIndustries(value)}
                     maxTagCount={3}
                     maxTagTextLength={10}

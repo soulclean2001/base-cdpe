@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import './leftMenu.scss'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
@@ -12,7 +12,12 @@ import { AuthState } from '~/features/Auth/authSlice'
 const LeftMenu = (props: any) => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const { clearActiveMenu } = props
-
+  const location = useLocation()
+  useEffect(() => {
+    if (location.state) {
+      setCurrent('jobSubmenu')
+    }
+  }, [location])
   const [current, setCurrent] = useState('mail')
   const items: MenuProps['items'] = [
     {
@@ -38,7 +43,6 @@ const LeftMenu = (props: any) => {
     }
   ]
   const onClick: MenuProps['onClick'] = (e) => {
-    console.log('click ', e)
     setCurrent(e.key)
   }
   //set active select menu

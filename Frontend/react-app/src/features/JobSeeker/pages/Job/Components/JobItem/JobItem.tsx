@@ -3,7 +3,10 @@ import './style.scss'
 import { AiOutlineHeart } from 'react-icons/ai'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 const JobItem = (props: any) => {
+  const navigate = useNavigate()
+  const idJob: string = props.idJob
   const img: string = props.img
   const nameJob: string = props.nameJob
   const nameCompany: string = props.nameCompany
@@ -35,8 +38,18 @@ const JobItem = (props: any) => {
       : 'rgb(239, 245, 255)',
     border: customHover ? (!isHovered ? style?.borderBefore : style?.borderAfter) : '1px solid rgb(160, 193, 255)'
   }
+  const handleClickShowDetail = () => {
+    const convertNameEng = nameJob
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+
+    navigate(`/jobs/${convertName}-id-${idJob}`)
+  }
   return (
     <Row
+      onClick={handleClickShowDetail}
       className='job-item-container'
       style={customHover ? divStyle : undefined}
       onMouseEnter={handleMouseEnter}

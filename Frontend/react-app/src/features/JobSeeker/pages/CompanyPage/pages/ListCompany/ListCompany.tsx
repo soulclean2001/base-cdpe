@@ -4,6 +4,7 @@ import { BsSearch } from 'react-icons/bs'
 import CompanyItem from '../../components/CompanyItem/CompanyItem'
 import { useEffect, useState } from 'react'
 import { getDataPage } from '~/api/fake.api'
+import { getAllFiles } from '~/api/industries.api'
 const listField = [
   { value: 'Tất cả lĩnh vực' },
   { value: 'Bán lẻ/Bán sỉ' },
@@ -91,18 +92,21 @@ const ListCompany = () => {
         </Button>
       </div>
       <div className='list-company-container'>
-        <div className='title-container'>
-          <div className='title-list-company'>{`Danh sách công ty (524)`}</div>
-          <Select
-            placeholder={'Tất cả lĩnh vực'}
-            defaultValue={'Tất cả lĩnh vực'}
-            showSearch
-            maxTagCount={1}
-            maxTagTextLength={8}
-            size='large'
-            options={listField}
-          />
-        </div>
+        <Row className='title-container'>
+          <Col lg={18} md={18} sm={24} xs={24} className='title-list-company'>{`Danh sách công ty (524)`}</Col>
+          <Col lg={6} md={6} sm={24} xs={24}>
+            <Select
+              placeholder={'Tất cả lĩnh vực'}
+              defaultValue={'Tất cả lĩnh vực'}
+              showSearch
+              // maxTagCount={1}
+              // maxTagTextLength={8}
+              style={{ width: '100%' }}
+              size='large'
+              options={[{ value: 'Tất cả lĩnh vực' }, ...getAllFiles]}
+            />
+          </Col>
+        </Row>
         <Row className='list-company' justify={'space-between'}>
           {/* {dataCompany &&
                 dataCompany.map((companyItem) => (

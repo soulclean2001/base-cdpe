@@ -10,20 +10,8 @@ import CompanyRightItem from './components/CompanyRightItem'
 import { useLocation } from 'react-router-dom'
 import apiPost, { PostRequestSearchType } from '~/api/post.api'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
-const listCareer = [
-  {
-    value: 'Tất cả ngành nghề'
-  },
-  {
-    value: 'An toàn lao động'
-  },
-  {
-    value: 'Bác sĩ'
-  },
-  {
-    value: 'Bán hàng'
-  }
-]
+import { getAllIndustries } from '~/api/industries.api'
+
 // const listField = [
 //   { value: 'Tất cả lĩnh vực' },
 //   { value: 'Bán lẻ/Bán sỉ' },
@@ -104,7 +92,6 @@ const ListJob = () => {
     getJobs()
   }, [requestSearch])
   const getJobs = async () => {
-    console.log('request', requestSearch)
     await apiPost.searchJobs(requestSearch).then((rs) => {
       let jobs: JobItemType[] = []
       rs.result.jobs.map((job: any) => {
@@ -174,7 +161,7 @@ const ListJob = () => {
               // maxTagCount={1}
               // maxTagTextLength={15}
               size='large'
-              options={listCareer}
+              options={[{ value: 'Tất cả ngành nghề' }, ...getAllIndustries]}
               onChange={(value) =>
                 setRequestSearch({ ...requestSearch, career: value === 'Tất cả ngành nghề' ? '' : value })
               }
@@ -271,6 +258,7 @@ const ListJob = () => {
                 listJobs.map((item) => (
                   <JobItem
                     key={item._id}
+                    idJob={item._id}
                     img={item.logo}
                     nameJob={item.jobTitle}
                     salary={

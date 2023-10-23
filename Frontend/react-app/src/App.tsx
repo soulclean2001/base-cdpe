@@ -184,7 +184,7 @@ function App() {
           <Route path='active-page' element={<ActivePage />} />
           <Route path='jobs' element={<Job />}>
             <Route index element={<ListJob />} />
-            <Route path='job-detail' element={<JobDetailPage />} />
+            <Route path=':infoUrlJobDetail' element={<JobDetailPage />} />
           </Route>
 
           <Route path='companies' element={<CompanyPage />}>

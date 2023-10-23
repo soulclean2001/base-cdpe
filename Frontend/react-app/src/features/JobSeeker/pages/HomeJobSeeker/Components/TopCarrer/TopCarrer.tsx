@@ -6,7 +6,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import './topCarrer.scss'
-import { useDispatch } from 'react-redux'
+
 const TopCarrer = (props: any) => {
   const dataCarrer = [
     {

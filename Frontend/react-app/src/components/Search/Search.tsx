@@ -16,14 +16,12 @@ const Search = () => {
     fetchProvinces()
   }, [])
   const fetchProvinces = async () => {
-    const res = await getAllProviencesApi().then((rs) => {
+    await getAllProviencesApi().then((rs) => {
       setProvincesData([...provincesData, ...rs])
     })
-    console.log('res', res)
     // setProvincesData(res)
   }
   const handleSubmitSearch = () => {
-    console.log('xx')
     navigate('/jobs', { state: { content: content, cityName: cityName === 'Tất cả khu vực' ? '' : cityName } })
     // window.location.reload()
   }

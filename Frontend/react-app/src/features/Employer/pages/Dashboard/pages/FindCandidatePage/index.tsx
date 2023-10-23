@@ -5,6 +5,7 @@ import { FiFilter } from 'react-icons/fi'
 import CandidateItem from './components/CandidateItem/CandidateItem'
 import { SearchCandidateReqBody } from '~/api/candidate.api'
 import apiSearchCandidate from '~/api/candidate.api'
+import { getAllIndustries } from '~/api/industries.api'
 interface RangeExpYear {
   min?: number
   max?: number
@@ -12,22 +13,6 @@ interface RangeExpYear {
 interface AnyTypeCandidate {
   [key: string]: any
 }
-const listIndustries = [
-  { value: 'kasd' },
-  { value: 'Bảo hiểm' },
-  { value: 'Chứng khoán' },
-  { value: 'Kiểm toán' },
-  { value: 'Ngân hàng' },
-  { value: 'Tài chính/ Đầu tư' },
-  { value: 'In ấn/ Xuất bản' },
-  { value: 'Internet/ Online Media' },
-  { value: 'Bán sỉ/ Bán lẻ' },
-  { value: 'Hàng không/ Du lịch' },
-  { value: 'Nhà hàng/ Khách sạn' },
-  { value: 'Bất động sản' },
-  { value: 'IT - Phần mềm' },
-  { value: 'IT - Phần cứng/ Mạng' }
-]
 
 const listProvince = [{ value: 'TP. Hồ Chí Minh' }, { value: 'Hà Nội' }, { value: 'Đà Nẳng' }, { value: 'kasd' }]
 const maxItem = [{ value: 'Bạn đã chọn tối đa 3 mục', label: 'Bạn đã chọn tối đa 3 mục', disabled: true }]
@@ -237,7 +222,7 @@ const FindCandidatePage = () => {
                 mode={'multiple'}
                 placeholder={'Chọn ngành nghề'}
                 size='middle'
-                options={industries.length === 3 ? maxItem : listIndustries}
+                options={industries.length === 3 ? maxItem : getAllIndustries}
                 onChange={(value) => setIndustries(value)}
                 maxTagCount={3}
                 maxTagTextLength={10}

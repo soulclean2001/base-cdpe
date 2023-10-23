@@ -53,6 +53,11 @@
         font-size: 22px;
         font-weight: 600;
       }
+      @media (max-width: 768px) {
+        .title-list-company {
+          margin-bottom: 10px;
+        }
+      }
     }
   }
 }
