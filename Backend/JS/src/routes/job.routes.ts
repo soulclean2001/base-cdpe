@@ -14,7 +14,8 @@ import wrapAsync from '~/utils/handlers'
 const jobRouter = express.Router()
 
 jobRouter.get('/company', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getAllJobByCompany))
-jobRouter.get('/company/filter', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getJobByCompany))
+jobRouter.get('/company/filter', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getJobsByCompany))
+jobRouter.get('/company/:company_id', accessTokenValidator, wrapAsync(jobControllers.getAllJobsByCompanyId))
 jobRouter.get('/:job_id', wrapAsync(jobControllers.getJob))
 jobRouter.get('/', wrapAsync(jobControllers.getAllJob))
 jobRouter.post('/', accessTokenValidator, createJobValidator, wrapAsync(jobControllers.createJob))

@@ -2,6 +2,7 @@ import { escapeRegExp, isNumber, isUndefined } from 'lodash'
 import { SearchCandidateReqParam, SearchCompanyParam, SearchJobReqParam } from '~/models/requests/Search.request'
 import { removeUndefinedObject } from '~/utils/commons'
 import databaseServices from './database.services'
+import { ObjectId } from 'mongodb'
 
 class SearchService {
   static async searchCandidate({
@@ -229,7 +230,10 @@ class SearchService {
 
     const $sort: {
       [key: string]: any
-    } = {}
+    } = {
+      'salary_range.max': -1,
+      posted_date: -1
+    }
 
     if (filter.sort_by_salary && isNumber(Number(filter.sort_by_salary))) {
       $sort['salary_range.max'] = Number(filter.sort_by_salary) >= 1 ? 1 : -1
@@ -303,6 +307,39 @@ class SearchService {
         .aggregate([
           {
             $match
+          },
+          {
+            $lookup: {
+              from: 'jobs',
+              localField: '_id',
+              foreignField: 'company_id',
+              as: 'job_num'
+            }
+          },
+          {
+            $addFields: {
+              job_num: {
+                $size: '$job_num'
+              }
+            }
+          },
+          {
+            $lookup: {
+              from: 'user_company_follows',
+              localField: '_id',
+              foreignField: 'company_id',
+              as: 'follow_num'
+            }
+          },
+          {
+            $addFields: {
+              // is_following: {
+              //   $in: [new ObjectId(userId), '$follow_num.user_id']
+              // },
+              follow_num: {
+                $size: '$follow_num'
+              }
+            }
           },
           {
             $skip: limit * (page - 1)

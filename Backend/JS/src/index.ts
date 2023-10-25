@@ -35,6 +35,7 @@ databaseServices.connect().then(() => {
   //databaseServices.indexVideoStatus()
   databaseServices.indexCompany()
   databaseServices.indexJobs()
+  databaseServices.indexJobApplications()
 })
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

@@ -6,6 +6,7 @@ export interface CreatePackageReqBody {
   includes: string
   code?: string
   discount_price?: number
+  number_of_days_to_expire: number
 }
 
 export interface UpdatePackageReqBody {
@@ -17,4 +18,5 @@ export interface UpdatePackageReqBody {
   code?: string
   discount_price?: number
   preview?: string
+  number_of_days_to_expire?: number
 }

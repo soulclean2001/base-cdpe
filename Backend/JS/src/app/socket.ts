@@ -89,6 +89,10 @@ const init = (io: Server) => {
       roomIds.forEach((id: string) => socket.join(id))
       console.log(roomIds)
     })
+
+    socket.on('join-room', (roomId) => {
+      socket.join(roomId)
+    })
     // socket.on('send_message', async (data) => {
     //   const { receiver_id, sender_id, content, room_id } = data.payload
 

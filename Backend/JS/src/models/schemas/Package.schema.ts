@@ -20,6 +20,7 @@ export interface PackageType {
   created_at?: Date
   updated_at?: Date
   status?: PackageStatus
+  number_of_days_to_expire: number
 }
 
 export default class Package {
@@ -36,6 +37,7 @@ export default class Package {
   created_at: Date
   updated_at: Date
   status: PackageStatus
+  number_of_days_to_expire: number
 
   constructor(data: PackageType) {
     const date = new Date()
@@ -51,5 +53,6 @@ export default class Package {
     this.created_at = data.created_at || date
     this.updated_at = data.updated_at || date
     this.status = data.status || PackageStatus.ARCHIVE
+    this.number_of_days_to_expire = data.number_of_days_to_expire
   }
 }

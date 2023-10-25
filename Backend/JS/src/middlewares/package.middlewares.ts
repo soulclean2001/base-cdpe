@@ -45,6 +45,11 @@ export const createPackageValidator = validate(
       discount_price: {
         ...priceSchema('price'),
         optional: true
+      },
+      number_of_days_to_expire: {
+        isNumeric: {
+          errorMessage: 'Number of days to expire must be a number'
+        }
       }
     },
     ['body']
@@ -81,8 +86,36 @@ export const updatePackageValidator = validate(
       discount_price: {
         ...priceSchema('price'),
         optional: true
+      },
+      number_of_days_to_expire: {
+        isNumeric: {
+          errorMessage: 'Number of days to expire must be a number'
+        },
+        optional: true
       }
     },
     ['body']
+  )
+)
+
+export const packageQueryMiddleware = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: {
+          errorMessage: 'limit must be a number'
+        },
+        optional: true
+      },
+      page: {
+        isNumeric: true,
+        optional: true
+      },
+      title: {
+        isString: true,
+        optional: true
+      }
+    },
+    ['query']
   )
 )

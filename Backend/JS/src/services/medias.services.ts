@@ -1,5 +1,5 @@
 import path from 'path'
-import { getFiles, getNameFromFullName, handleUploadVideo } from './../utils/file'
+import { getFiles, getNameFromFullName, handleUploadPDF, handleUploadVideo } from './../utils/file'
 import { Request } from 'express'
 import { UPLOAD_IMAGE_DIR, UPLOAD_VIDEO_DIR } from '~/constants/dir'
 import { Media } from '~/models/Other'
@@ -168,6 +168,33 @@ class MediasService {
         return {
           url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
           type: MediaType.Image
+        }
+      })
+    )
+    return result
+    // return {
+    //   url: isProduction
+    //     ? `${process.env.HOST}/static/video/${file.newFilename}`
+    //     : `http://localhost:${process.env.PORT}/static/video/${file.newFilename}`,
+    //   type: MediaType.Video
+    // }
+  }
+
+  public async uploadPDF(req: Request) {
+    const files = await handleUploadPDF(req)
+    const result: Media[] = await Promise.all(
+      files.map(async (file) => {
+        const s3Result = await uploadFileToS3({
+          filename: 'videos/' + file.newFilename,
+          filepath: file.filepath,
+          contentType: mime.getType(file.filepath) as string
+        })
+
+        await Promise.all([fsPromise.unlink(file.filepath)])
+
+        return {
+          url: (s3Result as CompleteMultipartUploadCommandOutput).Location as string,
+          type: MediaType.PDF
         }
       })
     )

@@ -74,10 +74,76 @@ class CompanyService {
     })
   }
 
+  static async getCompanyById(companyId: string) {
+    const companies = await databaseServices.company
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(companyId)
+          }
+        },
+        {
+          $lookup: {
+            from: 'jobs',
+            localField: '_id',
+            foreignField: 'company_id',
+            as: 'job_num'
+          }
+        },
+        {
+          $addFields: {
+            job_num: {
+              $size: '$job_num'
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'user_company_follows',
+            localField: '_id',
+            foreignField: 'company_id',
+            as: 'follow_num'
+          }
+        },
+        {
+          $addFields: {
+            follow_num: {
+              $size: '$follow_num'
+            }
+          }
+        }
+      ])
+      .toArray()
+
+    return companies[0] || {}
+  }
+
   static async getCompanyByMe(userId: string) {
     return await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
     })
+  }
+
+  static async isFollowingCompanyId(userId: string, companyId: string) {
+    const companyFollowed = await databaseServices.companyFollowers.findOne({
+      company_id: new ObjectId(companyId),
+      user_id: new ObjectId(userId)
+    })
+
+    return companyFollowed ? true : false
+  }
+
+  static async getCompanyFollowing(userId: string) {
+    const companyFollowed = await databaseServices.companyFollowers.aggregate([
+      {
+        $match: {
+          user_id: new ObjectId(userId)
+        }
+      },
+      {}
+    ])
+
+    return companyFollowed ? true : false
   }
 }
 

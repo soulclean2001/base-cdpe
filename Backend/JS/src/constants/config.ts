@@ -74,6 +74,8 @@ export const envConfig = {
   dbJobApplication: process.env.DB_JOB_APPLICATION_COLLECTION as string,
   dbCandidate: process.env.DB_CANDIDATE_COLLECTION as string,
   dbPurchasedPackage: process.env.DB_PURCHASED_PACKAGE_COLLECTION as string,
+  dbOrder: process.env.DB_ORDER_COLLECTION as string,
+  dbServiceOrder: process.env.DB_SERVICE_ORDER as string,
   redisPassword: process.env.REDIS_PASSWORD as string,
   redisHost: process.env.REDIS_HOST as string,
   redisPort: process.env.REDIS_PORT as string,

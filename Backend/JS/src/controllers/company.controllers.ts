@@ -37,6 +37,29 @@ class CompanyController {
       result
     })
   }
+
+  async getCompanyById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { company_id } = req.params
+
+    const result = await CompanyService.getCompanyById(company_id)
+
+    return res.json({
+      message: 'get company',
+      result
+    })
+  }
+
+  async isFollowingCompanyId(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { company_id } = req.params
+    const { role, user_id } = req.decoded_authorization as TokenPayload
+
+    const result = await CompanyService.isFollowingCompanyId(user_id, company_id)
+
+    return res.json({
+      message: 'is following company',
+      result
+    })
+  }
 }
 
 export default new CompanyController()

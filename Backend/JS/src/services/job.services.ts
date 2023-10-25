@@ -3,12 +3,25 @@ import databaseServices from './database.services'
 import Job, { JobType } from '~/models/schemas/Job.schema'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
-import { isNumber, omit } from 'lodash'
+import { escapeRegExp, isBoolean, isNumber, omit } from 'lodash'
 
 export interface JobSearchOptions {
   visibility?: boolean
   status?: JobStatus
   expired_before_nday?: number
+  is_expired?: boolean
+  from_day?: string
+  to_day?: string
+  content?: string
+}
+
+export interface JobSearchByAdmin {
+  content?: string
+  from_day?: string
+  to_day?: string
+  status?: string
+  limit?: string
+  page?: string
 }
 
 export default class JobService {
@@ -29,8 +42,43 @@ export default class JobService {
       opts['status'] = options.status
     }
 
-    if (options.visibility) {
-      opts['visibility'] = options.visibility
+    if (options.visibility && isBoolean(options.visibility)) {
+      opts['visibility'] = Boolean(options.visibility)
+    }
+
+    if (options.is_expired) {
+      opts['expired_date'] = {
+        $lt: new Date()
+      }
+    }
+
+    if (options.from_day) {
+      opts['expired_date'] = {
+        $gte: new Date(options.from_day)
+      }
+    }
+
+    if (options.to_day) {
+      if (options.from_day) {
+        opts['expired_date'] = {
+          $gte: new Date(options.from_day),
+          $lte: new Date(options.to_day)
+        }
+      } else {
+        opts['expired_date'] = {
+          $lte: new Date(options.to_day)
+        }
+      }
+    }
+
+    if (options.content) {
+      const keyword = options.content.trim()
+      const keywords = keyword.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
+
+      opts['job_title'] = {
+        $regex: regex
+      }
     }
 
     return opts
@@ -152,12 +200,24 @@ export default class JobService {
     return result
   }
 
+  static async getAllJobsByCompanyId(companyId: string) {
+    const result = await databaseServices.job
+      .find({
+        company_id: new ObjectId(companyId)
+      })
+      .toArray()
+    if (!result) {
+      throw new ErrorWithStatus({ message: 'Company not found', status: 404 })
+    }
+    return result
+  }
+
   static async getAllJob() {
     const result = await databaseServices.job.find({}).toArray()
     return result
   }
 
-  static async getAllJobByCompany(userId: string, limit: number = 2, page: number = 1) {
+  static async getAllJobByCompany(userId: string, limit: number = 10, page: number = 1) {
     const company = await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
     })
@@ -266,7 +326,7 @@ export default class JobService {
     }
   }
 
-  static async getJobByCompany(userId: string, limit: number = 2, page: number = 1, options?: JobSearchOptions) {
+  static async getJobByCompany(userId: string, limit: number = 10, page: number = 1, options?: JobSearchOptions) {
     const company = await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
     })
@@ -279,6 +339,7 @@ export default class JobService {
     }
 
     const opts = options ? JobService.convertOptions(options) : {}
+    console.log(opts)
 
     const [listJob, total] = await Promise.all([
       databaseServices.job
@@ -523,5 +584,85 @@ export default class JobService {
     return {
       message: 'Hide job successfully'
     }
+  }
+
+  static async getPostsByAdmin(filter: JobSearchByAdmin) {
+    const limit = Number(filter.limit) || 10
+    const page = Number(filter.page) || 1
+
+    const opts = this.convertQueryPostByAdmin(filter) || {}
+
+    const [jobs, total] = await Promise.all([
+      databaseServices.job
+        .aggregate([
+          {
+            $match: {
+              ...opts
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+
+      databaseServices.job
+        .aggregate([
+          {
+            $match: {
+              ...opts
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      jobs,
+      total: total[0]?.total || 0,
+      limit,
+      page
+    }
+  }
+
+  static convertQueryPostByAdmin(filter: JobSearchByAdmin) {
+    const opts: { [key: string]: any } = {}
+
+    if (filter.content) {
+      opts['$text'] = {
+        $search: filter.content
+      }
+    }
+
+    if (filter.status && isNumber(Number(filter.status))) {
+      opts['status'] = Number(filter.status)
+    }
+
+    if (filter.from_day) {
+      opts['expired_date'] = {
+        $gte: new Date(filter.from_day)
+      }
+    }
+
+    if (filter.to_day) {
+      if (filter.from_day) {
+        opts['expired_date'] = {
+          $gte: new Date(filter.from_day),
+          $lte: new Date(filter.to_day)
+        }
+      } else {
+        opts['expired_date'] = {
+          $lte: new Date(filter.to_day)
+        }
+      }
+    }
+
+    return opts
   }
 }

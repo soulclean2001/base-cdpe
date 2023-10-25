@@ -92,6 +92,50 @@ export const handleUploadVideo = async (req: Request) => {
   })
 }
 
+export const handleUploadPDF = async (req: Request) => {
+  const formidable = (await import('formidable')).default
+
+  const nanoId = (await import('nanoid')).nanoid
+  const idName = nanoId()
+  const folderPath = path.resolve(UPLOAD_VIDEO_DIR, idName)
+  fs.mkdirSync(folderPath)
+
+  const form = formidable({
+    uploadDir: folderPath,
+    maxFiles: 1,
+    maxFileSize: 1024 * 1024 * 10, // 50MB
+    filter: function ({ name, originalFilename, mimetype }) {
+      const valid = name === 'filepdf' && Boolean(mimetype === 'application/pdf')
+      if (!valid) {
+        form.emit('error' as any, new Error('File type is not valid') as any)
+      }
+      return valid
+    }
+  })
+
+  return new Promise<File[]>((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        return reject(err)
+      }
+      // eslint-disable-next-line no-extra-boolean-cast
+      if (!Boolean(files.filepdf)) {
+        return reject(new Error('File is empty'))
+      }
+
+      const pdfs = files.filepdf as File[]
+      pdfs.forEach((pdf) => {
+        const ext = getExtension(pdf.originalFilename as string)
+        fs.renameSync(pdf.filepath, pdf.filepath + '.' + ext)
+        pdf.newFilename = pdf.newFilename + '.' + ext
+        pdf.filepath = pdf.filepath + '.' + ext
+      })
+
+      resolve(files.filepdf as File[])
+    })
+  })
+}
+
 export const getNameFromFullName = (fullName: string) => {
   const namearr = fullName.split('.')
   namearr.pop()

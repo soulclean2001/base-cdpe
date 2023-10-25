@@ -40,6 +40,16 @@ class JobApplicationController {
     })
   }
 
+  async getJobApplicationsByFilter(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+
+    const result = await JobApplicationService.getJobAppications(req.query)
+    return res.json({
+      message: 'get job applications filter',
+      result
+    })
+  }
+
   async getById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
     const { user_id } = req.decoded_authorization
     const { job_application_id } = req.params

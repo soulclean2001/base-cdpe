@@ -26,7 +26,8 @@ export enum TokenType {
 export enum MediaType {
   Image,
   Video,
-  HLS
+  HLS,
+  PDF
 }
 
 export enum MediaTypeQuery {

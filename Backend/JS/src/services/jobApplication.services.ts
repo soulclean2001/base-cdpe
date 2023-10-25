@@ -8,8 +8,19 @@ import JobApplication, {
   JobApplicationType,
   ApplyType
 } from '~/models/schemas/JobApplication.schema'
-import { omit } from 'lodash'
+import { isNumber, omit } from 'lodash'
 import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
+
+export interface searchJobApplication {
+  content?: string
+  post_id?: string
+  from_date?: string
+  to_date?: string
+  status?: string
+  profile_status?: string
+  limit?: string
+  page?: string
+}
 
 class JobApplicationService {
   static async apply(userId: string, payload: ApplyReqBody) {
@@ -95,6 +106,11 @@ class JobApplicationService {
       .find({
         user_id: new ObjectId(userId)
       })
+      .project({
+        profile_status: 0,
+        status: 0,
+        deleted_at: 0
+      })
       .toArray()
 
     return result
@@ -157,6 +173,94 @@ class JobApplicationService {
     return {
       message: result.ok ? `Update status: '${status}' OK` : `Update status: '${status}'Failed`
     }
+  }
+
+  static async getJobAppications(filter: searchJobApplication) {
+    const limit = Number(filter.limit) || 10
+    const page = Number(filter.page) || 1
+
+    const opts = JobApplicationService.convertToOptions(filter) || {}
+
+    console.log(opts)
+
+    const [jas, total] = await Promise.all([
+      databaseServices.jobApplication
+        .aggregate([
+          {
+            $match: {
+              ...opts
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.jobApplication
+        .aggregate([
+          {
+            $match: {
+              ...opts
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      message: 'Job application',
+      result: {
+        jas,
+        limit,
+        page,
+        total: total[0]?.total || 0
+      }
+    }
+  }
+
+  static convertToOptions(filter: searchJobApplication) {
+    const options: {
+      [key: string]: any
+    } = {}
+    const content = filter.content?.trim() || ''
+    if (content) {
+      options['$text'] = {
+        $search: content
+      }
+    }
+
+    if (filter.status && isNumber(Number(filter.status))) {
+      options['status'] = Number(filter.status)
+    }
+
+    if (filter.profile_status) {
+      options['profile_status'] = filter.profile_status
+    }
+
+    if (filter.to_date) {
+      if (filter.from_date) {
+        options['created_at'] = {
+          $gte: new Date(filter.from_date),
+          $lte: new Date(filter.to_date)
+        }
+      } else {
+        options['created_at'] = {
+          $lte: new Date(filter.to_date)
+        }
+      }
+    }
+
+    if (filter.post_id && ObjectId.isValid(filter.post_id)) {
+      options['job_post_id'] = new ObjectId(filter.post_id)
+    }
+
+    return options
   }
 }
 

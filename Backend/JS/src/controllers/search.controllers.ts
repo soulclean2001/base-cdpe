@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { Pagination, SearchCandidateReqParam } from '~/models/requests/Search.request'
+import { TokenPayload } from '~/models/requests/User.request'
 import SearchService from '~/services/search.services'
 
 class SearchController {

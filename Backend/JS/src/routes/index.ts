@@ -11,6 +11,8 @@ import conversationsRouter from './conversations.routes'
 import candidateRoute from './candidate.routes'
 import jobApplicationRouter from './jobApplication.routes'
 import searchRouter from './search.routes'
+import adminRouter from './admin.routes'
+import orderRouter from './order.routes'
 
 const router = express.Router()
 
@@ -26,5 +28,7 @@ router.use('/conversations', conversationsRouter)
 router.use('/candidates', candidateRoute)
 router.use('/job-applications', jobApplicationRouter)
 router.use('/search', searchRouter)
+router.use('/admin', adminRouter)
+router.use('/orders', orderRouter)
 
 export default router

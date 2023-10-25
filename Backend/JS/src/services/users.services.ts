@@ -8,13 +8,22 @@ import { envConfig } from '~/constants/config'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 import { ObjectId } from 'mongodb'
 import { USERS_MESSAGES } from '~/constants/messages'
-import { omit } from 'lodash'
+import { isNumber, omit } from 'lodash'
 import { ErrorWithStatus } from '~/models/Errors'
 import HTTP_STATUS from '~/constants/httpStatus'
 import axios from 'axios'
 import { sendVerifyRegisterEmail, sendForgotPasswordEmail } from '~/utils/email'
 import Company from '~/models/schemas/Company.schema'
 import { PositionType } from '~/models/requests/Company.request'
+
+export interface QueryUserEmployerFilter {
+  content?: string
+  verify?: string
+  status?: string
+  limit?: string
+  page?: string
+  type?: 'employer' | 'admin' | 'candidate' | 'all'
+}
 
 class UsersService {
   private signAccessToken({ user_id, verify, role }: { user_id: string; verify: UserVerifyStatus; role: UserRole }) {
@@ -499,6 +508,87 @@ class UsersService {
       user_id: new ObjectId(userId)
     })
     return result
+  }
+
+  async getUsersFromAdmin(filter: QueryUserEmployerFilter) {
+    const limit = Number(filter.limit) || 10
+    const page = Number(filter.page) || 1
+
+    const opts = this.queryUserEmployerConvertToMatch(filter) || {}
+
+    console.log(opts)
+
+    const [employers, total] = await Promise.all([
+      databaseServices.users
+        .aggregate([
+          {
+            $match: {
+              ...opts
+            }
+          },
+          {
+            $project: {
+              password: 0,
+              email_verify_token: 0,
+              forgot_password_token: 0
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.users
+        .aggregate([
+          {
+            $match: {
+              role: UserRole.Employer,
+              ...opts
+            }
+          },
+
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      employers,
+      total: total[0]?.total || 0,
+      limit,
+      page
+    }
+  }
+
+  queryUserEmployerConvertToMatch(query: QueryUserEmployerFilter) {
+    const options: {
+      [key: string]: any
+    } = {}
+    if (query.content) {
+      options['$text'] = {
+        $search: query.content
+      }
+    }
+
+    if (query.status && isNumber(Number(query.status))) {
+      options['status'] = Number(query.status)
+    }
+
+    if (query.verify && isNumber(Number(query.verify))) {
+      options['verify'] = Number(query.verify)
+    }
+
+    if (query.type) {
+      if (query.type === 'admin') options['role'] = UserRole.Administrators
+      if (query.type === 'candidate') options['role'] = UserRole.Candidate
+      if (query.type === 'employer') options['role'] = UserRole.Employer
+    }
+    return options
   }
 }
 

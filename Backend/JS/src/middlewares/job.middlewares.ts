@@ -423,6 +423,42 @@ export const jobQueryMiddleware = validate(
       page: {
         isNumeric: true,
         optional: true
+      },
+      expired_before_nday: {
+        isNumeric: true,
+        optional: true
+      },
+      is_expired: {
+        isBoolean: true,
+        optional: true
+      },
+      visibility: {
+        isBoolean: true,
+        optional: true
+      },
+      content: {
+        isString: true,
+        optional: true
+      },
+      from_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'from_day must be a valid ISO8601'
+        },
+        optional: true
+      },
+      to_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'to_day must be a valid ISO8601'
+        },
+        optional: true
       }
     },
     ['query']

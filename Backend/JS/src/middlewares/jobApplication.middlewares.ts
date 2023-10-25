@@ -133,3 +133,63 @@ export const updateStatusValidator = validate(
     ['body']
   )
 )
+
+export const jobApplicationQueryMiddleware = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: true,
+        optional: true
+      },
+      page: {
+        isNumeric: true,
+        optional: true
+      },
+      status: {
+        isNumeric: true,
+        optional: true
+      },
+      profile_status: {
+        isString: true,
+        optional: true
+      },
+
+      content: {
+        isString: true,
+        optional: true
+      },
+      from_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'from_day must be a valid ISO8601'
+        },
+        optional: true
+      },
+      to_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'to_day must be a valid ISO8601'
+        },
+        optional: true
+      },
+      post_id: {
+        optional: true,
+        custom: {
+          options: (value: any) => {
+            if (!ObjectId.isValid(value)) {
+              throw new Error('Invalid post_id: ' + value)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)

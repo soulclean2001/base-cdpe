@@ -1,6 +1,11 @@
 import express from 'express'
 import jobApplicationControllers from '~/controllers/jobApplication.controllers'
-import { applyJobValidator, idValidator, updateStatusValidator } from '~/middlewares/jobApplication.middlewares'
+import {
+  applyJobValidator,
+  idValidator,
+  jobApplicationQueryMiddleware,
+  updateStatusValidator
+} from '~/middlewares/jobApplication.middlewares'
 import { accessTokenValidator } from '~/middlewares/users.middlewares'
 const jobApplicationRouter = express.Router()
 
@@ -16,6 +21,14 @@ jobApplicationRouter.get(
   accessTokenValidator,
   jobApplicationControllers.getAllJobApplicationsFromCandidate
 )
+
+jobApplicationRouter.get(
+  '/',
+  accessTokenValidator,
+  jobApplicationQueryMiddleware,
+  jobApplicationControllers.getJobApplicationsByFilter
+)
+
 jobApplicationRouter.get(
   '/:job_application_id',
   accessTokenValidator,

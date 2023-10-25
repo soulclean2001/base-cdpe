@@ -4,6 +4,7 @@ import Package, { PackageStatus } from '~/models/schemas/Package.schema'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 import { deleteFileFromS3 } from '~/utils/s3'
+import { escapeRegExp } from 'lodash'
 
 export default class PackageService {
   static async createPackage(data: CreatePackageReqBody) {
@@ -111,6 +112,57 @@ export default class PackageService {
     const pkg = await databaseServices.package.find({}).toArray()
 
     return pkg
+  }
+
+  static async getAllPackagesByTitle(limit: number = 10, page: number = 1, title: string) {
+    // const pkg = await databaseServices.package.find({}).toArray()
+
+    const $match: {
+      [key: string]: any
+    } = {}
+
+    if (title) {
+      const keyword = title.trim()
+      const keywords = keyword.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
+
+      $match['title'] = {
+        $regex: regex
+      }
+    }
+
+    const [pks, total] = await Promise.all([
+      databaseServices.package
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.package
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      pks,
+      total: total[0]?.total || 0,
+      limit,
+      page
+    }
   }
 
   static async activePackage(package_id: string) {
