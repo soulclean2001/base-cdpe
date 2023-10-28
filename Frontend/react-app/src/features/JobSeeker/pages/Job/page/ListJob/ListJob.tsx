@@ -82,7 +82,7 @@ const ListJob = () => {
     working_location: location.state ? location.state.cityName : ''
   })
   const [listJobs, setListJobs] = useState<Array<JobItemType>>([])
-
+  const [pageClick, setPageClick] = useState('')
   useEffect(() => {
     if (location && location.state) {
       setRequestSearch({ ...requestSearch, content: location.state.content, working_location: location.state.cityName })
@@ -91,8 +91,8 @@ const ListJob = () => {
   useEffect(() => {
     getJobs()
   }, [requestSearch])
-  const getJobs = async () => {
-    await apiPost.searchJobs(requestSearch).then((rs) => {
+  const getJobs = async (page?: string) => {
+    await apiPost.searchJobs({ ...requestSearch, page: page ? page : '1' }).then((rs) => {
       let jobs: JobItemType[] = []
       rs.result.jobs.map((job: any) => {
         jobs.push({
@@ -139,7 +139,9 @@ const ListJob = () => {
   //set value page click
   const handleChangePage = (valuePageClick: any) => {
     // setPageClick(valuePageClick)
-    setRequestSearch({ ...requestSearch, page: valuePageClick })
+    // setPageClick(valuePageClick)
+    // setRequestSearch({ ...requestSearch, page: valuePageClick })
+    getJobs(valuePageClick)
   }
   //
   return (

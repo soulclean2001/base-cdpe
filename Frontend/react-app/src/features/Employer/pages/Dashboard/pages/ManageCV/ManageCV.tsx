@@ -4,32 +4,35 @@ import './style.scss'
 
 import { TabsProps } from 'antd/lib'
 import ContentCVManage from './components/ContentCVManage'
+import { useState } from 'react'
 
 const ManageCV = () => {
+  const [tabKey, setTabKey] = useState('')
   const onChange = (key: string) => {
     console.log(key)
+    setTabKey(key)
   }
 
   const items: TabsProps['items'] = [
     {
       key: 'tab-applied-cv',
       label: <div className='tab-item'>Hồ sơ đã ứng tuyển</div>,
-      children: <ContentCVManage />
+      children: <ContentCVManage tabKey={tabKey} />
     },
     {
       key: 'tab-saved-cv',
       label: <div className='tab-item'>Hồ sơ đã lưu</div>,
-      children: 'Content of Tab Pane 2'
+      children: <ContentCVManage tabKey={tabKey} />
     },
     {
       key: 'tab-back-list',
       label: <div className='tab-item'>Danh sách đen</div>,
-      children: 'Content of Tab Pane 2'
+      children: <ContentCVManage tabKey={tabKey} />
     },
     {
       key: 'tab-deleted',
       label: <div className='tab-item'>Đã xóa</div>,
-      children: 'Content of Tab Pane 3'
+      children: <ContentCVManage tabKey={tabKey} />
     }
   ]
   return (

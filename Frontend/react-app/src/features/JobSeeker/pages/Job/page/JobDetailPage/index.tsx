@@ -8,12 +8,13 @@ import type { TabsProps } from 'antd'
 import { useEffect, useState } from 'react'
 import JobInfo from './components/JobInfo/JobInfo'
 import CompanyInfo from './components/CompanyInfo/CompanyInfo'
-import ShowMoreJob from './components/ShowMoreJob/ShowMoreJob'
+// import ShowMoreJob from './components/ShowMoreJob/ShowMoreJob'
 import ModalApplyCV from './components/ModalApplyCV'
 import { useParams } from 'react-router-dom'
 import apiPost from '~/api/post.api'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
-
+import ListJob from '../../../CompanyPage/pages/CompanyDetail/components/ListJob/ListJob'
+import logoTemp from '~/assets/HF_logo.jpg'
 interface JobDetailType {
   [key: string]: any
 }
@@ -113,7 +114,7 @@ const JobDetailPage = () => {
     {
       key: '3_else_jobs',
       label: 'VIỆC LÀM KHÁC TỪ CÔNG TY',
-      children: <ShowMoreJob />
+      children: <ListJob companyId={jobDetail ? jobDetail.company_id : ''} />
     }
   ]
   return (
@@ -130,7 +131,7 @@ const JobDetailPage = () => {
         <div className='content-header'>
           <Row className='job-title-container'>
             <Col md={4} sm={24} xs={24} className='logo-company'>
-              <img src={jobDetail && jobDetail.company.logo ? jobDetail.company.logo : ''} />
+              <img src={jobDetail && jobDetail.company.logo ? jobDetail.company.logo : logoTemp} />
             </Col>
             <Col md={20} sm={24} xs={24} className='title-info'>
               <div className='job-name'>{jobDetail && jobDetail.job_title ? jobDetail.job_title : 'Tên việc làm'}</div>

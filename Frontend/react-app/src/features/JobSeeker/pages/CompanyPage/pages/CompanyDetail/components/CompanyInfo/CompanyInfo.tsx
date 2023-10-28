@@ -2,22 +2,28 @@ import { Carousel, Col, Row } from 'antd'
 import './style.scss'
 import { useEffect, useState } from 'react'
 import { BsPlayCircle } from 'react-icons/bs'
-import { BiMoneyWithdraw } from 'react-icons/bi'
-const descriptionsData = `History and Background
-Formed in spring 2004 the practice has thoroughly embraced BIM and has been using Revit (but also ArchiCAD and other BIM software) since 2006.
+// import { BiMoneyWithdraw } from 'react-icons/bi'
+import { TypeCompanyDetail } from '../../CompanyDetail'
+import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
+// const descriptionsData = `History and Background
+// Formed in spring 2004 the practice has thoroughly embraced BIM and has been using Revit (but also ArchiCAD and other BIM software) since 2006.
 
-All architectural staff are qualified architects, the majority having attended HCMC University. WA Projects has an exceptionally low turnover of staff, which has been key to our continued success.
+// All architectural staff are qualified architects, the majority having attended HCMC University. WA Projects has an exceptionally low turnover of staff, which has been key to our continued success.
 
-Our sustained growth has been, and continues to be by recommendation - the best form of marketing ! Our strength is in our ability to deliver consistently high-quality architectural packages, drawings and BIM models on programme that are to`
-const CompanyInfo = () => {
+// Our sustained growth has been, and continues to be by recommendation - the best form of marketing ! Our strength is in our ability to deliver consistently high-quality architectural packages, drawings and BIM models on programme that are to`
+interface PropsType {
+  data: TypeCompanyDetail
+}
+const CompanyInfo = (props: any) => {
+  const { data }: PropsType = props
   const [descriptions, setDescriptions] = useState([''])
   useEffect(() => {
     handleFormatInfo()
     console.log(handleFormatInfo())
-  }, [])
+  }, [data])
   const handleFormatInfo = () => {
-    if (descriptionsData) {
-      setDescriptions(descriptionsData.split('\n'))
+    if (data && data.company_info) {
+      setDescriptions(data.company_info.split('\n'))
     }
   }
   return (
@@ -32,8 +38,12 @@ const CompanyInfo = () => {
               Địa chỉ
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
-              Our studio is located in Harmony Building, 6th floor, 47-49-51 Phung Khac Khoan, Dakao Ward, District 1,
-              HCMC
+              {data &&
+                data.working_locations.map((loc: WorkingLocation, index: number) => (
+                  <div key={index} style={{ paddingBottom: '7px' }}>
+                    {loc.address}, {loc.district}, {loc.city_name}
+                  </div>
+                ))}
             </Col>
           </Row>
           <Row className='about-info-container'>
@@ -41,7 +51,7 @@ const CompanyInfo = () => {
               Quy mô
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
-              25-99 nhân viên
+              {data && data.company_size ? data.company_size : 0} nhân sự
             </Col>
           </Row>
           <Row className='about-info-container'>
@@ -49,7 +59,7 @@ const CompanyInfo = () => {
               Lĩnh vực
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
-              Kiến trúc/Thiết kế nội thất
+              {data && data.fields ? data.fields.join(', ') : ''}
             </Col>
           </Row>
           <Row className='about-info-container'>
@@ -57,13 +67,18 @@ const CompanyInfo = () => {
               Liên hệ
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
-              Marcel Lennartz
+              ...
             </Col>
           </Row>
           <h2 className='title-about' style={{ paddingTop: '20px' }}>
             GIỚI THIỆU
           </h2>
-          {descriptions && descriptions.map((item) => <div className='description'>{item}</div>)}
+          {descriptions &&
+            descriptions.map((item, index) => (
+              <div key={index} className='description'>
+                {item}
+              </div>
+            ))}
         </Col>
         <Col lg={12} md={24} sm={24} xs={24} className='right-img-container'>
           <Carousel autoplay>
@@ -82,7 +97,7 @@ const CompanyInfo = () => {
           <BsPlayCircle />
         </div>
       </div>
-      <div className='benefit-company-detail-container'>
+      {/* <div className='benefit-company-detail-container'>
         <h2 className='benefit-title'>PHÚC LỢI</h2>
         <Row className='benefit-content'>
           <Col md={8} sm={11} xs={23} className='benefit-item'>
@@ -110,7 +125,7 @@ const CompanyInfo = () => {
             </div>
           </Col>
         </Row>
-      </div>
+      </div> */}
     </div>
   )
 }

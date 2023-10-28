@@ -1,9 +1,9 @@
-import { Button, Col, Input, Row, Select, Space, Table } from 'antd'
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
-import { FilterValue, SorterResult } from 'antd/es/table/interface'
+import { Col, Input, Row, Select, Table } from 'antd'
+import { ColumnsType, TableProps } from 'antd/es/table'
+import { SorterResult } from 'antd/es/table/interface'
 import { useEffect, useState } from 'react'
 import './style.scss'
-import { BsFillEyeFill, BsPencilSquare, BsSearch } from 'react-icons/bs'
+import { BsFillEyeFill, BsSearch } from 'react-icons/bs'
 import { MdDelete } from 'react-icons/md'
 import ModalInfoPost from '../../../../components/ModalInfoPost/ModalInfoPost'
 import { DatePicker } from 'antd'
@@ -11,9 +11,10 @@ import { BiWorld } from 'react-icons/bi'
 import { AiFillLock } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import apiClient from '~/api/client'
+
 import { setPosts } from '~/features/Employer/employerSlice'
 // import viVN from 'antd/es/locale/vi_VN'
+import apiPost, { PostFilterRequestType } from '~/api/post.api'
 
 const { RangePicker } = DatePicker
 
@@ -70,9 +71,10 @@ export interface JobType {
 }
 // muon bỏ buoc call api à
 const TableCustom = (props: any) => {
-  const { tabKey } = props
+  const { isSubmit, tabKey } = props
   const [sortedInfo, setSortedInfo] = useState<SorterResult<JobType>>({})
   const dispatch = useDispatch()
+  const [isUpdate, setIsUpDate] = useState(false)
   const employer = useSelector((state: RootState) => state.employer)
   const [currentPage, setCurrentPage] = useState(1)
   const [data, setData] = useState<JobType[]>([])
@@ -81,38 +83,62 @@ const TableCustom = (props: any) => {
   const [idPost, setIdPost] = useState<string>()
   const limit = 3
 
-  const total = employer.posts.total
+  // const total = employer.posts.total
+  const [total, setTotal] = useState(1)
+
+  const [content, setContent] = useState('')
+  const [rangeDate, setRangeDate] = useState<Array<string>>([])
+
   const handleChange: TableProps<JobType>['onChange'] = async (pagination, filters, sorter) => {
     // console.log('log data', pagination, filters, sorter)
-    await fetchData(pagination.pageSize, pagination.current)
+    console.log(pagination.current as number)
     setCurrentPage(pagination.current as number)
     setSortedInfo(sorter as SorterResult<JobType>)
+    await fetchData(pagination.current?.toString())
   }
 
   // get data
-  useEffect(() => {
-    fetchData(limit)
-  }, [])
 
-  const fetchData = async (limit: number = 2, page: number = 1) => {
-    const post = (await apiClient.get(`/jobs/company?limit=${limit}&page=${page}`)) as {
-      message: string
-      result: {
-        data: any[]
-        total: number
-      }
+  useEffect(() => {
+    fetchData()
+  }, [tabKey, content, rangeDate])
+  useEffect(() => {
+    if (isUpdate) {
+      fetchData(currentPage.toString())
     }
-    console.log('Data', post)
-    dispatch(setPosts(post.result))
+  }, [isUpdate])
+  useEffect(() => {
+    if (isSubmit) {
+      fetchData(currentPage.toString())
+    }
+  }, [isSubmit])
+  const fetchData = async (page?: string) => {
+    const initReq = { limit: limit.toString(), page: page ? page : '1' }
+    let request: PostFilterRequestType = initReq
+    if (tabKey === 'tab-publish') request = { ...initReq, visibility: true }
+    if (tabKey === 'tab-hide') request = { ...initReq, visibility: false }
+    if (tabKey === 'tab-over-time-7-day') request = { ...initReq, expired_before_nday: 7 }
+    if (tabKey === 'tab-over-time') request = { ...initReq, is_expired: true }
+    if (content) request = { ...request, content }
+    if (rangeDate && rangeDate[0] && rangeDate[1])
+      request = { ...request, from_day: rangeDate[0], to_day: rangeDate[1] }
+
+    console.log('request', request)
+    await apiPost.getPostsFormEmployer(request).then((rs) => {
+      console.log(rs)
+      dispatch(setPosts(rs.result))
+      setData(rs.result.data)
+      setTotal(rs.result.total)
+    })
   }
   // kiểm tra data thay đổi
-  useEffect(() => {
-    setData(employer.posts.data)
-  }, [employer])
+  // useEffect(() => {
+  //   setData(employer.posts.data)
+  // }, [employer])
 
   const columns: ColumnsType<JobType> = [
     {
-      title: 'Chức danh',
+      title: 'Tên công việc',
       dataIndex: 'job_title',
       key: 'job_title',
       sorter: (a, b) => a.job_title.localeCompare(b.job_title),
@@ -232,7 +258,6 @@ const TableCustom = (props: any) => {
       showSorterTooltip: false,
       render: (value, _) => (
         <>
-          {console.log('value', typeof value)}
           {value === 1 && <span>Chờ duyệt</span>} {value === 0 && <span>Chấp nhận</span>}
           {value === 2 && <span>Từ chối</span>}
           {value === 3 && <span>Chưa kiểm duyệt</span>}
@@ -284,23 +309,44 @@ const TableCustom = (props: any) => {
       return anotherTemp
     }
   }
+  const handleAfterSubmit = () => {
+    setOpenModalInfo(false)
+    setIsUpDate(true)
+  }
+
   const handleCloseModalInfo = () => {
+    setIsUpDate(false)
     setOpenModalInfo(false)
   }
   return (
     <>
-      <ModalInfoPost idPost={idPost} open={openModalInfo} handleClose={handleCloseModalInfo} />
+      <ModalInfoPost
+        handleAfterSubmit={handleAfterSubmit}
+        idPost={idPost}
+        open={openModalInfo}
+        handleClose={handleCloseModalInfo}
+      />
       <Row style={{ width: '100%', marginBottom: '16px', gap: '10px' }}>
         <Col md={6} sm={11} xs={24}>
-          <Input style={{ width: '95%' }} size='large' placeholder='Tìm theo tên, id bài đăng' prefix={<BsSearch />} />
+          <Input
+            allowClear
+            onChange={(e) => setContent(e.target.value)}
+            style={{ width: '95%' }}
+            size='large'
+            placeholder='Tìm theo tên, id bài đăng'
+            prefix={<BsSearch />}
+          />
         </Col>
         <Col md={6} sm={11} xs={24}>
           <RangePicker
             style={{ width: '95%' }}
             size='large'
             placeholder={['Từ ngày', 'Đến ngày']}
-            format='DD-MM-YYYY'
+            format='YYYY-MM-DD'
             // locale={viVN}
+            onChange={(_, dateStrings) => {
+              setRangeDate(dateStrings)
+            }}
           />
         </Col>
         {tabKey !== 'tab-publish' && (

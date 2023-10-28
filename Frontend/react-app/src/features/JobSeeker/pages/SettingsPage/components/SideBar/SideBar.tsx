@@ -1,39 +1,76 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons'
 import { FaClipboardUser } from 'react-icons/fa6'
-import { IoNotificationsSharp } from 'react-icons/io5'
+
 import { Layout, Menu, Button, MenuProps, Checkbox } from 'antd'
 
 const { Sider } = Layout
 import { Avatar } from 'antd'
 import { useEffect, useState } from 'react'
 import './style.scss'
-import { AiFillDashboard, AiFillSetting } from 'react-icons/ai'
+import { AiFillDashboard } from 'react-icons/ai'
 
 import { BiSolidFactory } from 'react-icons/bi'
 import { MdWork } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { CheckboxChangeEvent } from 'antd/es/checkbox'
-import { FaUserCog } from 'react-icons/fa'
-import CVSettings from '../Content/CVSettings'
 
+import CVSettings from '../Content/CVSettings'
+import apiResume from '~/api/resume.api'
+import apiCanidate from '~/api/candidate.api'
+import { InfoMeState } from '~/features/Account/meSlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 const SideBar = () => {
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
   const navigation = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
   const [hiddenHeader, setHiddenHeader] = useState(false)
-  const [defaultSelected, setDefaultSelected] = useState(['1'])
+
   const [checkboxCV, setCheckboxCV] = useState(false)
   const currentURL = window.location.href
+  const [isModalOpenSettingCV, setIsModalOpenSettingCV] = useState(false)
   console.log('URL của trang web hiện tại:', currentURL)
   //check cv
-  const [dataMyCV, setDataMyCV] = useState('data my cv')
+  // const [dataMyCV, setDataMyCV] = useState('data my cv')
   //
   const [disableTurnOnFindCV, setDisableTurnOnFindCV] = useState(false)
+  const [idCV, setIdCV] = useState('')
   useEffect(() => {
-    if (!dataMyCV) {
-      setCheckboxCV(false)
-      setDisableTurnOnFindCV(true)
-    } else setDisableTurnOnFindCV(false)
-  }, [dataMyCV])
+    fetchMyResume()
+  }, [])
+  const fetchMyResume = async () => {
+    await apiResume.getAllByMe().then((rs) => {
+      if (
+        !rs.result[0] ||
+        !rs.result[0] ||
+        !rs.result[0].user_info ||
+        !rs.result[0].user_info.first_name ||
+        !rs.result[0].user_info.last_name ||
+        !rs.result[0].user_info.phone ||
+        !rs.result[0].user_info.email ||
+        !rs.result[0].educations.data ||
+        !rs.result[0].skills.data ||
+        !rs.result[0].employment_histories.data
+      ) {
+        setDisableTurnOnFindCV(true)
+        setCheckboxCV(false)
+      } else {
+        setDisableTurnOnFindCV(false)
+        setIdCV(rs.result[0]._id)
+      }
+    })
+    await apiCanidate.getMyCandidate().then((rs) => {
+      if (!rs.result) return
+      setCheckboxCV(rs.result.cv_public)
+    })
+  }
+
+  // useEffect(() => {
+  //   if (!dataMyCV) {
+  //     setCheckboxCV(false)
+  //     setDisableTurnOnFindCV(true)
+  //   } else setDisableTurnOnFindCV(false)
+  // }, [dataMyCV])
   const onClickMenu: MenuProps['onClick'] = (e) => {
     console.log('click ', e)
     if (e.key === '1') navigation('/settings')
@@ -46,8 +83,6 @@ const SideBar = () => {
     console.log(`checked = ${e.target.checked}`)
     setIsModalOpenSettingCV(true)
   }
-
-  const [isModalOpenSettingCV, setIsModalOpenSettingCV] = useState(false)
 
   // const showModal = () => {
   //   setIsModalOpenSettingCV(true)
@@ -66,8 +101,20 @@ const SideBar = () => {
         <div className='header-side-bar-container'>
           <div className='header-side-bar' style={{ height: `${hiddenHeader ? 'auto' : '100px'}` }}>
             <div className='user-header-side-bar' hidden={hiddenHeader}>
-              <Avatar src={'P'} size={'large'} className='avatar-header-side-bar' />
-              <div className='name-header-side-bar'>Thanh Phong</div>
+              <Avatar
+                src={me.avatar && me.avatar !== '_' ? me.avatar : ''}
+                size={'large'}
+                className='avatar-header-side-bar'
+              >
+                {!me.avatar || me.avatar === '_'
+                  ? me.name && me.name !== '_'
+                    ? me.name.slice(0, 1).toUpperCase()
+                    : me.email.slice(0, 1).toUpperCase()
+                  : ''}
+              </Avatar>
+              <div className='name-header-side-bar'>
+                {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
+              </div>
             </div>
 
             <div
@@ -101,6 +148,7 @@ const SideBar = () => {
               Hồ sơ chưa đủ điều kiện cho phép tìm kiếm
             </span>
             <CVSettings
+              idCV={idCV}
               handleTurnOnFindCV={handleTurnOnFindCV}
               open={isModalOpenSettingCV}
               handleClose={handleCancel}

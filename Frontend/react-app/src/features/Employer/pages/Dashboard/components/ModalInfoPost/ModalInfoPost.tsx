@@ -2,7 +2,21 @@ import { PlusOutlined } from '@ant-design/icons'
 import { GiReceiveMoney } from 'react-icons/gi'
 import { PiStudentFill } from 'react-icons/pi'
 import { TfiCup } from 'react-icons/tfi'
-import { Button, Checkbox, Col, Divider, Form, Input, InputNumber, InputRef, Modal, Row, Select, Space } from 'antd'
+import {
+  Button,
+  Checkbox,
+  Col,
+  DatePicker,
+  Divider,
+  Form,
+  Input,
+  InputNumber,
+  InputRef,
+  Modal,
+  Row,
+  Select,
+  Space
+} from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { ImLocation } from 'react-icons/im'
 import { useState, useRef, useEffect } from 'react'
@@ -12,7 +26,7 @@ import { BsFillAirplaneFill, BsTrashFill } from 'react-icons/bs'
 import { FaMoneyBillWave } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import { addPost, setDataPosts } from '~/features/Employer/employerSlice'
-import apiClient from '~/api/client'
+
 import apiCompany, { UpdateCompanyType } from '~/api/company.api'
 import apiPost from '~/api/post.api'
 import './style.scss'
@@ -22,6 +36,7 @@ import { DataOptionType } from '../ModalWorkLocation'
 import { RootState } from '~/app/store'
 import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
 import { getAllIndustries } from '~/api/industries.api'
+import { format, addDays } from 'date-fns'
 //data lo
 
 const listLevel = [
@@ -112,6 +127,7 @@ interface Benefit {
 }
 
 export interface JobType {
+  id?: string
   job_title: string
   alias?: string
   is_salary_visible: boolean
@@ -138,7 +154,7 @@ const ModalInfoPost = (props: any) => {
   const [form] = Form.useForm()
   const dispatch = useDispatch()
   const employer = useSelector((state: RootState) => state.employer)
-  const { idPost, open, handleClose, title, roleType } = props
+  const { idPost, open, handleClose, title, roleType, handleAfterSubmit } = props
 
   const [idCompany, setIdCompany] = useState('')
   const [listWorkLocation, setListWorkLocation] = useState<Array<WorkingLocation>>([])
@@ -148,7 +164,8 @@ const ModalInfoPost = (props: any) => {
   const [level, setLevel] = useState('')
   const [typeJob, setTypeJob] = useState('')
   const [industries, setIndustries] = useState<Array<string>>([])
-
+  const [publish, setPublish] = useState(false)
+  const [expireDate, setExpireDate] = useState('')
   const [jobDescription, setJobDescription] = useState('')
   const [jobRequirement, setJobRequirement] = useState('')
   const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 })
@@ -182,13 +199,13 @@ const ModalInfoPost = (props: any) => {
   useEffect(() => {
     if (!dataLocationBranch.city_name) return
     formLocation.setFieldsValue({ district: '' })
-    if (dataLocationBranch.city_name) fetchDistricts()
+    fetchDistricts()
   }, [dataLocationBranch.city_name])
   useEffect(() => {
-    if (open === true) {
+    if (openModalLocation) {
       fetchProvinces()
     }
-  }, [open])
+  }, [openModalLocation])
   const fetchProvinces = async () => {
     const res = await getAllProviencesApi()
 
@@ -200,12 +217,16 @@ const ModalInfoPost = (props: any) => {
   }
   useEffect(() => {
     if (!open) {
-      setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
-      setArrSkills([{ key: 0, value: '' }])
-      setArrLocations(initLocation)
-      getDataWorkLocation()
+      handleClearDataForm()
     }
   }, [open])
+  const handleClearDataForm = async () => {
+    setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
+    setArrSkills([{ key: 0, value: '' }])
+    setArrLocations(initLocation)
+    setIndustries([])
+    await getDataWorkLocation()
+  }
   const getDataWorkLocation = async () => {
     const dataTemp: SelectionLocationData[] = []
     const listTemp: WorkingLocation[] = await apiCompany.getMyCompany().then((rs) => {
@@ -278,6 +299,7 @@ const ModalInfoPost = (props: any) => {
   const handleDeletedRowLocation = (key: number) => {
     if (arrLocations.length > 1) {
       const oldSelectedObj = arrLocations.filter((item) => item.key === key)
+      console.log('oldSelectedObj', oldSelectedObj)
       const oldSelected = oldSelectedObj[0].selected
       if (oldSelected !== '_') {
         const changeData = listLocation.map((item: SelectionLocationData) => {
@@ -286,9 +308,11 @@ const ModalInfoPost = (props: any) => {
           }
           return item
         })
+        console.log('changeData', changeData)
         setListLocation(changeData)
       }
       const filterData = arrLocations.filter((item) => item.key !== key)
+      console.log('filterData', filterData)
       setArrLocations(filterData)
       form.resetFields([`location_${key}`])
     }
@@ -343,6 +367,7 @@ const ModalInfoPost = (props: any) => {
     })
     setArrBenefits(dataBenefit)
   }
+
   const [hiddenDeleteLocation, setHiddenDeleteLocation] = useState(true)
   const [hiddenDeleteSkill, setHiddenDeleteSkill] = useState(true)
   const [hiddenDeleteBenefit, setHiddenDeleteBenefit] = useState(true)
@@ -402,7 +427,7 @@ const ModalInfoPost = (props: any) => {
     //   quantityAccept,
     //   emailAcceptCV
     // }
-    const job: JobType = {
+    let job: JobType = {
       job_title: jobTitle,
       job_level: level,
       job_type: typeJob,
@@ -415,13 +440,14 @@ const ModalInfoPost = (props: any) => {
       },
       job_description: jobDescription,
       job_requirement: jobRequirement,
-      visibility: false,
+      visibility: publish,
       benefits: benefits as Benefit[],
       number_of_employees_needed: quantityAccept,
       application_email: emailAcceptCV,
       is_salary_visible: showSalaryRange
     }
-
+    // expired_date: expireDate ? expireDate : format(addDays(new Date(), 7), 'yyyy-MM-dd'),
+    if (publish) job = { ...job, expired_date: expireDate }
     console.log('form data post', job)
 
     // call api
@@ -429,34 +455,47 @@ const ModalInfoPost = (props: any) => {
       await updatePost(job)
     } else await postData(job)
   }
-  const updatePost = async (job: JobType) => {
-    await apiPost.updatePost(idPost, job).then((rs) => {
-      const postUpdate: JobTypeFull = employer.posts.data.filter((post: any) => {
-        return post.id === idPost
-      })[0]
 
-      const listFilter = employer.posts.data.filter((post: any) => {
-        return post.id !== idPost
+  const updatePost = async (job: JobType) => {
+    await apiPost
+      .updatePost(idPost, job)
+      .then((rs) => {
+        const postUpdate: JobTypeFull = employer.posts.data.filter((post: any) => {
+          return post.id === idPost
+        })[0]
+
+        const listFilter = employer.posts.data.filter((post: any) => {
+          return post.id !== idPost
+        })
+        console.log('postUpdate', postUpdate)
+        let jobFullUpdate = { ...postUpdate, ...job }
+        console.log('jobFullUpdate', jobFullUpdate)
+        console.log('listFilter', listFilter)
+        console.log('redux full', [...listFilter, jobFullUpdate])
+        dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
       })
-      console.log('postUpdate', postUpdate)
-      let jobFullUpdate = { ...postUpdate, ...job }
-      console.log('jobFullUpdate', jobFullUpdate)
-      console.log('listFilter', listFilter)
-      console.log('redux full', [...listFilter, jobFullUpdate])
-      dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
-      form.resetFields()
-      handleClose()
-    })
+      .then(() => {
+        form.resetFields()
+
+        handleAfterSubmit()
+        handleClose()
+      })
   }
   const postData = async (job: JobType) => {
-    await apiClient.post('/jobs', job).then((response) => {
-      const newJob = { ...job } as JobType & { [key: string]: any }
-      newJob.salary = job.salary_range.min + ' - ' + job.salary_range.max
-      // custome before add to list posts
-      dispatch(addPost(job))
-      form.resetFields()
-      handleClose()
-    })
+    await apiPost
+      .addPost(job)
+      .then((response) => {
+        const newJob = { ...job, id: response.result.insertedId } as JobType & { [key: string]: any }
+        newJob.salary = job.salary_range.min + ' - ' + job.salary_range.max
+
+        // custome before add to list posts
+        dispatch(addPost(newJob))
+      })
+      .then(() => {
+        form.resetFields()
+
+        handleAfterSubmit()
+      })
   }
 
   useEffect(() => {
@@ -479,9 +518,9 @@ const ModalInfoPost = (props: any) => {
       //set work location
 
       const tempLoc = rs.working_locations.map((locationJob, index) => {
-        return { checked: false, key: index + 1, selected: '_' }
+        return { checked: false, key: index, selected: locationJob.branch_name }
       })
-      setArrLocations([...arrLocations, ...tempLoc])
+      setArrLocations(tempLoc)
 
       for (let i = 0; i < rs.working_locations.length; i++) {
         form.setFieldsValue({
@@ -579,6 +618,7 @@ const ModalInfoPost = (props: any) => {
             layout='vertical'
           >
             <h2>Mô tả công việc </h2>
+
             <Form.Item
               name='jobTitle'
               label={<span style={{ fontWeight: '500' }}>Chức Danh</span>}
@@ -592,6 +632,7 @@ const ModalInfoPost = (props: any) => {
                 onChange={(e) => setJobTitle(e.target.value)}
               />
             </Form.Item>
+
             <Row justify={'space-between'}>
               <Col md={11} sm={24} xs={24}>
                 <Form.Item
@@ -1010,6 +1051,30 @@ const ModalInfoPost = (props: any) => {
                 size='large'
                 placeholder='mail@gmail.com'
                 onChange={(e) => setEmailAcceptCV(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item
+              hidden={idPost ? true : false}
+              valuePropName='checked'
+              name='publish'
+              style={{ marginBottom: 0 }}
+            >
+              <Checkbox defaultChecked={publish} onClick={() => setPublish(!publish)}>
+                Công khai bài đăng
+              </Checkbox>
+            </Form.Item>
+            <Form.Item
+              hidden={idPost || !publish ? true : false}
+              valuePropName='checked'
+              name='expireDate'
+              // style={{ marginBottom: 0 }}
+              rules={[{ required: publish ? true : false, message: 'Vui lòng chọn ngày hết hạn' }]}
+            >
+              <DatePicker
+                size='large'
+                placeholder='Ngày hết hạn'
+                onChange={(_, strings) => setExpireDate(strings)}
+                format={'YYYY-MM-DD'}
               />
             </Form.Item>
             <div className='btn-container' style={{ display: 'flex', justifyContent: 'end', gap: '8px' }}>

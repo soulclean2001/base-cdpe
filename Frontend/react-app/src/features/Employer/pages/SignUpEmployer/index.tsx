@@ -271,7 +271,9 @@ const SignUpEmployer = () => {
       <Col md={16} sm={24} xs={24} className='page-sign-up-employer-wapper'>
         <div className='sign-up-employer-content'>
           <div className='title-container'>
-            <div className='title'>HFWork</div>
+            <div className='title' onClick={() => navigate('/employer')}>
+              HFWork
+            </div>
             <p>Đăng ký tài khoản Nhà tuyển dụng</p>
             <span>Cùng tạo dựng lợi thế cho doanh nghiệp bằng trải nghiệm dịch vụ Website của chúng tôi.</span>
           </div>

@@ -17,8 +17,21 @@ export interface PostRequestSearchType {
   'salary[min]'?: string
   'salary[max]'?: string
 }
-
+export interface PostFilterRequestType {
+  limit?: string
+  page?: string
+  expired_before_nday?: number
+  is_expired?: boolean
+  visibility?: boolean //hiden publish
+  content?: string //input search
+  from_day?: string
+  to_day?: string
+}
 export class Post {
+  public static getPostsFormEmployer = async (param: PostFilterRequestType) => {
+    const rs: ApiResponse = await client.get(`/jobs/company/filter`, { params: param })
+    return rs
+  }
   public static getPostById = async (id: string) => {
     const rs: ApiResponse = await client.get(`/jobs/${id}`)
     return rs

@@ -10,7 +10,7 @@ import Auth from '~/api/auth.api'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 import { AuthLogin, AuthState, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
 import { decodeToken } from '~/utils/jwt'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 
@@ -74,7 +74,9 @@ const LoginEmployer = (props: any) => {
       <Col md={16} sm={24} xs={24} className='page-login-employer-wapper'>
         <div className='login-employer-content'>
           <div className='title-container'>
-            <div className='title'>HFWork</div>
+            <div className='title' onClick={() => navigate('/employer')}>
+              HFWork
+            </div>
             <p>{titleForm && titleForm.title ? titleForm.title : 'Chào mừng bạn đã trở lại'}</p>
             <span>
               {titleForm && titleForm.description

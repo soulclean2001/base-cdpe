@@ -20,7 +20,7 @@ import { decodeToken, isExpired } from '~/utils/jwt'
 import Auth from '~/api/auth.api'
 // import { getMe } from '~/api/users.api'
 // import { getMe } from '../../jobSeekerSlice'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
@@ -164,18 +164,6 @@ const Login: React.FC = () => {
                 Đăng nhập
               </Button>
             </Form.Item>
-            <ToastContainer
-              position='top-right'
-              autoClose={1500}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme='light'
-            />
 
             <p className='or-login-title'>Hoặc đăng nhập bằng</p>
             <Form.Item>

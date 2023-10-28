@@ -49,20 +49,23 @@ const RightMenu = (props: any) => {
   }
   const items: MenuProps['items'] = [
     {
-      label: 'Cài đặt thông tin cá nhân',
+      label: 'Thông tin cá nhân',
       key: 'key_settings_info',
-      icon: <GrUserSettings />
+      icon: <GrUserSettings />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
       label: 'Đổi mật khẩu',
       key: 'key_changePassword',
-      icon: <AiFillLock />
+      icon: <AiFillLock />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
       label: 'Đăng xuất',
       key: 'key_logout',
       icon: <MdOutlineLogout />,
-      danger: true
+      danger: true,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     }
   ]
   const handleMenuClick: MenuProps['onClick'] = (e) => {

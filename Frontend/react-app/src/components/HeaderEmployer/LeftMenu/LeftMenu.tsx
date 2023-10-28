@@ -42,7 +42,7 @@ const LeftMenu = (props: any) => {
 
   if (isLogin && items[items.length - 1]?.key !== 'dashboard') {
     items.push({
-      label: <NavLink to={'/employer/dashboard'}>Dashboard</NavLink>,
+      label: <NavLink to={'/employer/dashboard'}>Bảng điều khiển</NavLink>,
       key: 'dashboard'
     })
   }

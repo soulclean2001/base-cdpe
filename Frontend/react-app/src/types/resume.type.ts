@@ -83,6 +83,7 @@ export enum EducationLevel {
   Intermediate = 'Intermediate',
   HigherDiploma = 'HigherDiploma',
   BachelorDegree = 'BachelorDegree',
+  Master = 'Master',
   Doctorate = 'Doctorate',
   Another = 'Another'
 }

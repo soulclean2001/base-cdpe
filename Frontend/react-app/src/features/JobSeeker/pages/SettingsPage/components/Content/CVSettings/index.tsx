@@ -1,7 +1,10 @@
-import { Button, Form, Modal, Radio, Select } from 'antd'
+import { Button, Checkbox, Form, Modal, Select } from 'antd'
 import './style.scss'
-import { useState } from 'react'
-const listCareers = [{ value: 'IT phần mềm' }, { value: 'Công nghệ thông tin' }, { value: 'Bất động sản' }]
+import { useEffect, useState } from 'react'
+import { getAllIndustries } from '~/api/industries.api'
+import { getAllProviencesApi } from '~/api/provinces.api'
+import apiCandidate, { RequestTurnOnFindingJobs } from '~/api/candidate.api'
+
 const maxItem = [{ value: 'Bạn đã chọn tối đa 3 mục', label: 'Bạn đã chọn tối đa 3 mục', disabled: true }]
 const listLevel = [
   { value: 'Thực tập sinh' },
@@ -14,7 +17,7 @@ const listLevel = [
   { value: 'Giám đốc' },
   { value: 'Tổng giám đốc' }
 ]
-const listProvince = [{ value: 'TP. Hồ Chí Minh' }, { value: 'Hà Nội' }, { value: 'Đà Nẳng' }]
+
 const listExpYears = [
   { value: 0.9, label: 'Dưới 1 năm' },
   { value: 1, label: '1 năm' },
@@ -24,22 +27,107 @@ const listExpYears = [
   { value: 5, label: '5 năm' },
   { value: 6, label: 'Trên 5 năm' }
 ]
+const listEducationLevel = [
+  {
+    value: 'Trung học',
+    label: 'Trung học'
+  },
+  {
+    value: 'Trung cấp',
+    label: 'Trung cấp'
+  },
+  {
+    value: 'Cao đẳng',
+    label: 'Cao đẳng'
+  },
+  {
+    value: 'Cử nhân',
+    label: 'Cử nhân'
+  },
+  {
+    value: 'Thạc sĩ',
+    label: 'Thạc sĩ'
+  },
+  {
+    value: 'Tiến sĩ',
+    label: 'Tiến sĩ'
+  },
+  {
+    value: 'Khác',
+    label: 'Khác'
+  }
+]
+interface DataOptionType {
+  value: string
+  [key: string]: any
+}
+interface CandidateType {
+  [key: string]: any
+}
 const CVSettings = (props: any) => {
-  const { open, handleClose, handleTurnOnFindCV, isTurnOn } = props
+  const { open, handleClose, handleTurnOnFindCV, isTurnOn, idCV } = props
   const [form] = Form.useForm()
   const [carrers, setCarrers] = useState([])
   const [provinces, setProvinces] = useState([])
-  const [expYears, setExpYears] = useState()
+  const [expYears, setExpYears] = useState(0)
   const [levelDesire, setLevelDesire] = useState('')
+  const [educationLevel, setEducationLevel] = useState('')
+  const [publishCV, setPublishCV] = useState(false)
+  const [provincesData, setProvincesData] = useState<Array<DataOptionType>>([])
+  const [myCanidate, setMyCanidate] = useState<CandidateType>()
 
-  const handleSubmitForm = (value: any) => {
-    const data = {
-      carrers,
-      provinces,
-      expYears,
-      levelDesire
+  useEffect(() => {
+    if (open) {
+      fetchProvinces()
+      fetchMyCandidate()
     }
-    console.log('form data post', data)
+  }, [open])
+  const fetchProvinces = async () => {
+    await getAllProviencesApi().then((rs) => {
+      setProvincesData([...provincesData, ...rs])
+    })
+    // setProvincesData(res)
+  }
+  const fetchMyCandidate = async () => {
+    await apiCandidate.getMyCandidate().then((rs) => {
+      if (rs.result) {
+        setMyCanidate(rs.result)
+        setCarrers(rs.result.industry)
+        setProvinces(rs.result.work_location)
+        setExpYears(rs.result.experience)
+        setEducationLevel(rs.result.education_level)
+        setPublishCV(rs.result.cv_public)
+        form.setFieldsValue({
+          careers: rs.result.industry,
+          provinces: rs.result.work_location,
+          expYears: rs.result.experience,
+          educationLevel: rs.result.education_level,
+          checkPublish: rs.result.cv_public
+        })
+      }
+    })
+  }
+  const handleSubmitForm = async () => {
+    let request: RequestTurnOnFindingJobs = {
+      cv_id: idCV,
+      cv_public: publishCV,
+      education_level: educationLevel,
+      experience: expYears,
+      industry: carrers,
+      work_location: provinces
+    }
+
+    if (myCanidate) {
+      await apiCandidate.updateTurnOnFindingJobs(request).catch(() => {
+        return
+      })
+    } else {
+      await apiCandidate.createTurnOnFindingJobs(request).catch(() => {
+        return
+      })
+    }
+    handleTurnOnFindCV(publishCV)
+
     handleClose()
   }
   const onFinishFailed = (errorInfo: any) => {
@@ -81,7 +169,7 @@ const CVSettings = (props: any) => {
                   showSearch
                   placeholder={'Chọn ngành nghề'}
                   size='large'
-                  options={carrers.length === 3 ? maxItem : listCareers}
+                  options={carrers.length === 3 ? maxItem : getAllIndustries}
                   onChange={(value) => setCarrers(value)}
                 />
               </Form.Item>
@@ -112,7 +200,7 @@ const CVSettings = (props: any) => {
                   showSearch
                   placeholder={'Chọn địa diểm'}
                   size='large'
-                  options={provinces.length === 3 ? maxItem : listProvince}
+                  options={provinces.length === 3 ? maxItem : provincesData}
                   onChange={(value) => setProvinces(value)}
                 />
               </Form.Item>
@@ -131,6 +219,36 @@ const CVSettings = (props: any) => {
                   onChange={(value) => setExpYears(value)}
                 />
               </Form.Item>
+              <Form.Item
+                style={{ marginBottom: '15px' }}
+                label={<span style={{ fontWeight: '500' }}>Trình độ học vấn</span>}
+                name='educationLevel'
+                rules={[{ required: true, message: 'Vui lòng chọn trình độ học vấn' }]}
+              >
+                <Select
+                  allowClear
+                  className='select-custom'
+                  showSearch
+                  placeholder={'Chọn trình độ học vấn'}
+                  size='large'
+                  options={listEducationLevel}
+                  onChange={(value) => setEducationLevel(value)}
+                />
+              </Form.Item>
+              <Form.Item
+                name={'checkPublish'}
+                // noStyle
+                valuePropName='checked'
+              >
+                <Checkbox
+                  checked={publishCV}
+                  onClick={() => {
+                    setPublishCV(!publishCV)
+                  }}
+                >
+                  <span style={{ fontWeight: '450', fontFamily: 'sans-serif', paddingLeft: '10px' }}>Bật tìm kiếm</span>
+                </Checkbox>
+              </Form.Item>
             </div>
             {/* <div className='right-content'>
                 
@@ -140,25 +258,10 @@ const CVSettings = (props: any) => {
             <Button size='large' onClick={handleClose}>
               Thoát
             </Button>
-            {!isTurnOn ? (
-              <Button
-                onClick={() => handleTurnOnFindCV(true)}
-                size='large'
-                htmlType='submit'
-                style={{ background: 'rgb(255, 125, 85)', color: 'white' }}
-              >
-                Bật tìm việc
-              </Button>
-            ) : (
-              <Button
-                onClick={() => handleTurnOnFindCV(false)}
-                size='large'
-                htmlType='submit'
-                style={{ background: 'rgb(255, 125, 85)', color: 'white' }}
-              >
-                Tắt tìm việc
-              </Button>
-            )}
+
+            <Button size='large' htmlType='submit' style={{ background: 'rgb(255, 125, 85)', color: 'white' }}>
+              Cập nhật
+            </Button>
           </div>
         </div>
       </Form>

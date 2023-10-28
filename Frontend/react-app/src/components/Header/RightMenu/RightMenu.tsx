@@ -3,8 +3,8 @@ import './rightMenu.scss'
 import RightMenuPhone from '../RightMenuPhone/RightMenuPhone'
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { IoMdNotifications } from 'react-icons/io'
-import { AiFillLock, AiFillMessage } from 'react-icons/ai'
-import { DownOutlined, UserOutlined } from '@ant-design/icons'
+import { AiFillDashboard, AiFillLock, AiFillMessage } from 'react-icons/ai'
+import { DownOutlined } from '@ant-design/icons'
 import { GrUserSettings } from 'react-icons/gr'
 import { MdOutlineLogout } from 'react-icons/md'
 
@@ -52,27 +52,33 @@ const RightMenu = (props: any) => {
   const handleTabChat = () => {
     navigate('/chat')
   }
+
   const items: MenuProps['items'] = [
     {
-      label: <span>Cài đặt thông tin cá nhân</span>,
-      key: 'key_settings_info',
-      icon: <GrUserSettings />
+      label: <NavLink to={'/settings'}>Bảng điều khiển</NavLink>,
+      key: 'key_settings_general',
+      icon: <AiFillDashboard />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
-      label: <NavLink to={'/settings'}>Cài đặt chung</NavLink>,
-      key: 'key_settings_general',
-      icon: <GrUserSettings />
+      label: <span>Thông tin cá nhân</span>,
+      key: 'key_settings_info',
+      icon: <GrUserSettings />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
+
     {
       label: 'Đổi mật khẩu',
       key: 'key_changePassword',
-      icon: <AiFillLock />
+      icon: <AiFillLock />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
       label: 'Đăng xuất',
       key: 'key_logout',
       icon: <MdOutlineLogout />,
-      danger: true
+      danger: true,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     }
   ]
 
@@ -130,7 +136,7 @@ const RightMenu = (props: any) => {
                   <Avatar style={{ verticalAlign: 'middle' }} src={me?.avatar} size='large'>
                     {me.avatar ? '' : me.name.charAt(0).toUpperCase()}
                   </Avatar>
-                  {me.name}
+                  {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
                   <DownOutlined />
                 </Space>
               </Button>

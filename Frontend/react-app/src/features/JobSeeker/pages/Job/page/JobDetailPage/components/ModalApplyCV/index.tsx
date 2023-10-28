@@ -10,6 +10,7 @@ import apiResume from '~/api/resume.api'
 import { AuthState } from '~/features/Auth/authSlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
+import logoTemp from '~/assets/HF_logo.jpg'
 interface HeaderModalApplyCVType {
   id: string
   logo: string
@@ -32,7 +33,7 @@ const ModalApplyCV = (props: any) => {
 
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
-
+  const [phone, setPhone] = useState('')
   const [typeCV, setTypeCV] = useState<number>(1)
   const [fileCV, setFileCV] = useState<UploadFile>()
   const [idCV, setIdCV] = useState('')
@@ -122,7 +123,7 @@ const ModalApplyCV = (props: any) => {
       // width={'60%'}
       title={
         <div className='header-container'>
-          <img className='logo' src={'https://images.vietnamworks.com/pictureofcompany/fa/11046498.png'} />
+          <img className='logo' src={headerModalData?.logo || logoTemp} />
           <div className='header-info-wapper'>
             <div className='name-job'>{headerModalData?.nameJob || 'Name job'}</div>
             <div className='address'>{headerModalData.nameCompany}</div>
@@ -179,6 +180,21 @@ const ModalApplyCV = (props: any) => {
               ]}
             >
               <Input onChange={(e) => setEmail(e.target.value)} size='large' placeholder='Nhập email' />
+            </Form.Item>
+            <Form.Item
+              label={<span style={{ fontWeight: 500 }}>Số điện thoại</span>}
+              style={{ marginBottom: '10px' }}
+              name={'phone'}
+              rules={[
+                { required: true, message: 'Vui lòng không để trống số điện thoại' },
+                {
+                  pattern: new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/),
+                  message:
+                    'Vui lòng nhập đúng định dạng số điện thoại: Có những số đầu là 03-05-07-08-09 và có 10 số.  Ví dụ: 0988888888'
+                }
+              ]}
+            >
+              <Input onChange={(e) => setPhone(e.target.value)} size='large' placeholder='Nhập số điện thoại' />
             </Form.Item>
             <div className='choose-type-cv-wapper'>
               <div className='select-type-cv'>

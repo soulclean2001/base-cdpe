@@ -130,7 +130,7 @@ const FindCandidatePage = () => {
       education
     }
     const dataSearch: SearchCandidateReqBody = {
-      page: pageClick.toString(),
+      page: '1',
       limit: limitOnPage.toString(),
       name: nameCandidate,
       job: wannaJob,
@@ -163,18 +163,19 @@ const FindCandidatePage = () => {
   }
 
   //set value page click
-  const handleChangePage = (valuePageClick: any) => {
+  const handleChangePage = async (valuePageClick: any) => {
     setPageClick(valuePageClick)
+    await fetchGetData({ limit: limitOnPage.toString(), page: valuePageClick })
     console.log('page', valuePageClick)
   }
   //
   useEffect(() => {
-    fetchGetData({ limit: limitOnPage.toString(), page: pageClick.toString() })
-  }, [pageClick])
+    fetchGetData({ limit: limitOnPage.toString(), page: '1' })
+  }, [])
   const fetchGetData = async (data: SearchCandidateReqBody) => {
     await apiSearchCandidate.searchCandidate(data).then((rs) => {
       console.log(rs, rs.result)
-      setListCandidate(rs.result.cvs)
+      setListCandidate(rs.result.profiles)
       setTotalItems(rs.result.total)
     })
   }
@@ -360,7 +361,7 @@ const FindCandidatePage = () => {
                   nameCandidate: `${candidate.cvs.user_info.first_name} ${candidate.cvs.user_info.last_name}`,
                   jobTitle: candidate.cvs.user_info.wanted_job_title,
                   educationLevel: candidate.education_level,
-                  provinceWanted: candidate.industry,
+                  provinceWanted: candidate.work_location,
                   expYear: candidate.experience,
                   updateDate: candidate.cvs.updated_at.toString().slice(0, 10)
                 }}

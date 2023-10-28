@@ -4,6 +4,7 @@ import { AiOutlineHeart } from 'react-icons/ai'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import logoTemp from '~/assets/HF_logo.jpg'
 const JobItem = (props: any) => {
   const navigate = useNavigate()
   const idJob: string = props.idJob
@@ -63,7 +64,7 @@ const JobItem = (props: any) => {
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
       >
         <div className='logo-wapper'>
-          <img style={{ width: '100%', height: '100%' }} src={img ? img : ''} alt='' />
+          <img style={{ width: '100%', height: '100%' }} src={img ? img : logoTemp} alt='' />
         </div>
       </Col>
       <Col className='job-item-info' md={18} sm={15} xs={15}>

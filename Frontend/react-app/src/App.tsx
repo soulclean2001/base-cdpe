@@ -189,7 +189,7 @@ function App() {
 
           <Route path='companies' element={<CompanyPage />}>
             <Route index element={<ListCompany />} />
-            <Route path='company-detail' element={<CompanyDetail />} />
+            <Route path=':infoUrlCompanyDetail' element={<CompanyDetail />} />
           </Route>
           <Route path='CV' element={<CV />} />
           <Route

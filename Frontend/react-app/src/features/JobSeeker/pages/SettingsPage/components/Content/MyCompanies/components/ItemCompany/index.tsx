@@ -18,7 +18,7 @@ const ItemCompany = () => {
           <div className='address'>{`Địa chỉ:  ${'Gò Vấp, TP. Hồ Chí Minh'}`}</div>
         </div>
       </Col>
-      <Col lg={4} md={4} sm={24} xs={24} className='right-container'>
+      <Col lg={3} md={4} sm={24} xs={24} className='right-container'>
         <span className='time-seen'>9 tháng trước</span>
         <div className='btn-container'>
           <Button className='btn-follow' icon={<AiOutlineHeart />} />

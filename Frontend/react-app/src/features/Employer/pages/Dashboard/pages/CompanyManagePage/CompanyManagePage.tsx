@@ -7,10 +7,11 @@ import './style.scss'
 import { BiUpload } from 'react-icons/bi'
 import TextArea from 'antd/es/input/TextArea'
 import { imageDimensions } from '~/utils/image'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 import apiCompany, { UpdateCompanyType } from '~/api/company.api'
 import apiMe from '~/api/me.api'
 import apiUpload from '~/api/upload.api'
+import { getAllFiles } from '~/api/industries.api'
 export interface WorkingLocation {
   lat: number
   lon: number
@@ -32,6 +33,7 @@ export interface CompanyType {
   background?: string
   company_size?: string
   working_locations: WorkingLocation[]
+  fields?: string[]
 }
 const listQuantityEmployers = [
   { value: 'Ít hơn 10' },
@@ -41,21 +43,8 @@ const listQuantityEmployers = [
   { value: '500-999' },
   { value: '1000-4999' }
 ]
-const listFieldCompany = [
-  { value: 'Bảo hiểm' },
-  { value: 'Chứng khoán' },
-  { value: 'Kiểm toán' },
-  { value: 'Ngân hàng' },
-  { value: 'Tài chính/ Đầu tư' },
-  { value: 'In ấn/ Xuất bản' },
-  { value: 'Internet/ Online Media' },
-  { value: 'Bán sỉ/ Bán lẻ' },
-  { value: 'Hàng không/ Du lịch' },
-  { value: 'Nhà hàng/ Khách sạn' },
-  { value: 'Bất động sản' },
-  { value: 'IT - Phần mềm' },
-  { value: 'IT - Phần cứng/ Mạng' }
-]
+const maxItem = [{ value: 'Bạn đã chọn tối đa 3 ngành nghề', label: 'Bạn đã chọn tối đa 3 ngành nghề', disabled: true }]
+
 const CompanyManagePage = () => {
   const [formCompanyGeneral] = Form.useForm()
   const [myCompany, setMyCompany] = useState<CompanyType>()
@@ -64,7 +53,7 @@ const CompanyManagePage = () => {
   const [address, setAddress] = useState('')
   const [quantityEmployee, setQuantityEmployee] = useState('')
   const [employerContact, setEmployerContact] = useState('')
-  const [fieldCompany, setFieldCompany] = useState('')
+  const [fieldCompany, setFieldCompany] = useState<Array<string>>([])
   const [description, setDescription] = useState('')
 
   const [fileListLogo, setFileListLogo] = useState<UploadFile[]>([])
@@ -116,7 +105,8 @@ const CompanyManagePage = () => {
       const request: UpdateCompanyType = {
         company_name: myCompany.company_name !== nameCompany ? nameCompany : '',
         company_info: myCompany.company_info !== description ? description : '',
-        company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : ''
+        company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : '',
+        fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : ''
       }
       await apiCompany.updateCompanyById(myCompany._id, urlLogo, urlBanner, request).then((rs) => {
         setTimeout(() => {
@@ -210,6 +200,7 @@ const CompanyManagePage = () => {
       setPhone(me.phone_number)
       setDescription(rs.result.company_info)
       setQuantityEmployee(rs.result.company_size)
+      setFieldCompany(rs.result.fields)
       if (rs.result.logo) {
         const fileLogo: UploadFile = {
           uid: rs.result._id,
@@ -234,7 +225,8 @@ const CompanyManagePage = () => {
         employerContact: me.name,
         description: rs.result.company_info,
         phone: me.phone_number,
-        quantityEmployee: rs.result.company_size
+        quantityEmployee: rs.result.company_size,
+        fieldCompany: rs.result.fields
       })
     })
   }
@@ -415,10 +407,12 @@ const CompanyManagePage = () => {
           >
             <Select
               showSearch
-              placeholder={'Chọn lĩnh vực của công ty'}
+              mode={'multiple'}
+              placeholder={'Chọn ngành nghề'}
               size='large'
-              options={listFieldCompany}
+              options={fieldCompany && fieldCompany.length > 2 ? maxItem : getAllFiles}
               onChange={(value) => setFieldCompany(value)}
+              maxTagCount={3}
             />
           </Form.Item>
           <Form.Item

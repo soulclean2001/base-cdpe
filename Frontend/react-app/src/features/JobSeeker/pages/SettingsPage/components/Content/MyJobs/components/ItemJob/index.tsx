@@ -23,13 +23,25 @@ const ItemJob = (props: any) => {
   }, [data])
   const handleSetCssStatus = () => {
     if (data) {
-      if (data.status === 'Pending') setStatusCSS('pending')
-      else if (data.status === 'Rejected') setStatusCSS('rejected')
-      else if (data.status === 'Approved') setStatusCSS('approved')
-      else if (data.status === 'Interview') setStatusCSS('interview')
-      else if (data.status === 'Hired') setStatusCSS('hired')
-      else if (data.status === 'NotContactable') setStatusCSS('not-contactable')
-      else setStatusCSS('')
+      if (data.status === 'Pending') {
+        setStatusCSS('pending')
+        return
+      } else if (data.status === 'Rejected') {
+        setStatusCSS('rejected')
+        return
+      } else if (data.status === 'Approved') {
+        setStatusCSS('approved')
+        return
+      } else if (data.status === 'Interview') {
+        setStatusCSS('interview')
+        return
+      } else if (data.status === 'Hired') {
+        setStatusCSS('hired')
+        return
+      } else if (data.status === 'NotContactable') {
+        setStatusCSS('not-contactable')
+        return
+      } else setStatusCSS('')
     }
   }
   if (!data) return <>k co data</>
@@ -48,8 +60,8 @@ const ItemJob = (props: any) => {
         </div>
       </Col>
       <Col
-        lg={4}
-        md={6}
+        lg={3}
+        md={5}
         sm={6}
         xs={24}
         className='right-container'
@@ -59,7 +71,7 @@ const ItemJob = (props: any) => {
           <span className={`status-apply-job ${statusCSS}`}>{data.status ? data.status : 'status'}</span>
         )}
         <div className='btn-wapper'>
-          <Button className='btn-follow' icon={<AiOutlineHeart />} />
+          {/* <Button className='btn-follow' icon={<AiOutlineHeart />} /> */}
           <Button className='btn-show-detail'>Chi tiết</Button>
         </div>
       </Col>

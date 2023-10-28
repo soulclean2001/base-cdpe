@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import iconStatic from '~/utils/icons'
-import locale from 'antd/locale/vi_VN'
+// import locale from 'antd/locale/vi_VN'
 import dayjs from 'dayjs'
 import './cv.scss'
 import InputCustom from './components/InputCustom'
@@ -963,7 +963,8 @@ const CV = () => {
                                           'educations',
                                           index,
                                           'degree',
-                                          Object.keys(EducationLevel)[Number(e) - 1]
+                                          // Object.keys(EducationLevel)[Number(e) - 1]
+                                          e
                                         )
                                       }}
                                       style={{ width: 200 }}
@@ -972,31 +973,31 @@ const CV = () => {
                                       filterOption={(input, option) => (option?.label ?? '').includes(input)}
                                       options={[
                                         {
-                                          value: '1',
+                                          value: 'Trung học',
                                           label: 'Trung học'
                                         },
                                         {
-                                          value: '2',
+                                          value: 'Trung cấp',
                                           label: 'Trung cấp'
                                         },
                                         {
-                                          value: '3',
+                                          value: 'Cao đẳng',
                                           label: 'Cao đẳng'
                                         },
                                         {
-                                          value: '4',
+                                          value: 'Cử nhân',
                                           label: 'Cử nhân'
                                         },
                                         {
-                                          value: '5',
+                                          value: 'Thạc sĩ',
                                           label: 'Thạc sĩ'
                                         },
                                         {
-                                          value: '6',
+                                          value: 'Tiến sĩ',
                                           label: 'Tiến sĩ'
                                         },
                                         {
-                                          value: '7',
+                                          value: 'Khác',
                                           label: 'Khác'
                                         }
                                       ]}

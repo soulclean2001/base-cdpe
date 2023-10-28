@@ -1,6 +1,6 @@
 .item-save-ojb-container {
   margin-bottom: 10px;
-  cursor: pointer;
+  // cursor: pointer;
   border: 1px solid rgb(224, 224, 233);
   border-radius: 5px;
   padding: 15px;
@@ -69,12 +69,13 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-items: flex-end;
+    // align-items: flex-end;
     // gap: 5px;
 
     .btn-wapper {
       display: flex;
       justify-content: space-between;
+      align-items: flex-end;
       gap: 10px;
       .btn-follow {
         border: none;
@@ -96,11 +97,18 @@
       }
     }
     .status-apply-job {
-      text-align: end;
+      text-align: center;
     }
   }
   &:hover {
     border: 1px solid rgb(160, 193, 255);
+  }
+  @media (max-width: 576px) {
+    .right-container {
+      gap: 10px;
+      flex-direction: column-reverse;
+      justify-content: space-around;
+    }
   }
 }
 .status-apply-job {

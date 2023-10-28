@@ -80,17 +80,17 @@ const onChangeTab = (key: string) => {
   console.log('click tab', key)
 }
 const items: TabsProps['items'] = [
-  {
-    key: '1',
-    label: 'Việc làm đã lưu',
-    children: (
-      <>
-        {dataJobFollow.map((job) => (
-          <ItemJob key={job.id} type='ITEM_SAVE_JOB' data={job} />
-        ))}
-      </>
-    )
-  },
+  // {
+  //   key: '1',
+  //   label: 'Việc làm đã lưu',
+  //   children: (
+  //     <>
+  //       {dataJobFollow.map((job) => (
+  //         <ItemJob key={job.id} type='ITEM_SAVE_JOB' data={job} />
+  //       ))}
+  //     </>
+  //   )
+  // },
   {
     key: '2',
     label: 'Việc làm đã ứng tuyển',
@@ -108,7 +108,7 @@ const MyJobs = () => {
     <div className='my-jobs-container'>
       <div className='title'>Việc Làm Của Tôi</div>
       <div className='list-jobs-container'>
-        <Tabs className='tab-container' defaultActiveKey='1' items={items} onChange={onChangeTab} />
+        <Tabs className='tab-container' defaultActiveKey='2' items={items} onChange={onChangeTab} />
       </div>
     </div>
   )

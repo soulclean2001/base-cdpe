@@ -4,31 +4,51 @@ import { AiFillFlag } from 'react-icons/ai'
 import { BsFillShareFill } from 'react-icons/bs'
 import CompanyInfo from './components/CompanyInfo/CompanyInfo'
 import ListJob from './components/ListJob/ListJob'
-const onChange = (key: string) => {
-  console.log(key)
+import { useParams } from 'react-router-dom'
+import logoTemp from '~/assets/logo_temp.jpg'
+import bannerTemp from '~/assets/banner_temp.jpg'
+import apiCompany from '~/api/company.api'
+import { useState, useEffect } from 'react'
+export interface TypeCompanyDetail {
+  [key: string]: any
 }
-
-const items: TabsProps['items'] = [
-  {
-    key: '1',
-    label: 'Về chúng tôi',
-    children: <CompanyInfo />
-  },
-  {
-    key: '2',
-    label: 'Vị trí đang tuyển dụng',
-    children: <ListJob />
-  }
-]
 const CompanyDetail = () => {
+  const { infoUrlCompanyDetail } = useParams()
+  const [myCompany, setMyCompany] = useState<TypeCompanyDetail>()
+  useEffect(() => {
+    getDetailCompany()
+  }, [])
+  const getDetailCompany = async () => {
+    if (!infoUrlCompanyDetail) return
+    const idCompany = infoUrlCompanyDetail.match(/id-(\w+)/)
+    console.log('idCompany', idCompany?.[1])
+    if (!idCompany) return
+    await apiCompany.getDetailCompany(idCompany[1]).then((rs) => {
+      console.log('rs detail', rs)
+      setMyCompany(rs.result)
+    })
+  }
+  const onChange = (key: string) => {
+    console.log(key)
+  }
+
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Về chúng tôi',
+      children: <CompanyInfo data={myCompany} />
+    },
+    {
+      key: '2',
+      label: 'Vị trí đang tuyển dụng',
+      children: <ListJob companyId={myCompany ? myCompany._id : ''} />
+    }
+  ]
   return (
     <div id='company-detail-page-container'>
       <div className='header-container'>
         <div className='banner-container'>
-          <img
-            className='banner'
-            src='https://www.vietnamworks.com/_next/image?url=https%3A%2F%2Fimages02.vietnamworks.com%2Fcompanyprofile%2Fbanner-default-company.png&w=640&q=75'
-          ></img>
+          <img className='banner' src={bannerTemp}></img>
         </div>
         <Row className='header-content'>
           <Col lg={18} md={17} sm={24} xs={24} className='left-content'>
@@ -36,13 +56,13 @@ const CompanyDetail = () => {
               <div
                 className='logo'
                 style={{
-                  backgroundImage: `url(${'https://images.vietnamworks.com/pictureofcompany/97/11105092.png'})`
+                  backgroundImage: `url(${logoTemp})`
                 }}
               ></div>
             </div>
             <div className='info'>
-              <div className='name-company'>WA Projects Limited</div>
-              <div className='total-followers'>25 lượt theo dõi</div>
+              <div className='name-company'>{myCompany && myCompany.company_name}</div>
+              <div className='total-followers'>{myCompany && myCompany.follow_num} lượt theo dõi</div>
             </div>
           </Col>
           <Col lg={5} md={6} sm={24} xs={24} className='right-content'>
