@@ -47,13 +47,15 @@ class OrderService {
     const now = new Date()
     for (let i = 0; i < items.length; i++) {
       total += packages[i].discount_price * items[i].quantity
-      const date = new Date().setDate(now.getDate() + packages[i].number_of_days_to_expire * items[i].quantity)
+      const date = new Date(now)
+      date.setDate(now.getDate() + packages[i].number_of_days_to_expire * items[i].quantity)
+
       services.push(
         new ServiceOrder({
-          status: ServicePackageStatus.UnActive,
+          status: ServicePackageStatus.Canceled,
           company_id: company._id,
           quantity: items[i].quantity,
-          expired_at: new Date(),
+          expired_at: date,
           package_id: packages[i]._id,
           unit_price: packages[i].discount_price,
           order_id: new ObjectId(),
@@ -65,26 +67,34 @@ class OrderService {
     const discount_percent = 0
     total = total - total * discount_percent
 
-    const order = await databaseServices.order.insertOne(
+    const od = new Order({
+      company_id: company._id,
+      services: itemIds,
+      total,
+      discount: discount_percent,
+      status: StatusOrder.WaitForPay
+    })
+
+    const result = await databaseServices.order.insertOne(
       new Order({
         company_id: company._id,
         services: itemIds,
         total,
         discount: discount_percent,
-        status: StatusOrder.Processing
+        status: StatusOrder.WaitForPay
       })
     )
-
-    if (order) {
+    if (result) {
       for (let i = 0; i < services.length; i++) {
-        services[i].order_id = order.insertedId
+        services[i].order_id = result.insertedId
       }
     }
+    od._id = result.insertedId
 
     const servicesSaved = await databaseServices.serviceOrder.insertMany(services)
 
     return {
-      order,
+      order: od,
       packages
     }
   }

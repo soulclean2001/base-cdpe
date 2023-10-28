@@ -243,6 +243,12 @@ class JobApplicationService {
       options['profile_status'] = filter.profile_status
     }
 
+    if (filter.from_date) {
+      options['created_at'] = {
+        $gte: new Date(filter.from_date)
+      }
+    }
+
     if (filter.to_date) {
       if (filter.from_date) {
         options['created_at'] = {

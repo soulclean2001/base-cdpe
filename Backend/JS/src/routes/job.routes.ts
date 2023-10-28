@@ -10,10 +10,12 @@ import {
 import { accessTokenValidator, isAdmin } from '~/middlewares/users.middlewares'
 import { UpdateJobReqBody } from '~/models/requests/Job.request'
 import wrapAsync from '~/utils/handlers'
+import { paginationValidator } from '~/utils/validation'
 
 const jobRouter = express.Router()
 
 jobRouter.get('/company', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getAllJobByCompany))
+jobRouter.get('/applied', accessTokenValidator, paginationValidator, wrapAsync(jobControllers.getAllJobsApplied))
 jobRouter.get('/company/filter', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getJobsByCompany))
 jobRouter.get('/company/:company_id', accessTokenValidator, wrapAsync(jobControllers.getAllJobsByCompanyId))
 jobRouter.get('/:job_id', wrapAsync(jobControllers.getJob))

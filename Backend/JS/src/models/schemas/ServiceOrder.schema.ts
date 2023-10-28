@@ -2,7 +2,8 @@ import { ObjectId } from 'mongodb'
 
 export enum ServicePackageStatus {
   Active,
-  UnActive
+  UnActive,
+  Canceled
 }
 
 export interface ServiceOrderType {

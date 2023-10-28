@@ -42,6 +42,10 @@ export const createCandidateValidator = validate(
         optional: true
       },
       education_level: {
+        ...isStringNotEmpty('education_level'),
+        optional: true
+      },
+      level: {
         ...isStringNotEmpty('level'),
         optional: true
       },
@@ -104,6 +108,10 @@ export const updateCandidateValidator = validate(
         optional: true
       },
       education_level: {
+        ...isStringNotEmpty('education_level'),
+        optional: true
+      },
+      level: {
         ...isStringNotEmpty('level'),
         optional: true
       },

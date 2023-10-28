@@ -28,8 +28,8 @@ export default class JobService {
   static convertOptions(options: JobSearchOptions) {
     const opts: { [key: string]: any } = {}
 
-    if (options.expired_before_nday && isNumber(options.expired_before_nday)) {
-      const nday = options.expired_before_nday
+    if (options.expired_before_nday && isNumber(Number(options.expired_before_nday))) {
+      const nday = Number(options.expired_before_nday)
       const now = new Date()
       const afterNDays = new Date(now.getTime() + nday * 24 * 60 * 60 * 1000)
       opts['expired_date'] = {
@@ -38,15 +38,15 @@ export default class JobService {
       }
     }
 
-    if (options.status) {
-      opts['status'] = options.status
+    if (options.status && isNumber(Number(options.status))) {
+      opts['status'] = Number(options.status)
     }
 
-    if (options.visibility && isBoolean(options.visibility)) {
-      opts['visibility'] = Boolean(options.visibility)
+    if (options.visibility) {
+      opts['visibility'] = String(options.visibility).toLowerCase() === 'true'
     }
 
-    if (options.is_expired) {
+    if (options.is_expired && String(options.is_expired).toLowerCase() === 'true') {
       opts['expired_date'] = {
         $lt: new Date()
       }
@@ -309,6 +309,75 @@ export default class JobService {
               localField: 'user_id',
               foreignField: '_id',
               as: 'user_post'
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      data: listJob,
+      total: total[0]?.total || 0,
+      limit,
+      page: page
+    }
+  }
+
+  static async getAllJobApplied(userId: string, limit: number = 10, page: number = 1) {
+    const [listJob, total] = await Promise.all([
+      databaseServices.jobApplication
+        .aggregate([
+          {
+            $match: {
+              user_id: new ObjectId(userId)
+            }
+          },
+          {
+            $group: {
+              _id: '$job_post_id',
+              job_applications: {
+                $push: '$$ROOT'
+              }
+            }
+          },
+          {
+            $lookup: {
+              from: 'jobs',
+              localField: '_id',
+              foreignField: '_id',
+              as: 'job'
+            }
+          },
+          {
+            $unwind: {
+              path: '$job'
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+
+      databaseServices.jobApplication
+        .aggregate([
+          {
+            $match: {
+              user_id: new ObjectId(userId)
+            }
+          },
+          {
+            $group: {
+              _id: '$job_post_id',
+              job_applications: {
+                $push: '$$ROOT'
+              }
             }
           },
           {

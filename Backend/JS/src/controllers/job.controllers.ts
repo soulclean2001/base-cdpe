@@ -74,7 +74,7 @@ class JobController {
   async getAllJobByCompany(req: Request<ParamsDictionary, any, UpdateJobReqBody>, res: Response) {
     const { user_id } = req.decoded_authorization as TokenPayload
     const { limit, page } = req.query
-    const intLimit = !isNaN(Number(limit)) ? Number(limit) : 2
+    const intLimit = !isNaN(Number(limit)) ? Number(limit) : 10
     const intPage = !isNaN(Number(page)) ? Number(page) : 1
 
     const result = await JobService.getAllJobByCompany(user_id, intLimit, intPage)
@@ -87,7 +87,7 @@ class JobController {
   async getJobsByCompany(req: Request<ParamsDictionary, any, any>, res: Response) {
     const { user_id } = req.decoded_authorization as TokenPayload
     const { limit, page, expired_before_nday, visibility, status } = req.query
-    const intLimit = !isNaN(Number(limit)) ? Number(limit) : 2
+    const intLimit = !isNaN(Number(limit)) ? Number(limit) : 10
     const intPage = !isNaN(Number(page)) ? Number(page) : 1
     const options: JobSearchOptions = req.query
     // options.expired_before_nday = !isNaN(Number(expired_before_nday)) ? Number(expired_before_nday) : undefined
@@ -97,6 +97,22 @@ class JobController {
     const result = await JobService.getJobByCompany(user_id, intLimit, intPage, options)
     return res.json({
       message: 'All jobs by company',
+      result
+    })
+  }
+
+  async getAllJobsApplied(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+    const { limit, page } = req.query
+    const intLimit = !isNaN(Number(limit)) ? Number(limit) : 10
+    const intPage = !isNaN(Number(page)) ? Number(page) : 1
+    // options.expired_before_nday = !isNaN(Number(expired_before_nday)) ? Number(expired_before_nday) : undefined
+    // options.visibility = isBoolean(Boolean(visibility)) ? Boolean(visibility) : undefined
+    // options.status = !isNaN(Number(status)) ? Number(status) : undefined
+
+    const result = await JobService.getAllJobApplied(user_id, intLimit, intPage)
+    return res.json({
+      message: 'All jobs by user have been applied',
       result
     })
   }

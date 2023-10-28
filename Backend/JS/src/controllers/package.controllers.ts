@@ -2,6 +2,7 @@ import { CreatePackageReqBody, UpdatePackageReqBody } from '~/models/requests/Pa
 import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import PackageService from '~/services/package.services'
+import { TokenPayload } from '~/models/requests/User.request'
 
 class PackageController {
   async createPackage(req: Request<ParamsDictionary, any, CreatePackageReqBody>, res: Response) {
@@ -76,6 +77,17 @@ class PackageController {
     const result = await PackageService.getAllPackagesByTitle(limit, page, title)
     return res.json({
       message: 'Get all package',
+      result
+    })
+  }
+
+  async getAllPackagesOwn(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+
+    const result = await PackageService.getAllPackagesOwn(user_id, req.query)
+
+    return res.json({
+      message: 'Package owned by company',
       result
     })
   }

@@ -6,6 +6,15 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { deleteFileFromS3 } from '~/utils/s3'
 import { escapeRegExp } from 'lodash'
 
+interface getQueryPackageOwn {
+  title?: string
+  status?: number
+  from_date?: string
+  to_date?: string
+  limit?: string
+  page?: string
+}
+
 export default class PackageService {
   static async createPackage(data: CreatePackageReqBody) {
     const pkg = await databaseServices.package.insertOne(
@@ -159,6 +168,136 @@ export default class PackageService {
 
     return {
       pks,
+      total: total[0]?.total || 0,
+      limit,
+      page
+    }
+  }
+
+  static convertToQueryPackageOwn(filter: getQueryPackageOwn) {
+    const options: {
+      [key: string]: any
+    } = {}
+
+    if (filter.title) {
+      filter.title = filter.title.trim()
+      const keywords = filter.title.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
+      options['package.title'] = {
+        $regex: regex
+      }
+    }
+
+    if (filter.status && !isNaN(Number(filter.status))) {
+      options['status'] = Number(filter.status)
+    }
+
+    if (filter.from_date) {
+      options['created_at'] = {
+        $gte: new Date(filter.from_date)
+      }
+    }
+
+    if (filter.to_date) {
+      if (filter.from_date) {
+        options['created_at'] = {
+          $gte: new Date(filter.from_date),
+          $lte: new Date(filter.to_date)
+        }
+      } else {
+        options['created_at'] = {
+          $lte: new Date(filter.to_date)
+        }
+      }
+    }
+
+    return options
+  }
+
+  static async getAllPackagesOwn(userId: string, filter: getQueryPackageOwn) {
+    const limit = !isNaN(Number(filter.limit)) ? Number(filter.limit) : 10
+    const page = !isNaN(Number(filter.page)) ? Number(filter.page) : 1
+
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'No company found',
+        status: 404
+      })
+
+    const match = this.convertToQueryPackageOwn(filter)
+
+    const [packages, total] = await Promise.all([
+      databaseServices.serviceOrder
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id
+            }
+          },
+          {
+            $lookup: {
+              from: 'packages',
+              localField: 'package_id',
+              foreignField: '_id',
+              as: 'package'
+            }
+          },
+          {
+            $unwind: {
+              path: '$package'
+            }
+          },
+          {
+            $match: {
+              ...match
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.serviceOrder
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id
+            }
+          },
+          {
+            $lookup: {
+              from: 'packages',
+              localField: 'package_id',
+              foreignField: '_id',
+              as: 'package'
+            }
+          },
+          {
+            $unwind: {
+              path: '$package'
+            }
+          },
+          {
+            $match: {
+              ...match
+            }
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      packages,
       total: total[0]?.total || 0,
       limit,
       page

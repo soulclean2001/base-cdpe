@@ -53,7 +53,7 @@ const toSecond = (input: string) => {
 }
 
 export const envConfig = {
-  port: (process.env.PORT as string) || 4000,
+  port: (process.env.PORT as string) || 8888,
   host: process.env.HOST as string,
   dbName: process.env.DB_NAME as string,
   dbUsername: process.env.DB_USERNAME as string,
@@ -76,6 +76,8 @@ export const envConfig = {
   dbPurchasedPackage: process.env.DB_PURCHASED_PACKAGE_COLLECTION as string,
   dbOrder: process.env.DB_ORDER_COLLECTION as string,
   dbServiceOrder: process.env.DB_SERVICE_ORDER as string,
+  dbTransactionHistory: process.env.DB_TRANSACTION_HISTORY_COLLECTION as string,
+
   redisPassword: process.env.REDIS_PASSWORD as string,
   redisHost: process.env.REDIS_HOST as string,
   redisPort: process.env.REDIS_PORT as string,
@@ -99,5 +101,10 @@ export const envConfig = {
   awsRegion: process.env.AWS_REGION as string,
   sesFromAddress: process.env.SES_FROM_ADDRESS as string,
   s3BucketName: process.env.S3_BUCKET_NAME as string,
-  dbVideoStatusCollection: process.env.DB_VIDEO_STATUS_COLLECTION as string
+  dbVideoStatusCollection: process.env.DB_VIDEO_STATUS_COLLECTION as string,
+  vnpTmnCode: process.env.vnp_TmnCode as string,
+  vnpHashSecret: process.env.vnp_HashSecret as string,
+  vnpUrl: process.env.vnp_Url as string,
+  vnpApi: process.env.vnp_Api as string,
+  vnpReturnUrl: process.env.vnp_ReturnUrl as string
 }

@@ -1,4 +1,4 @@
-import { accessTokenValidator, isAdmin } from './../middlewares/users.middlewares'
+import { accessTokenValidator, isAdmin, isEmployer } from './../middlewares/users.middlewares'
 import { Router } from 'express'
 import packageControllers from '~/controllers/package.controllers'
 import {
@@ -29,6 +29,7 @@ packageRouter.delete('/:package_id', isAdmin, wrapAsync(packageControllers.remov
 packageRouter.post('/:package_id/active', isAdmin, wrapAsync(packageControllers.activePackage))
 packageRouter.get('/', wrapAsync(packageControllers.getAllPackages))
 packageRouter.get('/get-by-filter', wrapAsync(packageControllers.getAllPackagesByTitle))
+packageRouter.get('/me', accessTokenValidator, isEmployer, wrapAsync(packageControllers.getAllPackagesOwn))
 packageRouter.get('/:package_id', packageQueryMiddleware, wrapAsync(packageControllers.getPackage))
 
 export default packageRouter

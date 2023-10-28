@@ -2,9 +2,8 @@ import { ObjectId } from 'mongodb'
 
 export enum StatusOrder {
   Processing,
-  Cancled,
+  Canceled,
   Success,
-  Paid,
   Error,
   WaitForPay
 }

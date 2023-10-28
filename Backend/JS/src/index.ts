@@ -47,9 +47,10 @@ const limiter = rateLimit({
 // app.use(limiter)
 
 // const httpServer = createServer(app)
+// isProduction ? envConfig.clientUrl :
 app.use(helmet())
 const corsOptions: CorsOptions = {
-  origin: isProduction ? envConfig.clientUrl : '*'
+  origin: '*'
 }
 app.use(cors(corsOptions))
 

@@ -22,6 +22,7 @@ import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
 import { text } from 'body-parser'
 import Order from '~/models/schemas/Order.schema'
 import ServiceOrder from '~/models/schemas/ServiceOrder.schema'
+import TransactionHistory from '~/models/schemas/TransactionHistory.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -192,6 +193,10 @@ class DatabaseService {
 
   get serviceOrder(): Collection<ServiceOrder> {
     return this.db.collection(envConfig.dbServiceOrder)
+  }
+
+  get transaction(): Collection<TransactionHistory> {
+    return this.db.collection(envConfig.dbTransactionHistory)
   }
 }
 

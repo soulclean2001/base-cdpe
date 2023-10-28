@@ -67,6 +67,11 @@ class SearchService {
       databaseServices.candidate
         .aggregate([
           {
+            $match: {
+              cv_public: true
+            }
+          },
+          {
             $lookup: {
               from: 'resumes',
               localField: 'cv_id',
@@ -90,7 +95,7 @@ class SearchService {
     ])
 
     return {
-      cvs,
+      profiles: cvs,
       total: total[0]?.total || 0
     }
   }
@@ -99,9 +104,9 @@ class SearchService {
     const match: any = {}
 
     if (data.name && data.name.length > 0) {
+      data.name = data.name.trim()
       const keywords = data.name.split(' ').map(escapeRegExp).join('|')
       const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
-      data.name = data.name.trim()
       match['$or'] = [
         { 'cvs.user_info.first_name': { $regex: regex } },
         { 'cvs.user_info.last_name': { $regex: regex } }
