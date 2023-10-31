@@ -6,35 +6,11 @@ import {
   jobApplicationQueryMiddleware,
   updateStatusValidator
 } from '~/middlewares/jobApplication.middlewares'
-import { accessTokenValidator } from '~/middlewares/users.middlewares'
+import { accessTokenValidator, isCandidate, isEmployer } from '~/middlewares/users.middlewares'
 const jobApplicationRouter = express.Router()
 
 jobApplicationRouter.post('/', accessTokenValidator, applyJobValidator, jobApplicationControllers.applyJob)
-jobApplicationRouter.get(
-  '/get-all-by-post/:post_id',
-  accessTokenValidator,
-  idValidator('post_id'),
-  jobApplicationControllers.getAllJobApplicationsByPost
-)
-jobApplicationRouter.get(
-  '/get-all-from-candidate',
-  accessTokenValidator,
-  jobApplicationControllers.getAllJobApplicationsFromCandidate
-)
 
-jobApplicationRouter.get(
-  '/',
-  accessTokenValidator,
-  jobApplicationQueryMiddleware,
-  jobApplicationControllers.getJobApplicationsByFilter
-)
-
-jobApplicationRouter.get(
-  '/:job_application_id',
-  accessTokenValidator,
-  idValidator('job_application_id'),
-  jobApplicationControllers.getById
-)
 jobApplicationRouter.post(
   '/approve/:job_application_id',
   accessTokenValidator,
@@ -56,6 +32,46 @@ jobApplicationRouter.post(
   updateStatusValidator,
   idValidator('job_application_id'),
   jobApplicationControllers.updateStatus
+)
+
+jobApplicationRouter.get(
+  '/',
+  accessTokenValidator,
+  jobApplicationQueryMiddleware,
+  jobApplicationControllers.getJobApplicationsByFilter
+)
+
+jobApplicationRouter.get(
+  '/list-chat-users',
+  accessTokenValidator,
+  isCandidate,
+  jobApplicationControllers.getInfoJobsAppliedByUserId
+)
+
+jobApplicationRouter.get(
+  '/list-chat-company',
+  accessTokenValidator,
+  isEmployer,
+  jobApplicationControllers.getInfoJobsAppliedByCompany
+)
+
+jobApplicationRouter.get(
+  '/get-all-by-post/:post_id',
+  accessTokenValidator,
+  idValidator('post_id'),
+  jobApplicationControllers.getAllJobApplicationsByPost
+)
+jobApplicationRouter.get(
+  '/get-all-from-candidate',
+  accessTokenValidator,
+  jobApplicationControllers.getAllJobApplicationsFromCandidate
+)
+
+jobApplicationRouter.get(
+  '/:job_application_id',
+  accessTokenValidator,
+  idValidator('job_application_id'),
+  jobApplicationControllers.getById
 )
 
 export default jobApplicationRouter

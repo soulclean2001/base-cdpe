@@ -43,7 +43,7 @@ class JobApplicationController {
   async getJobApplicationsByFilter(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
     const { user_id } = req.decoded_authorization
 
-    const result = await JobApplicationService.getJobAppications(req.query)
+    const result = await JobApplicationService.getJobAppications(user_id, req.query)
     return res.json({
       message: 'get job applications filter',
       result
@@ -66,7 +66,10 @@ class JobApplicationController {
     const { job_application_id } = req.params
 
     const result = await JobApplicationService.approve(job_application_id)
-    return res.json(result)
+    return res.json({
+      message: 'ok',
+      result
+    })
   }
 
   async reject(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
@@ -74,7 +77,10 @@ class JobApplicationController {
     const { job_application_id } = req.params
 
     const result = await JobApplicationService.reject(job_application_id)
-    return res.json(result)
+    return res.json({
+      message: 'ok',
+      result
+    })
   }
 
   async updateStatus(
@@ -86,7 +92,32 @@ class JobApplicationController {
     const { status } = req.body
 
     const result = await JobApplicationService.updateStatus(user_id, status)
-    return res.json(result)
+    return res.json({
+      message: 'ok',
+      result
+    })
+  }
+
+  async getInfoJobsAppliedByUserId(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+
+    const result = await JobApplicationService.getInfoJobsAppliedByUserId(user_id)
+
+    return res.json({
+      message: 'JobApplication',
+      result
+    })
+  }
+
+  async getInfoJobsAppliedByCompany(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+
+    const result = await JobApplicationService.getInfoJobsAppliedByCompany(user_id)
+
+    return res.json({
+      message: 'JobApplication',
+      result
+    })
   }
 }
 

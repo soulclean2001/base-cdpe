@@ -36,7 +36,7 @@ class TransactionHistory {
   constructor(data: TransactionHistoryType) {
     const now = new Date()
     this._id = data._id
-    this.transaction_status = data.transaction_status
+    this.transaction_status = data.transaction_status || '01'
     this.bill_number = data.bill_number
     this.amount = data.amount
     this.ip_addr = data.ip_addr

@@ -185,7 +185,7 @@ class MediasService {
     const result: Media[] = await Promise.all(
       files.map(async (file) => {
         const s3Result = await uploadFileToS3({
-          filename: 'videos/' + file.newFilename,
+          filename: 'images/' + file.newFilename,
           filepath: file.filepath,
           contentType: mime.getType(file.filepath) as string
         })

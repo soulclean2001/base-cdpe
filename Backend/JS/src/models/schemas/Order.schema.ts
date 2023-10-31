@@ -44,6 +44,7 @@ class Order {
     this.services = data.services
     this.created_at = data.created_at || now
     this.updated_at = data.updated_at || now
+    this.status = data.status || StatusOrder.WaitForPay
   }
 }
 

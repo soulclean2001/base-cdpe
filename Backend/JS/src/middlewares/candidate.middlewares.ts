@@ -136,3 +136,22 @@ export const updateCandidateValidator = validate(
     ['body']
   )
 )
+
+export const getCandidateValidator = validate(
+  checkSchema(
+    {
+      candidate_id: {
+        custom: {
+          options: (value: any) => {
+            if (!ObjectId.isValid(value)) {
+              throw new Error('Invalid candidate identifier')
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['params']
+  )
+)

@@ -189,7 +189,11 @@ class SearchService {
       databaseServices.job
         .aggregate([
           {
-            $match
+            $match: {
+              ...$match,
+              visibility: true,
+              status: 0
+            }
           },
           {
             $skip: limit * (page - 1)
@@ -202,7 +206,11 @@ class SearchService {
       databaseServices.job
         .aggregate([
           {
-            $match
+            $match: {
+              ...$match,
+              visibility: true,
+              status: 0
+            }
           },
           {
             $count: 'total'
@@ -254,23 +262,31 @@ class SearchService {
       databaseServices.job
         .aggregate([
           {
-            $match
+            $match: {
+              ...$match,
+              visibility: true,
+              status: 0
+            }
+          },
+          {
+            $sort
           },
           {
             $skip: limit * (page - 1)
           },
           {
             $limit: limit
-          },
-          {
-            $sort
           }
         ])
         .toArray(),
       databaseServices.job
         .aggregate([
           {
-            $match
+            $match: {
+              ...$match,
+              visibility: true,
+              status: 0
+            }
           },
           {
             $count: 'total'

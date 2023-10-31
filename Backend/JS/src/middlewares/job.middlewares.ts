@@ -198,8 +198,7 @@ export const createJobValidator = validate(
         optional: true
       },
       visibility: {
-        isBoolean: true,
-        optional: true
+        isBoolean: true
       },
       benefits: {
         optional: true,

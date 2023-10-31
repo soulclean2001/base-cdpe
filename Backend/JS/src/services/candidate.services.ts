@@ -27,6 +27,34 @@ class CandidateService {
     return result
   }
 
+  static async getCandidateById(candidateId: string) {
+    const result = await databaseServices.candidate
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId('64f97df432a75cad406394a4'),
+            cv_public: true
+          }
+        },
+        {
+          $lookup: {
+            from: 'resumes',
+            localField: 'cv_id',
+            foreignField: '_id',
+            as: 'cv'
+          }
+        },
+        {
+          $unwind: {
+            path: '$cv'
+          }
+        }
+      ])
+      .toArray()
+
+    return result[0] || {}
+  }
+
   static async updateCandidate(userId: string, payload: UpdateCandidateReqBody) {
     const cv = await databaseServices.resume.findOne({
       user_id: new ObjectId(userId)

@@ -11,6 +11,8 @@ import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 import { StatusOrder } from '~/models/schemas/Order.schema'
 import { ServicePackageStatus } from '~/models/schemas/ServiceOrder.schema'
+import { accessTokenValidator, isEmployer } from '~/middlewares/users.middlewares'
+import transactionControllers from '~/controllers/transaction.controllers'
 
 const transactionRouter = express.Router()
 
@@ -93,7 +95,7 @@ transactionRouter.post('/create_payment_url', async function (req, res, next) {
       bank_code: '',
       bill_number: trade_code,
       ip_addr: ipAddr,
-      transaction_status: '',
+      transaction_status: '01',
       order_info: 'Thanh toan cho ma GD:' + trade_code,
       payment_status: '0',
       order_id: new ObjectId(ordId)
@@ -422,6 +424,8 @@ transactionRouter.post('/refund', function (req, res, next) {
   //   }
   // )
 })
+
+transactionRouter.get('/', accessTokenValidator, isEmployer, transactionControllers.getTransactionsByCompany)
 
 function sortObject(obj: any) {
   const sorted: {

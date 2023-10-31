@@ -97,7 +97,7 @@ export default class Job {
     this.salary_range = data.salary_range
     this.job_description = data.job_description
     this.job_requirement = data.job_requirement
-    this.visibility = data.visibility
+    this.visibility = data.visibility || false
     this.benefits = data.benefits
     this.created_at = data.created_at || date
     this.expired_date = data.expired_date || date

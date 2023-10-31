@@ -106,8 +106,7 @@ export default class JobService {
         ..._payload,
         user_id: new ObjectId(userId),
         company_id: company._id,
-        company: omit(company, ['_id', 'users']),
-        visibility: false
+        company: omit(company, ['_id', 'users'])
       })
     )
 
@@ -711,6 +710,10 @@ export default class JobService {
 
     if (filter.status && isNumber(Number(filter.status))) {
       opts['status'] = Number(filter.status)
+    } else {
+      opts['status'] = {
+        $ne: 3
+      }
     }
 
     if (filter.from_day) {

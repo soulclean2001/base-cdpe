@@ -54,6 +54,16 @@ class CandidateController {
       message: result
     })
   }
+
+  async getCandidateById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const candidate_id = req.params.candidate_id
+
+    const result = await CandidateService.getCandidateById(candidate_id)
+    return res.json({
+      message: 'get candidate',
+      result
+    })
+  }
 }
 
 export default new CandidateController()

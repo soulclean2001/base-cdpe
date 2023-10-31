@@ -175,7 +175,19 @@ class JobApplicationService {
     }
   }
 
-  static async getJobAppications(filter: searchJobApplication) {
+  static async getJobAppications(userId: string, filter: searchJobApplication) {
+    //
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company) {
+      throw new ErrorWithStatus({
+        message: "Could not find company's job applications",
+        status: 404
+      })
+    }
+
     const limit = Number(filter.limit) || 10
     const page = Number(filter.page) || 1
 
@@ -187,8 +199,22 @@ class JobApplicationService {
       databaseServices.jobApplication
         .aggregate([
           {
+            $lookup: {
+              from: 'jobs',
+              localField: 'job_post_id',
+              foreignField: '_id',
+              as: 'job'
+            }
+          },
+          {
+            $unwind: {
+              path: '$job'
+            }
+          },
+          {
             $match: {
-              ...opts
+              ...opts,
+              'job.company_id': company._id
             }
           },
           {
@@ -202,8 +228,22 @@ class JobApplicationService {
       databaseServices.jobApplication
         .aggregate([
           {
+            $lookup: {
+              from: 'jobs',
+              localField: 'job_post_id',
+              foreignField: '_id',
+              as: 'job'
+            }
+          },
+          {
+            $unwind: {
+              path: '$job'
+            }
+          },
+          {
             $match: {
-              ...opts
+              ...opts,
+              'job.company_id': company._id
             }
           },
           {
@@ -214,13 +254,10 @@ class JobApplicationService {
     ])
 
     return {
-      message: 'Job application',
-      result: {
-        jas,
-        limit,
-        page,
-        total: total[0]?.total || 0
-      }
+      jas,
+      limit,
+      page,
+      total: total[0]?.total || 0
     }
   }
 
@@ -267,6 +304,154 @@ class JobApplicationService {
     }
 
     return options
+  }
+
+  static async getInfoJobsAppliedByUserId(userId: string) {
+    const result = await databaseServices.jobApplication
+      .aggregate([
+        {
+          $match: {
+            user_id: new ObjectId(userId)
+          }
+        },
+        {
+          $lookup: {
+            from: 'jobs',
+            localField: 'job_post_id',
+            foreignField: '_id',
+            as: 'job'
+          }
+        },
+        {
+          $unwind: {
+            path: '$job'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $addFields: {
+            info_job: {
+              job_title: '$job.job_title',
+              _id: '$job._id'
+            },
+            info_company: {
+              company_name: '$job.company.company_name',
+              avatar: '$job.company.logo',
+              _id: '$job.company_id'
+            },
+            info_user: {
+              company_name: '$user.name',
+              avatar: '$user.avatar',
+              _id: '$user._id'
+            }
+          }
+        },
+        {
+          $project: {
+            user: 0,
+            job: 0
+          }
+        },
+        {
+          $sort: {
+            created_at: -1
+          }
+        }
+      ])
+      .toArray()
+
+    return result
+  }
+
+  static async getInfoJobsAppliedByCompany(userId: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
+    const result = await databaseServices.jobApplication
+      .aggregate([
+        {
+          $lookup: {
+            from: 'jobs',
+            localField: 'job_post_id',
+            foreignField: '_id',
+            as: 'job'
+          }
+        },
+        {
+          $unwind: {
+            path: '$job'
+          }
+        },
+        {
+          $match: {
+            'job.company_id': company._id
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'user_id',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $unwind: {
+            path: '$user'
+          }
+        },
+        {
+          $addFields: {
+            info_job: {
+              job_title: '$job.job_title',
+              _id: '$job._id'
+            },
+            info_company: {
+              company_name: '$job.company.company_name',
+              avatar: '$job.company.logo',
+              _id: '$job.company_id'
+            },
+            info_user: {
+              company_name: '$user.name',
+              avatar: '$user.avatar',
+              _id: '$user._id'
+            }
+          }
+        },
+        {
+          $project: {
+            user: 0,
+            job: 0
+          }
+        },
+        {
+          $sort: {
+            created_at: -1
+          }
+        }
+      ])
+      .toArray()
+
+    return result
   }
 }
 
