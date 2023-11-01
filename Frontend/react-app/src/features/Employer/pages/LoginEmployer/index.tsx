@@ -31,15 +31,32 @@ const LoginEmployer = (props: any) => {
   const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
     if (token) {
       const dataDecode = await decodeToken(token.accessToken)
-      if (dataDecode.role && dataDecode.role === 1) {
-        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
-        dispatchAsync(setToken(token))
-        dispatchAsync(setAccountStatus(dataDecode))
-        dispatchAsync(setStateLogin(action))
-        navigate('/employer')
+      if (hiddenTabSignUp) {
+        console.log('dataDecode.role', dataDecode.role)
+        if (dataDecode.role.toString() === '0') {
+          console.log('check')
+          const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+          dispatchAsync(setToken(token))
+          dispatchAsync(setAccountStatus(dataDecode))
+          dispatchAsync(setStateLogin(action))
+          navigate('/admin')
+        } else {
+          toast.error('Tài khoản không tồn tạii')
+
+          // setLoading(false)
+        }
       } else {
-        toast.error('Tài khoản không tồn tại')
-        // setLoading(false)
+        if (dataDecode.role && dataDecode.role === 1) {
+          const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+          dispatchAsync(setToken(token))
+          dispatchAsync(setAccountStatus(dataDecode))
+          dispatchAsync(setStateLogin(action))
+          navigate('/employer')
+        } else {
+          toast.error('Tài khoản không tồn tại')
+          return
+          // setLoading(false)
+        }
       }
     }
   }

@@ -21,7 +21,7 @@ const Right = (props: RightPropsType) => {
   const personalInfo = omit(data.user_info, ['first_name', 'last_name', 'avatar', 'wanted_job_title'])
   const skills = data.skills
   const professionalSummary = data.professional_summary
-  const hobbie = data.hobbies
+  const hobbie = data.hobbies // ben day đúng r mà xem gi the
 
   const [avatar, setAvatar] = useState('')
   const { toPDF, targetRef } = usePDF({
@@ -206,7 +206,7 @@ const Right = (props: RightPropsType) => {
                     return (
                       <div key={e.job_title + index} style={{ paddingBottom: '10px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <p className='preview__info' style={{ width: '78%' }}>
+                          <p className='preview__info' style={{ width: '74%' }}>
                             <b>{e.job_title}</b>
                           </p>
                           <p className='preview__info'>
@@ -237,7 +237,7 @@ const Right = (props: RightPropsType) => {
                   return (
                     <div key={e.school + index} style={{ paddingBottom: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <p className='preview__info' style={{ width: '78%' }}>
+                        <p className='preview__info' style={{ width: '74%' }}>
                           <b>{e.school}</b>
                         </p>
                         <p className='preview__info'>
@@ -289,7 +289,7 @@ const Right = (props: RightPropsType) => {
                   return (
                     <div key={e.title + index} style={{ paddingBottom: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <p className='preview__info' style={{ width: '78%' }}>
+                        <p className='preview__info' style={{ width: '74%' }}>
                           <b>{e.title}</b>
                         </p>
                         <p className='preview__info'>
@@ -342,7 +342,7 @@ const Right = (props: RightPropsType) => {
                   return (
                     <div key={e.job_title + index} style={{ paddingBottom: '10px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <p className='preview__info' style={{ width: '78%' }}>
+                        <p className='preview__info' style={{ width: '74%' }}>
                           <b>{e.job_title}</b>
                         </p>
                         <p className='preview__info'>
@@ -380,7 +380,7 @@ const Right = (props: RightPropsType) => {
                               <div
                                 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
                               >
-                                <p className='preview__info' style={{ width: '78%' }}>
+                                <p className='preview__info' style={{ width: '74%' }}>
                                   <b>{e.title}</b>
                                 </p>
                                 <p className='preview__info'>

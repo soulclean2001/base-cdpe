@@ -97,12 +97,14 @@ const CVSettings = (props: any) => {
         setExpYears(rs.result.experience)
         setEducationLevel(rs.result.education_level)
         setPublishCV(rs.result.cv_public)
+        setLevelDesire(rs.result.level)
         form.setFieldsValue({
           careers: rs.result.industry,
           provinces: rs.result.work_location,
           expYears: rs.result.experience,
           educationLevel: rs.result.education_level,
-          checkPublish: rs.result.cv_public
+          checkPublish: rs.result.cv_public,
+          levelDesire: rs.result.level
         })
       }
     })
@@ -114,7 +116,8 @@ const CVSettings = (props: any) => {
       education_level: educationLevel,
       experience: expYears,
       industry: carrers,
-      work_location: provinces
+      work_location: provinces,
+      level: levelDesire
     }
 
     if (myCanidate) {

@@ -8,18 +8,85 @@ import { FiSearch } from 'react-icons/fi'
 import { DatePicker } from 'antd'
 import ModalInfoPost from '~/features/Employer/pages/Dashboard/components/ModalInfoPost/ModalInfoPost'
 const { RangePicker } = DatePicker
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import apiAdmin, { JobSearchByAdmin } from '~/api/admin.api'
+import { toast } from 'react-toastify'
+import { format, parseISO } from 'date-fns'
 interface DataType {
   id: string
   nameJob: string
   nameCompany: string
   requestDate: string
   updateDate: string
-  status: string | number
+  status: number
 }
+
 const ListPostReview = () => {
   const [postID, setPostID] = useState('')
   const [openModalDetailPost, setOpenModalDetailPost] = useState(false)
+  const [listPostRequest, setListPostRequest] = useState<DataType[]>([])
+  const [total, setTotal] = useState(1)
+  const limit = 2
+  const [currentPage, setCurrentPage] = useState(1)
+  //request search
+  const [content, setContent] = useState('')
+  const [dateFormTo, setDateFormTo] = useState<string[]>()
+  const [status, setStatus] = useState('')
+  //
+  useEffect(() => {
+    fetchGetListPostRequest()
+  }, [])
+  useEffect(() => {
+    fetchGetListPostRequest()
+  }, [content, dateFormTo, status])
+  const fetchGetListPostRequest = async (page?: string) => {
+    let request: JobSearchByAdmin = {
+      content: content,
+      from_day: dateFormTo ? dateFormTo[0] : '',
+      to_day: dateFormTo ? dateFormTo[1] : '',
+      status: status,
+      limit: limit.toString(),
+      page: page ? page : '1'
+    }
+    await apiAdmin.getAllPostRequest(request).then((rs) => {
+      console.log('rs', rs)
+      const listTemp: DataType[] = []
+      rs.result.jobs.map((job: any) => {
+        listTemp.push({
+          id: job._id,
+          nameJob: job.job_title,
+          nameCompany: job.company.company_name,
+          requestDate: format(parseISO(job.posted_date), 'dd-MM-yyyy HH:mm:ss'),
+          status: job.status,
+          updateDate: format(parseISO(job.updated_at), 'dd-MM-yyyy HH:mm:ss')
+        })
+      })
+      setListPostRequest(listTemp)
+      setTotal(rs.result.total)
+    })
+  }
+  const handleActionRequest = async (type: string, id: string) => {
+    if (type === 'APPROVE') {
+      await apiAdmin.postApprovePostRequest(id).then(async (rs) => {
+        console.log('Rs action', rs)
+        await fetchGetListPostRequest().then(() => {
+          toast.success(`Đã thành công duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+        })
+      })
+    }
+    if (type === 'REJECT') {
+      await apiAdmin.postRejectPostRequest(id).then(async (rs) => {
+        console.log('Rs action', rs)
+        await fetchGetListPostRequest().then(() => {
+          toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+        })
+      })
+    }
+  }
+  const handleOnchangePageClick = async (page: number, pageSize: number) => {
+    setCurrentPage(page)
+    await fetchGetListPostRequest(page.toString())
+  }
   const handleOpenModalDetailPost = (id: string) => {
     setPostID(id)
     setOpenModalDetailPost(true)
@@ -30,7 +97,7 @@ const ListPostReview = () => {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      render: (value, _) => <span key={value}>{`POST_${value}`}</span>
+      render: (value, _) => <span key={value}>{`POST_${value.slice(-5).toUpperCase()}`}</span>
     },
     {
       ellipsis: true,
@@ -62,11 +129,11 @@ const ListPostReview = () => {
       key: 'status',
       dataIndex: 'status',
       align: 'center',
-      render: (_, { status }) => (
+      render: (_, record) => (
         <>
-          {status === 'Đang chờ' && <Tag color={'orange'}>{status}</Tag>}
-          {status === 'Chấp nhận' && <Tag color={'green'}>{status}</Tag>}
-          {status === 'Từ chối' && <Tag color={'red'}>{status}</Tag>}
+          {record.status === 1 && <Tag color={'orange'}>Đang chờ</Tag>}
+          {record.status === 0 && <Tag color={'green'}>Chấp nhận</Tag>}
+          {record.status === 2 && <Tag color={'red'}>Từ chối</Tag>}
         </>
       )
     },
@@ -84,14 +151,20 @@ const ListPostReview = () => {
           >
             <BsFillEyeFill />
           </a>
-          {record.status !== 'Đang chờ' ? (
+          {record.status !== 1 ? (
             <></>
           ) : (
             <>
-              <a style={{ fontSize: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+              <a
+                onClick={() => handleActionRequest('APPROVE', record.id)}
+                style={{ fontSize: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              >
                 <BsFillCheckCircleFill />
               </a>
-              <a style={{ fontSize: '17px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+              <a
+                onClick={() => handleActionRequest('REJECT', record.id)}
+                style={{ fontSize: '17px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              >
                 <TiDelete />
               </a>
             </>
@@ -101,32 +174,6 @@ const ListPostReview = () => {
     }
   ]
 
-  const data: DataType[] = [
-    {
-      id: '65167d32e569685ca8a7f3c0',
-      nameJob: 'Web intern',
-      nameCompany: 'Công ty XX',
-      requestDate: '26/09/2023',
-      updateDate: '26/09/2023',
-      status: 'Đang chờ'
-    },
-    {
-      id: '2',
-      nameJob: 'Fresher',
-      nameCompany: 'Công ty Y',
-      requestDate: '26/09/2023',
-      updateDate: '26/09/2023',
-      status: 'Chấp nhận'
-    },
-    {
-      id: '3',
-      nameJob: 'Grab',
-      nameCompany: 'GarbVN',
-      requestDate: '26/09/2023',
-      updateDate: '26/09/2023',
-      status: 'Từ chối'
-    }
-  ]
   return (
     <div className='post-review-manage-container admin-users-manage-container'>
       <div className='title'>Kiểm duyệt bài đăng</div>
@@ -134,6 +181,8 @@ const ListPostReview = () => {
         <Row style={{ gap: '10px', marginBottom: '15px' }}>
           <Col md={8} sm={24} xs={24}>
             <Input
+              allowClear
+              onChange={(e) => setContent(e.target.value)}
               className='input-search-user'
               size='large'
               placeholder='ID, tên công việc, công ty'
@@ -142,6 +191,7 @@ const ListPostReview = () => {
           </Col>
           <Col md={6} sm={16} xs={12}>
             <RangePicker
+              onChange={(_, dataStr) => setDateFormTo(dataStr)}
               style={{ width: '100%' }}
               size='large'
               placeholder={['Từ ngày', 'Đến ngày']}
@@ -151,14 +201,15 @@ const ListPostReview = () => {
           </Col>
           <Col md={4} sm={7} xs={11}>
             <Select
+              onChange={(value) => setStatus(value === 'all' ? '' : value)}
               size='large'
               style={{ width: '100%' }}
               defaultValue='Tất cả'
               options={[
-                { value: 'Tất cả trạng thái' },
-                { value: 'Đang chờ' },
-                { value: 'Chấp nhận' },
-                { value: 'Từ chối' }
+                { value: 'all', label: 'Tất cả trạng thái' },
+                { value: '1', label: 'Đang chờ' },
+                { value: '0', label: 'Chấp nhận' },
+                { value: '2', label: 'Từ chối' }
               ]}
             />
           </Col>
@@ -174,7 +225,8 @@ const ListPostReview = () => {
           className='table-custom users-table'
           scroll={{ x: true }}
           columns={columns}
-          dataSource={data}
+          dataSource={listPostRequest}
+          pagination={{ pageSize: limit, total: total, onChange: handleOnchangePageClick, current: currentPage }}
         />
       </div>
     </div>

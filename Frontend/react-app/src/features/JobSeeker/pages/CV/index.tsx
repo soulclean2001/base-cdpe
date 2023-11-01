@@ -19,6 +19,8 @@ import { AuthState } from '~/features/Auth/authSlice'
 import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import apiResume from '~/api/resume.api'
+import { omit } from 'lodash'
 // import { isExpired } from '~/utils/jwt'
 
 const initResume: ResumeType = {
@@ -283,10 +285,40 @@ const CV = () => {
   }, [auth])
   const [isAddInfo, setIsAddInfo] = useState(false)
   const [openIndex, setOpenIndex] = useState([1, 1, 1, 1, 1, 1, 1])
+  const [data2, setData2] = useState<string[]>([])
   // const plugin = ClassicEditor.builtinPlugins.map((plugin) => plugin.pluginName)
 
   const [data, setData] = useState<ResumeType>(defaultResume)
 
+  console.log('KEYS', data2)
+  useEffect(() => {
+    fetchGetMyResume()
+  }, [])
+  const fetchGetMyResume = async () => {
+    await apiResume.getAllByMe().then((rs) => {
+      console.log('resume', rs)
+      if (rs.result[0]) {
+        setData(rs.result[0])
+        setFileList([
+          { uid: `info_${data._id}`, name: 'avatar.png', status: 'done', url: rs.result[0].user_info.avatar }
+        ])
+
+        const temp = omit(rs.result[0], [
+          'skills',
+          'hobbies',
+          'languages',
+          'user_info',
+          'status',
+          'updated_at',
+          'user_id',
+          '_id'
+        ])
+        const keys = Object.keys(temp)
+
+        setData2(keys)
+      }
+    })
+  }
   console.log(data)
   const {
     additional_info,
@@ -378,6 +410,10 @@ const CV = () => {
         ...prvData
       }
     })
+
+    if (!data2.includes(key)) {
+      setData2((prv) => [...prv, key])
+    } // sao chạy qua đây rồi :v thì cho n đủ từ đăng bài tới ứng tuyen đó mà
     setOpenIndex((prv) => {
       prv[index] = 0
       return [...prv]
@@ -555,7 +591,7 @@ const CV = () => {
                   <div style={{ width: '90%' }}>
                     <p className='title-name'>Tên công việc mong muốn</p>
                     <InputCustom
-                      // value={user_info.wanted_job_title || ''}
+                      value={user_info.wanted_job_title || ''}
                       onChange={(e) => handleSetData('user_info', 'wanted_job_title', e.target.value)}
                       type='text'
                     />
@@ -585,7 +621,7 @@ const CV = () => {
                   <div style={{ width: '90%' }}>
                     <p className='title-name'>Họ</p>
                     <InputCustom
-                      // value={user_info.first_name || ''}
+                      value={user_info.first_name || ''}
                       onChange={(e) => handleSetData('user_info', 'first_name', e.target.value)}
                       type='text'
                     />
@@ -595,7 +631,7 @@ const CV = () => {
                   <div style={{ width: '90%' }}>
                     <p className='title-name'>Tên</p>
                     <InputCustom
-                      // value={user_info.last_name || ''}
+                      value={user_info.last_name || ''}
                       onChange={(e) => handleSetData('user_info', 'last_name', e.target.value)}
                       type='text'
                     />
@@ -608,7 +644,7 @@ const CV = () => {
                     <p className='title-name'>Email</p>
                     <InputCustom
                       type='text'
-                      // value={user_info.email || ''}
+                      value={user_info.email || ''}
                       onChange={(e) => handleSetData('user_info', 'email', e.target.value)}
                     />
                   </div>
@@ -618,7 +654,7 @@ const CV = () => {
                     <p className='title-name'>Số điện thoại</p>
                     <InputCustom
                       type='text'
-                      // value={user_info.phone || ''}
+                      value={user_info.phone || ''}
                       onChange={(e) => handleSetData('user_info', 'phone', e.target.value)}
                     />
                   </div>
@@ -630,7 +666,7 @@ const CV = () => {
                     <p className='title-name'>Thành phố sinh sống</p>
                     <InputCustom
                       type='text'
-                      // value={user_info.city || ''}
+                      value={user_info.city || ''}
                       onChange={(e) => handleSetData('user_info', 'city', e.target.value)}
                     />
                   </div>
@@ -650,7 +686,7 @@ const CV = () => {
                       <p className='title-name'>Địa chỉ</p>
                       <InputCustom
                         type='text'
-                        // value={user_info.address || ''}
+                        value={user_info.address || ''}
                         onChange={(e) => handleSetData('user_info', 'address', e.target.value)}
                       />
                     </div>
@@ -701,7 +737,7 @@ const CV = () => {
                         <p className='title-name'>Quốc tịch</p>
                         <InputCustom
                           type='text'
-                          // value={user_info.country || ''}
+                          value={user_info.country || ''}
                           onChange={(e) => handleSetData('user_info', 'country', e.target.value)}
                         />
                       </div>
@@ -2276,6 +2312,10 @@ const CV = () => {
                           additional_info: [...prvData.additional_info, item]
                         }
                       })
+
+                      if (!data2.includes('additional_info')) {
+                        setData2((prv) => [...prv, 'additional_info'])
+                      }
                     }
                   }}
                 >

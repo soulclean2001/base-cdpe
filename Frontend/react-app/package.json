@@ -16,6 +16,7 @@
     "@ant-design/icons": "^5.1.4",
     "@ckeditor/ckeditor5-build-classic": "^39.0.2",
     "@ckeditor/ckeditor5-react": "^6.1.0",
+    "@cyntler/react-doc-viewer": "^1.14.0",
     "@fontsource/rubik": "^5.0.8",
     "@reduxjs/toolkit": "^1.9.5",
     "@types/jwt-decode": "^3.1.0",

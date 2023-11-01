@@ -11,6 +11,7 @@ import { AuthState } from '~/features/Auth/authSlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import logoTemp from '~/assets/HF_logo.jpg'
+import apiUpload from '~/api/upload.api'
 interface HeaderModalApplyCVType {
   id: string
   logo: string
@@ -58,11 +59,12 @@ const ModalApplyCV = (props: any) => {
       }
     })
   }
-  const handleSubmitForm = () => {
+  const handleSubmitForm = async () => {
     const data = {
       idJob: headerModalData?.id,
       fullName,
       email,
+      phone,
       typeCV,
       fileCV: typeCV === 0 ? undefined : fileCV,
       applicationDate: new Date().toLocaleString('vi-VN', {
@@ -76,6 +78,14 @@ const ModalApplyCV = (props: any) => {
       toast.error('Hồ sơ của bạn chưa được tải lên')
       return
     }
+    // if (data.fileCV && data.fileCV.originFileObj) {
+    //   const cvForm = new FormData()
+    //   cvForm.append('file', data.fileCV.originFileObj)
+    //   await apiUpload.uploadPDF(cvForm).then((rs) => {
+    //     console.log(rs)
+    //   })
+    // }
+
     console.log('form data post', data)
 
     handleCancel()
@@ -107,6 +117,7 @@ const ModalApplyCV = (props: any) => {
     },
     onChange: (info) => {
       // console.log(info.fileList)
+      console.log('info.file', info.file)
       setFileCV(info.file)
     }
   }

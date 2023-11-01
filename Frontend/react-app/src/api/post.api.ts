@@ -26,10 +26,12 @@ export interface PostFilterRequestType {
   content?: string //input search
   from_day?: string
   to_day?: string
+  status?: string
 }
 export class Post {
   public static getPostsFormEmployer = async (param: PostFilterRequestType) => {
-    const rs: ApiResponse = await client.get(`/jobs/company/filter`, { params: param })
+    let filterParam = filterObject(param)
+    const rs: ApiResponse = await client.get(`/jobs/company/filter`, { params: filterParam })
     return rs
   }
   public static getPostById = async (id: string) => {
@@ -42,6 +44,18 @@ export class Post {
   }
   public static updatePost = async (id: string, data: JobType) => {
     const rs: ApiResponse = await client.patch(`/jobs/${id}`, data)
+    return rs
+  }
+  public static publishPost = async (id: string, expired_date: string) => {
+    const rs: ApiResponse = await client.post(`/jobs/${id}/publish`, { expired_date })
+    return rs
+  }
+  public static hidePost = async (id: string) => {
+    const rs: ApiResponse = await client.post(`/jobs/${id}/hide`)
+    return rs
+  }
+  public static deletePost = async (id: string) => {
+    const rs: ApiResponse = await client.delete(`/jobs/${id}`)
     return rs
   }
   public static searchJobs = async (data: PostRequestSearchType) => {

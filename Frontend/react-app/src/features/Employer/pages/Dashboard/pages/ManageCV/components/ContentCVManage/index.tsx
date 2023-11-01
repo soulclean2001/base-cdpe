@@ -1,4 +1,4 @@
-import { Col, Input, Row, Select, Table, Dropdown, MenuProps, Tooltip } from 'antd'
+import { Col, Input, Row, Select, Table, Dropdown, MenuProps, Tooltip, Modal } from 'antd'
 import { DatePicker } from 'antd'
 import { ColumnsType, TableProps } from 'antd/es/table'
 import { SorterResult } from 'antd/es/table/interface'
@@ -17,6 +17,7 @@ import { format, parseISO } from 'date-fns'
 import { useEffect, useState } from 'react'
 import apiJobsApplication, { SearchJobApplicationType } from '~/api/jobsApplication.api'
 import apiCompany from '~/api/company.api'
+import { toast } from 'react-toastify'
 interface DataType {
   id: string
   key: string
@@ -37,21 +38,22 @@ interface DataType {
 // ]
 const listStatus = [
   { value: 'allStatus', label: 'Tất tất trạng thái' },
-  { value: '0', label: 'pending' },
-  { value: '1', label: 'approved' },
-  { value: '2', label: 'reject' },
-  { value: '3', label: 'potential' },
-  { value: '4', label: 'interview' },
-  { value: '5', label: 'hired' },
-  { value: '6', label: 'notcontactable' }
+  { value: '0', label: 'Chờ duyệt' },
+  { value: '1', label: 'Chấp nhận CV' },
+  { value: '2', label: 'Từ chối' },
+  { value: '3', label: 'Tiềm năng' },
+  { value: '4', label: 'Phỏng vấn' },
+  { value: '5', label: 'Nhận việc' },
+  { value: '6', label: 'Không thể liên lạc' }
 ]
 const ContentCVManage = (props: any) => {
   const { tabKey } = props
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({})
   const [openModalInfo, setOpenModalInfo] = useState(false)
+
   const [dataRowSelected, setDataRowSelected] = useState<DataType>()
   const [idPost, setIdPost] = useState<string>()
-  const limit = 1
+  const limit = 2
   const [totalPage, setTotalPage] = useState(1)
   //search fillter
   const [listJobsApplied, setListJobsApplied] = useState<DataType[]>([])
@@ -99,8 +101,8 @@ const ContentCVManage = (props: any) => {
 
     await apiJobsApplication.getJobsApplicationByFilter(request).then((rs) => {
       console.log('rs', rs)
-      setTotalPage(rs.result.result.total)
-      const listTemp: DataType[] = rs.result.result.jas.map((item: any) => {
+      setTotalPage(rs.result.total)
+      const listTemp: DataType[] = rs.result.jas.map((item: any) => {
         return {
           id: item._id,
           key: item._id,
@@ -129,6 +131,7 @@ const ContentCVManage = (props: any) => {
   const handleCloseModalInfo = () => {
     setOpenModalInfo(false)
   }
+
   const items: MenuProps['items'] = [
     {
       label: (
@@ -239,7 +242,7 @@ const ContentCVManage = (props: any) => {
         <div style={{ textAlign: 'center' }}>
           {text === '0' && <span className='status-apply-job pending'>Chờ duyệt</span>}
           {text === '1' && <span className='status-apply-job approved'>Chấp nhận CV</span>}
-          {text === '2' && <span className='status-apply-job rejected'>Từ chối CV</span>}
+          {text === '2' && <span className='status-apply-job rejected'>Từ chối</span>}
           {text === '3' && <span className='status-apply-job potential'>Tiềm năng</span>}
           {text === '4' && <span className='status-apply-job interview'>Phỏng vấn</span>}
           {text === '5' && <span className='status-apply-job hired'>Nhận việc</span>}
@@ -370,6 +373,7 @@ const ContentCVManage = (props: any) => {
         </Col>
         <Col md={6} sm={8} xs={24} style={{ padding: '5px' }}>
           <Select
+            allowClear
             defaultValue='allJobs'
             size='large'
             style={{ width: '100%' }}
@@ -400,7 +404,7 @@ const ContentCVManage = (props: any) => {
       </Row>
       <div className='cv-applied-manage-content'>
         <div className='header-content'>
-          <div className='total-cv'>{`Đã tìm thấy ${0} ứng viên`}</div>
+          <div className='total-cv'>{`Đã tìm thấy ${totalPage} ứng viên`}</div>
         </div>
         <div className='table-container'>
           {/* <TableApplied /> */}

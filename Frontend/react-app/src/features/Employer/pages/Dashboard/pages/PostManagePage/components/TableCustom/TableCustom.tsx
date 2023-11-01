@@ -1,4 +1,4 @@
-import { Col, Input, Row, Select, Table } from 'antd'
+import { Button, Col, Input, Modal, Row, Select, Table, Tag } from 'antd'
 import { ColumnsType, TableProps } from 'antd/es/table'
 import { SorterResult } from 'antd/es/table/interface'
 import { useEffect, useState } from 'react'
@@ -15,6 +15,7 @@ import { RootState } from '~/app/store'
 import { setPosts } from '~/features/Employer/employerSlice'
 // import viVN from 'antd/es/locale/vi_VN'
 import apiPost, { PostFilterRequestType } from '~/api/post.api'
+import { toast } from 'react-toastify'
 
 const { RangePicker } = DatePicker
 
@@ -81,11 +82,18 @@ const TableCustom = (props: any) => {
   const [openModalInfo, setOpenModalInfo] = useState(false)
   const [dataRowSelected, setDataRowSelected] = useState<JobType>()
   const [idPost, setIdPost] = useState<string>()
-  const limit = 3
-
+  const limit = 2
+  //publish
+  const [isOpenModalPublish, setIsOpenModalPublish] = useState(false)
+  const [expiresDate, setExpires] = useState('')
+  //
+  //delete
+  const [isOpenModalDelete, setIsOpenModalDelete] = useState(false)
+  //
   // const total = employer.posts.total
   const [total, setTotal] = useState(1)
-
+  const [publishStatus, setPublishStatus] = useState<boolean | string>('')
+  const [acceptStatus, setAcceptStatus] = useState<number | string>('')
   const [content, setContent] = useState('')
   const [rangeDate, setRangeDate] = useState<Array<string>>([])
 
@@ -100,11 +108,12 @@ const TableCustom = (props: any) => {
   // get data
 
   useEffect(() => {
+    setCurrentPage(1)
     fetchData()
-  }, [tabKey, content, rangeDate])
+  }, [tabKey, content, rangeDate, publishStatus, acceptStatus])
   useEffect(() => {
     if (isUpdate) {
-      fetchData(currentPage.toString())
+      fetchData(currentPage.toString()).then(() => setIsUpDate(false))
     }
   }, [isUpdate])
   useEffect(() => {
@@ -116,13 +125,19 @@ const TableCustom = (props: any) => {
     const initReq = { limit: limit.toString(), page: page ? page : '1' }
     let request: PostFilterRequestType = initReq
     if (tabKey === 'tab-publish') request = { ...initReq, visibility: true }
-    if (tabKey === 'tab-hide') request = { ...initReq, visibility: false }
-    if (tabKey === 'tab-over-time-7-day') request = { ...initReq, expired_before_nday: 7 }
-    if (tabKey === 'tab-over-time') request = { ...initReq, is_expired: true }
+    if (tabKey === 'tab-hide') request = { ...initReq, visibility: false, status: acceptStatus as string }
+    if (tabKey === 'tab-over-time-7-day')
+      request = {
+        ...initReq,
+        expired_before_nday: 7,
+        visibility: publishStatus as boolean,
+        status: acceptStatus as string
+      }
+    if (tabKey === 'tab-over-time')
+      request = { ...initReq, is_expired: true, visibility: publishStatus as boolean, status: acceptStatus as string }
     if (content) request = { ...request, content }
     if (rangeDate && rangeDate[0] && rangeDate[1])
       request = { ...request, from_day: rangeDate[0], to_day: rangeDate[1] }
-
     console.log('request', request)
     await apiPost.getPostsFormEmployer(request).then((rs) => {
       console.log(rs)
@@ -130,6 +145,30 @@ const TableCustom = (props: any) => {
       setData(rs.result.data)
       setTotal(rs.result.total)
     })
+  }
+
+  const handleSubmitModalPublish = async () => {
+    if (!dataRowSelected || !idPost) return
+    if (!expiresDate) {
+      toast.error('Vui lòng chọn ngày hết hạn trước khi công khai bài đăng')
+      return
+    }
+    await apiPost.publishPost(idPost, expiresDate).then(async () => {
+      await fetchData()
+      if (dataRowSelected.status === '0') toast.success(`#POST_${idPost.slice(-5).toUpperCase()} đã được công khai`)
+      else toast.success(`Yêu cầu công khai #POST_${idPost.slice(-5).toUpperCase()} đã được gửi thành công`)
+      setIsOpenModalPublish(false)
+    })
+  }
+  const handleHidePost = async (id: string) => {
+    if (!id) return
+    await apiPost.hidePost(id).then(async () => {
+      await fetchData()
+      toast.success(`#POST_${id.slice(-5).toUpperCase()} đã được ẩn`)
+    })
+  }
+  const handleCloseModalPublish = () => {
+    setIsOpenModalPublish(false)
   }
   // kiểm tra data thay đổi
   // useEffect(() => {
@@ -218,37 +257,7 @@ const TableCustom = (props: any) => {
       render: (value, _) => <span>{value ? value : 0}</span>
     },
     {
-      title: 'Xử lý',
-      dataIndex: 'action',
-      key: 'action',
-      fixed: 'right',
-      render: (_, item) => (
-        <div style={{ display: 'flex', gap: '5px' }}>
-          <a onClick={() => setOpenModalInfo(true)}>
-            <BsFillEyeFill />
-          </a>
-
-          <a>
-            <MdDelete />
-          </a>
-
-          {item.visibility && (
-            <a>
-              <AiFillLock />
-            </a>
-          )}
-          {!item.visibility && (
-            <a>
-              <BiWorld />
-            </a>
-          )}
-        </div>
-      ),
-      showSorterTooltip: false
-    }
-  ]
-  const hiddenColumn: ColumnsType<JobType> = [
-    {
+      align: 'center',
       title: 'Kiểm duyệt',
       dataIndex: 'status',
       key: 'status',
@@ -258,15 +267,62 @@ const TableCustom = (props: any) => {
       showSorterTooltip: false,
       render: (value, _) => (
         <>
-          {value === 1 && <span>Chờ duyệt</span>} {value === 0 && <span>Chấp nhận</span>}
-          {value === 2 && <span>Từ chối</span>}
-          {value === 3 && <span>Chưa kiểm duyệt</span>}
+          {value === 1 && <Tag color={'orange'}>Chờ duyệt</Tag>}
+          {value === 0 && <Tag color={'green'}>Chấp nhận</Tag>}
+          {value === 2 && <Tag color={'red'}>Từ chối</Tag>}
+          {value === 3 && <Tag color={'purple'}>Chưa kiểm duyệt</Tag>}
         </>
       )
+    },
+    {
+      title: 'Xử lý',
+      dataIndex: 'action',
+      key: 'action',
+      fixed: 'right',
+      render: (_, item) => (
+        <div style={{ display: 'flex', gap: '5px' }}>
+          <a onClick={() => setOpenModalInfo(true)}>
+            <BsFillEyeFill />
+          </a>
+          {item.visibility && (
+            <a onClick={() => handleHidePost(item.id ? item.id : '')}>
+              <AiFillLock />
+            </a>
+          )}
+          {!item.visibility && Number(item.status) !== 1 && (
+            <a onClick={() => setIsOpenModalPublish(true)}>
+              <BiWorld />
+            </a>
+          )}
+          <a onClick={handleOpenModalDelete}>
+            <MdDelete />
+          </a>
+        </div>
+      ),
+      showSorterTooltip: false
     }
   ]
+  // const hiddenColumn: ColumnsType<JobType> = [
+  //   {
+  //     title: 'Kiểm duyệt',
+  //     dataIndex: 'status',
+  //     key: 'status',
+  //     sorter: (a, b) => a.status.localeCompare(b.status),
+  //     sortOrder: sortedInfo.columnKey === 'status' ? sortedInfo.order : null,
+  //     ellipsis: true,
+  //     showSorterTooltip: false,
+  //     render: (value, _) => (
+  //       <>
+  //         {value === 1 && <span>Chờ duyệt</span>} {value === 0 && <span>Chấp nhận</span>}
+  //         {value === 2 && <span>Từ chối</span>}
+  //         {value === 3 && <span>Chưa kiểm duyệt</span>}
+  //       </>
+  //     )
+  //   }
+  // ]
   const anotherColumns: ColumnsType<JobType> = [
     {
+      align: 'center',
       title: 'Hiển thị',
       dataIndex: 'visibility',
       key: 'visibility',
@@ -276,7 +332,8 @@ const TableCustom = (props: any) => {
       sortOrder: sortedInfo.columnKey === 'visibility' ? sortedInfo.order : null,
       ellipsis: true,
       showSorterTooltip: false,
-      render: (value, _) => <span>{value ? 'Công khai' : 'Riêng tư'}</span>
+
+      render: (value, _) => <>{value ? <Tag color={'blue'}>Công khai</Tag> : <Tag color={'grey'}>Riêng tư</Tag>} </>
     }
   ]
 
@@ -289,19 +346,19 @@ const TableCustom = (props: any) => {
       return columns
     }
     if (tabKey === 'tab-hide') {
-      const hideTemp: ColumnsType<JobType> = [
-        ...columns.slice(0, columns.length - 1),
-        hiddenColumn[0],
-        ...columns.slice(columns.length - 1, columns.length)
-      ]
+      // const hideTemp: ColumnsType<JobType> = [
+      //   ...columns.slice(0, columns.length - 1),
+      //   hiddenColumn[0],
+      //   ...columns.slice(columns.length - 1, columns.length)
+      // ]
 
       // setColumnState(hideTemp)
-      return hideTemp
+      return columns
     }
     if (tabKey === 'tab-over-time-7-day' || tabKey === 'tab-over-time') {
       const anotherTemp: ColumnsType<JobType> = [
         ...columns.slice(0, columns.length - 1),
-        hiddenColumn[0],
+        // hiddenColumn[0],
         anotherColumns[0],
         ...columns.slice(columns.length - 1, columns.length)
       ]
@@ -318,8 +375,97 @@ const TableCustom = (props: any) => {
     setIsUpDate(false)
     setOpenModalInfo(false)
   }
+  const handleOpenModalDelete = () => {
+    setIsOpenModalDelete(true)
+  }
+  const handleCloseModalDelete = () => {
+    setIsOpenModalDelete(false)
+  }
+  const handleConfirmDelete = async () => {
+    if (!idPost) return
+    await apiPost.deletePost(idPost).then(async () => {
+      await fetchData()
+      toast.success(`#POST_${idPost.slice(-5).toUpperCase()} đã được xóa thành công`)
+      setIsOpenModalDelete(false)
+    })
+  }
   return (
     <>
+      <Modal footer='' cancelText={'Thoát'} width={300} open={isOpenModalDelete} onCancel={handleCloseModalDelete}>
+        <div
+          style={{
+            paddingBottom: '20px',
+
+            boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
+
+            borderRadius: '7px',
+            padding: '10px',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column'
+          }}
+        >
+          <h4>Bạn có chắc muốn xóa bài đăng #POST_{idPost && idPost.slice(-5).toUpperCase()}?</h4>
+
+          <div style={{ marginTop: '25px', display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
+            <Button size='middle' onClick={handleCloseModalDelete}>
+              Thoát
+            </Button>
+            <Button
+              size='middle'
+              onClick={handleConfirmDelete}
+              style={{ background: 'rgb(255, 125, 85)', color: 'white' }}
+            >
+              Xóa
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
+        footer=''
+        cancelText={'Thoát'}
+        width={300}
+        title={
+          <h4
+            style={{
+              paddingBottom: '15px'
+            }}
+          >
+            CÔNG KHAI #POST_{idPost && idPost.slice(-5).toUpperCase()}
+          </h4>
+        }
+        open={isOpenModalPublish}
+        onCancel={handleCloseModalPublish}
+      >
+        <div
+          style={{
+            paddingBottom: '20px',
+            marginBottom: '20px',
+            boxShadow: 'rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
+
+            borderRadius: '7px',
+            padding: '10px',
+            display: 'flex',
+            justifyContent: 'center',
+            flexDirection: 'column'
+          }}
+        >
+          <h4>Chọn ngày hết hạn</h4>
+          <DatePicker placeholder='Chọn ngày' size='large' onChange={(_, str) => setExpires(str)} />
+          <div style={{ marginTop: '25px', display: 'flex', gap: '5px', justifyContent: 'flex-end' }}>
+            <Button size='middle' onClick={handleCloseModalPublish}>
+              Thoát
+            </Button>
+            <Button
+              size='middle'
+              onClick={handleSubmitModalPublish}
+              style={{ background: 'rgb(255, 125, 85)', color: 'white' }}
+            >
+              Tạo
+            </Button>
+          </div>
+        </div>
+      </Modal>
       <ModalInfoPost
         handleAfterSubmit={handleAfterSubmit}
         idPost={idPost}
@@ -352,14 +498,16 @@ const TableCustom = (props: any) => {
         {tabKey !== 'tab-publish' && (
           <Col md={5} sm={11} xs={24}>
             <Select
+              onChange={(value) => setAcceptStatus(value === 'all' ? '' : value)}
               style={{ width: '95%' }}
               size='large'
               defaultValue='all'
               options={[
                 { value: 'all', label: 'Tất cả trạng thái kiểm duyệt' },
-                { value: 0, label: 'Chờ duyệt' },
-                { value: 1, label: 'Chấp nhận' },
-                { value: 2, label: 'Từ chối' }
+                { value: 1, label: 'Chờ duyệt' },
+                { value: 0, label: 'Chấp nhận' },
+                { value: 2, label: 'Từ chối' },
+                { value: 3, label: 'Chưa kiểm duyệt' }
               ]}
             />
           </Col>
@@ -367,13 +515,14 @@ const TableCustom = (props: any) => {
         {(tabKey === 'tab-over-time-7-day' || tabKey === 'tab-over-time') && (
           <Col md={5} sm={11} xs={24}>
             <Select
+              onChange={(value) => setPublishStatus(value === 'all' ? '' : value)}
               style={{ width: '95%' }}
               size='large'
               defaultValue='all'
               options={[
                 { value: 'all', label: 'Tất cả trạng thái hiển thị' },
-                { value: 0, label: 'Công khai' },
-                { value: 1, label: 'Riêng tư' }
+                { value: true, label: 'Công khai' },
+                { value: false, label: 'Riêng tư' }
               ]}
             />
           </Col>

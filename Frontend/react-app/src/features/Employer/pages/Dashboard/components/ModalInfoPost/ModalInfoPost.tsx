@@ -37,6 +37,7 @@ import { RootState } from '~/app/store'
 import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
 import { getAllIndustries } from '~/api/industries.api'
 import { format, addDays } from 'date-fns'
+
 //data lo
 
 const listLevel = [
@@ -225,7 +226,7 @@ const ModalInfoPost = (props: any) => {
     setArrSkills([{ key: 0, value: '' }])
     setArrLocations(initLocation)
     setIndustries([])
-    await getDataWorkLocation()
+    if (roleType !== 'ADMIN_ROLE') await getDataWorkLocation()
   }
   const getDataWorkLocation = async () => {
     const dataTemp: SelectionLocationData[] = []
@@ -452,7 +453,7 @@ const ModalInfoPost = (props: any) => {
 
     // call api
     if (idPost) {
-      await updatePost(job)
+      await updatePost(job).then(() => toast.success(`Cập nhật #POST_${idPost.slice(-5).toUpperCase()} thành công`))
     } else await postData(job)
   }
 
@@ -467,18 +468,15 @@ const ModalInfoPost = (props: any) => {
         const listFilter = employer.posts.data.filter((post: any) => {
           return post.id !== idPost
         })
-        console.log('postUpdate', postUpdate)
+
         let jobFullUpdate = { ...postUpdate, ...job }
-        console.log('jobFullUpdate', jobFullUpdate)
-        console.log('listFilter', listFilter)
-        console.log('redux full', [...listFilter, jobFullUpdate])
         dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
       })
       .then(() => {
         form.resetFields()
 
         handleAfterSubmit()
-        handleClose()
+        // handleClose()
       })
   }
   const postData = async (job: JobType) => {
@@ -489,6 +487,7 @@ const ModalInfoPost = (props: any) => {
         newJob.salary = job.salary_range.min + ' - ' + job.salary_range.max
 
         // custome before add to list posts
+        toast.success(`#POST_${response.result.insertedId.slice(-5).toUpperCase()} đã được tạo thành công`)
         dispatch(addPost(newJob))
       })
       .then(() => {
@@ -743,7 +742,7 @@ const ModalInfoPost = (props: any) => {
                     }}
                   >
                     <Button
-                      hidden={hiddenDeleteLocation}
+                      hidden={roleType === 'ADMIN_ROLE' ? true : hiddenDeleteLocation}
                       onClick={() => handleDeletedRowLocation(lcItem.key)}
                       size='large'
                       icon={<BsTrashFill />}

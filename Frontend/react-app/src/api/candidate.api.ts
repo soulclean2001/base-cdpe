@@ -24,6 +24,7 @@ export interface RequestTurnOnFindingJobs {
   cv_public: boolean
   cv_id: string
   education_level: string
+  level: string
 }
 
 export class Candidate {

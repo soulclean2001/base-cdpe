@@ -1,5 +1,5 @@
 import Layout from './Layout'
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate, Outlet } from 'react-router-dom'
 
 import 'antd/dist/reset.css'
 
@@ -47,7 +47,7 @@ import OrdersManage from './features/Admin/contents/OrdersManage'
 import AdminPage from './features/Admin'
 import OverviewEmployer from './features/Employer/pages/Dashboard/pages/OverviewPage'
 import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
-import PostDetail from './features/Admin/contents/PostReviewManage/pages/PostDetail'
+
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
 import { AuthPayload, AuthState, logout, setToken } from './features/Auth/authSlice'
 import { RootState } from './app/store'
@@ -66,6 +66,7 @@ import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServices
 import { ToastContainer } from 'react-toastify'
 import axios from 'axios'
 import apiClient from './api/client'
+import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVAppliedDetailPage'
 
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
@@ -238,13 +239,33 @@ function App() {
             }
           >
             <Route index element={<OverviewEmployer />} />
-            <Route path='cv-manage' element={<ManageCV />} />
+            <Route
+              path='cv-manage'
+              element={
+                <>
+                  <Outlet />
+                </>
+              }
+            >
+              <Route index element={<ManageCV />} />
+              <Route path=':infoUrlAppliedCV' element={<CVAppliedDetailPage />} />
+            </Route>
             <Route path='post-manage' element={<PostManagePage />} />
             <Route path='my-account-info' element={<MyAccountManagePage />} />
             <Route path='company-general' element={<CompanyManagePage />} />
             <Route path='company-location' element={<WorkLocationPage />} />
-            <Route path='find-candidate' element={<FindCandidatePage />} />
-            <Route path='candidate-detail/:infoUrlCandidate' element={<CandidateDetailPage />} />
+            <Route
+              path='find-candidate'
+              element={
+                <>
+                  <Outlet />
+                </>
+              }
+            >
+              <Route index element={<FindCandidatePage />} />
+              <Route path=':infoUrlCandidate' element={<CandidateDetailPage />} />
+            </Route>
+
             <Route path='my-services' element={<MyServicesPage />} />
           </Route>
         </Route>
@@ -267,7 +288,6 @@ function App() {
             <Route path='users-manage' element={<UsersManage />} />
             <Route path='post-review-manage' element={<PostReviewManage />}>
               <Route index element={<ListPostReview />} />
-              <Route path='post-detail' element={<PostDetail />} />
             </Route>
 
             <Route path='services-manage' element={<ServicesManage />} />

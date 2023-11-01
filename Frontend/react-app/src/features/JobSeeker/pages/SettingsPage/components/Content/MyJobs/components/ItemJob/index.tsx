@@ -68,7 +68,9 @@ const ItemJob = (props: any) => {
         style={{ justifyContent: type === 'ITEM_SAVE_JOB' ? 'center' : 'space-between' }}
       >
         {type === 'ITEM_APPLIED_JOB' && (
-          <span className={`status-apply-job ${statusCSS}`}>{data.status ? data.status : 'status'}</span>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <span className={`status-apply-job ${statusCSS}`}>{data.status ? data.status : 'status'}</span>
+          </div>
         )}
         <div className='btn-wapper'>
           {/* <Button className='btn-follow' icon={<AiOutlineHeart />} /> */}

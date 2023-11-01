@@ -26,7 +26,7 @@ const CandidateItem = (props: any) => {
       .toLowerCase()
     const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
-    navigate(`/employer/dashboard/candidate-detail/${convertName}-id-${data.id}`)
+    navigate(`/employer/dashboard/find-candidate/${convertName}-id-${data.id}`)
   }
   if (!data) return <div>Không có dữ liệu ứng viên</div>
   return (

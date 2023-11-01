@@ -5,6 +5,7 @@ import './style.scss'
 import { TabsProps } from 'antd/lib'
 import ContentCVManage from './components/ContentCVManage'
 import { useState } from 'react'
+import CVAppliedDetailPage from '../CVAppliedDetailPage'
 
 const ManageCV = () => {
   const [tabKey, setTabKey] = useState('')

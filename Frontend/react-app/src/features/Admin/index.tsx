@@ -6,23 +6,23 @@ import { useEffect, useState } from 'react'
 import { RootState } from '~/app/store'
 import HeaderEmployer from '~/components/HeaderEmployer'
 import AdminOverview from './contents/Overview'
-// import { AuthState } from '../Auth/authSlice'
-// import { isExpired } from '~/utils/jwt'
+import { AuthState } from '../Auth/authSlice'
+import { isExpired } from '~/utils/jwt'
 const AdminPage = () => {
   const outlet = useOutlet()
-  // const auth: AuthState = useSelector((state: RootState) => state.auth)
-  // const navigate = useNavigate()
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
   const [hiddenButtonCollapsed, setHiddenButtonCollapsed] = useState(false)
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const [widthContent, setWidthContent] = useState('100%')
 
-  // useEffect(() => {
-  //   if (auth && auth.isLogin && auth.accessToken ) {
-  //     if (auth.role !== 0) navigate('/admin-login')
-  //   } else {
-  //     navigate('/admin-login')
-  //   }
-  // }, [auth])
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken) {
+      if (auth.role !== 0) navigate('/admin-login')
+    } else {
+      navigate('/admin-login')
+    }
+  }, [auth])
   useEffect(() => {
     if (collap) {
       setWidthContent('calc(100%-80px)')
