@@ -32,7 +32,7 @@ class CandidateService {
       .aggregate([
         {
           $match: {
-            _id: new ObjectId('64f97df432a75cad406394a4'),
+            _id: new ObjectId(candidateId),
             cv_public: true
           }
         },

@@ -4,6 +4,8 @@ import Job, { JobType } from '~/models/schemas/Job.schema'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 import { escapeRegExp, isBoolean, isNumber, omit } from 'lodash'
+import NotificationService from './notification.services'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
 
 export interface JobSearchOptions {
   visibility?: boolean
@@ -109,6 +111,17 @@ export default class JobService {
         company: omit(company, ['_id', 'users'])
       })
     )
+
+    if (result && _payload.status === JobStatus.Pending) {
+      const recievers = company.users.map((user) => user.position.toString())
+
+      await NotificationService.notify({
+        content: _payload.job_title,
+        object_recieve: NotificationObject.Admin,
+        recievers,
+        type: 'post/pending'
+      })
+    }
 
     return {
       message: 'Job created',
@@ -520,6 +533,9 @@ export default class JobService {
           posted_date: true,
           updated_at: true
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
 
@@ -528,6 +544,39 @@ export default class JobService {
         message: 'Not found this job',
         status: 404
       })
+    }
+    if (result.value) {
+      const company = await databaseServices.company.findOne({
+        _id: result.value.company_id
+      })
+
+      const recievers = company?.users.map((user) => user.user_id.toString()) || []
+
+      if (recievers.length > 0)
+        await NotificationService.notify({
+          content: result.value.job_title,
+          type: 'post/approved',
+          object_recieve: NotificationObject.Employer,
+          recievers
+        })
+
+      if (company) {
+        const user_company_followings = await databaseServices.companyFollowers
+          .find({
+            company_id: company._id
+          })
+          .toArray()
+
+        const recievers2 = user_company_followings.map((user) => user.user_id.toString())
+        if (recievers2.length > 0) {
+          await NotificationService.notify({
+            content: result.value.job_title,
+            type: 'post/created',
+            object_recieve: NotificationObject.Candidate,
+            recievers: recievers2
+          })
+        }
+      }
     }
 
     return {
@@ -547,6 +596,9 @@ export default class JobService {
         $currentDate: {
           updated_at: true
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
 
@@ -555,6 +607,22 @@ export default class JobService {
         message: 'Not found this job',
         status: 404
       })
+    }
+
+    if (result.value) {
+      const company = await databaseServices.company.findOne({
+        _id: result.value.company_id
+      })
+
+      const recievers = company?.users.map((user) => user.user_id.toString()) || []
+
+      if (recievers.length > 0)
+        await NotificationService.notify({
+          content: result.value.job_title,
+          type: 'post/rejected',
+          object_recieve: NotificationObject.Employer,
+          recievers
+        })
     }
 
     return {
@@ -596,12 +664,16 @@ export default class JobService {
       {
         $set: {
           ...dataUpdate,
-          status
+          status,
+          visibility: true
         },
         $currentDate: {
           posted_date: true,
           updated_at: true
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
 
@@ -610,6 +682,18 @@ export default class JobService {
         message: 'User are not owner of this job',
         status: 401
       })
+    }
+
+    if (result && result.value && result.value.status === JobStatus.Pending) {
+      const recievers = company.users.map((user) => user.position.toString())
+
+      if (recievers.length > 0)
+        await NotificationService.notify({
+          content: result.value.job_title,
+          object_recieve: NotificationObject.Admin,
+          recievers,
+          type: 'post/pending'
+        })
     }
 
     return {

@@ -77,6 +77,7 @@ export const envConfig = {
   dbOrder: process.env.DB_ORDER_COLLECTION as string,
   dbServiceOrder: process.env.DB_SERVICE_ORDER as string,
   dbTransactionHistory: process.env.DB_TRANSACTION_HISTORY_COLLECTION as string,
+  dbNotificationCollection: process.env.DB_NOTIFY_COLLECTION as string,
 
   redisPassword: process.env.REDIS_PASSWORD as string,
   redisHost: process.env.REDIS_HOST as string,

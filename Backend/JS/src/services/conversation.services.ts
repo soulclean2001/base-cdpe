@@ -4,6 +4,9 @@ import Conversation from '~/models/schemas/Conversation.schema'
 import { ErrorWithStatus } from '~/models/Errors'
 import { da } from '@faker-js/faker'
 import { omit, pick } from 'lodash'
+import NotificationService from './notification.services'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
+import { UserRole } from '~/constants/enums'
 
 export default class ConversationService {
   // static async getConversations({
@@ -418,7 +421,7 @@ export default class ConversationService {
 
     conversation._id = result.insertedId
 
-    await databaseServices.conversationRooms.findOneAndUpdate(
+    const room = await databaseServices.conversationRooms.findOneAndUpdate(
       {
         _id: conversation.room_id
       },
@@ -429,8 +432,49 @@ export default class ConversationService {
         $currentDate: {
           updated_at: true
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
+
+    if (room && room.value) {
+      const isUserSend = room.value.user_id.toString() === sender_id ? true : false
+      let recievers: string[] = []
+      let isAdmin = false
+
+      if (isUserSend) {
+        const user = await databaseServices.users.findOne({
+          _id: new ObjectId(sender_id)
+        })
+        isAdmin = user?.role === UserRole.Administrators ? true : false
+
+        const company = await databaseServices.company.findOne({
+          _id: room.value.company_id
+        })
+
+        recievers = company?.users.map((user) => user.user_id.toString()) || []
+      } else {
+        recievers = [room.value.user_id.toString()]
+      }
+
+      const object_recieve = isUserSend
+        ? isAdmin
+          ? NotificationObject.Admin
+          : NotificationObject.Employer
+        : NotificationObject.Candidate
+
+      if (recievers.length > 0)
+        await NotificationService.notify({
+          content: `Bạn có 1 tin nhắn mới từ ${
+            isUserSend ? (isAdmin ? 'quản trị viên' : 'ứng viên') : 'nhà tuyển dụng'
+          }`,
+          object_recieve,
+          recievers,
+          type: 'chat'
+        })
+    }
+
     return conversation
   }
 }

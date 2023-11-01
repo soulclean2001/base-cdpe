@@ -10,6 +10,8 @@ import JobApplication, {
 } from '~/models/schemas/JobApplication.schema'
 import { isNumber, omit } from 'lodash'
 import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
+import NotificationService from './notification.services'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
 
 export interface searchJobApplication {
   content?: string
@@ -58,13 +60,28 @@ class JobApplicationService {
     const job = await databaseServices.job.findOne({
       _id: _payload.job_post_id
     })
-    if (job)
-      await databaseServices.conversationRooms.insertOne(
-        new ConversationRoom({
-          company_id: job.company_id,
-          user_id: new ObjectId(userId)
+    if (job) {
+      const company = await databaseServices.company.findOne({
+        _id: job.company_id
+      })
+
+      const recievers = company?.users.map((user) => user.user_id.toString()) || []
+      if (recievers.length > 0) {
+        await databaseServices.conversationRooms.insertOne(
+          new ConversationRoom({
+            company_id: job.company_id,
+            user_id: new ObjectId(userId)
+          })
+        )
+
+        await NotificationService.notify({
+          content: `1 ứng viên đã gửi vào bài tuyển dụng ${job?.job_title}`,
+          object_recieve: NotificationObject.Employer,
+          recievers,
+          type: 'post/applied'
         })
-      )
+      }
+    }
 
     return {
       message: 'apply job'
@@ -133,8 +150,28 @@ class JobApplicationService {
         $set: {
           status: JobApplicationStatus.Approved
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
+
+    if (result && result.value) {
+      const job = await databaseServices.job.findOne({
+        _id: result.value.job_post_id
+      })
+
+      const company = await databaseServices.company.findOne({
+        _id: job?.company_id
+      })
+
+      await NotificationService.notify({
+        content: `CV của bạn đã được nhà tuyển dụng '${company?.company_name}' phê duyệt`,
+        object_recieve: NotificationObject.Candidate,
+        recievers: [result.value.user_id.toString()],
+        type: 'cv/approved'
+      })
+    }
 
     return {
       message: result.ok ? 'Action Approve OK' : 'Action Approve Failed'
@@ -150,8 +187,28 @@ class JobApplicationService {
         $set: {
           status: JobApplicationStatus.Rejected
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
+
+    // if (result && result.value) {
+    //   const job = await databaseServices.job.findOne({
+    //     _id: result.value.job_post_id
+    //   })
+
+    //   const company = await databaseServices.company.findOne({
+    //     _id: job?.company_id
+    //   })
+
+    //   await NotificationService.notify({
+    //     content: `CV của bạn đã được nhà tuyển dụng '${company?.company_name}' từ chối`,
+    //     object_recieve: NotificationObject.Candidate,
+    //     recievers: [result.value.user_id.toString()],
+    //     type: 'cv/rejected'
+    //   })
+    // }
 
     return {
       message: result.ok ? 'Action Reject OK' : 'Action Reject Failed'
@@ -167,11 +224,53 @@ class JobApplicationService {
         $set: {
           status: status
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
 
+    if (result && result.value) {
+      const job = await databaseServices.job.findOne({
+        _id: result.value.job_post_id
+      })
+
+      const company = await databaseServices.company.findOne({
+        _id: job?.company_id
+      })
+
+      const msg = this.getMessageStatus(status, company?.company_name as string)
+
+      await NotificationService.notify({
+        content: msg?.content as string,
+        object_recieve: NotificationObject.Candidate,
+        recievers: [result.value.user_id.toString()],
+        type: msg?.type as string
+      })
+    }
+
     return {
       message: result.ok ? `Update status: '${status}' OK` : `Update status: '${status}'Failed`
+    }
+  }
+
+  static getMessageStatus(status: JobApplicationStatus, companyName: string) {
+    const msg = `CV của bạn đã được nhà tuyển dụng ${companyName}`
+    const t = 'cv/'
+    switch (status) {
+      case JobApplicationStatus.Approved: {
+        return {
+          content: msg + ' phê duyệt',
+          type: t + 'approved'
+        }
+      }
+
+      case JobApplicationStatus.Potential: {
+        return {
+          content: msg + ' đưa vào hồ sơ có tiềm năng',
+          type: t + 'potential'
+        }
+      }
     }
   }
 

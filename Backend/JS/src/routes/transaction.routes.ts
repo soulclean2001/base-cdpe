@@ -13,6 +13,9 @@ import { StatusOrder } from '~/models/schemas/Order.schema'
 import { ServicePackageStatus } from '~/models/schemas/ServiceOrder.schema'
 import { accessTokenValidator, isEmployer } from '~/middlewares/users.middlewares'
 import transactionControllers from '~/controllers/transaction.controllers'
+import NotificationService from '~/services/notification.services'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
+import { UserRole } from '~/constants/enums'
 
 const transactionRouter = express.Router()
 
@@ -202,6 +205,19 @@ transactionRouter.get('/vnpay_return', async function (req, res, next) {
         }
       }
     )
+
+    if (vnp_TransactionStatus === '00') {
+      const admin = await databaseServices.users.findOne({
+        role: UserRole.Administrators
+      })
+      if (admin)
+        await NotificationService.notify({
+          content: 'Đã có 1 đơn hàng mới giao dịch thành công',
+          object_recieve: NotificationObject.Admin,
+          recievers: [admin._id.toString() as string],
+          type: 'order/success'
+        })
+    }
   }
 
   return res.json({

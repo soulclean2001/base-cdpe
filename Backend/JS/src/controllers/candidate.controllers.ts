@@ -1,7 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { ObjectId } from 'mongodb'
+import { UserRole } from '~/constants/enums'
 import { CreateCandidateReqBody, UpdateCandidateReqBody } from '~/models/requests/Candidate.request'
+import { TokenPayload } from '~/models/requests/User.request'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
 import CandidateService from '~/services/candidate.services'
+import databaseServices from '~/services/database.services'
+import NotificationService from '~/services/notification.services'
 
 class CandidateController {
   async createCandidate(
@@ -56,9 +62,24 @@ class CandidateController {
   }
 
   async getCandidateById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id, role } = req.decoded_authorization as TokenPayload
+
     const candidate_id = req.params.candidate_id
 
     const result = await CandidateService.getCandidateById(candidate_id)
+    if (role === UserRole.Employer && result) {
+      const company = await databaseServices.company.findOne({
+        'users.user_id': new ObjectId(user_id)
+      })
+
+      await NotificationService.notify({
+        recievers: [result.user_id.toString()],
+        content: `Nhà tuyển dụng ${company?.company_name} đã xem hồ sơ của bạn`,
+        object_recieve: NotificationObject.Candidate,
+        type: 'cv/seen'
+      })
+    }
+
     return res.json({
       message: 'get candidate',
       result

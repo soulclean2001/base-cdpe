@@ -14,6 +14,7 @@ import searchRouter from './search.routes'
 import adminRouter from './admin.routes'
 import orderRouter from './order.routes'
 import transactionRouter from './transaction.routes'
+import notificationRouter from './notification.routes'
 
 const router = express.Router()
 
@@ -32,5 +33,6 @@ router.use('/search', searchRouter)
 router.use('/admin', adminRouter)
 router.use('/orders', orderRouter)
 router.use('/transactions', transactionRouter)
+router.use('/notifications', notificationRouter)
 
 export default router
