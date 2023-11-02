@@ -134,11 +134,30 @@ class JobApplicationService {
   }
 
   static async getById(jobApplicationId: string) {
-    const result = await databaseServices.jobApplication.findOne({
-      _id: new ObjectId(jobApplicationId)
-    })
+    const result = await databaseServices.jobApplication
+      .aggregate([
+        {
+          $match: {
+            _id: new ObjectId(jobApplicationId)
+          }
+        },
+        {
+          $lookup: {
+            from: 'resumes',
+            localField: 'cv_id',
+            foreignField: '_id',
+            as: 'cv'
+          }
+        },
+        {
+          $unwind: {
+            path: '$cv'
+          }
+        }
+      ])
+      .toArray()
 
-    return result
+    return result[0] || {}
   }
 
   static async approve(jobApplicationId: string) {

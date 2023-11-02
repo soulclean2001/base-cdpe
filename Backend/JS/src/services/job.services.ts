@@ -215,7 +215,8 @@ export default class JobService {
   static async getAllJobsByCompanyId(companyId: string) {
     const result = await databaseServices.job
       .find({
-        company_id: new ObjectId(companyId)
+        company_id: new ObjectId(companyId),
+        visibility: true
       })
       .toArray()
     if (!result) {
