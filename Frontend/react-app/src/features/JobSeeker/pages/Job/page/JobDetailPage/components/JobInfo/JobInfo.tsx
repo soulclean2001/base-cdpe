@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import ReactHtmlParser from 'html-react-parser'
 import './style.scss'
 import { BsFillCalendarCheckFill, BsFillInboxesFill } from 'react-icons/bs'
 import { SiLevelsdotfyi } from 'react-icons/si'
@@ -30,23 +31,24 @@ interface JobInfoType {
   created_at: string
   job_level: string
   industries: string[]
+  application_email: string
 }
 interface PropsType {
   data: JobInfoType
 }
 const JobInfo = (props: any) => {
   const { data }: PropsType = props
-  const [descriptions, setDescriptions] = useState([''])
-  const [requirements, setRequirements] = useState([''])
-  useEffect(() => {
-    if (data) handleFormatInfo()
-  }, [data])
-  const handleFormatInfo = () => {
-    if (data.description) {
-      setDescriptions(data.description.split('\n'))
-    }
-    if (data.requirement) setRequirements(data.requirement.split('\n'))
-  }
+  // const [descriptions, setDescriptions] = useState([''])
+  // const [requirements, setRequirements] = useState([''])
+  // useEffect(() => {
+  //   if (data) handleFormatInfo()
+  // }, [data])
+  // const handleFormatInfo = () => {
+  //   if (data.description) {
+  //     setDescriptions(data.description.split('\n'))
+  //   }
+  //   if (data.requirement) setRequirements(data.requirement.split('\n'))
+  // }
   return (
     <Row className='info-container'>
       <Col lg={6} md={8} sm={24} xs={24} className='content-right'>
@@ -103,22 +105,27 @@ const JobInfo = (props: any) => {
       <Col lg={17} md={15} sm={24} xs={24} className='content-left'>
         <div className='descriptions'>
           <h2>MÔ TẢ CÔNG VIỆC</h2>
-
-          {descriptions &&
+          <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+            {data.description && ReactHtmlParser(data.description)}
+          </div>
+          {/* {descriptions &&
             descriptions.map((item, index) => (
               <div key={index} className='info'>
                 {item}
               </div>
-            ))}
+            ))} */}
         </div>
         <div className='requirements'>
           <h2>YÊU CẦU CÔNG VIỆC</h2>
-          {requirements &&
+          <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+            {data.requirement && ReactHtmlParser(data.requirement)}
+          </div>
+          {/* {requirements &&
             requirements.map((item, index) => (
               <div key={index} className='info'>
                 {item}
               </div>
-            ))}
+            ))} */}
         </div>
         <div className='skill-requirements'>
           <h2>YÊU CẦU KỸ NĂNG</h2>
@@ -146,6 +153,10 @@ const JobInfo = (props: any) => {
                 className='info'
               >{`${location.address}, ${location.district}, ${location.city_name}`}</div>
             ))}
+        </div>
+        <div className='working-address'>
+          <h2>Email nhận hồ sơ</h2>
+          {data.application_email && <div className='info'>{data.application_email}</div>}
         </div>
       </Col>
     </Row>

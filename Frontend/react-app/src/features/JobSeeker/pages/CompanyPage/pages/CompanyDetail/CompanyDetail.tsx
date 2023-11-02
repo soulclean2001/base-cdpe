@@ -48,7 +48,7 @@ const CompanyDetail = () => {
     <div id='company-detail-page-container'>
       <div className='header-container'>
         <div className='banner-container'>
-          <img className='banner' src={bannerTemp}></img>
+          <img className='banner' src={myCompany && myCompany.background ? myCompany.background : bannerTemp}></img>
         </div>
         <Row className='header-content'>
           <Col lg={18} md={17} sm={24} xs={24} className='left-content'>
@@ -56,7 +56,7 @@ const CompanyDetail = () => {
               <div
                 className='logo'
                 style={{
-                  backgroundImage: `url(${logoTemp})`
+                  backgroundImage: `url(${myCompany && myCompany.logo ? myCompany.logo : logoTemp})`
                 }}
               ></div>
             </div>

@@ -118,6 +118,7 @@ const FindCandidatePage = () => {
     form.resetFields()
   }
   const handleSubmitForm = async () => {
+    setPageClick(1)
     const data = {
       nameCandidate,
       wannaJob,
@@ -370,6 +371,7 @@ const FindCandidatePage = () => {
 
             <div style={{ width: '100%', display: 'flex', justifyContent: 'end', marginTop: '20px' }}>
               <Pagination
+                current={pageClick}
                 onChange={handleChangePage}
                 responsive
                 defaultCurrent={1}

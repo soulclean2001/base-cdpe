@@ -171,7 +171,48 @@ export interface ResumeType {
   is_show: boolean
   [key: string]: any
 }
-
+export interface ResumeRequestBody {
+  ['user_info.avatar']?: string
+  title?: string
+  user_info?: UserInfo & PropertyName
+  professional_summary?: ProfessionalSummary & PropertyName
+  employment_histories?: {
+    data: EmploymentHistory[]
+  } & PropertyName
+  educations?: {
+    data: Education[]
+  } & PropertyName
+  social_or_website?: {
+    data: SocialOrWebsite[]
+  } & PropertyName
+  skills?: {
+    data: Skill[]
+  } & PropertyName &
+    Show
+  // not specified
+  hobbies?: Hobbies & PropertyName
+  references?: {
+    data: Reference[]
+  } & PropertyName &
+    Show
+  languages?: {
+    data: Language[]
+  } & PropertyName
+  internships?: {
+    data: Internship[]
+  } & PropertyName
+  courses?: {
+    data: Course[]
+  } & PropertyName
+  extra_curricular_activities?: {
+    data: ExtraCurricularActivity[]
+  } & PropertyName
+  additional_info?: ({
+    data: CustomePropertyResume[]
+  } & PropertyName)[]
+  status?: string
+  is_show?: boolean
+}
 enum StatusResume {
   Active = 'active',
   Draft = 'draft'

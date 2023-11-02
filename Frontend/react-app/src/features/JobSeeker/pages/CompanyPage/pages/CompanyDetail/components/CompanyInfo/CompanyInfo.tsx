@@ -2,7 +2,7 @@ import { Carousel, Col, Row } from 'antd'
 import './style.scss'
 import { useEffect, useState } from 'react'
 import { BsPlayCircle } from 'react-icons/bs'
-// import { BiMoneyWithdraw } from 'react-icons/bi'
+import ReactHtmlParser from 'html-react-parser'
 import { TypeCompanyDetail } from '../../CompanyDetail'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
 // const descriptionsData = `History and Background
@@ -16,25 +16,25 @@ interface PropsType {
 }
 const CompanyInfo = (props: any) => {
   const { data }: PropsType = props
-  const [descriptions, setDescriptions] = useState([''])
-  useEffect(() => {
-    handleFormatInfo()
-    console.log(handleFormatInfo())
-  }, [data])
-  const handleFormatInfo = () => {
-    if (data && data.company_info) {
-      setDescriptions(data.company_info.split('\n'))
-    }
-  }
+  // const [descriptions, setDescriptions] = useState([''])
+  // useEffect(() => {
+  //   handleFormatInfo()
+  //   console.log(handleFormatInfo())
+  // }, [data])
+  // const handleFormatInfo = () => {
+  //   if (data && data.company_info) {
+  //     setDescriptions(data.company_info.split('\n'))
+  //   }
+  // }
   return (
     <div id='tab-company-info-container-in-company-detail'>
       <Row className='top-container'>
         <Col span={24}>
           <h2 className='title-about'>TỔNG QUAN</h2>
         </Col>
-        <Col lg={12} md={24} sm={24} xs={24} className='about-company-container'>
+        <Col lg={24} md={24} sm={24} xs={24} className='about-company-container'>
           <Row className='about-info-container'>
-            <Col lg={4} md={6} sm={24} xs={24} className='label-info'>
+            <Col lg={2} md={6} sm={24} xs={24} className='label-info'>
               Địa chỉ
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
@@ -47,7 +47,7 @@ const CompanyInfo = (props: any) => {
             </Col>
           </Row>
           <Row className='about-info-container'>
-            <Col lg={4} md={6} sm={24} xs={24} className='label-info'>
+            <Col lg={2} md={6} sm={24} xs={24} className='label-info'>
               Quy mô
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
@@ -55,7 +55,7 @@ const CompanyInfo = (props: any) => {
             </Col>
           </Row>
           <Row className='about-info-container'>
-            <Col lg={4} md={6} sm={24} xs={24} className='label-info'>
+            <Col lg={2} md={6} sm={24} xs={24} className='label-info'>
               Lĩnh vực
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
@@ -63,7 +63,7 @@ const CompanyInfo = (props: any) => {
             </Col>
           </Row>
           <Row className='about-info-container'>
-            <Col lg={4} md={6} sm={24} xs={24} className='label-info'>
+            <Col lg={2} md={6} sm={24} xs={24} className='label-info'>
               Liên hệ
             </Col>
             <Col lg={19} md={17} sm={24} xs={24} className='info'>
@@ -73,14 +73,17 @@ const CompanyInfo = (props: any) => {
           <h2 className='title-about' style={{ paddingTop: '20px' }}>
             GIỚI THIỆU
           </h2>
-          {descriptions &&
+          <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+            {data && data.company_info ? ReactHtmlParser(data.company_info) : ''}
+          </div>
+          {/* {descriptions &&
             descriptions.map((item, index) => (
               <div key={index} className='description'>
                 {item}
               </div>
-            ))}
+            ))} */}
         </Col>
-        <Col lg={12} md={24} sm={24} xs={24} className='right-img-container'>
+        {/* <Col lg={12} md={24} sm={24} xs={24} className='right-img-container'>
           <Carousel autoplay>
             <div className='img-carosel-container'>
               <img src='https://www.vietnamworks.com/_next/image?url=https%3A%2F%2Fimages.vietnamworks.com%2Fcompany_profile%2F80384.jpg&w=1920&q=75' />
@@ -89,7 +92,7 @@ const CompanyInfo = (props: any) => {
               <img src='https://www.vietnamworks.com/_next/image?url=https%3A%2F%2Fimages.vietnamworks.com%2Fcompany_profile%2F80350.jpg&w=1920&q=75' />
             </div>
           </Carousel>
-        </Col>
+        </Col> */}
       </Row>
       <div className='video-company-detail-container'>
         <h2 className='video-title'>VIDEO</h2>

@@ -55,6 +55,10 @@ export class Candidate {
     const rs: ApiResponse = await client.post(`/candidates/hide`)
     return rs
   }
+  public static getCandidateDetail = async (id: string) => {
+    const rs: ApiResponse = await client.get(`/candidates/${id}`)
+    return rs
+  }
 }
 
 export default Candidate

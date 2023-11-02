@@ -69,7 +69,7 @@ const Right = (props: RightPropsType) => {
           <div className='preview-left'>
             <h2 className='preview-user-name'>{data.user_info.first_name.concat(' ', data.user_info.last_name)}</h2>
             <h4 className='preview-user-wanted-job'>{data.user_info.wanted_job_title}</h4>
-            {avatar && (
+            {avatar && avatar !== '_' && (
               <div className='preview__cover-avatar'>
                 <Avatar src={avatar} size={{ xs: 44, sm: 52, md: 60, lg: 84, xl: 100, xxl: 120 }} />
               </div>
@@ -186,7 +186,7 @@ const Right = (props: RightPropsType) => {
             {professionalSummary && professionalSummary.content.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{professionalSummary.property_name}</h4>
-                <h5 className='preview__info'>{ReactHtmlParser(professionalSummary.content)}</h5>
+                <div className='preview__info'>{ReactHtmlParser(professionalSummary.content)}</div>
                 <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
@@ -216,7 +216,7 @@ const Right = (props: RightPropsType) => {
 
                         <p className='preview__info'>{`${e.employer}`}</p>
 
-                        <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                        <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                       </div>
                     )
                   })}
@@ -247,7 +247,7 @@ const Right = (props: RightPropsType) => {
 
                       <p className='preview__info'>{`${e.degree}`}</p>
 
-                      <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                      <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                     </div>
                   )
                 })}
@@ -352,7 +352,7 @@ const Right = (props: RightPropsType) => {
 
                       <p className='preview__info'>{`${e.employer}`}</p>
 
-                      <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                      <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                     </div>
                   )
                 })}
@@ -390,7 +390,7 @@ const Right = (props: RightPropsType) => {
 
                               <p className='preview__info'>{`${e.city}`}</p>
 
-                              <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                              <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                             </div>
                           )
                         })}

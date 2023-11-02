@@ -13,8 +13,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { handleAutoChangeSideBarByWidth } from '../../../../employerSlice'
 import { FaIndustry } from 'react-icons/fa'
+import { InfoMeState } from '~/features/Account/meSlice'
 const SideBarEmployer = (props: any) => {
   const dispatch = useDispatch()
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
   const { image, collapsed, toggled, handleToggleSidebar, hidden, roleType } = props
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const getWindowSize = () => {
@@ -64,14 +66,10 @@ const SideBarEmployer = (props: any) => {
             alignItems: 'center'
           }}
         >
-          <img
-            style={{ borderRadius: '50%' }}
-            src={'https://www.studytienganh.vn/upload/2022/02/109958.jpg'}
-            alt=''
-            width={'40px'}
-            height={'40px'}
-          />
-          <span style={{ padding: '0 21px' }}>Thanh Phong</span>
+          <img style={{ borderRadius: '50%' }} src={me.avatar} alt='' width={'40px'} height={'40px'} />
+          <span style={{ padding: '0 21px', fontWeight: 600, fontSize: '14px' }}>
+            {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
+          </span>
         </div>
       </SidebarHeader>
       {roleType === 'EMPLOYER_ROLE' && (
@@ -118,11 +116,22 @@ const SideBarEmployer = (props: any) => {
               <Link to={'/employer/dashboard/find-candidate'} />
             </MenuItem>
           </Menu>
+
           <Menu iconShape='circle'>
-            <MenuItem icon={<FundFilled />}>
-              Quản lý hồ sơ ứng viên
-              <Link to={'/employer/dashboard/cv-manage'} />
-            </MenuItem>
+            <SubMenu
+              // suffix={<span className="features-menu">count num</span>}  thong bao number++
+              title={'Quản lý hồ sơ - CV'}
+              icon={<FaIndustry />}
+            >
+              <MenuItem>
+                Hồ sơ ứng tuyển
+                <Link to={'/employer/dashboard/cv-manage'} />
+              </MenuItem>
+              <MenuItem>
+                Hồ sơ đang theo dõi
+                <Link to={'/employer/dashboard/company-location'} />
+              </MenuItem>
+            </SubMenu>
           </Menu>
           <Menu iconShape='circle'>
             <MenuItem icon={<ShoppingFilled />}>

@@ -1,7 +1,7 @@
 import { FaLocationDot } from 'react-icons/fa6'
 import './style.scss'
 import { Col, Row } from 'antd'
-
+import ReactHtmlParser from 'html-react-parser'
 import { FaUsers } from 'react-icons/fa'
 import { AiFillPhone, AiTwotoneMail } from 'react-icons/ai'
 import { useEffect, useState } from 'react'
@@ -27,25 +27,28 @@ interface PropsType {
 }
 const CompanyInfo = (props: any) => {
   const { data }: PropsType = props
-  const [descriptions, setDescriptions] = useState([''])
-  useEffect(() => {
-    if (data.info) handleFormatInfo()
-  }, [data])
-  const handleFormatInfo = () => {
-    if (data.info) {
-      setDescriptions(data.info.split('\n'))
-    }
-  }
+  // const [descriptions, setDescriptions] = useState([''])
+  // useEffect(() => {
+  //   if (data.info) handleFormatInfo()
+  // }, [data])
+  // const handleFormatInfo = () => {
+  //   if (data.info) {
+  //     setDescriptions(data.info.split('\n'))
+  //   }
+  // }
   return (
     <Row className='tab-company-info-container'>
       <Col lg={17} md={15} sm={24} xs={24} className='left-content'>
         <h2>TỔNG QUAN</h2>
-        {descriptions &&
+        <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+          {data.info && ReactHtmlParser(data.info)}
+        </div>
+        {/* {descriptions &&
           descriptions.map((item, index) => (
             <div key={index} className='description'>
               {item}
             </div>
-          ))}
+          ))} */}
       </Col>
       <Col lg={6} md={8} sm={24} xs={24} className='right-content'>
         <div className='item-container location-container'>

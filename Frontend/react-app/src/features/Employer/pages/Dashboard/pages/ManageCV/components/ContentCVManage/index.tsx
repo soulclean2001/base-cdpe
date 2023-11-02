@@ -378,7 +378,7 @@ const ContentCVManage = (props: any) => {
             size='large'
             style={{ width: '100%' }}
             showSearch
-            onChange={handleChange}
+            onChange={(value) => setIdJob(value === 'allJobs' ? '' : value)}
             options={listJobs}
           />
         </Col>

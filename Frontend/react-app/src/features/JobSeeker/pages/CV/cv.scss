@@ -32,6 +32,19 @@
         }
       }
     }
+    .btn-submit-container {
+      .btn-update {
+        background-color: #ff7d55;
+        border: none;
+        border-radius: 6px;
+        color: #fff;
+        &:hover {
+          border: none;
+          color: #fff;
+          background-color: #ff6f43;
+        }
+      }
+    }
   }
 
   .right {

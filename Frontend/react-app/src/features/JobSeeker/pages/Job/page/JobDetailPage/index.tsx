@@ -39,7 +39,8 @@ const JobDetailPage = () => {
           working_locations: rs.result.working_locations,
           created_at: rs.result.created_at.slice(0, 10).split('-').reverse().join('/'),
           job_level: rs.result.job_level,
-          industries: rs.result.industries
+          industries: rs.result.industries,
+          application_email: rs.result.application_email
         })
         setCompanyInfo({
           info: rs.result.company.company_info,
@@ -186,14 +187,7 @@ const JobDetailPage = () => {
         <Row className={`sticky-div ${isVisible ? '' : 'hidden'}`}>
           <Col lg={14} md={16} sm={23} xs={23} className='sticky-content'>
             <div className='logo'>
-              <img
-                src={
-                  jobDetail && jobDetail.company.logo
-                    ? jobDetail.company.logo
-                    : 'https://images.vietnamworks.com/pictureofcompany/86/10475262.png'
-                }
-                alt=''
-              />
+              <img src={jobDetail && jobDetail.company.logo ? jobDetail.company.logo : logoTemp} alt='' />
             </div>
             <div className='sticky-info-container'>
               <div className='name-job'>{jobDetail && jobDetail.job_title ? jobDetail.job_title : 'Tên việc làm'}</div>

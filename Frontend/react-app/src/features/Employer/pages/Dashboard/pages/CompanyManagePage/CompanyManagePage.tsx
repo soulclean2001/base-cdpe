@@ -1,7 +1,8 @@
 import { Button, Col, Form, Input, Modal, Row, Select, Upload, Image as ImageAnt } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import { useState, useEffect } from 'react'
-
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface'
 import './style.scss'
 import { BiUpload } from 'react-icons/bi'
@@ -104,7 +105,7 @@ const CompanyManagePage = () => {
       console.log('urlbanner', urlBanner)
       const request: UpdateCompanyType = {
         company_name: myCompany.company_name !== nameCompany ? nameCompany : '',
-        company_info: myCompany.company_info !== description ? description : '',
+        company_info: description,
         company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : '',
         fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : ''
       }
@@ -420,10 +421,35 @@ const CompanyManagePage = () => {
             label={<span style={{ fontWeight: '500' }}>Sơ lượt về công ty</span>}
             // rules={[{ required: true, message: 'Vui lòng không để trống sơ lượt về công ty' }]}
           >
-            <TextArea
+            {/* <TextArea
               style={{ height: 210, maxHeight: 210 }}
               size='large'
               onChange={(e) => setDescription(e.target.value)}
+            /> */}
+            <CKEditor
+              data={description ? description : '_'}
+              config={{
+                toolbar: [
+                  'undo',
+                  'redo',
+                  '|',
+                  'heading',
+                  '|',
+                  'bold',
+                  'italic',
+                  'link',
+                  'bulletedList',
+                  'numberedList',
+                  'blockQuote',
+                  'outdent',
+                  'indent'
+                ]
+              }}
+              editor={ClassicEditor}
+              onChange={(event, editor) => {
+                const data = editor.getData()
+                setDescription(data)
+              }}
             />
           </Form.Item>
 

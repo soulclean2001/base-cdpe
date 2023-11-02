@@ -7,12 +7,12 @@ import InputCustom from './components/InputCustom'
 import InputAutoResize from './components/InputAutoResize'
 import InputEditAutoResize from './components/InputEditAutoResize'
 import ImgCrop from 'antd-img-crop'
-import { Collapse, DatePicker, Select, Upload, UploadFile, UploadProps } from 'antd'
+import { Button, Collapse, DatePicker, Select, Upload, UploadFile, UploadProps } from 'antd'
 import { RcFile } from 'antd/es/upload'
 import { DeleteRowOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import { EducationLevel, LanguageLevel, ResumeType, SkillLevel } from '~/types/resume.type'
+import { EducationLevel, LanguageLevel, ResumeRequestBody, ResumeType, SkillLevel } from '~/types/resume.type'
 import Right from './Right'
 import { AiOutlineUpload } from 'react-icons/ai'
 import { AuthState } from '~/features/Auth/authSlice'
@@ -21,6 +21,8 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import apiResume from '~/api/resume.api'
 import { omit } from 'lodash'
+import apiUpload from '~/api/upload.api'
+import { toast } from 'react-toastify'
 // import { isExpired } from '~/utils/jwt'
 
 const initResume: ResumeType = {
@@ -286,6 +288,7 @@ const CV = () => {
   const [isAddInfo, setIsAddInfo] = useState(false)
   const [openIndex, setOpenIndex] = useState([1, 1, 1, 1, 1, 1, 1])
   const [data2, setData2] = useState<string[]>([])
+  const [disableBtn, setDisableBtn] = useState(false)
   // const plugin = ClassicEditor.builtinPlugins.map((plugin) => plugin.pluginName)
 
   const [data, setData] = useState<ResumeType>(defaultResume)
@@ -299,9 +302,10 @@ const CV = () => {
       console.log('resume', rs)
       if (rs.result[0]) {
         setData(rs.result[0])
-        setFileList([
-          { uid: `info_${data._id}`, name: 'avatar.png', status: 'done', url: rs.result[0].user_info.avatar }
-        ])
+        if (rs.result[0].user_info.avatar && rs.result[0].user_info.avatar !== '_')
+          setFileList([
+            { uid: `${rs.result[0]._id}`, name: 'avatar.png', status: 'done', url: rs.result[0].user_info.avatar }
+          ])
 
         const temp = omit(rs.result[0], [
           'skills',
@@ -550,6 +554,38 @@ const CV = () => {
         [parentKey]: [...arrObj]
       }
     })
+  }
+  const handleSubmitUpdate = async () => {
+    setDisableBtn(true)
+    let urlAvatar = ''
+    if (!fileList || !fileList[0]) urlAvatar = '_'
+    else {
+      if (fileList[0].uid !== data._id) {
+        let avatarForm = new FormData()
+        if (fileList[0].originFileObj) {
+          avatarForm.append('image', fileList[0].originFileObj)
+          urlAvatar = await apiUpload.uploadImage(avatarForm).then((rs) => {
+            return rs.result[0].url
+          })
+        }
+      } else urlAvatar = data.user_info.avatar
+    }
+    let request = { ...data, updated_at: '', user_id: '', _id: '', user_info: { ...data.user_info, avatar: urlAvatar } }
+    // request = { ...data, 'user_info.avatar': urlAvatar }
+    console.log('file', fileList)
+    console.log('urlAvatar', urlAvatar)
+    console.log('request', request)
+    await apiResume
+      .createOrUpdateResume(request)
+      .then((rs) => {
+        console.log('after update', rs)
+        toast.success('Hồ sơ của bạn đã được cập nhật thành công')
+        setDisableBtn(false)
+      })
+      .catch(() => {
+        toast.error('Bạn đã cập nhật thất bại, vui lòng kiểm tra lại')
+        setDisableBtn(false)
+      })
   }
 
   return (
@@ -2392,6 +2428,14 @@ const CV = () => {
                   Ngôn ngữ
                 </button>
               </div>
+            </div>
+            <div
+              className='btn-submit-container'
+              style={{ paddingBottom: '10px', display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Button disabled={disableBtn} onClick={handleSubmitUpdate} className='btn-update' size='large'>
+                Cập nhật
+              </Button>
             </div>
           </div>
         </div>

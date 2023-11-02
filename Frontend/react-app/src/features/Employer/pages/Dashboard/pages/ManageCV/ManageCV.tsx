@@ -1,11 +1,10 @@
 import { Tabs } from 'antd'
-import TableApplied from './components/TableApplied/TableApplied'
+
 import './style.scss'
 
 import { TabsProps } from 'antd/lib'
 import ContentCVManage from './components/ContentCVManage'
 import { useState } from 'react'
-import CVAppliedDetailPage from '../CVAppliedDetailPage'
 
 const ManageCV = () => {
   const [tabKey, setTabKey] = useState('')
@@ -20,11 +19,11 @@ const ManageCV = () => {
       label: <div className='tab-item'>Hồ sơ đã ứng tuyển</div>,
       children: <ContentCVManage tabKey={tabKey} />
     },
-    {
-      key: 'tab-saved-cv',
-      label: <div className='tab-item'>Hồ sơ đã lưu</div>,
-      children: <ContentCVManage tabKey={tabKey} />
-    },
+    // {
+    //   key: 'tab-saved-cv',
+    //   label: <div className='tab-item'>Hồ sơ đã lưu</div>,
+    //   children: <ContentCVManage tabKey={tabKey} />
+    // },
     {
       key: 'tab-back-list',
       label: <div className='tab-item'>Danh sách đen</div>,

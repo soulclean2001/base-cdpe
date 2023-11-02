@@ -2,6 +2,8 @@ import { PlusOutlined } from '@ant-design/icons'
 import { GiReceiveMoney } from 'react-icons/gi'
 import { PiStudentFill } from 'react-icons/pi'
 import { TfiCup } from 'react-icons/tfi'
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import {
   Button,
   Checkbox,
@@ -249,6 +251,15 @@ const ModalInfoPost = (props: any) => {
         { checked: false, key: arrLocations[arrLocations.length - 1].key + 1, selected: '_' }
       ])
     }
+  }
+  const validateMinMax = () => {
+    if (salaryRange && salaryRange.min && salaryRange.max) {
+      if (salaryRange.min && salaryRange.max && salaryRange.min > salaryRange.max) {
+        return Promise.reject('Vui lòng nhập từ thấp đến cao')
+      }
+    }
+
+    return Promise.resolve()
   }
   //submit modal location
   const handleSubmitLocationForm = async () => {
@@ -621,7 +632,10 @@ const ModalInfoPost = (props: any) => {
             <Form.Item
               name='jobTitle'
               label={<span style={{ fontWeight: '500' }}>Chức Danh</span>}
-              rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
+              rules={[
+                { required: true, message: 'Vui lòng không để trống tên công việc' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' }
+              ]}
             >
               <Input
                 disabled={roleType === 'ADMIN_ROLE' ? true : false}
@@ -870,10 +884,35 @@ const ModalInfoPost = (props: any) => {
               label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống mô tả công việc' }]}
             >
-              <TextArea
+              {/* <TextArea
                 disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 size='large'
                 onChange={(e) => setJobDescription(e.target.value)}
+              /> */}
+              <CKEditor
+                data={jobDescription}
+                config={{
+                  toolbar: [
+                    'undo',
+                    'redo',
+                    '|',
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    'blockQuote',
+                    'outdent',
+                    'indent'
+                  ]
+                }}
+                editor={ClassicEditor}
+                onChange={(event, editor) => {
+                  const data = editor.getData()
+                  setJobDescription(data)
+                }}
               />
             </Form.Item>
             <Form.Item
@@ -881,10 +920,35 @@ const ModalInfoPost = (props: any) => {
               label={<span style={{ fontWeight: '500' }}>Yêu Cầu Công Việc</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu công việc' }]}
             >
-              <TextArea
+              {/* <TextArea
                 disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 size='large'
                 onChange={(e) => setJobRequirement(e.target.value)}
+              /> */}
+              <CKEditor
+                data={jobRequirement}
+                config={{
+                  toolbar: [
+                    'undo',
+                    'redo',
+                    '|',
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    'blockQuote',
+                    'outdent',
+                    'indent'
+                  ]
+                }}
+                editor={ClassicEditor}
+                onChange={(event, editor) => {
+                  const data = editor.getData()
+                  setJobRequirement(data)
+                }}
               />
             </Form.Item>
             <h4 style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</h4>
@@ -932,9 +996,17 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   // label={<span style={{ fontWeight: '500' }}>Mức Lương</span>}
                   name='minSalary'
-                  rules={[{ required: true, message: 'Vui lòng nhập mức lương tối thiểu' }]}
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập mức lương tối thiểu' },
+                    { validator: validateMinMax }
+                  ]}
                 >
                   <Input
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                        event.preventDefault()
+                      }
+                    }}
                     disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối thiểu'
@@ -946,9 +1018,14 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   name='maxSalary'
                   style={{ marginBottom: 0 }}
-                  rules={[{ required: true, message: 'Vui lòng nhập mức lương tối đa' }]}
+                  rules={[{ required: true, message: 'Vui lòng nhập mức lương tối đa' }, { validator: validateMinMax }]}
                 >
                   <Input
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                        event.preventDefault()
+                      }
+                    }}
                     disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối đa'
