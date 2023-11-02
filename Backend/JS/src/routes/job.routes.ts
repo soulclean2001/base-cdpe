@@ -18,6 +18,7 @@ jobRouter.get('/company', accessTokenValidator, jobQueryMiddleware, wrapAsync(jo
 jobRouter.get('/applied', accessTokenValidator, paginationValidator, wrapAsync(jobControllers.getAllJobsApplied))
 jobRouter.get('/company/filter', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getJobsByCompany))
 jobRouter.get('/company/:company_id', wrapAsync(jobControllers.getAllJobsByCompanyId))
+jobRouter.get('/published/company/:company_id', wrapAsync(jobControllers.getAllJobsPublishedByCompanyId)) // list job cong khai
 jobRouter.get('/:job_id', wrapAsync(jobControllers.getJob))
 jobRouter.get('/', wrapAsync(jobControllers.getAllJob))
 jobRouter.post('/', accessTokenValidator, createJobValidator, wrapAsync(jobControllers.createJob))

@@ -133,6 +133,23 @@ class JobController {
       result
     })
   }
+
+  async getAllJobsPublishedByCompanyId(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { company_id } = req.params
+    // options.expired_before_nday = !isNaN(Number(expired_before_nday)) ? Number(expired_before_nday) : undefined
+    // options.visibility = isBoolean(Boolean(visibility)) ? Boolean(visibility) : undefined
+    // options.status = !isNaN(Number(status)) ? Number(status) : undefined
+    if (!ObjectId.isValid(company_id as string))
+      return res.json({
+        message: 'All jobs by company',
+        result: []
+      })
+    const result = await JobService.getAllJobsPublishedByCompanyId(company_id as string)
+    return res.json({
+      message: 'All jobs by company',
+      result
+    })
+  }
 }
 
 export default new JobController()

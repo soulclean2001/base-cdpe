@@ -215,8 +215,21 @@ export default class JobService {
   static async getAllJobsByCompanyId(companyId: string) {
     const result = await databaseServices.job
       .find({
+        company_id: new ObjectId(companyId)
+      })
+      .toArray()
+    if (!result) {
+      throw new ErrorWithStatus({ message: 'Company not found', status: 404 })
+    }
+    return result
+  }
+
+  static async getAllJobsPublishedByCompanyId(companyId: string) {
+    const result = await databaseServices.job
+      .find({
         company_id: new ObjectId(companyId),
-        visibility: true
+        visibility: true,
+        status: JobStatus.Approved
       })
       .toArray()
     if (!result) {
