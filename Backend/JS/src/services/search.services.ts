@@ -244,8 +244,8 @@ class SearchService {
     const $sort: {
       [key: string]: any
     } = {
-      'salary_range.max': -1,
-      posted_date: -1
+      // 'salary_range.max': -1,
+      // posted_date: -1
     }
 
     if (filter.sort_by_salary && isNumber(Number(filter.sort_by_salary))) {

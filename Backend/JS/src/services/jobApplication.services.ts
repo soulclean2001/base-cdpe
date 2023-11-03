@@ -317,6 +317,11 @@ class JobApplicationService {
       databaseServices.jobApplication
         .aggregate([
           {
+            $match: {
+              ...opts
+            }
+          },
+          {
             $lookup: {
               from: 'jobs',
               localField: 'job_post_id',
@@ -331,7 +336,6 @@ class JobApplicationService {
           },
           {
             $match: {
-              ...opts,
               'job.company_id': company._id
             }
           },
@@ -346,6 +350,11 @@ class JobApplicationService {
       databaseServices.jobApplication
         .aggregate([
           {
+            $match: {
+              ...opts
+            }
+          },
+          {
             $lookup: {
               from: 'jobs',
               localField: 'job_post_id',
@@ -360,7 +369,6 @@ class JobApplicationService {
           },
           {
             $match: {
-              ...opts,
               'job.company_id': company._id
             }
           },

@@ -68,7 +68,7 @@ class OrderService {
           package_id: packages[i]._id,
           unit_price: packages[i].discount_price,
           order_id: new ObjectId(),
-          code: ''
+          code: packages[i].code
         })
       )
     }

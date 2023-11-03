@@ -286,17 +286,25 @@ class UsersService {
     user_id,
     verify,
     refresh_token,
-    exp,
-    role
+    exp
   }: {
     user_id: string
     verify: UserVerifyStatus
     refresh_token: string
     exp: number
-    role: UserRole
   }) {
+    const user = await databaseServices.users.findOne({
+      _id: new ObjectId(user_id)
+    })
+
+    if (!user)
+      throw new ErrorWithStatus({
+        message: 'User not found',
+        status: 404
+      })
+
     const [new_access_token, new_refresh_token] = await Promise.all([
-      this.signAccessToken({ user_id, verify, role }),
+      this.signAccessToken({ user_id, verify, role: user.role }),
       this.signRefreshToken({ user_id, verify, exp })
     ])
 
