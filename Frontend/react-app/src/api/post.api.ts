@@ -10,8 +10,8 @@ export interface PostRequestSearchType {
 
   industry?: string
   career?: string
-  sort_by_salary?: number
-  sort_by_post_date?: number
+  sort_by_salary?: string
+  sort_by_post_date?: string
   limit?: string
   page?: string
   'salary[min]'?: string

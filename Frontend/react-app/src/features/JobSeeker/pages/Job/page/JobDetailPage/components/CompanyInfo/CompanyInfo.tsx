@@ -40,7 +40,7 @@ const CompanyInfo = (props: any) => {
     <Row className='tab-company-info-container'>
       <Col lg={17} md={15} sm={24} xs={24} className='left-content'>
         <h2>TỔNG QUAN</h2>
-        <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+        <div className='preview__info' style={{ maxWidth: '100%', wordBreak: 'break-word' }}>
           {data.info && ReactHtmlParser(data.info)}
         </div>
         {/* {descriptions &&

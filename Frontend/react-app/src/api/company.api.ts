@@ -50,6 +50,10 @@ export class Company {
     const rs: ApiResponse = await client.get(`jobs/company/${id}`)
     return rs
   }
+  public static getAllJobPublishByCompanyId = async (id: string) => {
+    const rs: ApiResponse = await client.get(`jobs/published/company/${id}`)
+    return rs
+  }
 }
 
 export default Company

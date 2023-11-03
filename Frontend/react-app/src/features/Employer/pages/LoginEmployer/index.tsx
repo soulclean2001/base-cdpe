@@ -92,7 +92,7 @@ const LoginEmployer = (props: any) => {
         <div className='login-employer-content'>
           <div className='title-container'>
             <div className='title' onClick={() => navigate('/employer')}>
-              HFWork
+              HFWorks
             </div>
             <p>{titleForm && titleForm.title ? titleForm.title : 'Chào mừng bạn đã trở lại'}</p>
             <span>
@@ -163,7 +163,11 @@ const LoginEmployer = (props: any) => {
               <div className='or-tab-sign-up' hidden={hiddenTabSignUp ? hiddenTabSignUp : false}>
                 <p style={{ textAlign: 'center' }}>
                   <span>Bạn chưa có tài khoản?</span>
-                  <Link to={'/employer-sign-up'}>Đăng ký ngay</Link>
+                  <Link to={'/employer-sign-up'}> Đăng ký ngay</Link>
+                </p>
+                <p style={{ textAlign: 'center' }}>
+                  {/* <span>Dành cho quản trị viên</span> */}
+                  <Link to={'/admin'}>Dành cho quản trị viên</Link>
                 </p>
               </div>
             </Form>

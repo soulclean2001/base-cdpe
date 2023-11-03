@@ -82,8 +82,8 @@ const UsersManage = () => {
       render: (_, { status }) => (
         <>
           {status === 'Đã khóa' && <Tag color={'red'}>{status}</Tag>}
-          {status === 'Online' && <Tag color={'green'}>{status}</Tag>}
-          {status === 'Offline' && <Tag color={'gray'}>{status}</Tag>}
+          {status === 'Đã kích hoạt' && <Tag color={'green'}>{status}</Tag>}
+          {status === 'Chưa kích hoạt' && <Tag color={'gray'}>{status}</Tag>}
         </>
       )
     },

@@ -2,11 +2,13 @@
   //   box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   border-bottom: 1px solid rgb(241, 242, 244);
   //   margin-bottom: 5px;
+  width: 100%;
   padding: 15px;
   border-radius: 10px;
   display: flex;
   justify-content: space-between;
   .left-wapper {
+    width: 70%;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -16,13 +18,21 @@
       display: flex;
       flex-direction: column;
       //   gap: 5px;
-
+      width: 80%;
       .name-job {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         cursor: pointer;
         font-size: 15px;
         font-weight: 500;
+        max-width: 95%;
       }
       .name-company {
+        max-width: 95%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         cursor: pointer;
         font-size: 13px;
         font-weight: 300;

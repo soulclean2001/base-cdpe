@@ -55,6 +55,7 @@ const responseInterceptorId = instance.interceptors.response.use(
 
     if (responseInterceptorId) axios.interceptors.response.eject(responseInterceptorId)
 
+    return Promise.reject(error)
     return Auth.refreshToken(refreshToken)
       .then((response) => {
         const data = response as AuthResponse

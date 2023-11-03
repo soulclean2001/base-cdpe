@@ -35,7 +35,7 @@ const HeaderEmployer = (props: any) => {
       >
         {roleType === 'EMPLOYER_ROLE' ? (
           <NavLink to={'/employer'} className={'header_logo'}>
-            HFWork
+            HFWorks
           </NavLink>
         ) : (
           <>
@@ -56,7 +56,7 @@ const HeaderEmployer = (props: any) => {
               className={'header_logo'}
               style={{ paddingLeft: hiddenButtonCollapsed ? '15px' : 0 }}
             >
-              HFWork
+              HFWorks
             </NavLink>
           </>
         )}

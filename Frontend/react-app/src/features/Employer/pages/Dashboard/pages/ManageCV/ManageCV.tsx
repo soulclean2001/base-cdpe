@@ -7,7 +7,7 @@ import ContentCVManage from './components/ContentCVManage'
 import { useState } from 'react'
 
 const ManageCV = () => {
-  const [tabKey, setTabKey] = useState('')
+  const [tabKey, setTabKey] = useState('tab-applied-cv')
   const onChange = (key: string) => {
     console.log(key)
     setTabKey(key)
@@ -17,7 +17,7 @@ const ManageCV = () => {
     {
       key: 'tab-applied-cv',
       label: <div className='tab-item'>Hồ sơ đã ứng tuyển</div>,
-      children: <ContentCVManage tabKey={tabKey} />
+      children: <></>
     },
     // {
     //   key: 'tab-saved-cv',
@@ -27,12 +27,12 @@ const ManageCV = () => {
     {
       key: 'tab-back-list',
       label: <div className='tab-item'>Danh sách đen</div>,
-      children: <ContentCVManage tabKey={tabKey} />
+      children: <></>
     },
     {
       key: 'tab-deleted',
       label: <div className='tab-item'>Đã xóa</div>,
-      children: <ContentCVManage tabKey={tabKey} />
+      children: <></>
     }
   ]
   return (
@@ -41,6 +41,7 @@ const ManageCV = () => {
 
       <div className='tabs-post-manage-container'>
         <Tabs className='tabs-post-manage' defaultActiveKey='1' items={items} onChange={onChange} />
+        <ContentCVManage tabKey={tabKey} />
       </div>
     </div>
   )

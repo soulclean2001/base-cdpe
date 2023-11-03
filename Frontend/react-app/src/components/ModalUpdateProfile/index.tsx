@@ -9,7 +9,7 @@ import { AiFillCamera } from 'react-icons/ai'
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface'
 import apiUpload from '~/api/upload.api'
 import { toast } from 'react-toastify'
-
+import bannerTemp from '~/assets/banner_temp.jpg'
 interface PropsType {
   openModal: boolean
   handleCloseModal: any
@@ -43,7 +43,13 @@ const ModalUpdateProfile = (props: PropsType) => {
   }
   const onClickOkConfirmCropImgLogo = async (e: any) => {
     const dimension = await imageDimensions(e)
+
     console.log('eee', dimension)
+    if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
+      setFileListAvatar([])
+      toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      return
+    }
   }
   const onChangeLogo: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     console.log('xxx', newFileList)
@@ -128,7 +134,8 @@ const ModalUpdateProfile = (props: PropsType) => {
       title={<h4 style={{ padding: '15px 20px', margin: '0' }}>{`Cập nhật tài khoản`}</h4>}
     >
       <div className='profile-cover'>
-        <img src='https://cover-talk.zadn.vn/default' alt='' />
+        {/* <img src='https://cover-talk.zadn.vn/default' alt='' /> */}
+        <img src={bannerTemp} alt='' />
       </div>
       <div className='profile-avatar' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <ImgCrop

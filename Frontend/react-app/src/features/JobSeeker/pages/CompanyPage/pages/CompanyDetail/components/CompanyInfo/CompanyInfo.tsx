@@ -73,7 +73,7 @@ const CompanyInfo = (props: any) => {
           <h2 className='title-about' style={{ paddingTop: '20px' }}>
             GIỚI THIỆU
           </h2>
-          <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+          <div className='preview__info' style={{ color: '#333333', maxWidth: '100%', wordBreak: 'break-word' }}>
             {data && data.company_info ? ReactHtmlParser(data.company_info) : ''}
           </div>
           {/* {descriptions &&

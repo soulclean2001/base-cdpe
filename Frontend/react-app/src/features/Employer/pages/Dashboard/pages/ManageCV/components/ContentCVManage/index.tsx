@@ -8,7 +8,7 @@ import { BiBlock, BiCommentError, BiSolidUserX } from 'react-icons/bi'
 const { RangePicker } = DatePicker
 import '../../style.scss'
 import { BsFillEyeFill } from 'react-icons/bs'
-import { FaUserCheck } from 'react-icons/fa'
+import { FaTrashRestoreAlt, FaUserCheck, FaUserPlus } from 'react-icons/fa'
 import { FiMoreVertical } from 'react-icons/fi'
 import { ImUserCheck } from 'react-icons/im'
 import { IoMdMail } from 'react-icons/io'
@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react'
 import apiJobsApplication, { SearchJobApplicationType } from '~/api/jobsApplication.api'
 import apiCompany from '~/api/company.api'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { CgUnblock } from 'react-icons/cg'
 interface DataType {
   id: string
   key: string
@@ -50,7 +52,7 @@ const ContentCVManage = (props: any) => {
   const { tabKey } = props
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({})
   const [openModalInfo, setOpenModalInfo] = useState(false)
-
+  const navigate = useNavigate()
   const [dataRowSelected, setDataRowSelected] = useState<DataType>()
   const [idPost, setIdPost] = useState<string>()
   const limit = 2
@@ -83,7 +85,7 @@ const ContentCVManage = (props: any) => {
     fetchGetJobsApplication()
   }, [tabKey, content, idJob, dateFormTo, statusApplied])
   const fetchGetJobsApplication = async (page?: string) => {
-    let profileStatus = ''
+    let profileStatus = 'available'
     if (tabKey === 'tab-applied-cv') profileStatus = 'available'
     if (tabKey === 'tab-saved-cv') profileStatus = 'archive'
     if (tabKey === 'tab-back-list') profileStatus = 'blacklist'
@@ -128,8 +130,15 @@ const ContentCVManage = (props: any) => {
   useEffect(() => {
     console.log('data row selected', dataRowSelected)
   }, [dataRowSelected])
-  const handleCloseModalInfo = () => {
-    setOpenModalInfo(false)
+
+  const handleClickShowDetail = (name: string, id: string) => {
+    const convertNameEng = name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+
+    navigate(`/employer/dashboard/cv-manage/${convertName}-id-${id}`)
   }
 
   const items: MenuProps['items'] = [
@@ -246,7 +255,7 @@ const ContentCVManage = (props: any) => {
           {text === '3' && <span className='status-apply-job potential'>Tiềm năng</span>}
           {text === '4' && <span className='status-apply-job interview'>Phỏng vấn</span>}
           {text === '5' && <span className='status-apply-job hired'>Nhận việc</span>}
-          {text === '6' && <span className='status-apply-job not-contactable'>Không thể liên hệ</span>}
+          {text === '7' && <span className='status-apply-job not-contactable'>Không thể liên hệ</span>}
         </div>
       )
     },
@@ -258,99 +267,125 @@ const ContentCVManage = (props: any) => {
       render: (_, record) => (
         <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
           <Tooltip title='Xem CV'>
-            <a onClick={() => setOpenModalInfo(true)}>
+            <a onClick={() => handleClickShowDetail(record.nameJobSeeker, record.id)}>
               <BsFillEyeFill />
             </a>
           </Tooltip>
-
-          {record.status === '0' && (
+          {tabKey === 'tab-applied-cv' && (
             <>
-              <Tooltip title='Chấp nhận CV'>
-                <a>
-                  <ImUserCheck />
-                </a>
-              </Tooltip>
-              <Tooltip title='Từ chối CV'>
-                <a style={{ fontSize: '19px' }}>
-                  <BiSolidUserX />
-                </a>
-              </Tooltip>
-            </>
-          )}
-          {record.status === '1' && (
-            <>
-              <Tooltip title='Interview'>
-                <a style={{ fontSize: '19px' }}>
-                  <MdConnectWithoutContact />
-                </a>
-              </Tooltip>
-              <a>
-                <Tooltip title='Không thể liên hệ'>
-                  <BiCommentError />
-                </Tooltip>
-              </a>
-            </>
-          )}
-          {record.status === '3' && (
-            <>
-              <Tooltip title='Chấp nhận CV'>
-                <a>
-                  <ImUserCheck />
-                </a>
-              </Tooltip>
-              <Tooltip title='Từ chối CV'>
-                <a style={{ fontSize: '19px' }}>
-                  <BiSolidUserX />
-                </a>
-              </Tooltip>
-            </>
-          )}
-          {record.status === '4' && (
-            <>
-              <a>
-                <Tooltip title='Nhận việc'>
-                  <FaUserCheck />
-                </Tooltip>
-              </a>
-              <Tooltip title='Từ chối'>
-                <a style={{ fontSize: '19px' }}>
-                  <BiSolidUserX />
-                </a>
-              </Tooltip>
-            </>
-          )}
-          {record.status === '6' && (
-            <>
-              <Tooltip title='Interview'>
-                <a style={{ fontSize: '19px' }}>
-                  <MdConnectWithoutContact />
-                </a>
-              </Tooltip>
-            </>
-          )}
-          {record.status !== '2' && record.status !== '5' ? (
-            <Dropdown menu={{ items }} trigger={['click']}>
-              <a onClick={(e) => e.preventDefault()}>
-                <FiMoreVertical />
-              </a>
-            </Dropdown>
-          ) : (
-            <>
-              {/* <Tooltip title='In CV'>
+              {record.status === '0' && (
+                <>
+                  <Tooltip title='Chấp nhận CV'>
+                    <a>
+                      <FaUserPlus />
+                    </a>
+                  </Tooltip>
+                  <Tooltip title='Từ chối CV'>
+                    <a style={{ fontSize: '19px' }}>
+                      <BiSolidUserX />
+                    </a>
+                  </Tooltip>
+                </>
+              )}
+              {record.status === '1' && (
+                <>
+                  <Tooltip title='Interview'>
+                    <a style={{ fontSize: '19px' }}>
+                      <MdConnectWithoutContact />
+                    </a>
+                  </Tooltip>
+                  <a>
+                    <Tooltip title='Không thể liên hệ'>
+                      <BiCommentError />
+                    </Tooltip>
+                  </a>
+                </>
+              )}
+              {record.status === '3' && (
+                <>
+                  <Tooltip title='Chấp nhận CV'>
+                    <a>
+                      <ImUserCheck />
+                    </a>
+                  </Tooltip>
+                  <Tooltip title='Từ chối CV'>
+                    <a style={{ fontSize: '19px' }}>
+                      <BiSolidUserX />
+                    </a>
+                  </Tooltip>
+                </>
+              )}
+              {record.status === '4' && (
+                <>
+                  <a>
+                    <Tooltip title='Nhận việc'>
+                      <FaUserCheck />
+                    </Tooltip>
+                  </a>
+                  <Tooltip title='Từ chối'>
+                    <a style={{ fontSize: '19px' }}>
+                      <BiSolidUserX />
+                    </a>
+                  </Tooltip>
+                </>
+              )}
+              {record.status === '7' && (
+                <>
+                  <Tooltip title='Interview'>
+                    <a style={{ fontSize: '19px' }}>
+                      <MdConnectWithoutContact />
+                    </a>
+                  </Tooltip>
+                  <Tooltip title='Từ chối'>
+                    <a style={{ fontSize: '19px' }}>
+                      <BiSolidUserX />
+                    </a>
+                  </Tooltip>
+                </>
+              )}
+              {record.status !== '2' && record.status !== '5' ? (
+                <Dropdown menu={{ items }} trigger={['click']}>
+                  <a onClick={(e) => e.preventDefault()}>
+                    <FiMoreVertical />
+                  </a>
+                </Dropdown>
+              ) : (
+                <>
+                  {/* <Tooltip title='In CV'>
                 <a>
                   <AiFillPrinter />
                 </a>
               </Tooltip> */}
 
-              <Tooltip title='Hủy bỏ'>
+                  <Tooltip title='Hủy bỏ'>
+                    <a>
+                      <MdDelete />
+                    </a>
+                  </Tooltip>
+
+                  <Tooltip title='Thêm vào sổ đen'>
+                    <a>
+                      <BiBlock />
+                    </a>
+                  </Tooltip>
+                </>
+              )}
+            </>
+          )}
+          {tabKey === 'tab-back-list' && (
+            <>
+              <Tooltip title='Bỏ chặn'>
                 <a>
-                  <MdDelete />
+                  <CgUnblock />
                 </a>
               </Tooltip>
-
-              <Tooltip title='Thêm vào sổ đen'>
-                <a>
-                  <BiBlock />
+            </>
+          )}
+          {tabKey === 'tab-deleted' && (
+            <>
+              <Tooltip title='Hoàn tác'>
+                <a style={{ fontSize: '12px' }}>
+                  <FaTrashRestoreAlt />
                 </a>
               </Tooltip>
             </>
@@ -365,6 +400,7 @@ const ContentCVManage = (props: any) => {
       <Row className='filter-container'>
         <Col md={8} sm={24} xs={24} style={{ padding: '5px' }}>
           <Input
+            allowClear
             onChange={(e) => setContent(e.target.value)}
             size='large'
             placeholder='Tìm kiếm tên, email, số điện thoại'
@@ -373,7 +409,7 @@ const ContentCVManage = (props: any) => {
         </Col>
         <Col md={6} sm={8} xs={24} style={{ padding: '5px' }}>
           <Select
-            allowClear
+            // allowClear
             defaultValue='allJobs'
             size='large'
             style={{ width: '100%' }}

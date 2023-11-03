@@ -5,7 +5,7 @@ import './style.scss'
 import ModalUpdateProfile from '../ModalUpdateProfile'
 import apiMe, { MeResponseType } from '~/api/me.api'
 import { InfoMeState, setMyProfile } from '~/features/Account/meSlice'
-
+import bannerTemp from '~/assets/banner_temp.jpg'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 const ModalProfile = (props: any) => {
@@ -51,7 +51,7 @@ const ModalProfile = (props: any) => {
       footer={''}
     >
       <div className='profile-cover'>
-        <img src='https://cover-talk.zadn.vn/default' alt='' />
+        <img src={bannerTemp} alt='' />
       </div>
       <div className='profile-avatar'>
         <Avatar

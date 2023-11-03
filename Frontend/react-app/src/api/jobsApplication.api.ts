@@ -17,6 +17,10 @@ export class JobsApplication {
     const rs: ApiResponse = await client.get(`/job-applications`, { params: param })
     return rs
   }
+  public static getJobsApplicationById = async (id: string) => {
+    const rs: ApiResponse = await client.get(`/job-applications/${id}`)
+    return rs
+  }
 }
 
 export default JobsApplication

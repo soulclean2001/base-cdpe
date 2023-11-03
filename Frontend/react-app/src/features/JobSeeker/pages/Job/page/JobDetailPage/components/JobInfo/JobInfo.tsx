@@ -105,7 +105,7 @@ const JobInfo = (props: any) => {
       <Col lg={17} md={15} sm={24} xs={24} className='content-left'>
         <div className='descriptions'>
           <h2>MÔ TẢ CÔNG VIỆC</h2>
-          <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+          <div className='preview__info' style={{ maxWidth: '100%', wordBreak: 'break-word' }}>
             {data.description && ReactHtmlParser(data.description)}
           </div>
           {/* {descriptions &&
@@ -117,7 +117,7 @@ const JobInfo = (props: any) => {
         </div>
         <div className='requirements'>
           <h2>YÊU CẦU CÔNG VIỆC</h2>
-          <div className='preview__info' style={{ color: 'black', maxWidth: '100%', wordBreak: 'break-word' }}>
+          <div className='preview__info' style={{ maxWidth: '100%', wordBreak: 'break-word' }}>
             {data.requirement && ReactHtmlParser(data.requirement)}
           </div>
           {/* {requirements &&

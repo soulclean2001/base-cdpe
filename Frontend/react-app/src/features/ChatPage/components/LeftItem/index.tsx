@@ -26,7 +26,9 @@ const LeftItem = (props: any) => {
           <Avatar className='logo' size={'large'} src={data.user.avatar ? data.user.avatar : ''} />
           <div className='info-chat-container'>
             <div className='name'>{data.user.name ? data.user.name : 'Tên'}</div>
-            <div className='latest-message'>{data.last_conversation.content ? data.last_conversation.content : ''}</div>
+            <div className='latest-message'>
+              {data.last_conversation && data.last_conversation.content ? data.last_conversation.content : ''}
+            </div>
           </div>
         </div>
         <div className='right-wapper'>

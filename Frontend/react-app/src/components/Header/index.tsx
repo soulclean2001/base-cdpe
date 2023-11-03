@@ -28,7 +28,7 @@ const Header = () => {
     <nav className='menu'>
       <div className='menu__logo' onClick={handleClickLogo}>
         <NavLink to={'/'} className={'header_logo'}>
-          HFWork
+          HFWorks
         </NavLink>
       </div>
       <div className='menu__container'>

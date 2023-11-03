@@ -7,9 +7,10 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import './topCompany.scss'
 import { Pagination } from 'swiper/modules'
+import { Tooltip } from 'antd'
 const TopCompany = () => {
   const dataTopCompany = [
-    { id: '1', img: logo, name: 'KIMBERLY-CLARK 1' },
+    { id: '1', img: logo, name: 'KIMBERLY-CLARK 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
     { id: '2', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 2' },
     {
       id: '3',
@@ -69,7 +70,10 @@ const TopCompany = () => {
               <SwiperSlide key={item.id}>
                 <div className='top-company-item'>
                   <img src={item.img} alt='' className='logo-company' />
-                  <span className='name-company'>{item.name}</span>
+                  <Tooltip title={item.name}>
+                    <span className='name-company'>{item.name.slice(0, 16)}</span>
+                  </Tooltip>
+
                   <button className='btn-detail'>Chi tiết</button>
                 </div>
               </SwiperSlide>

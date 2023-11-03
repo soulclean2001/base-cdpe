@@ -688,7 +688,7 @@ const ModalInfoPost = (props: any) => {
               </Col>
             </Row>
             <Row justify={'space-between'}>
-              <Col md={11} sm={24} xs={24}>
+              <Col md={24} sm={24} xs={24}>
                 <Form.Item
                   label={<span style={{ fontWeight: '500' }}>Ngành Nghề (Tối đa 3 ngành nghề)</span>}
                   name='industry'
@@ -703,7 +703,7 @@ const ModalInfoPost = (props: any) => {
                     options={industries.length === 3 ? maxItem : getAllIndustries}
                     onChange={(value) => setIndustries(value)}
                     maxTagCount={3}
-                    maxTagTextLength={10}
+                    // maxTagTextLength={10}
                   />
                 </Form.Item>
               </Col>
@@ -890,6 +890,7 @@ const ModalInfoPost = (props: any) => {
                 onChange={(e) => setJobDescription(e.target.value)}
               /> */}
               <CKEditor
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 data={jobDescription}
                 config={{
                   toolbar: [
@@ -926,6 +927,7 @@ const ModalInfoPost = (props: any) => {
                 onChange={(e) => setJobRequirement(e.target.value)}
               /> */}
               <CKEditor
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 data={jobRequirement}
                 config={{
                   toolbar: [

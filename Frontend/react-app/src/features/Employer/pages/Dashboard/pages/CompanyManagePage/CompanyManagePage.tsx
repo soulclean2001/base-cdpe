@@ -42,9 +42,10 @@ const listQuantityEmployers = [
   { value: '25-99' },
   { value: '100-499' },
   { value: '500-999' },
-  { value: '1000-4999' }
+  { value: '1000-4999' },
+  { value: 'Trên 5000' }
 ]
-const maxItem = [{ value: 'Bạn đã chọn tối đa 3 ngành nghề', label: 'Bạn đã chọn tối đa 3 ngành nghề', disabled: true }]
+const maxItem = [{ value: 'Bạn đã chọn tối đa 3 lĩnh vực', label: 'Bạn đã chọn tối đa 3 lĩnh vực', disabled: true }]
 
 const CompanyManagePage = () => {
   const [formCompanyGeneral] = Form.useForm()
@@ -85,8 +86,8 @@ const CompanyManagePage = () => {
     if (myCompany && myCompany._id) {
       let urlLogo = ''
       let urlBanner = ''
-      if (myCompany.logo && myCompany._id === fileListLogo[0].uid) urlLogo = 'default'
-      if (myCompany.background && myCompany._id === fileListBanner[0].uid) urlBanner = 'default'
+      if (myCompany.logo && fileListLogo[0] && myCompany._id === fileListLogo[0].uid) urlLogo = 'default'
+      if (myCompany.background && fileListBanner[0] && myCompany._id === fileListBanner[0].uid) urlBanner = 'default'
       if (logoImage) {
         const logoForm = new FormData()
         logoForm.append('image', logoImage)
@@ -97,9 +98,16 @@ const CompanyManagePage = () => {
       if (bannerImage) {
         const bannerForm = new FormData()
         bannerForm.append('image', bannerImage)
-        urlBanner = await apiUpload.uploadImage(bannerForm).then(async (rs) => {
-          return rs.result[0].url
-        })
+        urlBanner = await apiUpload
+          .uploadImage(bannerForm)
+          .then(async (rs) => {
+            if (rs.result) return rs.result[0].url
+          })
+          .catch(() => {
+            toast.error('Lỗi')
+            setBtnDisabled(false)
+            return
+          })
       }
       console.log('urlLogo', urlLogo)
       console.log('urlbanner', urlBanner)
@@ -109,12 +117,19 @@ const CompanyManagePage = () => {
         company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : '',
         fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : ''
       }
-      await apiCompany.updateCompanyById(myCompany._id, urlLogo, urlBanner, request).then((rs) => {
-        setTimeout(() => {
+      await apiCompany
+        .updateCompanyById(myCompany._id, urlLogo, urlBanner, request)
+        .then((rs) => {
+          setTimeout(() => {
+            setBtnDisabled(false)
+            toast.success('Cập nhật thông tin công ty thành công')
+          }, 1000)
+        })
+        .catch(() => {
           setBtnDisabled(false)
-          toast.success('Cập nhật thông tin công ty thành công')
-        }, 1000)
-      })
+          toast.error('Lỗi')
+          return
+        })
     }
 
     console.log('form data post', data)
@@ -152,16 +167,26 @@ const CompanyManagePage = () => {
     setFileListBanner(list)
   }
   const onClickOkConfirmCropImgLogo = async (e: any) => {
+    const listErro: UploadFile[] = []
     const dimension = await imageDimensions(e)
-    console.log('eee', dimension)
+    console.log('eee', e.type)
+    if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
+      setFileListLogo(listErro)
+      toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      return
+    }
   }
   const onClickOkConfirmCropImgBanner = async (e: any) => {
     const { width, height } = await imageDimensions(e)
     console.log('w-h', width, height)
     const listErro: UploadFile[] = []
-
-    if (e.size > 307200) {
-      toast.error('Kích thước hình ảnh tối đa: 307 kb')
+    if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
+      setFileListBanner(listErro)
+      toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      return
+    }
+    if (e.size > 3072000) {
+      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
       setFileListBanner(listErro)
       return
     }
@@ -370,6 +395,7 @@ const CompanyManagePage = () => {
                 rules={[{ required: true, message: 'Vui lòng không để trống người liên hệ' }]}
               >
                 <Input
+                  readOnly
                   size='large'
                   placeholder='Ví dụ: Nguyễn Văn B'
                   onChange={(e) => {
@@ -385,6 +411,7 @@ const CompanyManagePage = () => {
                 rules={[{ required: true, message: 'Vui lòng không để trống số điện thoại' }]}
               >
                 <Input
+                  readOnly
                   size='large'
                   placeholder='Nhập số điện thoại'
                   onChange={(e) => {

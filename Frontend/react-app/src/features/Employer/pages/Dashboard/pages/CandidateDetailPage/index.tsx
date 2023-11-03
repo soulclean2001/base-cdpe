@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { Avatar, Button, UploadFile } from 'antd'
 import './style.scss'
@@ -51,6 +51,10 @@ const CandidateDetailPage = (props: any) => {
 
   return (
     <div className='candidate-detail-page-container'>
+      <div style={{ padding: '0 20px', fontSize: '14px', fontWeight: 500 }}>
+        Bảng điều khiển / <Link to={'/employer/dashboard/find-candidate'}>Tìm kiếm ứng viên</Link> {'>'}{' '}
+        {infoUrlCandidate?.match(/id-(\w+)/)?.[1]}
+      </div>
       <div className='header-container'>
         <div className='left-container'>
           <Avatar className='avatar-candidate' size={'large'} src={dataCV.user_info.avatar} />

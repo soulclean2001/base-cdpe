@@ -1,7 +1,21 @@
 import RightItem from '../RightItem'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './style.scss'
+import apiChat from '~/api/chat.api'
 
+interface ContactChatType {
+  [key: string]: any
+}
+interface DataType {
+  id: string
+  idUser: string
+  idJob: string | undefined
+  idCompany: string | undefined
+  logo: string
+  titleName: string
+  nameCompany: string | undefined
+  titleJob: string
+}
 const dataJobApplied = [
   {
     idUser: 'u1',
@@ -31,18 +45,51 @@ const dataUserConnect = [
 const RightContent = (props: any) => {
   const { roleType } = props
 
-  // const [dataContact,setDataContact] = useState<Array<DataType>>([])
-  const getDataByRoleType = () => {
+  const [dataContact, setDataContact] = useState<Array<DataType>>([])
+  useEffect(() => {
+    getDataByRoleType()
+  }, [])
+
+  // test api chứ chua co rap n bi vong fo moi thang nay bị bi gi bị vong lap có cái này chứ mấy  r do day nãy cũng có gọi nó đâu mà nó tự chạy api vậy t bấm dô cai list do
+  const getDataByRoleType = async () => {
     if (roleType === 'CANDIDATE_TYPE') {
-      return dataJobApplied
+      await apiChat.getListChatForCandidate().then((rs) => {
+        console.log('rs chat', rs)
+        let temp = rs.result.map((item: ContactChatType) => {
+          return {
+            id: item._id,
+            idUser: item.user_id,
+            idJob: item.info_job._id,
+            idCompany: item.info_company._id,
+            logo: item.info_company.avatar,
+            titleName: item.info_job.job_title,
+            nameCompany: item.info_company.company_name,
+            titleJob: item.info_job.job_title
+          }
+        })
+        setDataContact(temp)
+      })
     }
     if (roleType === 'EMPLOYER_TYPE') {
-      return dataCandidate
+      await apiChat.getListChatForEmployer().then((rs) => {
+        console.log('rs chat', rs)
+        let temp = rs.result.map((item: ContactChatType) => {
+          return {
+            id: item._id,
+            idUser: item.user_id,
+            idJob: item.info_job._id,
+            idCompany: item.info_company._id,
+            logo: item.info_user.avatar,
+            titleName: item.full_name,
+            nameCompany: '',
+            titleJob: item.info_job.job_title
+          }
+        })
+        setDataContact(temp)
+      })
     }
     if (roleType === 'ADMIN_TYPE') {
-      return dataUserConnect
     }
-    return []
   }
   return (
     <div className='right-content-chat-page-container'>
@@ -52,8 +99,8 @@ const RightContent = (props: any) => {
         {roleType === 'ADMIN_TYPE' && <h5>DANH SÁCH NGƯỜI DÙNG</h5>}
       </div>
       <div className='list-applied-jobs'>
-        {getDataByRoleType().map((job) => (
-          <RightItem key={job.idUser} data={job} />
+        {dataContact.map((job) => (
+          <RightItem key={job.id} data={job} />
         ))}
       </div>
     </div>

@@ -26,7 +26,7 @@ const ListJob = (props: any) => {
   }, [companyId])
   const getAllJob = async () => {
     if (!companyId) return
-    await apiCompany.getAllJobByCompanyId(companyId).then((rs) => {
+    await apiCompany.getAllJobPublishByCompanyId(companyId).then((rs) => {
       setListJobs(rs.result)
     })
   }
@@ -35,43 +35,48 @@ const ListJob = (props: any) => {
   }
   return (
     <div className='list-job-company-detail'>
-      <Row className='title-container'>
-        <Col lg={17} md={15} sm={24} xs={24}>
-          <h2>VỊ TRÍ ĐANG TUYỂN DỤNG</h2>
-        </Col>
+      {displayedData && displayedData.length > 0 && (
+        <>
+          <Row className='title-container'>
+            <Col lg={17} md={15} sm={24} xs={24}>
+              <h2>VỊ TRÍ ĐANG TUYỂN DỤNG</h2>
+            </Col>
 
-        <Col lg={6} md={8} sm={24} xs={24} className='filter-container'>
-          <Input allowClear size='large' placeholder='Nhập chức danh' prefix={<FiSearch />} />
-        </Col>
-      </Row>
-      {displayedData &&
-        displayedData.map((job) => (
-          <JobItem
-            key={job._id}
-            style={customStyleItem}
-            customHover={true}
-            idJob={job._id}
-            img={job.company.logo}
-            nameJob={job.job_title}
-            nameCompany={job.company.company_name}
-            salary={
-              job.is_salary_visible
-                ? `${job.salary_range.min.toLocaleString('vi', {
-                    currency: 'VND'
-                  })} - ${job.salary_range.max.toLocaleString('vi', { style: 'currency', currency: 'VND' })}`
-                : 'Thương lượng'
-            }
+            <Col lg={6} md={8} sm={24} xs={24} className='filter-container'>
+              <Input allowClear size='large' placeholder='Nhập chức danh' prefix={<FiSearch />} />
+            </Col>
+          </Row>
+          {displayedData &&
+            displayedData.map((job) => (
+              <JobItem
+                key={job._id}
+                style={customStyleItem}
+                customHover={true}
+                idJob={job._id}
+                img={job.company.logo}
+                nameJob={job.job_title}
+                nameCompany={job.company.company_name}
+                salary={
+                  job.is_salary_visible
+                    ? `${job.salary_range.min.toLocaleString('vi', {
+                        currency: 'VND'
+                      })} - ${job.salary_range.max.toLocaleString('vi', { style: 'currency', currency: 'VND' })}`
+                    : 'Thương lượng'
+                }
+              />
+            ))}
+
+          <Pagination
+            style={{ display: 'flex', justifyContent: 'center' }}
+            onChange={handleChangePage}
+            defaultCurrent={1}
+            current={pageClick}
+            pageSize={limit}
+            total={listJobs.length}
           />
-        ))}
-
-      <Pagination
-        style={{ display: 'flex', justifyContent: 'center' }}
-        onChange={handleChangePage}
-        defaultCurrent={1}
-        current={pageClick}
-        pageSize={limit}
-        total={listJobs.length}
-      />
+        </>
+      )}
+      Không tìm thấy việc làm khác
     </div>
   )
 }

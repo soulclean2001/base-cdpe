@@ -69,37 +69,43 @@ interface JobItemType {
   created_at: string
   is_salary_visible: boolean
 }
+
 const ListJob = () => {
   const location = useLocation()
-  const limitOnPage = 10
+  const limitOnPage = 2
   const [totalItems, setTotalItems] = useState(1)
   const [activeSort, setActiveSort] = useState('last-post-date')
-  const [requestSearch, setRequestSearch] = useState<PostRequestSearchType>({
-    sort_by_post_date: 0,
+  const [listJobs, setListJobs] = useState<Array<JobItemType>>([])
+  const [pageClick, setPageClick] = useState(1)
+  const initRequestFilter: PostRequestSearchType = {
+    sort_by_post_date: '-1',
     page: '1',
-    limit: '10',
+    limit: limitOnPage.toString(),
     content: location.state ? location.state.content : '',
     working_location: location.state ? location.state.cityName : ''
-  })
-  const [listJobs, setListJobs] = useState<Array<JobItemType>>([])
-  const [pageClick, setPageClick] = useState('')
+  }
+  const [requestSearch, setRequestSearch] = useState<PostRequestSearchType>(initRequestFilter)
+
   useEffect(() => {
     if (location && location.state) {
       setRequestSearch({ ...requestSearch, content: location.state.content, working_location: location.state.cityName })
     }
   }, [location.state])
   useEffect(() => {
+    setPageClick(1)
     getJobs()
   }, [requestSearch])
   const getJobs = async (page?: string) => {
     await apiPost.searchJobs({ ...requestSearch, page: page ? page : '1' }).then((rs) => {
+      console.log('Rs', rs)
       let jobs: JobItemType[] = []
       rs.result.jobs.map((job: any) => {
+        console.log('job', job)
         jobs.push({
           _id: job._id,
           logo: job.company.logo,
           companyName: job.company.company_name,
-          created_at: job.created_at.slice(0, 10),
+          created_at: job.posted_date.slice(0, 10),
           is_salary_visible: job.salary_visible,
           jobTitle: job.job_title,
           salary_range: job.salary_range,
@@ -112,10 +118,14 @@ const ListJob = () => {
   }
 
   const handleActiveSort = (event: any) => {
-    if (event.target.id === 'last-post-date') setRequestSearch({ ...requestSearch, sort_by_post_date: -1 })
-    if (event.target.id === 'old-post-date') setRequestSearch({ ...requestSearch, sort_by_post_date: 1 })
-    if (event.target.id === 'salary-low-to-hight') setRequestSearch({ ...requestSearch, sort_by_salary: 1 })
-    if (event.target.id === 'salary-hight-to-low') setRequestSearch({ ...requestSearch, sort_by_salary: -1 })
+    if (event.target.id === 'last-post-date')
+      setRequestSearch({ ...requestSearch, sort_by_post_date: '-1', sort_by_salary: '' })
+    if (event.target.id === 'old-post-date')
+      setRequestSearch({ ...requestSearch, sort_by_post_date: '1', sort_by_salary: '' })
+    if (event.target.id === 'salary-low-to-hight')
+      setRequestSearch({ ...requestSearch, sort_by_salary: '1', sort_by_post_date: '' })
+    if (event.target.id === 'salary-hight-to-low')
+      setRequestSearch({ ...requestSearch, sort_by_salary: '-1', sort_by_post_date: '' })
     setActiveSort(event.target.id)
     // console.log('event.target.id', event.target.id)
   }
@@ -138,7 +148,7 @@ const ListJob = () => {
   }
   //set value page click
   const handleChangePage = (valuePageClick: any) => {
-    // setPageClick(valuePageClick)
+    setPageClick(valuePageClick)
     // setPageClick(valuePageClick)
     // setRequestSearch({ ...requestSearch, page: valuePageClick })
     getJobs(valuePageClick)
@@ -287,6 +297,7 @@ const ListJob = () => {
                   responsive
                   defaultCurrent={1}
                   pageSize={limitOnPage}
+                  current={pageClick}
                   //   current={totalItems}
                   //   showLessItems={false}
                   showSizeChanger={false}

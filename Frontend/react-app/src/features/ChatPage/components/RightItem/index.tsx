@@ -1,12 +1,14 @@
 import { Avatar, Button } from 'antd'
 import './style.scss'
 interface DataType {
+  id: string
   idUser: string
   idJob: string | undefined
   idCompany: string | undefined
   logo: string
   titleName: string
   nameCompany: string | undefined
+  titleJob: string
 }
 interface PropsType {
   data: DataType
@@ -20,7 +22,7 @@ const RightItem = (props: any) => {
         <Avatar className='logo' size={'large'} src={data.logo ? data.logo : ''} />
         <div className='info-item-wapper'>
           <div className='name-job'>{data.titleName ? data.titleName : 'titleName'}</div>
-          <div className='name-company'>{data.nameCompany ? data.nameCompany : ''}</div>
+          <div className='name-company'>{data.nameCompany ? data.nameCompany : data.titleJob}</div>
         </div>
       </div>
       <div className='btn-container'>

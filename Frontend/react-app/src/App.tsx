@@ -144,7 +144,7 @@ function App() {
       async () => {
         await getRefreshToken()
       },
-      getTimeExpired(auth.accessToken) * 1000 - 50000 // thời gian hết hạn trừ thời gian tạo. thì ra số gì đó nhân 1000 ra milisecond. à ra second nhân 1000 ra milisecond
+      getTimeExpired(auth.accessToken) * 1000 - 90000 // 86390000
     )
   }, [auth.refreshToken])
   const fetchListRooms = async () => {
