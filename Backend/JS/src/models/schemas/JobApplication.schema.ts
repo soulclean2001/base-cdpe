@@ -13,7 +13,6 @@ export enum JobApplicationStatus {
 
 export enum ProfileStatus {
   Available = 'available',
-  Archive = 'archive',
   BlackList = 'blacklist',
   Deleted = 'deleted'
 }

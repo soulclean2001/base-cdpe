@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb'
 import databaseServices from './database.services'
 import TrackedCandidate from '~/models/schemas/TrackedCandidate.schema'
 import { ErrorWithStatus } from '~/models/Errors'
+import { escapeRegExp } from 'lodash'
 
 export default class TrackedCandidateService {
   static async trackedCandidate(userId: string, candidateId: string) {
@@ -21,17 +22,22 @@ export default class TrackedCandidateService {
     })
 
     if (result) {
-      await databaseServices.trackedCandidate.insertOne(
-        new TrackedCandidate({
+      await databaseServices.trackedCandidate.findOneAndUpdate(
+        {
           candidate_id: new ObjectId(candidateId),
           company_id: company._id
-        })
+        },
+        {
+          $set: {}
+        },
+        {
+          upsert: true,
+          returnDocument: 'after'
+        }
       )
     }
 
-    return {
-      message: 'tracked candidate'
-    }
+    return 'tracked candidate'
   }
 
   static async untrackedCandidate(userId: string, candidateId: string) {
@@ -51,16 +57,158 @@ export default class TrackedCandidateService {
     })
 
     if (result) {
-      await databaseServices.trackedCandidate.findOneAndDelete(
-        new TrackedCandidate({
-          candidate_id: new ObjectId(candidateId),
-          company_id: company._id
-        })
-      )
+      await databaseServices.trackedCandidate.findOneAndDelete({
+        candidate_id: new ObjectId(candidateId),
+        company_id: company._id
+      })
     }
 
+    return 'delete tracked candidate'
+  }
+
+  static async getListTrackedCandidate(userId: string, filter: { name?: string; limit?: string; page?: string }) {
+    const limit = Number(filter.limit) || 10
+    const page = Number(filter.page) || 1
+
+    const options: {
+      [key: string]: any
+    } = {}
+
+    if (filter.name) {
+      const keyword = filter.name.trim()
+      const keywords = keyword.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
+      options['candidate_name'] = {
+        $regex: regex
+      }
+    }
+
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company) {
+      throw new ErrorWithStatus({
+        message: 'Could not find company',
+        status: 404
+      })
+    }
+
+    const [list, total] = await Promise.all([
+      databaseServices.trackedCandidate
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id
+            }
+          },
+          {
+            $lookup: {
+              from: 'candidates',
+              localField: 'candidate_id',
+              foreignField: '_id',
+              as: 'candidate'
+            }
+          },
+          {
+            $unwind: {
+              path: '$candidate'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'candidate.user_id',
+              foreignField: '_id',
+              as: 'user'
+            }
+          },
+          {
+            $unwind: {
+              path: '$user'
+            }
+          },
+          {
+            $addFields: {
+              candidate_name: '$user.name',
+              avatar: '$user.avatar'
+            }
+          },
+          {
+            $match: {
+              ...options
+            }
+          },
+          {
+            $project: {
+              user: 0
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.trackedCandidate
+        .aggregate([
+          {
+            $match: {
+              company_id: company._id
+            }
+          },
+          {
+            $lookup: {
+              from: 'candidates',
+              localField: 'candidate_id',
+              foreignField: '_id',
+              as: 'candidate'
+            }
+          },
+          {
+            $unwind: {
+              path: '$candidate'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'candidate.user_id',
+              foreignField: '_id',
+              as: 'user'
+            }
+          },
+          {
+            $unwind: {
+              path: '$user'
+            }
+          },
+          {
+            $addFields: {
+              candidate_name: '$user.name',
+              avatar: '$user.avatar'
+            }
+          },
+          {
+            $match: {
+              ...options
+            }
+          },
+
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
     return {
-      message: 'delete tracked candidate'
+      list,
+      total: total[0]?.total || 0,
+      page,
+      limit
     }
   }
 }

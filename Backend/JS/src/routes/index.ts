@@ -15,6 +15,7 @@ import adminRouter from './admin.routes'
 import orderRouter from './order.routes'
 import transactionRouter from './transaction.routes'
 import notificationRouter from './notification.routes'
+import trackedCandidateRouter from './trackedCandidate.routes'
 
 const router = express.Router()
 
@@ -34,5 +35,6 @@ router.use('/admin', adminRouter)
 router.use('/orders', orderRouter)
 router.use('/transactions', transactionRouter)
 router.use('/notifications', notificationRouter)
+router.use('/follow-candidates', trackedCandidateRouter)
 
 export default router
