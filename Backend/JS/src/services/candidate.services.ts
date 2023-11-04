@@ -27,7 +27,17 @@ class CandidateService {
     return result
   }
 
-  static async getCandidateById(candidateId: string) {
+  static async getCandidateById(candidateId: string, userId: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Could not find company',
+        status: 404
+      })
+
     const result = await databaseServices.candidate
       .aggregate([
         {
@@ -47,6 +57,26 @@ class CandidateService {
         {
           $unwind: {
             path: '$cv'
+          }
+        },
+        {
+          $lookup: {
+            from: 'tracked_candidates',
+            localField: '_id',
+            foreignField: 'candidate_id',
+            as: 'company_following'
+          }
+        },
+        {
+          $addFields: {
+            is_follwing: {
+              $in: [company._id, '$company_following.company_id']
+            }
+          }
+        },
+        {
+          $project: {
+            company_following: 0
           }
         }
       ])

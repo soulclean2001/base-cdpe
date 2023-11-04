@@ -579,6 +579,17 @@ class JobApplicationService {
 
     return result
   }
+
+  static async checkIsApplied(userId: string, postId: string) {
+    const jobApplication = await databaseServices.jobApplication.findOne({
+      job_post_id: new ObjectId(postId),
+      user_id: new ObjectId(userId)
+    })
+
+    return {
+      is_applied: jobApplication ? true : false
+    }
+  }
 }
 
 export default JobApplicationService

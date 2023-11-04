@@ -74,7 +74,7 @@ class CompanyService {
     })
   }
 
-  static async getCompanyById(companyId: string) {
+  static async getCompanyById(companyId: string, userId?: string) {
     const companies = await databaseServices.company
       .aggregate([
         {
@@ -107,6 +107,9 @@ class CompanyService {
         },
         {
           $addFields: {
+            is_following: {
+              $in: [userId ? new ObjectId(userId) : '', '$follow_num.user_id']
+            },
             follow_num: {
               $size: '$follow_num'
             }

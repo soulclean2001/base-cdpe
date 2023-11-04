@@ -26,6 +26,8 @@ companyRouter.patch(
 )
 
 companyRouter.get('/me', accessTokenValidator, wrapAsync(companyControllers.getCompanyByMe))
+
+// is following company
 companyRouter.get(
   '/:company_id/is_following',
   accessTokenValidator,

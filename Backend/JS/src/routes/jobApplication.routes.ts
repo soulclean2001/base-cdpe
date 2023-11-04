@@ -74,4 +74,16 @@ jobApplicationRouter.get(
   jobApplicationControllers.getById
 )
 
+/**
+ * 
+ * {
+    "message": "Check me is applied",
+    "result": {
+        "is_applied": true
+    }
+}
+ */
+
+jobApplicationRouter.get('/me/applied/:post_id', accessTokenValidator, jobApplicationControllers.checkIsApplied)
+
 export default jobApplicationRouter

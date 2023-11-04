@@ -66,7 +66,7 @@ class CandidateController {
 
     const candidate_id = req.params.candidate_id
 
-    const result = await CandidateService.getCandidateById(candidate_id)
+    const result = await CandidateService.getCandidateById(candidate_id, user_id)
     if (role === UserRole.Employer && result) {
       const company = await databaseServices.company.findOne({
         'users.user_id': new ObjectId(user_id)

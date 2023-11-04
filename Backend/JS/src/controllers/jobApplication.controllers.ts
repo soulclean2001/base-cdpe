@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { ObjectId } from 'mongodb'
+import { ErrorWithStatus } from '~/models/Errors'
 import { ApplyReqBody, UpdateStatusJobApplicationBody } from '~/models/requests/JobApplication.request'
 import JobApplicationService from '~/services/jobApplication.services'
 
@@ -116,6 +118,23 @@ class JobApplicationController {
 
     return res.json({
       message: 'JobApplication',
+      result
+    })
+  }
+
+  async checkIsApplied(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+    const { post_id } = req.params
+
+    if (!ObjectId.isValid(post_id))
+      throw new ErrorWithStatus({
+        message: 'Invalid post ID',
+        status: 422
+      })
+    const result = await JobApplicationService.checkIsApplied(user_id, post_id)
+
+    return res.json({
+      message: 'Check me is applied',
       result
     })
   }

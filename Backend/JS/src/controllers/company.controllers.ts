@@ -40,8 +40,8 @@ class CompanyController {
 
   async getCompanyById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
     const { company_id } = req.params
-
-    const result = await CompanyService.getCompanyById(company_id)
+    const { query } = req
+    const result = await CompanyService.getCompanyById(company_id, query.user_id as string)
 
     return res.json({
       message: 'get company',

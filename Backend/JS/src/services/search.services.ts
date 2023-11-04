@@ -3,6 +3,7 @@ import { SearchCandidateReqParam, SearchCompanyParam, SearchJobReqParam } from '
 import { removeUndefinedObject } from '~/utils/commons'
 import databaseServices from './database.services'
 import { ObjectId } from 'mongodb'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class SearchService {
   static async searchCandidate({
@@ -31,6 +32,17 @@ class SearchService {
     // }
 
     console.log(match)
+
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(user_id)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Could not find company',
+        status: 404
+      })
+
     const [cvs, total] = await Promise.all([
       databaseServices.candidate
         .aggregate([
@@ -54,6 +66,26 @@ class SearchService {
           },
           {
             $match: match
+          },
+          {
+            $lookup: {
+              from: 'tracked_candidates',
+              localField: '_id',
+              foreignField: 'candidate_id',
+              as: 'company_following'
+            }
+          },
+          {
+            $addFields: {
+              is_follwing: {
+                $in: [company._id, '$company_following.company_id']
+              }
+            }
+          },
+          {
+            $project: {
+              company_following: 0
+            }
           },
           {
             $skip: limit * (page - 1)
@@ -302,7 +334,7 @@ class SearchService {
     }
   }
 
-  static async searchCompany(search: SearchCompanyParam) {
+  static async searchCompany(search: SearchCompanyParam, userId?: string) {
     const limit = Number(search.limit) || 10
     const page = Number(search.page) || 1
 
@@ -354,9 +386,9 @@ class SearchService {
           },
           {
             $addFields: {
-              // is_following: {
-              //   $in: [new ObjectId(userId), '$follow_num.user_id']
-              // },
+              is_following: {
+                $in: [userId ? new ObjectId(userId) : '', '$follow_num.user_id']
+              },
               follow_num: {
                 $size: '$follow_num'
               }
