@@ -144,7 +144,10 @@ export default class PackageService {
       databaseServices.package
         .aggregate([
           {
-            $match
+            $match: {
+              ...$match,
+              status: PackageStatus.ACTIVE
+            }
           },
           {
             $skip: limit * (page - 1)

@@ -9,5 +9,12 @@ const orderRouter = express.Router()
 orderRouter.post('/', accessTokenValidator, orderItemValidator, wrapAsync(orderControllers.order))
 orderRouter.get('/', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getAllOrdersByCompany))
 orderRouter.get('/:order_id', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getOrdersDetailByCompany))
+// kích hoạt service đã mua thành công
+orderRouter.get(
+  '/active-order/:service_id',
+  accessTokenValidator,
+  isEmployer,
+  wrapAsync(orderControllers.activeServiceOrder)
+)
 
 export default orderRouter
