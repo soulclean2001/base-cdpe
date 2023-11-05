@@ -195,7 +195,7 @@ transactionRouter.get('/vnpay_return', async function (req, res, next) {
       }
     )
 
-    await databaseServices.serviceOrder.findOneAndUpdate(
+    await databaseServices.serviceOrder.updateMany(
       {
         order_id: transaction.value.order_id
       },

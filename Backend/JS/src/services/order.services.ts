@@ -4,6 +4,7 @@ import Order, { StatusOrder } from '~/models/schemas/Order.schema'
 import { ErrorWithStatus } from '~/models/Errors'
 import ServiceOrder, { ServicePackageStatus } from '~/models/schemas/ServiceOrder.schema'
 import { fi } from '@faker-js/faker'
+import { PackageType } from '~/constants/enums'
 
 interface QueryOrder {
   status?: string
@@ -54,11 +55,37 @@ class OrderService {
     let total = 0
     const services: ServiceOrder[] = []
     const now = new Date()
+
+    const oldPkgs = await databaseServices.serviceOrder
+      .find({
+        code: PackageType.BANNER,
+        status: ServicePackageStatus.Active
+      })
+      .sort({
+        created_at: -1
+      })
+      .limit(1)
+      .toArray()
+
+    let tempdate = oldPkgs[0]?.expired_at || now
+    let diffTime = Math.abs((tempdate as any) - (now as any))
+    let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
     for (let i = 0; i < items.length; i++) {
       total += packages[i].discount_price * items[i].quantity
       const date = new Date(now)
-      date.setDate(now.getDate() + packages[i].number_of_days_to_expire * items[i].quantity)
-
+      if (packages[i].type === PackageType.BANNER) {
+        date.setDate(now.getDate() + packages[i].number_of_days_to_expire * items[i].quantity + diffDays)
+        diffTime = Math.abs((date as any) - (tempdate as any))
+        diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        tempdate = date
+      }
+      let value = 1
+      if (packages[i].type === PackageType.POST) {
+        value = packages[i].value * items[i].quantity
+      } else {
+        value = packages[i].number_of_days_to_expire * items[i].quantity
+      }
       services.push(
         new ServiceOrder({
           status: ServicePackageStatus.Canceled,
@@ -68,7 +95,8 @@ class OrderService {
           package_id: packages[i]._id,
           unit_price: packages[i].discount_price,
           order_id: new ObjectId(),
-          code: packages[i].code
+          code: packages[i].type,
+          value: value
         })
       )
     }
@@ -543,6 +571,49 @@ class OrderService {
       total: total[0]?.total || 0,
       limit,
       page
+    }
+  }
+
+  static async activeServiceOrder(id: string, userId: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
+    const service = await databaseServices.serviceOrder.findOne({
+      _id: new ObjectId(id)
+    })
+
+    if (service && service.status === ServicePackageStatus.UnActive) {
+      await databaseServices.serviceOrder.updateOne(
+        {
+          _id: new ObjectId(id)
+        },
+        {
+          $set: {
+            status: ServicePackageStatus.Active
+          }
+        }
+      )
+
+      if (service.code === PackageType.POST) {
+        await databaseServices.company.updateOne(
+          {
+            'users.user_id': new ObjectId(userId),
+            _id: company._id
+          },
+          {
+            $set: {
+              number_of_posts: company.number_of_posts + service.value
+            }
+          }
+        )
+      }
     }
   }
 }

@@ -18,6 +18,7 @@ export interface ServiceOrderType {
   status: ServicePackageStatus
   quantity: number
   unit_price: number
+  value?: number
 }
 
 class ServiceOrder {
@@ -32,6 +33,7 @@ class ServiceOrder {
   status: ServicePackageStatus
   quantity: number
   unit_price: number
+  value: number
 
   constructor(data: ServiceOrderType) {
     const now = new Date()
@@ -46,6 +48,7 @@ class ServiceOrder {
     this.status = data.status || ServicePackageStatus.UnActive
     this.quantity = data.quantity
     this.unit_price = data.unit_price
+    this.value = data.value || 1
   }
 }
 

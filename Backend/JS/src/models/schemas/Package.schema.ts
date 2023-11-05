@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb'
+import { PackageType as PackageTypeEnum } from '~/constants/enums'
 
 export enum PackageStatus {
   DELETED = 'DELETED',
@@ -8,7 +9,7 @@ export enum PackageStatus {
 
 export interface PackageType {
   _id?: ObjectId
-  type: string
+  type: PackageTypeEnum
   price: number
   title: string
   description: string
@@ -21,11 +22,12 @@ export interface PackageType {
   updated_at?: Date
   status?: PackageStatus
   number_of_days_to_expire: number
+  value?: number
 }
 
 export default class Package {
   _id?: ObjectId
-  type: string
+  type: PackageTypeEnum
   price: number
   title: string
   description: string
@@ -38,6 +40,7 @@ export default class Package {
   updated_at: Date
   status: PackageStatus
   number_of_days_to_expire: number
+  value: number
 
   constructor(data: PackageType) {
     const date = new Date()
@@ -54,5 +57,6 @@ export default class Package {
     this.updated_at = data.updated_at || date
     this.status = data.status || PackageStatus.ARCHIVE
     this.number_of_days_to_expire = data.number_of_days_to_expire
+    this.value = data.value || 1
   }
 }

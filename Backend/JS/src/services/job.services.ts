@@ -535,6 +535,31 @@ export default class JobService {
   }
 
   static async approveJob(jobId: string) {
+    const job = await databaseServices.job.findOne({
+      _id: new ObjectId(jobId)
+    })
+
+    if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job not found',
+        status: 404
+      })
+    const company = await databaseServices.company.findOne({
+      _id: job.company_id
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
+    if (company.number_of_posts < 1) {
+      throw new ErrorWithStatus({
+        message: 'You are not enough number of posts',
+        status: 405
+      })
+    }
     const result = await databaseServices.job.findOneAndUpdate(
       {
         _id: new ObjectId(jobId)
@@ -560,10 +585,6 @@ export default class JobService {
       })
     }
     if (result.value) {
-      const company = await databaseServices.company.findOne({
-        _id: result.value.company_id
-      })
-
       const recievers = company?.users.map((user) => user.user_id.toString()) || []
 
       if (recievers.length > 0)
@@ -574,22 +595,32 @@ export default class JobService {
           recievers
         })
 
-      if (company) {
-        const user_company_followings = await databaseServices.companyFollowers
-          .find({
-            company_id: company._id
-          })
-          .toArray()
-
-        const recievers2 = user_company_followings.map((user) => user.user_id.toString())
-        if (recievers2.length > 0) {
-          await NotificationService.notify({
-            content: result.value.job_title,
-            type: 'post/created',
-            object_recieve: NotificationObject.Candidate,
-            recievers: recievers2
-          })
+      // cập nhật số lượng
+      await databaseServices.company.updateOne(
+        {
+          _id: company._id
+        },
+        {
+          $set: {
+            number_of_posts: company.number_of_posts - 1
+          }
         }
+      )
+
+      const user_company_followings = await databaseServices.companyFollowers
+        .find({
+          company_id: company._id
+        })
+        .toArray()
+
+      const recievers2 = user_company_followings.map((user) => user.user_id.toString())
+      if (recievers2.length > 0) {
+        await NotificationService.notify({
+          content: result.value.job_title,
+          type: 'post/created',
+          object_recieve: NotificationObject.Candidate,
+          recievers: recievers2
+        })
       }
     }
 

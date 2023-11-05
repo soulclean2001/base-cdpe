@@ -1,5 +1,7 @@
+import { PackageType } from '~/constants/enums'
+
 export interface CreatePackageReqBody {
-  type: string
+  type: PackageType
   price: number
   title: string
   description: string
@@ -10,7 +12,6 @@ export interface CreatePackageReqBody {
 }
 
 export interface UpdatePackageReqBody {
-  type?: string
   price?: number
   title?: string
   description?: string

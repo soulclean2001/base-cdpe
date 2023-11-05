@@ -42,7 +42,7 @@ export enum EncodingStatus {
   Failed // Encode thất bại
 }
 
-export enum PackageCode {
-  'POST',
-  'BANNER'
+export enum PackageType {
+  'POST' = 'POST',
+  'BANNER' = 'BANNER'
 }
