@@ -4,6 +4,7 @@ import {
   applyJobValidator,
   idValidator,
   jobApplicationQueryMiddleware,
+  updateProfileStatusValidator,
   updateStatusValidator
 } from '~/middlewares/jobApplication.middlewares'
 import { accessTokenValidator, isCandidate, isEmployer } from '~/middlewares/users.middlewares'
@@ -32,6 +33,16 @@ jobApplicationRouter.post(
   updateStatusValidator,
   idValidator('job_application_id'),
   wrapAsync(jobApplicationControllers.updateStatus)
+)
+
+// update profile status [available, archived, deleted]
+jobApplicationRouter.post(
+  '/update-profile-status/:job_application_id',
+  accessTokenValidator,
+  isEmployer,
+  updateProfileStatusValidator,
+  idValidator('job_application_id'),
+  wrapAsync(jobApplicationControllers.updateProfileStatus)
 )
 
 jobApplicationRouter.get(

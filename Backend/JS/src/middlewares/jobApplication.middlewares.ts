@@ -2,7 +2,7 @@ import { ParamSchema, checkSchema } from 'express-validator'
 import { isISO8601, isStringNotEmpty } from './common.middlewares'
 import { validate } from '~/utils/validation'
 import { ObjectId } from 'mongodb'
-import { ApplyType, JobApplicationStatus } from '~/models/schemas/JobApplication.schema'
+import { ApplyType, JobApplicationStatus, ProfileStatus } from '~/models/schemas/JobApplication.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
 
 // job_post_id: string
@@ -124,6 +124,30 @@ export const updateStatusValidator = validate(
           options: (value: any) => {
             if (!Object.keys(JobApplicationStatus).includes(String(value))) {
               throw new Error('Invalid status: ' + value)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const updateProfileStatusValidator = validate(
+  checkSchema(
+    {
+      profile_status: {
+        isString: true,
+        custom: {
+          options: (value: any) => {
+            if (!Object.keys(ProfileStatus).includes(value)) {
+              throw new Error(
+                'Invalid profile status: ' +
+                  value +
+                  '. Must be is ' +
+                  Object.keys(ProfileStatus).join(', ').toLowerCase()
+              )
             }
             return true
           }

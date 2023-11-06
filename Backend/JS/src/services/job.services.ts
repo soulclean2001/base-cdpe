@@ -457,7 +457,7 @@ export default class JobService {
             $lookup: {
               from: 'job_applications',
               localField: '_id',
-              foreignField: 'post_id',
+              foreignField: 'job_post_id',
               as: 'job_applications'
             }
           },

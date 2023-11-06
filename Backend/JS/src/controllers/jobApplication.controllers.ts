@@ -101,6 +101,18 @@ class JobApplicationController {
     })
   }
 
+  async updateProfileStatus(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+    const { profile_status } = req.body
+    const { job_application_id } = req.params
+
+    const result = await JobApplicationService.updateProfileStatus(user_id, job_application_id, profile_status)
+    return res.json({
+      message: 'ok',
+      result
+    })
+  }
+
   async getInfoJobsAppliedByUserId(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
     const { user_id } = req.decoded_authorization
 

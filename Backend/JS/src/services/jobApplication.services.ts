@@ -6,7 +6,8 @@ import { ApplyReqBody } from '~/models/requests/JobApplication.request'
 import JobApplication, {
   JobApplicationStatus,
   JobApplicationType,
-  ApplyType
+  ApplyType,
+  ProfileStatus
 } from '~/models/schemas/JobApplication.schema'
 import { isNumber, omit } from 'lodash'
 import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
@@ -170,7 +171,8 @@ class JobApplicationService {
         },
         {
           $unwind: {
-            path: '$cv'
+            path: '$cv',
+            preserveNullAndEmptyArrays: true
           }
         }
       ])
@@ -312,13 +314,13 @@ class JobApplicationService {
       })
 
       const msg = this.getMessageStatus(status, company?.company_name as string)
-
-      await NotificationService.notify({
-        content: msg?.content as string,
-        object_recieve: NotificationObject.Candidate,
-        recievers: [result.value.user_id.toString()],
-        type: msg?.type as string
-      })
+      if (status === JobApplicationStatus.Approved || status === JobApplicationStatus.Potential)
+        await NotificationService.notify({
+          content: msg?.content as string,
+          object_recieve: NotificationObject.Candidate,
+          recievers: [result.value.user_id.toString()],
+          type: msg?.type as string
+        })
     }
 
     return {
@@ -641,6 +643,71 @@ class JobApplicationService {
 
     return {
       is_applied: jobApplication ? true : false
+    }
+  }
+
+  static async updateProfileStatus(userId: string, jobApplicationId: string, status: ProfileStatus) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'No company found',
+        status: 404
+      })
+
+    const jobApplication = await databaseServices.jobApplication.findOne({
+      _id: new ObjectId(jobApplicationId)
+    })
+
+    if (!jobApplication)
+      throw new ErrorWithStatus({
+        message: 'Job application not found',
+        status: 404
+      })
+
+    const job = await databaseServices.job.findOne({
+      _id: jobApplication.job_post_id,
+      company_id: company._id
+    })
+
+    if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job  not found',
+        status: 404
+      })
+
+    const updateDeletedAt: {
+      deleted_at: undefined | Date
+    } = {
+      deleted_at: undefined
+    }
+
+    if (status === ProfileStatus.Deleted) {
+      updateDeletedAt.deleted_at = new Date()
+    }
+
+    const result = await databaseServices.jobApplication.findOneAndUpdate(
+      {
+        _id: new ObjectId(jobApplicationId)
+      },
+      {
+        $set: {
+          profile_status: status,
+          deleted_at: updateDeletedAt.deleted_at
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      },
+      {
+        returnDocument: 'after'
+      }
+    )
+
+    return {
+      message: result ? `Update profile status: '${status}' OK` : `Update profile status: '${status}' Failed`
     }
   }
 }
