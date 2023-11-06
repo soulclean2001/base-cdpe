@@ -92,8 +92,9 @@ class JobApplicationController {
   ) {
     const { user_id } = req.decoded_authorization
     const { status } = req.body
+    const { job_application_id } = req.params
 
-    const result = await JobApplicationService.updateStatus(user_id, status)
+    const result = await JobApplicationService.updateStatus(user_id, job_application_id, status)
     return res.json({
       message: 'ok',
       result

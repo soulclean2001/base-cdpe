@@ -16,134 +16,161 @@ import transactionControllers from '~/controllers/transaction.controllers'
 import NotificationService from '~/services/notification.services'
 import { NotificationObject } from '~/models/schemas/Notification.schema'
 import { UserRole } from '~/constants/enums'
+import wrapAsync from '~/utils/handlers'
 
 const transactionRouter = express.Router()
 
-transactionRouter.post('/create_payment_url', async function (req, res, next) {
-  const ordId = req.body.order_id
+transactionRouter.post(
+  '/create_payment_url',
+  wrapAsync(async function (req, res, next) {
+    const ordId = req.body.order_id
 
-  if (!ordId || ObjectId.isValid(ordId)) {
-    throw new ErrorWithStatus({
-      message: 'Invalid order ',
-      status: 405
-    })
-  }
-  const order = await databaseServices.order.findOne({
-    _id: new ObjectId(ordId)
-  })
-
-  if (!order)
-    throw new ErrorWithStatus({
-      message: 'Invalid order ',
-      status: 405
+    if (!ordId || ObjectId.isValid(ordId)) {
+      throw new ErrorWithStatus({
+        message: 'Invalid order ',
+        status: 405
+      })
+    }
+    const order = await databaseServices.order.findOne({
+      _id: new ObjectId(ordId)
     })
 
-  if (order.status === StatusOrder.Success)
+    if (!order)
+      throw new ErrorWithStatus({
+        message: 'Invalid order ',
+        status: 405
+      })
+
+    if (order.status === StatusOrder.Success)
+      return res.json({
+        message: 'Order was paided',
+        status: 204
+      })
+
+    if (order.status === StatusOrder.Canceled)
+      return res.json({
+        message: 'Order was canceled',
+        status: 204
+      })
+
+    process.env.TZ = 'Asia/Ho_Chi_Minh'
+
+    const date = new Date()
+    const createDate = moment(date).format('YYYYMMDDHHmmss')
+
+    const ipAddr = req.ip
+    // req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress
+    // ||    req.connection.socket.remoteAddress
+
+    const tmnCode = envConfig.vnpTmnCode
+    const secretKey = envConfig.vnpHashSecret
+    let vnpUrl = envConfig.vnpUrl
+    const returnUrl = envConfig.vnpReturnUrl
+    const trade_code = moment(date).format('YYMMDDHHmmss')
+    // const amount = req.body.amount
+    // const bankCode = req.body.bankCode
+    const bankCode = 'VNBANK'
+
+    let locale = req.body.language
+    if (!locale) {
+      locale = 'vn'
+    }
+    const currCode = 'VND'
+    let vnp_Params: {
+      [key: string]: any
+    } = {}
+    vnp_Params['vnp_Version'] = '2.1.0'
+    vnp_Params['vnp_Command'] = 'pay'
+    vnp_Params['vnp_TmnCode'] = tmnCode
+    vnp_Params['vnp_Locale'] = locale
+    vnp_Params['vnp_CurrCode'] = currCode
+    vnp_Params['vnp_TxnRef'] = trade_code
+    vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + trade_code
+    vnp_Params['vnp_OrderType'] = 'other'
+    vnp_Params['vnp_Amount'] = order.total * 100
+    vnp_Params['vnp_ReturnUrl'] = returnUrl
+    vnp_Params['vnp_IpAddr'] = ipAddr
+    vnp_Params['vnp_CreateDate'] = createDate
+    if (bankCode) {
+      vnp_Params['vnp_BankCode'] = bankCode
+    }
+
+    await databaseServices.transaction.insertOne(
+      new TransactionHistory({
+        amount: order.total * 100,
+        bank_code: '',
+        bill_number: trade_code,
+        ip_addr: ipAddr,
+        transaction_status: '01',
+        order_info: 'Thanh toan cho ma GD:' + trade_code,
+        payment_status: '0',
+        order_id: new ObjectId(ordId)
+      })
+    )
+
+    vnp_Params = sortObject(vnp_Params)
+
+    const signData = querystring.stringify(vnp_Params, { encode: false })
+    const hmac = crypto.createHmac('sha512', secretKey)
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
+    vnp_Params['vnp_SecureHash'] = signed
+    vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false })
+
     return res.json({
-      message: 'Order was paided',
-      status: 204
+      result: vnpUrl
     })
-
-  if (order.status === StatusOrder.Canceled)
-    return res.json({
-      message: 'Order was canceled',
-      status: 204
-    })
-
-  process.env.TZ = 'Asia/Ho_Chi_Minh'
-
-  const date = new Date()
-  const createDate = moment(date).format('YYYYMMDDHHmmss')
-
-  const ipAddr = req.ip
-  // req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress
-  // ||    req.connection.socket.remoteAddress
-
-  const tmnCode = envConfig.vnpTmnCode
-  const secretKey = envConfig.vnpHashSecret
-  let vnpUrl = envConfig.vnpUrl
-  const returnUrl = envConfig.vnpReturnUrl
-  const trade_code = moment(date).format('YYMMDDHHmmss')
-  // const amount = req.body.amount
-  // const bankCode = req.body.bankCode
-  const bankCode = 'VNBANK'
-
-  let locale = req.body.language
-  if (!locale) {
-    locale = 'vn'
-  }
-  const currCode = 'VND'
-  let vnp_Params: {
-    [key: string]: any
-  } = {}
-  vnp_Params['vnp_Version'] = '2.1.0'
-  vnp_Params['vnp_Command'] = 'pay'
-  vnp_Params['vnp_TmnCode'] = tmnCode
-  vnp_Params['vnp_Locale'] = locale
-  vnp_Params['vnp_CurrCode'] = currCode
-  vnp_Params['vnp_TxnRef'] = trade_code
-  vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + trade_code
-  vnp_Params['vnp_OrderType'] = 'other'
-  vnp_Params['vnp_Amount'] = order.total * 100
-  vnp_Params['vnp_ReturnUrl'] = returnUrl
-  vnp_Params['vnp_IpAddr'] = ipAddr
-  vnp_Params['vnp_CreateDate'] = createDate
-  if (bankCode) {
-    vnp_Params['vnp_BankCode'] = bankCode
-  }
-
-  await databaseServices.transaction.insertOne(
-    new TransactionHistory({
-      amount: order.total * 100,
-      bank_code: '',
-      bill_number: trade_code,
-      ip_addr: ipAddr,
-      transaction_status: '01',
-      order_info: 'Thanh toan cho ma GD:' + trade_code,
-      payment_status: '0',
-      order_id: new ObjectId(ordId)
-    })
-  )
-
-  vnp_Params = sortObject(vnp_Params)
-
-  const signData = querystring.stringify(vnp_Params, { encode: false })
-  const hmac = crypto.createHmac('sha512', secretKey)
-  const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
-  vnp_Params['vnp_SecureHash'] = signed
-  vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false })
-
-  return res.json({
-    result: vnpUrl
   })
-})
+)
 
-transactionRouter.get('/vnpay_return', async function (req, res, next) {
-  let vnp_Params = req.query
+transactionRouter.get(
+  '/vnpay_return',
+  wrapAsync(async function (req, res, next) {
+    let vnp_Params = req.query
 
-  const secureHash = vnp_Params['vnp_SecureHash']
+    const secureHash = vnp_Params['vnp_SecureHash']
 
-  delete vnp_Params['vnp_SecureHash']
-  delete vnp_Params['vnp_SecureHashType']
-  const vnp_TxnRef = vnp_Params['vnp_TxnRef']
-  const vnp_TransactionNo = vnp_Params['vnp_TransactionNo']
-  const vnp_TransactionStatus = vnp_Params['vnp_TransactionStatus']
-  const vnp_BankTranNo = vnp_Params['vnp_BankTranNo']
-  const vnp_BankCode = vnp_Params['vnp_BankCode']
-  const vnp_CardType = vnp_Params['vnp_CardType']
+    delete vnp_Params['vnp_SecureHash']
+    delete vnp_Params['vnp_SecureHashType']
+    const vnp_TxnRef = vnp_Params['vnp_TxnRef']
+    const vnp_TransactionNo = vnp_Params['vnp_TransactionNo']
+    const vnp_TransactionStatus = vnp_Params['vnp_TransactionStatus']
+    const vnp_BankTranNo = vnp_Params['vnp_BankTranNo']
+    const vnp_BankCode = vnp_Params['vnp_BankCode']
+    const vnp_CardType = vnp_Params['vnp_CardType']
 
-  vnp_Params = sortObject(vnp_Params)
+    vnp_Params = sortObject(vnp_Params)
 
-  const tmnCode = envConfig.vnpTmnCode
-  const secretKey = envConfig.vnpHashSecret
+    const tmnCode = envConfig.vnpTmnCode
+    const secretKey = envConfig.vnpHashSecret
 
-  const signData = querystring.stringify(vnp_Params, { encode: false })
-  const hmac = crypto.createHmac('sha512', secretKey)
-  const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
+    const signData = querystring.stringify(vnp_Params, { encode: false })
+    const hmac = crypto.createHmac('sha512', secretKey)
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
 
-  let transaction = undefined
-  if (secureHash === signed) {
-    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+    let transaction = undefined
+    if (secureHash === signed) {
+      //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+      transaction = await databaseServices.transaction.findOneAndUpdate(
+        {
+          bill_number: vnp_TxnRef
+        },
+        {
+          $set: {
+            transaction_no: vnp_TransactionNo as string,
+            bank_tran_no: vnp_BankTranNo as string,
+            transaction_status: vnp_TransactionStatus as string,
+            bank_code: vnp_BankCode as string,
+            card_type: vnp_CardType as string
+          }
+        }
+      )
+      return res.json({
+        result: {
+          code: vnp_Params['vnp_ResponseCode']
+        }
+      })
+    }
+
     transaction = await databaseServices.transaction.findOneAndUpdate(
       {
         bill_number: vnp_TxnRef
@@ -152,80 +179,60 @@ transactionRouter.get('/vnpay_return', async function (req, res, next) {
         $set: {
           transaction_no: vnp_TransactionNo as string,
           bank_tran_no: vnp_BankTranNo as string,
-          transaction_status: vnp_TransactionStatus as string,
+          transaction_status: '97',
           bank_code: vnp_BankCode as string,
           card_type: vnp_CardType as string
         }
+      },
+      {
+        returnDocument: 'after'
       }
     )
+
+    if (transaction && transaction.value) {
+      await databaseServices.order.findOneAndUpdate(
+        {
+          _id: transaction.value.order_id
+        },
+        {
+          $set: {
+            status: vnp_TransactionStatus === '00' ? StatusOrder.Success : StatusOrder.Canceled
+          }
+        }
+      )
+
+      await databaseServices.serviceOrder.updateMany(
+        {
+          order_id: transaction.value.order_id
+        },
+        {
+          $set: {
+            status: vnp_TransactionStatus === '00' ? ServicePackageStatus.UnActive : ServicePackageStatus.Canceled
+          }
+        }
+      )
+
+      if (vnp_TransactionStatus === '00') {
+        const admin = await databaseServices.users.findOne({
+          role: UserRole.Administrators
+        })
+        if (admin)
+          await NotificationService.notify({
+            content: 'Đã có 1 đơn hàng mới giao dịch thành công',
+            object_recieve: NotificationObject.Admin,
+            recievers: [admin._id.toString() as string],
+            type: 'order/success'
+          })
+      }
+    }
+
     return res.json({
       result: {
-        code: vnp_Params['vnp_ResponseCode']
+        code: '97'
       }
     })
-  }
-
-  transaction = await databaseServices.transaction.findOneAndUpdate(
-    {
-      bill_number: vnp_TxnRef
-    },
-    {
-      $set: {
-        transaction_no: vnp_TransactionNo as string,
-        bank_tran_no: vnp_BankTranNo as string,
-        transaction_status: '97',
-        bank_code: vnp_BankCode as string,
-        card_type: vnp_CardType as string
-      }
-    },
-    {
-      returnDocument: 'after'
-    }
-  )
-
-  if (transaction && transaction.value) {
-    await databaseServices.order.findOneAndUpdate(
-      {
-        _id: transaction.value.order_id
-      },
-      {
-        $set: {
-          status: vnp_TransactionStatus === '00' ? StatusOrder.Success : StatusOrder.Canceled
-        }
-      }
-    )
-
-    await databaseServices.serviceOrder.updateMany(
-      {
-        order_id: transaction.value.order_id
-      },
-      {
-        $set: {
-          status: vnp_TransactionStatus === '00' ? ServicePackageStatus.UnActive : ServicePackageStatus.Canceled
-        }
-      }
-    )
-
-    if (vnp_TransactionStatus === '00') {
-      const admin = await databaseServices.users.findOne({
-        role: UserRole.Administrators
-      })
-      if (admin)
-        await NotificationService.notify({
-          content: 'Đã có 1 đơn hàng mới giao dịch thành công',
-          object_recieve: NotificationObject.Admin,
-          recievers: [admin._id.toString() as string],
-          type: 'order/success'
-        })
-    }
-  }
-
-  return res.json({
-    result: {
-      code: '97'
-    }
   })
-})
+)
 
 transactionRouter.get('/vnpay_ipn', function (req, res, next) {
   let vnp_Params = req.query
@@ -441,7 +448,7 @@ transactionRouter.post('/refund', function (req, res, next) {
   // )
 })
 
-transactionRouter.get('/', accessTokenValidator, isEmployer, transactionControllers.getTransactionsByCompany)
+transactionRouter.get('/', accessTokenValidator, isEmployer, wrapAsync(transactionControllers.getTransactionsByCompany))
 
 function sortObject(obj: any) {
   const sorted: {

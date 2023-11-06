@@ -253,7 +253,38 @@ class JobApplicationService {
     }
   }
 
-  static async updateStatus(jobApplicationId: string, status: JobApplicationStatus) {
+  static async updateStatus(userId: string, jobApplicationId: string, status: JobApplicationStatus) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'No company found',
+        status: 404
+      })
+
+    const jobApplication = await databaseServices.jobApplication.findOne({
+      _id: new ObjectId(jobApplicationId)
+    })
+
+    if (!jobApplication)
+      throw new ErrorWithStatus({
+        message: 'Job application not found',
+        status: 404
+      })
+
+    const job = await databaseServices.job.findOne({
+      _id: jobApplication.job_post_id,
+      company_id: company._id
+    })
+
+    if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job  not found',
+        status: 404
+      })
+
     const result = await databaseServices.jobApplication.findOneAndUpdate(
       {
         _id: new ObjectId(jobApplicationId)
@@ -261,6 +292,9 @@ class JobApplicationService {
       {
         $set: {
           status: status
+        },
+        $currentDate: {
+          updated_at: true
         }
       },
       {
@@ -288,7 +322,7 @@ class JobApplicationService {
     }
 
     return {
-      message: result.ok ? `Update status: '${status}' OK` : `Update status: '${status}'Failed`
+      message: result ? `Update status: '${status}' OK` : `Update status: '${status}' Failed`
     }
   }
 
