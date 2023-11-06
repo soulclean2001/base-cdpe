@@ -4,17 +4,25 @@ import { AiFillFlag } from 'react-icons/ai'
 import { BsFillShareFill } from 'react-icons/bs'
 import CompanyInfo from './components/CompanyInfo/CompanyInfo'
 import ListJob from './components/ListJob/ListJob'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import logoTemp from '~/assets/HF_logo.jpg'
 import bannerTemp from '~/assets/banner_temp.jpg'
 import apiCompany from '~/api/company.api'
 import { useState, useEffect } from 'react'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
+import apiFollow from '~/api/follow.api'
+import { toast } from 'react-toastify'
 export interface TypeCompanyDetail {
   [key: string]: any
 }
 const CompanyDetail = () => {
   const { infoUrlCompanyDetail } = useParams()
   const [myCompany, setMyCompany] = useState<TypeCompanyDetail>()
+  const [isFollowed, setIsFollowed] = useState<boolean>(false)
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
   useEffect(() => {
     getDetailCompany()
   }, [])
@@ -27,6 +35,30 @@ const CompanyDetail = () => {
       console.log('rs detail', rs)
       setMyCompany(rs.result)
     })
+    if (auth && auth.isLogin) {
+      await apiCompany.checkFollowed(idCompany[1]).then((rs) => {
+        console.log('check', rs)
+        setIsFollowed(rs.result)
+      })
+    }
+  }
+  const fetchFollowCompany = async (type: string) => {
+    if (!myCompany) return
+    if (!auth || !auth.isLogin) {
+      navigate('/candidate-login')
+      return
+    }
+    if (type === 'FOLLOW') {
+      await apiFollow.follow(myCompany._id).then((rs) => {
+        toast.success('Bạn đã theo dõi công ty thành công')
+        setIsFollowed(true)
+      })
+    } else {
+      await apiFollow.unFollow({ company_id: myCompany._id }).then((rs) => {
+        toast.success('Bạn đã bỏ theo dõi công ty thành công')
+        setIsFollowed(false)
+      })
+    }
   }
   const onChange = (key: string) => {
     console.log(key)
@@ -66,10 +98,17 @@ const CompanyDetail = () => {
             </div>
           </Col>
           <Col lg={5} md={6} sm={24} xs={24} className='right-content'>
-            <Button size='large' className='btn-follow'>
-              Theo dõi
-            </Button>
-            <Button size='large' className='btn-report' icon={<AiFillFlag />} />
+            {isFollowed ? (
+              <Button onClick={() => fetchFollowCompany('UNFOLLOW')} size='large' className='btn-follow'>
+                Đang theo dõi
+              </Button>
+            ) : (
+              <Button onClick={() => fetchFollowCompany('FOLLOW')} size='large' className='btn-follow'>
+                Theo dõi
+              </Button>
+            )}
+
+            {/* <Button size='large' className='btn-report' icon={<AiFillFlag />} /> */}
             <Button size='large' className='btn-share' icon={<BsFillShareFill />} />
           </Col>
         </Row>

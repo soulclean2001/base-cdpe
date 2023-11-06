@@ -108,6 +108,7 @@ const ModalUpdateProfile = (props: PropsType) => {
     if (avatarImage) {
       const logoForm = new FormData()
       logoForm.append('image', avatarImage)
+      console.log('img from', logoForm)
       urlAvatar = await apiUpload.uploadImage(logoForm).then(async (rs) => {
         return rs.result[0].url
       })

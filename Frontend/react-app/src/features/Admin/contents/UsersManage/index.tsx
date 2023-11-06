@@ -139,7 +139,7 @@ const UsersManage = () => {
       email: 'font1@gmail.com',
       signUpDate: '26/09/2023',
       signInRecent: '26/09/2023',
-      status: 'Online'
+      status: 'Đã kích hoạt'
     },
     {
       key: '3',
@@ -147,7 +147,7 @@ const UsersManage = () => {
       email: 'font2@gmail.com',
       signUpDate: '26/09/2023',
       signInRecent: '26/09/2023',
-      status: 'Offline'
+      status: 'Chưa kích hoạt'
     }
   ]
 

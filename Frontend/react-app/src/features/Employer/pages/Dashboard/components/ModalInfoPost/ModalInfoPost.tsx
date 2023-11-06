@@ -136,7 +136,7 @@ export interface JobType {
   is_salary_visible: boolean
   pretty_salary?: string
   working_locations: WorkingLocation[]
-  industries: string[]
+  careers: string[]
   skills: string[]
   expired_date?: string
   job_level: string
@@ -294,12 +294,17 @@ const ModalInfoPost = (props: any) => {
     const oldSelectedObj = arrLocations.filter((item) => item.key === key)
     const oldSelected = oldSelectedObj[0].selected
     const changeData = listLocation.map((item: SelectionLocationData) => {
-      if (item.value.branch_name === value) {
+      if (
+        `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}` === value
+      ) {
         item.disabled = true
-        oldSelectedObj[0].selected = value
+        oldSelectedObj[0].selected = `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}`
       }
 
-      if (item.value.branch_name === oldSelected) {
+      if (
+        `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}` ===
+        oldSelected
+      ) {
         item.disabled = false
       }
 
@@ -315,7 +320,10 @@ const ModalInfoPost = (props: any) => {
       const oldSelected = oldSelectedObj[0].selected
       if (oldSelected !== '_') {
         const changeData = listLocation.map((item: SelectionLocationData) => {
-          if (item.value.branch_name === oldSelected) {
+          if (
+            `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}` ===
+            oldSelected
+          ) {
             item.disabled = false
           }
           return item
@@ -443,7 +451,7 @@ const ModalInfoPost = (props: any) => {
       job_title: jobTitle,
       job_level: level,
       job_type: typeJob,
-      industries: industries,
+      careers: industries,
       working_locations: locationsFinal,
       skills: skills as string[],
       salary_range: {
@@ -522,19 +530,23 @@ const ModalInfoPost = (props: any) => {
       setJobTitle(rs.job_title)
       setLevel(rs.job_level)
       setTypeJob(rs.job_type)
-      setIndustries(rs.industries)
+      setIndustries(rs.careers)
       setJobDescription(rs.job_description)
       setJobRequirement(rs.job_requirement)
       //set work location
 
       const tempLoc = rs.working_locations.map((locationJob, index) => {
-        return { checked: false, key: index, selected: locationJob.branch_name }
+        return {
+          checked: false,
+          key: index,
+          selected: `${locationJob.branch_name}, ${locationJob.address}, ${locationJob.district}, ${locationJob.city_name}`
+        }
       })
       setArrLocations(tempLoc)
 
       for (let i = 0; i < rs.working_locations.length; i++) {
         form.setFieldsValue({
-          [`location_${i}`]: rs.working_locations[i].branch_name
+          [`location_${i}`]: `${rs.working_locations[i].branch_name}, ${rs.working_locations[i].address}, ${rs.working_locations[i].district}, ${rs.working_locations[i].city_name}`
         })
       }
       // rs.working_locations.map((locationJob, index) => {
@@ -548,7 +560,7 @@ const ModalInfoPost = (props: any) => {
       //   })
       // })
 
-      const mapLocations = listLocation.map((locationCompany) => {
+      const mapLocations: SelectionLocationData[] = listLocation.map((locationCompany) => {
         for (let i = 0; i < rs.working_locations.length; ++i) {
           if (locationCompany.value.branch_name === rs.working_locations[i].branch_name) {
             locationCompany.disabled = true
@@ -591,7 +603,7 @@ const ModalInfoPost = (props: any) => {
         jobTitle: rs.job_title,
         level: rs.job_level,
         typeJob: rs.job_type,
-        industry: rs.industries,
+        industry: rs.careers,
         descriptions: rs.job_description,
         requirements: rs.job_requirement,
         minSalary: rs.salary_range.min,
@@ -700,7 +712,7 @@ const ModalInfoPost = (props: any) => {
                     mode={'multiple'}
                     placeholder={'Chọn ngành nghề'}
                     size='large'
-                    options={industries.length === 3 ? maxItem : getAllIndustries}
+                    options={industries && industries.length === 3 ? maxItem : getAllIndustries}
                     onChange={(value) => setIndustries(value)}
                     maxTagCount={3}
                     // maxTagTextLength={10}
@@ -737,10 +749,11 @@ const ModalInfoPost = (props: any) => {
                           label: (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                               <ImLocation />
-                              {location.value.branch_name}
+                              {location.value.branch_name}, {location.value.address}, {location.value.district},{' '}
+                              {location.value.city_name}
                             </div>
                           ),
-                          value: location.value.branch_name,
+                          value: `${location.value.branch_name}, ${location.value.address}, ${location.value.district}, ${location.value.city_name}`,
                           disabled: location.disabled
                         }))}
                       />

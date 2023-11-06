@@ -54,6 +54,10 @@ export class Company {
     const rs: ApiResponse = await client.get(`jobs/published/company/${id}`)
     return rs
   }
+  public static checkFollowed = async (id: string) => {
+    const rs: ApiResponse = await client.get(`company/${id}/is_following`)
+    return rs
+  }
 }
 
 export default Company

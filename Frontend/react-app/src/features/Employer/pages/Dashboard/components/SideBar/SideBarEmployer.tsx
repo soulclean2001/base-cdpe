@@ -14,6 +14,7 @@ import { RootState } from '~/app/store'
 import { handleAutoChangeSideBarByWidth } from '../../../../employerSlice'
 import { FaIndustry } from 'react-icons/fa'
 import { InfoMeState } from '~/features/Account/meSlice'
+import avatarTemp from '~/assets/logo_temp.jpg'
 const SideBarEmployer = (props: any) => {
   const dispatch = useDispatch()
   const me: InfoMeState = useSelector((state: RootState) => state.me)
@@ -66,7 +67,13 @@ const SideBarEmployer = (props: any) => {
             alignItems: 'center'
           }}
         >
-          <img style={{ borderRadius: '50%' }} src={me.avatar} alt='' width={'40px'} height={'40px'} />
+          <img
+            style={{ borderRadius: '50%' }}
+            src={me.avatar && me.avatar !== '_' ? me.avatar : avatarTemp}
+            alt=''
+            width={'40px'}
+            height={'40px'}
+          />
           <span style={{ padding: '0 21px', fontWeight: 600, fontSize: '14px' }}>
             {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
           </span>
@@ -129,7 +136,7 @@ const SideBarEmployer = (props: any) => {
               </MenuItem>
               <MenuItem>
                 Hồ sơ đang theo dõi
-                <Link to={'/employer/dashboard/company-location'} />
+                <Link to={'/employer/dashboard/cv-manage/tracked-candidate'} />
               </MenuItem>
             </SubMenu>
           </Menu>

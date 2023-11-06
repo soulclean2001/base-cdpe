@@ -2,6 +2,8 @@ import { Tabs } from 'antd'
 import './style.scss'
 import { TabsProps } from 'antd/lib'
 import ItemJob from './components/ItemJob'
+import apiJobApplied from '~/api/jobsApplication.api'
+import { useEffect, useState } from 'react'
 const dataJobFollow = [
   {
     id: '1',
@@ -103,7 +105,19 @@ const items: TabsProps['items'] = [
     )
   }
 ]
+interface ListJobType {
+  [key: string]: any
+}
 const MyJobs = () => {
+  const [listJobs, setListJobs] = useState<ListJobType[]>([])
+  useEffect(() => {
+    fetchListJobs()
+  }, [])
+  const fetchListJobs = async () => {
+    await apiJobApplied.getAllJobApplicationsFromCandidate().then((rs) => {
+      console.log('rs', rs)
+    })
+  }
   return (
     <div className='my-jobs-container'>
       <div className='title'>Việc Làm Của Tôi</div>

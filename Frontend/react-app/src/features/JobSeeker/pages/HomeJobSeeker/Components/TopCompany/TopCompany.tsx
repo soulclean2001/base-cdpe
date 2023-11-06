@@ -1,4 +1,3 @@
-import logo from '../../../../../../assets/react.svg'
 import { useState, useEffect } from 'react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -8,20 +7,34 @@ import 'swiper/css/pagination'
 import './topCompany.scss'
 import { Pagination } from 'swiper/modules'
 import { Tooltip } from 'antd'
+import apiHome from '~/api/home.api'
+import logoTemp from '~/assets/HF_logo.jpg'
+import { useNavigate } from 'react-router-dom'
+interface DataType {
+  [key: string]: any
+}
 const TopCompany = () => {
-  const dataTopCompany = [
-    { id: '1', img: logo, name: 'KIMBERLY-CLARK 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
-    { id: '2', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 2' },
-    {
-      id: '3',
-      img: 'https://anhdepfree.com/wp-content/uploads/2022/11/anh-nen-co-chu-cute_60900974387-607x1080.jpg',
-      name: 'KIMBERLY-CLARK 3'
-    },
-    { id: '4', img: 'https://images.vietnamworks.com/logo/pvcom_vip_124084.png', name: 'KIMBERLY-CLARK 4' },
-    { id: '5', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' },
-    { id: '6', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' },
-    { id: '7', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' }
-  ]
+  const navigate = useNavigate()
+  const [listData, setListData] = useState<DataType[]>()
+  useEffect(() => {
+    fetchGetData()
+  }, [])
+  const fetchGetData = async () => {
+    await apiHome.getCompaniesBanner().then((rs) => {
+      console.log('list ', rs)
+      setListData(rs.result)
+    })
+  }
+  const handleClickShowDetail = (idCompany: string, nameCompany: string) => {
+    const convertNameEng = nameCompany
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+
+    navigate(`/companies/${convertName}-id-${idCompany}`)
+  }
+  //set css
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
     return { innerWidth, innerHeight }
@@ -49,6 +62,7 @@ const TopCompany = () => {
       window.removeEventListener('resize', handleWindowResize)
     }
   }, [windowSize])
+  //
   return (
     <div className='top-company-container'>
       <div className='title-top-company'>Các Công Ty Hàng Đầu</div>
@@ -65,16 +79,20 @@ const TopCompany = () => {
           modules={[Pagination]}
           className='mySwiper'
         >
-          {dataTopCompany &&
-            dataTopCompany.map((item) => (
-              <SwiperSlide key={item.id}>
+          {listData &&
+            listData.map((item) => (
+              <SwiperSlide key={item._id}>
                 <div className='top-company-item'>
-                  <img src={item.img} alt='' className='logo-company' />
+                  <img src={item.logo ? item.logo : logoTemp} alt='' className='logo-company' />
                   <Tooltip title={item.name}>
-                    <span className='name-company'>{item.name.slice(0, 16)}</span>
+                    <span className='name-company'>
+                      {item.company_name ? item.company_name.slice(0, 16) : 'Tên công ty'}
+                    </span>
                   </Tooltip>
 
-                  <button className='btn-detail'>Chi tiết</button>
+                  <button onClick={() => handleClickShowDetail(item._id, item.company_name)} className='btn-detail'>
+                    Chi tiết
+                  </button>
                 </div>
               </SwiperSlide>
             ))}

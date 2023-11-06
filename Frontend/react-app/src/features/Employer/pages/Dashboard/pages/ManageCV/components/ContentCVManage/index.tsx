@@ -20,6 +20,7 @@ import apiCompany from '~/api/company.api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { CgUnblock } from 'react-icons/cg'
+import { JobApplicationStatus } from '~/types/jobAppliacation.type'
 interface DataType {
   id: string
   key: string
@@ -56,6 +57,7 @@ const ContentCVManage = (props: any) => {
   const [dataRowSelected, setDataRowSelected] = useState<DataType>()
   const [idPost, setIdPost] = useState<string>()
   const limit = 2
+  const [pageClick, setPageClick] = useState(1)
   const [totalPage, setTotalPage] = useState(1)
   //search fillter
   const [listJobsApplied, setListJobsApplied] = useState<DataType[]>([])
@@ -124,6 +126,7 @@ const ContentCVManage = (props: any) => {
   }
   const handleChangeRowTable: TableProps<DataType>['onChange'] = async (pagination, filters, sorter) => {
     console.log('log data', pagination, filters, sorter)
+    setPageClick(pagination.current as number)
     setSortedInfo(sorter as SorterResult<DataType>)
     await fetchGetJobsApplication(pagination.current?.toString())
   }
@@ -140,18 +143,41 @@ const ContentCVManage = (props: any) => {
 
     navigate(`/employer/dashboard/cv-manage/${convertName}-id-${id}`)
   }
-
+  const fetchActionApplication = async (id: string, type?: string, status?: number) => {
+    if (!id) return
+    if (type === 'APPROVE') {
+      await apiJobsApplication.approveCV(id).then((rs) => {
+        console.log('approve', rs)
+        toast.success(`#CV_${id.slice(-5).toUpperCase()} đã được chấp nhận`)
+      })
+    }
+    if (type === 'REJECT') {
+      await apiJobsApplication.rejectCV(id).then((rs) => {
+        console.log('reject', rs)
+        toast.success(`#CV_${id.slice(-5).toUpperCase()} đã bị từ chối`)
+      })
+    }
+    if (status && status > -1) {
+      await apiJobsApplication.updateStatus(id, status).then((rs) => {
+        console.log('rs update', rs)
+        toast.success(
+          `#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${Object.values(JobApplicationStatus)[status]}`
+        )
+      })
+    }
+    fetchGetJobsApplication(pageClick.toString())
+  }
   const items: MenuProps['items'] = [
-    {
-      label: (
-        <Tooltip title='Gửi Mail'>
-          <a style={{ color: '#1677ff' }}>
-            <IoMdMail />
-          </a>
-        </Tooltip>
-      ),
-      key: '0'
-    },
+    // {
+    //   label: (
+    //     <Tooltip title='Gửi Mail'>
+    //       <a style={{ color: '#1677ff' }}>
+    //         <IoMdMail />
+    //       </a>
+    //     </Tooltip>
+    //   ),
+    //   key: '0'
+    // },
     // {
     //   label: (
     //     <Tooltip title='In CV'>
@@ -276,12 +302,12 @@ const ContentCVManage = (props: any) => {
               {record.status === '0' && (
                 <>
                   <Tooltip title='Chấp nhận CV'>
-                    <a>
+                    <a onClick={() => fetchActionApplication(record.id, 'APPROVE')}>
                       <FaUserPlus />
                     </a>
                   </Tooltip>
                   <Tooltip title='Từ chối CV'>
-                    <a style={{ fontSize: '19px' }}>
+                    <a onClick={() => fetchActionApplication(record.id, 'REJECT')} style={{ fontSize: '19px' }}>
                       <BiSolidUserX />
                     </a>
                   </Tooltip>
@@ -290,26 +316,26 @@ const ContentCVManage = (props: any) => {
               {record.status === '1' && (
                 <>
                   <Tooltip title='Interview'>
-                    <a style={{ fontSize: '19px' }}>
+                    <a onClick={() => fetchActionApplication(record.id, _, 4)} style={{ fontSize: '19px' }}>
                       <MdConnectWithoutContact />
                     </a>
                   </Tooltip>
-                  <a>
-                    <Tooltip title='Không thể liên hệ'>
+                  <Tooltip title='Không thể liên hệ'>
+                    <a onClick={() => fetchActionApplication(record.id, _, 7)}>
                       <BiCommentError />
-                    </Tooltip>
-                  </a>
+                    </a>
+                  </Tooltip>
                 </>
               )}
               {record.status === '3' && (
                 <>
                   <Tooltip title='Chấp nhận CV'>
-                    <a>
+                    <a onClick={() => fetchActionApplication(record.id, 'APPROVE')}>
                       <ImUserCheck />
                     </a>
                   </Tooltip>
                   <Tooltip title='Từ chối CV'>
-                    <a style={{ fontSize: '19px' }}>
+                    <a onClick={() => fetchActionApplication(record.id, 'REJECT')} style={{ fontSize: '19px' }}>
                       <BiSolidUserX />
                     </a>
                   </Tooltip>
@@ -317,13 +343,13 @@ const ContentCVManage = (props: any) => {
               )}
               {record.status === '4' && (
                 <>
-                  <a>
-                    <Tooltip title='Nhận việc'>
+                  <Tooltip title='Nhận việc'>
+                    <a onClick={() => fetchActionApplication(record.id, _, 5)}>
                       <FaUserCheck />
-                    </Tooltip>
-                  </a>
+                    </a>
+                  </Tooltip>
                   <Tooltip title='Từ chối'>
-                    <a style={{ fontSize: '19px' }}>
+                    <a onClick={() => fetchActionApplication(record.id, 'REJECT')} style={{ fontSize: '19px' }}>
                       <BiSolidUserX />
                     </a>
                   </Tooltip>
@@ -332,12 +358,12 @@ const ContentCVManage = (props: any) => {
               {record.status === '7' && (
                 <>
                   <Tooltip title='Interview'>
-                    <a style={{ fontSize: '19px' }}>
+                    <a onClick={() => fetchActionApplication(record.id, _, 4)} style={{ fontSize: '19px' }}>
                       <MdConnectWithoutContact />
                     </a>
                   </Tooltip>
                   <Tooltip title='Từ chối'>
-                    <a style={{ fontSize: '19px' }}>
+                    <a onClick={() => fetchActionApplication(record.id, 'REJECT')} style={{ fontSize: '19px' }}>
                       <BiSolidUserX />
                     </a>
                   </Tooltip>
@@ -457,7 +483,7 @@ const ContentCVManage = (props: any) => {
             columns={columns}
             dataSource={listJobsApplied}
             onChange={handleChangeRowTable}
-            pagination={{ pageSize: limit, total: totalPage }}
+            pagination={{ pageSize: limit, total: totalPage, current: pageClick }}
           />
         </div>
       </div>

@@ -10,26 +10,35 @@ import JobInfo from './components/JobInfo/JobInfo'
 import CompanyInfo from './components/CompanyInfo/CompanyInfo'
 // import ShowMoreJob from './components/ShowMoreJob/ShowMoreJob'
 import ModalApplyCV from './components/ModalApplyCV'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import apiPost from '~/api/post.api'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
 import ListJob from '../../../CompanyPage/pages/CompanyDetail/components/ListJob/ListJob'
 import logoTemp from '~/assets/HF_logo.jpg'
+import apiJobAplli from '~/api/jobsApplication.api'
+import { AuthState } from '~/features/Auth/authSlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 interface JobDetailType {
   [key: string]: any
 }
 const JobDetailPage = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
   const [isVisible, setIsVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isSubmit, setIsSubmit] = useState(false)
   const { infoUrlJobDetail } = useParams()
   const [jobDetail, setJobDetail] = useState<JobDetailType>()
   const [jobInfo, setJobInfo] = useState({})
   const [companyInfo, setCompanyInfo] = useState({})
   const [headerModalApply, setHeaderModalApply] = useState({})
+  const [checkApplied, setCheckApplied] = useState(false)
   const getPostById = async () => {
     if (infoUrlJobDetail) {
       const idJobDetail = infoUrlJobDetail.match(/id-(\w+)/)
-      await apiPost.getPostById(idJobDetail?.[1] as string).then((rs) => {
+      if (!idJobDetail || !idJobDetail[1]) return
+      await apiPost.getPostById(idJobDetail[1] as string).then((rs) => {
         setJobDetail(rs.result)
         setJobInfo({
           description: rs.result.job_description,
@@ -39,7 +48,7 @@ const JobDetailPage = () => {
           working_locations: rs.result.working_locations,
           created_at: rs.result.created_at.slice(0, 10).split('-').reverse().join('/'),
           job_level: rs.result.job_level,
-          industries: rs.result.industries,
+          industries: rs.result.careers,
           application_email: rs.result.application_email
         })
         setCompanyInfo({
@@ -48,11 +57,23 @@ const JobDetailPage = () => {
           company_size: rs.result.company.company_size
         })
       })
+      if (auth && auth.isLogin) {
+        await apiJobAplli.checkApplied(idJobDetail[1]).then((rs) => {
+          console.log('cehck appli', rs)
+          setCheckApplied(rs.result.is_applied)
+        })
+      }
     }
   }
   useEffect(() => {
     getPostById()
   }, [])
+  useEffect(() => {
+    if (isSubmit) {
+      getPostById()
+      setIsSubmit(false)
+    }
+  }, [isSubmit])
 
   useEffect(() => {
     // Theo dõi sự kiện cuộn chuột khi component được render
@@ -75,6 +96,10 @@ const JobDetailPage = () => {
     }
   }
   const showModalApplyCV = () => {
+    if (!auth || !auth.isLogin) {
+      navigate('/candidate-login')
+      return
+    }
     if (jobDetail) {
       setHeaderModalApply({
         id: jobDetail._id,
@@ -93,7 +118,10 @@ const JobDetailPage = () => {
       setIsModalOpen(true)
     }
   }
-
+  const handleSubmit = () => {
+    setIsSubmit(true)
+    setIsModalOpen(false)
+  }
   const handleCancel = () => {
     setIsModalOpen(false)
   }
@@ -171,10 +199,21 @@ const JobDetailPage = () => {
                 </Col>
                 <Col lg={6} md={8} sm={24} xs={24} className='btn-container'>
                   <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
-                  <Button onClick={showModalApplyCV} size='large' className='btn-apply'>
-                    Nộp Đơn
+                  <Button
+                    disabled={checkApplied}
+                    onClick={showModalApplyCV}
+                    size='large'
+                    className='btn-apply'
+                    style={{ backgroundColor: checkApplied ? '#f58968' : '#ff7d55' }}
+                  >
+                    {checkApplied ? 'Đã nộp đơn' : 'Nộp Đơn'}
                   </Button>
-                  <ModalApplyCV headerModalData={headerModalApply} open={isModalOpen} handleCancel={handleCancel} />
+                  <ModalApplyCV
+                    handleSubmit={handleSubmit}
+                    headerModalData={headerModalApply}
+                    open={isModalOpen}
+                    handleCancel={handleCancel}
+                  />
                 </Col>
               </Row>
             </Col>

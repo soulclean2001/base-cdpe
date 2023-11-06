@@ -68,7 +68,7 @@ const FindCandidatePage = () => {
   //page
   const [listCandidate, setListCandidate] = useState<AnyTypeCandidate[]>([])
   const [pageClick, setPageClick] = useState(1)
-  const [limitOnPage, setLimitOnPage] = useState(1)
+  const limitOnPage = 2
   const [totalItems, setTotalItems] = useState(2)
   //
   /*/ 
@@ -307,35 +307,7 @@ const FindCandidatePage = () => {
                 onChange={(value) => setEducation(value)}
               />
             </Form.Item>
-            {/* <h4 style={{ fontWeight: '500' }}>Độ tuổi</h4>
-            <Form.Item name='rangeYearOld' rules={[{ validator: validateMinMaxOrder2 }]}>
-              <Row justify={'space-between'} style={{ gap: '8px' }}>
-                <Col md={11} sm={11} xs={11}>
-                  <Input
-                    onKeyDown={(event) => {
-                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
-                        event.preventDefault()
-                      }
-                    }}
-                    size='middle'
-                    placeholder='Từ'
-                    onChange={(e) => setRangeYearOld({ ...rangeYearOld, min: e.target.value })}
-                  />
-                </Col>
-                <Col md={11} sm={11} xs={11} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <Input
-                    onKeyDown={(event) => {
-                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
-                        event.preventDefault()
-                      }
-                    }}
-                    size='middle'
-                    placeholder='Đến'
-                    onChange={(e) => setRangeYearOld({ ...rangeYearOld, max: e.target.value })}
-                  />
-                </Col>
-              </Row>
-            </Form.Item> */}
+
             <div className='btn-container' style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Button htmlType='submit' style={{ width: '49%', color: 'white', background: 'rgb(255, 125, 85)' }}>
                 Tìm kiếm
@@ -364,7 +336,8 @@ const FindCandidatePage = () => {
                   educationLevel: candidate.education_level,
                   provinceWanted: candidate.work_location,
                   expYear: candidate.experience,
-                  updateDate: candidate.cvs.updated_at.toString().slice(0, 10)
+                  updateDate: candidate.cvs.updated_at.toString().slice(0, 10),
+                  isFollowed: candidate.is_follwing
                 }}
               />
             ))}

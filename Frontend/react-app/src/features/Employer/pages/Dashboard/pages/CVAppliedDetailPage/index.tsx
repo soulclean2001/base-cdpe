@@ -15,6 +15,7 @@ import { MdConnectWithoutContact, MdDelete } from 'react-icons/md'
 import { IoMdMail } from 'react-icons/io'
 import { FiMoreVertical } from 'react-icons/fi'
 import { JobApplicationStatus } from '~/types/jobAppliacation.type'
+import avatarTemp from '~/assets/logo_temp.jpg'
 interface DetailType {
   [key: string]: any
 }
@@ -121,7 +122,11 @@ const CVAppliedDetailPage = () => {
         <div className='info-candidate'>
           <div className='header-container'>
             <div className='left-container'>
-              <Avatar className='avatar-candidate' size={'large'} src={dataCV.user_info.avatar} />
+              <Avatar
+                className='avatar-candidate'
+                size={'large'}
+                src={dataCV.user_info.avatar && dataCV.user_info.avatar !== '_' ? dataCV.user_info.avatar : avatarTemp}
+              />
               <div className='header-info-wapper'>
                 <div className='name'>{myDetail.full_name}</div>
                 <div className='wanted-job'>{`Chief Accountant`}</div>
@@ -133,10 +138,9 @@ const CVAppliedDetailPage = () => {
                 <div className='birth-date small-text-header-candidate-detail'>
                   Trạng thái: {Object.values(JobApplicationStatus)[Number(myDetail.status)]}
                 </div>
-                <div className='lasted-update-date small-text-header-candidate-detail'>{`Ngày nộp: ${myDetail.application_date.slice(
-                  0,
-                  10
-                )}`}</div>
+                <div className='lasted-update-date small-text-header-candidate-detail'>{`Ngày nộp: ${
+                  myDetail.application_date ? myDetail.application_date.slice(0, 10) : ''
+                }`}</div>
               </div>
             </div>
             <div className='right-btn-container'>

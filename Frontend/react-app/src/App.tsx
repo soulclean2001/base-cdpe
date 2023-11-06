@@ -67,6 +67,7 @@ import { ToastContainer } from 'react-toastify'
 import axios from 'axios'
 import apiClient from './api/client'
 import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVAppliedDetailPage'
+import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/CandidateFollowedPage'
 
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
@@ -248,6 +249,17 @@ function App() {
               }
             >
               <Route index element={<ManageCV />} />
+              <Route
+                path='tracked-candidate'
+                element={
+                  <>
+                    <Outlet />
+                  </>
+                }
+              >
+                <Route index element={<CandidateFollowedPage />} />
+                <Route path=':infoUrlCandidate' element={<CandidateDetailPage type={'FOLLOW_TYPE'} />} />
+              </Route>
               <Route path=':infoUrlAppliedCV' element={<CVAppliedDetailPage />} />
             </Route>
             <Route path='post-manage' element={<PostManagePage />} />

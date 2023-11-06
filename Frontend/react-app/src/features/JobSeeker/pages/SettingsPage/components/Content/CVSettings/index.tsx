@@ -19,13 +19,18 @@ const listLevel = [
 ]
 
 const listExpYears = [
-  { value: 0.9, label: 'Dưới 1 năm' },
+  { value: 0, label: 'Dưới 1 năm' },
   { value: 1, label: '1 năm' },
   { value: 2, label: '2 năm' },
   { value: 3, label: '3 năm' },
   { value: 4, label: '4 năm' },
   { value: 5, label: '5 năm' },
-  { value: 6, label: 'Trên 5 năm' }
+  { value: 6, label: '6 năm' },
+  { value: 7, label: '7 năm' },
+  { value: 8, label: '8 năm' },
+  { value: 9, label: '9 năm' },
+  { value: 10, label: '10 năm' },
+  { value: 11, label: 'Trên 10 năm' }
 ]
 const listEducationLevel = [
   {

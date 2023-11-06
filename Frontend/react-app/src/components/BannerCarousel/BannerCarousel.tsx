@@ -1,69 +1,57 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Carousel, Col, Row } from 'antd'
-import banner1 from '../../assets/alena-aenami-cold-1k.jpg'
-import banner2 from '../../assets/banner_2.webp'
-import banner3 from '../../assets/banner_3.webp'
-import banner4 from '../../assets/banner_4.webp'
 import './bannerCarousel.scss'
-
-// const infoCompanyStyle: React.CSSProperties ={
-
-// }
+import apiHome from '~/api/home.api'
+import logoTemp from '~/assets/HF_logo.jpg'
+import bannerTemp from '~/assets/banner_temp.jpg'
+import { useNavigate } from 'react-router-dom'
+interface DataType {
+  [key: string]: any
+}
 const BannerCarousel = () => {
-  const [dataForBanner, setDataforBanner] = useState([
-    {
-      id: '1',
-      img: banner1,
-      logo: banner1,
-      nameCompany: 'Mercedes-Ben'
-    },
-    {
-      id: '2',
-      img: banner2,
-      logo: banner2,
-      nameCompany: 'iTechwx Company'
-    },
-    {
-      id: '3',
-      img: banner3,
-      logo: banner3,
-      nameCompany: 'Explor Global'
-    },
-    {
-      id: '4',
-      img: banner4,
-      logo: banner4,
-      nameCompany: 'Chailie Binace'
-    },
-    {
-      id: '5',
-      img: banner4,
-      logo: banner4,
-      nameCompany: 'Chailie Binace'
-    }
-  ])
+  const navigate = useNavigate()
+  const [listData, setListData] = useState<DataType[]>()
+  useEffect(() => {
+    fetchGetData()
+  }, [])
+  const fetchGetData = async () => {
+    await apiHome.getCompaniesBanner().then((rs) => {
+      console.log('list ', rs)
+      setListData(rs.result)
+    })
+  }
+  const handleClickShowDetail = (idCompany: string, nameCompany: string) => {
+    const convertNameEng = nameCompany
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
+    navigate(`/companies/${convertName}-id-${idCompany}`)
+  }
   return (
     <>
       <Carousel autoplay style={{ padding: '15px' }}>
-        {dataForBanner &&
-          dataForBanner.map((item) => (
-            <div key={item.id}>
-              <img className='img-carousel' alt='' src={item.img} />
+        {listData &&
+          listData.map((item) => (
+            <div key={item._id}>
+              <img className='img-carousel' alt='' src={item.background ? item.background : bannerTemp} />
               <Row className='banner-info-company-container' justify={'center'} align={'middle'}>
                 <Col md={20} sm={18} xs={16}>
                   <Row className='info-company-content' align='middle'>
                     <Col md={3} sm={6} xs={6} className='logo-company'>
-                      <img alt='' src={item.logo} className='img-logo' />
+                      <img alt='' src={item.logo ? item.logo : logoTemp} className='img-logo' />
                     </Col>
                     <Col md={21} sm={18} xs={18} className='name-company'>
-                      {item.nameCompany}
+                      {item.company_name ? item.company_name.slice(0, 16) : 'Tên công ty'}
                     </Col>
                   </Row>
                 </Col>
 
                 <Col md={4} sm={6} xs={8} className='btn-join-container'>
-                  <button className='btn-join-now'>Xin việc</button>
+                  <button onClick={() => handleClickShowDetail(item._id, item.company_name)} className='btn-join-now'>
+                    Chi tiết
+                  </button>
                 </Col>
               </Row>
             </div>

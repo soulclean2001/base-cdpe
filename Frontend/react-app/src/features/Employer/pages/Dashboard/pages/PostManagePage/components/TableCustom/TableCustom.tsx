@@ -48,7 +48,7 @@ export interface JobType {
   expired_date?: Date
   user_id: string
   working_locations: WorkingLocation[]
-  industries: string[] // linh vuc cong ty
+  careers: string[] // linh vuc cong ty
   skills: string[] // ky nang
   job_level: string // cap bac
   posted_date?: Date // ngay dang
@@ -254,7 +254,7 @@ const TableCustom = (props: any) => {
       sortOrder: sortedInfo.columnKey === 'total_applied ' ? sortedInfo.order : null,
       ellipsis: true,
       showSorterTooltip: false,
-      render: (value, _) => <span>{value ? value : 0}</span>
+      render: (_, record) => <span>{record.total_applied ? record.total_applied : 0}</span>
     },
     {
       align: 'center',

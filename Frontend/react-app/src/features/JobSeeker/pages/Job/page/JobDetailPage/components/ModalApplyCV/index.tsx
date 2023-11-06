@@ -12,6 +12,8 @@ import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import logoTemp from '~/assets/HF_logo.jpg'
 import apiUpload from '~/api/upload.api'
+import { formatISO } from 'date-fns'
+import apiJobAppli, { ApplyReqBody } from '~/api/jobsApplication.api'
 interface HeaderModalApplyCVType {
   id: string
   logo: string
@@ -25,9 +27,10 @@ interface PropsType {
   headerModalData: HeaderModalApplyCVType
   open: boolean
   handleCancel: any
+  handleSubmit: any
 }
 const ModalApplyCV = (props: any) => {
-  const { headerModalData, open, handleCancel }: PropsType = props
+  const { headerModalData, open, handleCancel, handleSubmit }: PropsType = props
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   const [form] = Form.useForm()
@@ -39,7 +42,7 @@ const ModalApplyCV = (props: any) => {
   const [fileCV, setFileCV] = useState<UploadFile>()
   const [idCV, setIdCV] = useState('')
   const [isDisabledSelected, setIsDisabledSelected] = useState(false)
-
+  const [isRemoveFile, setIsRemoveFile] = useState(false)
   useEffect(() => {
     if (open) {
       if (!auth.isLogin && auth.verify !== 1) {
@@ -60,37 +63,59 @@ const ModalApplyCV = (props: any) => {
     })
   }
   const handleSubmitForm = async () => {
-    const data = {
+    let data = {
       idJob: headerModalData?.id,
       fullName,
       email,
       phone,
       typeCV,
-      fileCV: typeCV === 0 ? undefined : fileCV,
-      applicationDate: new Date().toLocaleString('vi-VN', {
-        timeZone: 'Asia/Ho_Chi_Minh'
-      }),
+      fileCV: typeCV === 0 ? undefined : fileCV && fileCV.originFileObj ? fileCV.originFileObj : undefined,
+      applicationDate: formatISO(new Date(), { representation: 'complete' }),
       cvId: typeCV === 0 ? idCV : '',
-      cvLink: 'upload link'
+      cvLink: ''
     }
 
     if (typeCV === 1 && !fileCV) {
       toast.error('Hồ sơ của bạn chưa được tải lên')
       return
     }
-    // if (data.fileCV && data.fileCV.originFileObj) {
-    //   const cvForm = new FormData()
-    //   cvForm.append('file', data.fileCV.originFileObj)
-    //   await apiUpload.uploadPDF(cvForm).then((rs) => {
-    //     console.log(rs)
-    //   })
-    // }
+    if (data.fileCV) {
+      let cvForm = new FormData()
+      // cvForm.append('title', 'filepdf')
+      cvForm.append('filepdf', data.fileCV)
 
-    console.log('form data post', data)
+      await apiUpload
+        .uploadPDF(cvForm)
+        .then((rs) => {
+          data = { ...data, cvLink: rs.result[0].url }
+        })
+        .catch(() => {
+          toast.error('Có lỗi xảy ra, vui lòng thử lại')
+        })
+    }
+    console.log('data final', data)
+    let request: ApplyReqBody = {
+      application_date: data.applicationDate,
+      email: data.email,
+      full_name: data.fullName,
+      job_post_id: data.idJob,
+      type: data.typeCV,
+      cv_id: data.cvId,
+      cv_link: data.cvLink,
+      phone_number: data.phone
+    }
+    await apiJobAppli
+      .applyJob(request)
+      .then((rs) => {
+        toast.success('Bạn đã nộp đơn xin việc thành công')
 
-    handleCancel()
-    form.resetFields()
-    // handleClose()
+        handleSubmit()
+        form.resetFields()
+      })
+      .catch((error) => {
+        toast.error(error.message)
+        console.error('API error:', error)
+      })
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -103,7 +128,7 @@ const ModalApplyCV = (props: any) => {
   const beforeUpload: UploadProps = {
     multiple: false,
     beforeUpload: (file) => {
-      console.log('file', file)
+      console.log('check file', file)
       const isPDF = file.type === 'application/pdf'
       if (!isPDF) {
         toast.error(`${file.name} không phải định dạng PDF`)
@@ -116,9 +141,9 @@ const ModalApplyCV = (props: any) => {
       return isPDF
     },
     onChange: (info) => {
-      // console.log(info.fileList)
-      console.log('info.file', info.file)
-      setFileCV(info.file)
+      console.log('info.file', info)
+      if (info.fileList[0]) setFileCV(info.fileList[0])
+      else setFileCV(undefined)
     }
   }
   const dummyRequest = ({ file, onSuccess }: any) => {

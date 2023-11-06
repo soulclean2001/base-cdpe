@@ -1,9 +1,9 @@
 .my-jobs-container {
   overflow: auto;
   max-height: 100vh;
-
   display: flex;
   flex-direction: column;
+  padding-bottom: 60px;
   gap: 10px;
   // font-family: Inter, Arial, sans-serif !important;
   background-color: rgb(247, 248, 250);
