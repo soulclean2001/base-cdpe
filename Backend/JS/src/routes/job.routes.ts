@@ -15,6 +15,9 @@ import { paginationValidator } from '~/utils/validation'
 const jobRouter = express.Router()
 
 jobRouter.get('/company', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getAllJobByCompany))
+
+// total job theo ngành nghề
+jobRouter.get('/total-job', wrapAsync(jobControllers.getTotalJobByCareer))
 jobRouter.get('/applied', accessTokenValidator, paginationValidator, wrapAsync(jobControllers.getAllJobsApplied))
 jobRouter.get('/company/filter', accessTokenValidator, jobQueryMiddleware, wrapAsync(jobControllers.getJobsByCompany))
 jobRouter.get('/company/:company_id', wrapAsync(jobControllers.getAllJobsByCompanyId))

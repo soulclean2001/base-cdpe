@@ -120,14 +120,33 @@ class JobApplicationService {
 
   static async getFromCandidate(userId: string) {
     const result = await databaseServices.jobApplication
-      .find({
-        user_id: new ObjectId(userId)
-      })
-      .project({
-        profile_status: 0,
-        status: 0,
-        deleted_at: 0
-      })
+      .aggregate([
+        {
+          $match: {
+            user_id: new ObjectId(userId)
+          }
+        },
+        {
+          $lookup: {
+            from: 'jobs',
+            localField: 'job_post_id',
+            foreignField: '_id',
+            as: 'job'
+          }
+        },
+        {
+          $unwind: {
+            path: '$job'
+          }
+        },
+        {
+          $project: {
+            profile_status: 0,
+            status: 0,
+            deleted_at: 0
+          }
+        }
+      ])
       .toArray()
 
     return result

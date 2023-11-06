@@ -106,6 +106,28 @@ class OrderController {
       result
     })
   }
+
+  async getAllCompanyBuyBannerStillValid(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const result = await OrderService.getAllCompanyBuyBannerStillValid()
+
+    return res.json({
+      message: 'get successfully',
+      result
+    })
+  }
+
+  async getAllJobHasCompanyBuyBannerStillValid(
+    req: Request<ParamsDictionary, any, any>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const result = await OrderService.getAllJobHasCompanyBuyBannerStillValid()
+
+    return res.json({
+      message: 'get successfully',
+      result
+    })
+  }
 }
 
 export default new OrderController()

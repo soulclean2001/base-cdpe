@@ -129,19 +129,37 @@ export default class TrackedCandidateService {
             }
           },
           {
+            $lookup: {
+              from: 'resumes',
+              localField: 'user._id',
+              foreignField: 'user_id',
+              as: 'cv'
+            }
+          },
+          {
+            $unwind: {
+              path: '$cv'
+            }
+          },
+          {
             $addFields: {
               candidate_name: '$user.name',
-              avatar: '$user.avatar'
+              cv_info: {
+                avatar: '$cv.user_info.avatar',
+                wanted_job_title: '$cv.user_info.wanted_job_title',
+                updated_at: '$cv.updated_at'
+              }
+            }
+          },
+          {
+            $project: {
+              user: 0,
+              cv: 0
             }
           },
           {
             $match: {
               ...options
-            }
-          },
-          {
-            $project: {
-              user: 0
             }
           },
           {

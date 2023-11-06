@@ -866,4 +866,25 @@ export default class JobService {
 
     return opts
   }
+
+  static async getTotalJobByCareer(career: string) {
+    const total = await databaseServices.job
+      .aggregate([
+        {
+          $match: {
+            careers: {
+              $in: ['Bán lẻ/ Bán sỉ']
+            },
+            visibility: true,
+            status: 0
+          }
+        },
+        {
+          $count: 'total'
+        }
+      ])
+      .toArray()
+
+    return total[0]?.total || 0
+  }
 }

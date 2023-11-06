@@ -14,14 +14,12 @@ jobApplicationRouter.post('/', accessTokenValidator, applyJobValidator, jobAppli
 jobApplicationRouter.post(
   '/approve/:job_application_id',
   accessTokenValidator,
-  applyJobValidator,
   idValidator('job_application_id'),
   jobApplicationControllers.appove
 )
 jobApplicationRouter.post(
   '/reject/:job_application_id',
   accessTokenValidator,
-  applyJobValidator,
   idValidator('job_application_id'),
   jobApplicationControllers.reject
 )

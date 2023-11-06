@@ -8,7 +8,11 @@ const orderRouter = express.Router()
 
 orderRouter.post('/', accessTokenValidator, orderItemValidator, wrapAsync(orderControllers.order))
 orderRouter.get('/', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getAllOrdersByCompany))
-orderRouter.get('/:order_id', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getOrdersDetailByCompany))
+// danh sách để hiển thị banner
+orderRouter.get('/list-banner', wrapAsync(orderControllers.getAllCompanyBuyBannerStillValid))
+// danh sách ...
+orderRouter.get('/best-jobs', wrapAsync(orderControllers.getAllJobHasCompanyBuyBannerStillValid))
+
 // kích hoạt service đã mua thành công
 orderRouter.get(
   '/active-order/:service_id',
@@ -16,5 +20,6 @@ orderRouter.get(
   isEmployer,
   wrapAsync(orderControllers.activeServiceOrder)
 )
+orderRouter.get('/:order_id', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getOrdersDetailByCompany))
 
 export default orderRouter

@@ -616,6 +616,121 @@ class OrderService {
       }
     }
   }
+
+  static async getAllCompanyBuyBannerStillValid() {
+    const companies = await databaseServices.serviceOrder
+      .aggregate([
+        {
+          $match: {
+            code: 'BANNER',
+            expired_at: {
+              $gte: new Date()
+            }
+          }
+        },
+        {
+          $group: {
+            _id: '$company_id'
+          }
+        },
+        {
+          $lookup: {
+            from: 'company',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'company'
+          }
+        },
+        {
+          $unwind: {
+            path: '$company'
+          }
+        },
+        {
+          $replaceRoot: {
+            newRoot: '$company'
+          }
+        },
+        {
+          $project: {
+            users: 0
+          }
+        }
+      ])
+      .toArray()
+
+    return companies
+  }
+
+  static async getAllJobHasCompanyBuyBannerStillValid() {
+    const companies = await databaseServices.serviceOrder
+      .aggregate([
+        {
+          $match: {
+            code: 'BANNER',
+            expired_at: {
+              $gte: new Date()
+            }
+          }
+        },
+        {
+          $group: {
+            _id: '$company_id'
+          }
+        },
+        {
+          $lookup: {
+            from: 'company',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'company'
+          }
+        },
+        {
+          $unwind: {
+            path: '$company'
+          }
+        },
+        {
+          $replaceRoot: {
+            newRoot: '$company'
+          }
+        },
+        {
+          $lookup: {
+            from: 'jobs',
+            localField: '_id',
+            foreignField: 'company_id',
+            as: 'job'
+          }
+        },
+        {
+          $unwind: {
+            path: '$job'
+          }
+        },
+        {
+          $sort: {
+            'job.posted_date': -1
+          }
+        },
+        {
+          $match: {
+            'job.visibility': true,
+            'job.status': 0
+          }
+        },
+        {
+          $project: {
+            users: 0,
+            'job.company': 0
+          }
+        }
+      ])
+      .toArray()
+
+    return companies
+  }
 }
 
 export default OrderService
