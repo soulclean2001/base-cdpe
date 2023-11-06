@@ -153,7 +153,34 @@ class JobApplicationService {
     return result
   }
 
-  static async getById(jobApplicationId: string) {
+  static async getById(userId: string, jobApplicationId: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'No company found',
+        status: 404
+      })
+
+    const jobApplication = await databaseServices.jobApplication.findOne({
+      _id: new ObjectId(jobApplicationId)
+    })
+
+    if (!jobApplication) return {}
+
+    const job = await databaseServices.job.findOne({
+      _id: jobApplication.job_post_id,
+      company_id: company._id
+    })
+
+    if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job  not found',
+        status: 404
+      })
+
     const result = await databaseServices.jobApplication
       .aggregate([
         {

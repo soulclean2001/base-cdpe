@@ -560,6 +560,13 @@ export default class JobService {
         status: 405
       })
     }
+
+    if (job.status !== JobStatus.Pending) {
+      return {
+        message: 'job status is not pending to approve'
+      }
+    }
+
     const result = await databaseServices.job.findOneAndUpdate(
       {
         _id: new ObjectId(jobId)
@@ -867,24 +874,40 @@ export default class JobService {
     return opts
   }
 
-  static async getTotalJobByCareer(career: string) {
+  static async getTotalJobByCareer() {
     const total = await databaseServices.job
       .aggregate([
         {
           $match: {
-            careers: {
-              $in: ['Bán lẻ/ Bán sỉ']
-            },
             visibility: true,
             status: 0
           }
         },
         {
-          $count: 'total'
+          $unwind: {
+            path: '$careers',
+            includeArrayIndex: 'string',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $group: {
+            _id: '$careers',
+            jobs: {
+              $push: '$$ROOT'
+            }
+          }
+        },
+        {
+          $project: {
+            jobs: {
+              $size: '$jobs'
+            }
+          }
         }
       ])
       .toArray()
 
-    return total[0]?.total || 0
+    return total
   }
 }

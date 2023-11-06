@@ -56,7 +56,7 @@ class JobApplicationController {
     const { user_id } = req.decoded_authorization
     const { job_application_id } = req.params
 
-    const result = await JobApplicationService.getById(job_application_id)
+    const result = await JobApplicationService.getById(user_id, job_application_id)
     return res.json({
       message: 'get job applications',
       result

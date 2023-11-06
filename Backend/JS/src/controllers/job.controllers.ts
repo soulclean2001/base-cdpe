@@ -152,9 +152,7 @@ class JobController {
   }
 
   async getTotalJobByCareer(req: Request<ParamsDictionary, any, any>, res: Response) {
-    const { career } = req.query
-
-    const result = await JobService.getTotalJobByCareer(career as string)
+    const result = await JobService.getTotalJobByCareer()
     return res.json({
       message: 'total job by career',
       result
