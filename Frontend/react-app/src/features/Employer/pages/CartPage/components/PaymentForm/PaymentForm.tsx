@@ -1,10 +1,37 @@
 import { Button, Col, Radio, RadioChangeEvent, Row, Space } from 'antd'
 import { useState } from 'react'
 import './style.scss'
+import CreatePayment from '../VNPAY/CreatePayment'
+import VNPayReturn from '../VNPAY/VNPayReturn'
+import apiOrder, { RequestOrderType } from '~/api/order.api'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 const initHiddens = { hiddenCredit: true, hiddenATMCards: true, hiddenBankings: true }
-const PaymentForm = () => {
+interface PropsType {
+  totalPay: number
+  items: {
+    item_id: string
+    quantity: number
+  }[]
+}
+const PaymentForm = (props: PropsType) => {
+  const { totalPay, items }: PropsType = props
   const [methodPayment, setMethodPayment] = useState(1)
   const [hidden, setHidden] = useState(initHiddens)
+  const [orderId, setOrderId] = useState('')
+  const navigate = useNavigate()
+  const handleCreateOrder = async () => {
+    console.log('items', items)
+    if (!items) return
+    let request: RequestOrderType = { items }
+    await apiOrder.postOrder(request).then((rs) => {
+      console.log('rs order', rs)
+      setOrderId(rs.result.order._id)
+      toast.success('Bạn đã tạo đơn đặt hàng thành công')
+      navigate('/employer/dashboard/my-orders')
+    })
+  }
+
   const onChange = (e: RadioChangeEvent) => {
     console.log('radio checked', e.target.value)
     if (e.target.value === 1) {
@@ -25,7 +52,9 @@ const PaymentForm = () => {
           <div>Tổng cộng</div>
           <div className='vat'>{`(chưa gồm VAT)`}</div>
         </Col>
-        <Col md={12} sm={24} xs={24} className='total-value'>{`${'4.000.000'} VND`}</Col>
+        <Col md={12} sm={24} xs={24} className='total-value'>{`${totalPay.toLocaleString('vi', {
+          currency: 'VND'
+        })} VND`}</Col>
       </Row>
       <hr />
       <Row className='total-container-vat' align={'middle'}>
@@ -33,7 +62,9 @@ const PaymentForm = () => {
           <div>Tổng cộng</div>
           <div className='vat'>{`(đã gồm VAT)`}</div>
         </Col>
-        <Col md={12} sm={24} xs={24} className='total-value'>{`${'4.400.000'} VND`}</Col>
+        <Col md={12} sm={24} xs={24} className='total-value'>{`${(totalPay * 0.1 + totalPay).toLocaleString('vi', {
+          currency: 'VND'
+        })} VND`}</Col>
       </Row>
       <hr />
       <div className='method-payment-container'>
@@ -56,7 +87,10 @@ const PaymentForm = () => {
           </Radio.Group>
         </div>
       </div>
+      <CreatePayment orderId={orderId} />
       <Button
+        disabled={!items || items.length < 1 ? true : false}
+        onClick={handleCreateOrder}
         size='large'
         style={{ width: '100%', marginTop: '17px', backgroundColor: 'rgb(255, 125, 85)', color: 'white' }}
       >{`Thanh toán bằng ${methodPayment === 1 ? 'Thẻ tín dụng' : methodPayment === 2 ? 'thẻ ATM' : 'Mã QR'}`}</Button>
@@ -65,6 +99,7 @@ const PaymentForm = () => {
           Khi gửi đơn hàng Quý khách được xem rằng đã đồng ý với Chính sách bảo mật và Điều khoản dịch vụ.
         </div>
       </div>
+      <VNPayReturn />
     </div>
   )
 }

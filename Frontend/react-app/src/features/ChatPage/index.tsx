@@ -16,9 +16,27 @@ const ChatPage = (props: any) => {
   const navigate = useNavigate()
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
-      if (auth.role === 2) navigate('/chat')
-      if (auth.role === 1) navigate('/employer/chat')
-      if (auth.role === 0) navigate('/admin/chat')
+      if (auth.role === 2) {
+        if (auth.verify !== 1) {
+          navigate('/active-page')
+          return
+        }
+        navigate('/chat')
+      }
+      if (auth.role === 1) {
+        if (auth.verify !== 1) {
+          navigate('/employer/active-page')
+          return
+        }
+        navigate('/employer/chat')
+      }
+      if (auth.role === 0) {
+        if (auth.verify !== 1) {
+          navigate('/admin/active-page')
+          return
+        }
+        navigate('/admin/chat')
+      }
     } else {
       if (auth.role === 2) navigate('/candidate-login')
       if (auth.role === 1) navigate('/employer-login')

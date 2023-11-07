@@ -83,9 +83,8 @@ const JobItem = (props: any) => {
           </span>
         </div>
         <div className='time-post'>
-          {timePost
-            ? timePost
-            : 'Hôm nayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy'}
+          {`Ngày đăng: `}
+          {timePost ? timePost : 'Hôm nay'}
         </div>
       </Col>
       <Col className='job-item-action' md={2} sm={3} xs={3}>

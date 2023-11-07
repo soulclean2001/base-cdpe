@@ -13,7 +13,6 @@ interface PropsType {
 
 const ServiceItem = (props: PropsType) => {
   const { data, idActive, hiddenBorder } = props
-  console.log(idActive)
 
   if (!data) return <></>
   return (
@@ -26,7 +25,7 @@ const ServiceItem = (props: PropsType) => {
         }}
       >
         <div className='name'>{data.name}</div>
-        <div className='price'>{`${data.price.toLocaleString('vi', { currency: 'VND' })} VND`}</div>
+        <div className='price'>{`${data.price.toLocaleString('vi', { currency: 'VND' })} VNĐ`}</div>
       </div>
     </div>
   )

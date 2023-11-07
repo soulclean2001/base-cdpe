@@ -20,7 +20,14 @@ const DashboarEmployer = () => {
   const navigate = useNavigate()
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
-      if (auth.role !== 1) navigate('/employer-login')
+      if (auth.role !== 1) {
+        navigate('/employer-login')
+        return
+      }
+      if (auth.verify !== 1) {
+        navigate('/employer/active-page')
+        return
+      }
     } else {
       navigate('/employer-login')
     }

@@ -56,12 +56,23 @@ const ListJob = (props: any) => {
                 img={job.company.logo}
                 nameJob={job.job_title}
                 nameCompany={job.company.company_name}
+                timePost={job.posted_date.slice(0, 10)}
                 salary={
                   job.is_salary_visible
                     ? `${job.salary_range.min.toLocaleString('vi', {
                         currency: 'VND'
                       })} - ${job.salary_range.max.toLocaleString('vi', { style: 'currency', currency: 'VND' })}`
                     : 'Thương lượng'
+                }
+                area={
+                  job.working_locations &&
+                  job.working_locations
+                    .map((loc: any) => {
+                      return loc.city_name
+                    })
+                    .filter((value: any, index: number, self: string) => {
+                      return self.indexOf(value) === index
+                    })
                 }
               />
             ))}

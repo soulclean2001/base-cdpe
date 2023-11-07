@@ -3,7 +3,10 @@ import { useState, useEffect } from 'react'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import './leftMenu.scss'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
 // const itemsLogin: MenuProps['items'] = [
 //   {
 //     label: <NavLink to={'/employer/services'}>Dịch vụ</NavLink>,
@@ -38,11 +41,15 @@ const items: MenuProps['items'] = [
 ]
 const LeftMenu = (props: any) => {
   const { isLogin, clearActiveMenu } = props
-  const navigate = useNavigate()
 
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   if (isLogin && items[items.length - 1]?.key !== 'dashboard') {
     items.push({
-      label: <NavLink to={'/employer/dashboard'}>Bảng điều khiển</NavLink>,
+      label: (
+        <NavLink to={auth.verify === 1 ? '/employer/dashboard' : '/employer/active-page'}>
+          {auth.verify === 1 ? 'Bảng điều khiển' : 'Kích hoạt tài khoản'}
+        </NavLink>
+      ),
       key: 'dashboard'
     })
   }

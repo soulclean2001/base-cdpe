@@ -146,6 +146,12 @@ const SideBarEmployer = (props: any) => {
               <Link to={'/employer/dashboard/my-services'} />
             </MenuItem>
           </Menu>
+          <Menu iconShape='circle'>
+            <MenuItem icon={<ShoppingFilled />}>
+              Đơn đặt hàng
+              <Link to={'/employer/dashboard/my-orders'} />
+            </MenuItem>
+          </Menu>
         </SidebarContent>
       )}
       {roleType === 'ADMIN_ROLE' && (

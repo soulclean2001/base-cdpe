@@ -5,6 +5,7 @@ import apiHome from '~/api/home.api'
 import logoTemp from '~/assets/HF_logo.jpg'
 import bannerTemp from '~/assets/banner_temp.jpg'
 import { useNavigate } from 'react-router-dom'
+import apiCompany from '~/api/company.api'
 interface DataType {
   [key: string]: any
 }
@@ -15,8 +16,14 @@ const BannerCarousel = () => {
     fetchGetData()
   }, [])
   const fetchGetData = async () => {
-    await apiHome.getCompaniesBanner().then((rs) => {
+    await apiHome.getCompaniesBanner().then(async (rs) => {
       console.log('list ', rs)
+      if (!rs.result) {
+        await apiCompany.searchCompany({ limit: '10', page: '1' }).then((rs) => {
+          setListData(rs.result.companies)
+        })
+        return
+      }
       setListData(rs.result)
     })
   }

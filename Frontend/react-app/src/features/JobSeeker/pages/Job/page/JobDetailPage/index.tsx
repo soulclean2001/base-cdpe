@@ -46,7 +46,7 @@ const JobDetailPage = () => {
           skills: rs.result.skills,
           benefits: rs.result.benefits,
           working_locations: rs.result.working_locations,
-          created_at: rs.result.created_at.slice(0, 10).split('-').reverse().join('/'),
+          created_at: rs.result.posted_date.slice(0, 10).split('-').reverse().join('/'),
           job_level: rs.result.job_level,
           industries: rs.result.careers,
           application_email: rs.result.application_email

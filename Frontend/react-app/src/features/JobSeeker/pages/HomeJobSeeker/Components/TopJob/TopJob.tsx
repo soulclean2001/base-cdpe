@@ -11,6 +11,8 @@ import { Grid, Pagination } from 'swiper/modules'
 import { Col, Row } from 'antd'
 import apiHome from '~/api/home.api'
 import logoTemp from '~/assets/HF_logo.jpg'
+import apiJob from '~/api/post.api'
+import { clear } from 'console'
 interface DataType {
   [key: string]: any
 }
@@ -21,8 +23,15 @@ const TopJob = () => {
     fetchGetData()
   }, [])
   const fetchGetData = async () => {
-    await apiHome.getTopJobs().then((rs) => {
-      console.log('list ', rs)
+    await apiHome.getTopJobs().then(async (rs) => {
+      if (!rs.result) {
+        await apiJob.searchJobs({ limit: '10', page: '1', sort_by_post_date: '1' }).then((rs) => {
+          setListData(rs.result.jobs)
+          console.log('abc', rs)
+        })
+        return
+      }
+
       setListData(rs.result)
     })
   }

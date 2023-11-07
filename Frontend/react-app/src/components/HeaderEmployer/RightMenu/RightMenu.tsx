@@ -10,7 +10,7 @@ import { GrUserSettings } from 'react-icons/gr'
 import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
 import { DownOutlined, UserOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '~/features/Auth/authSlice'
+import { AuthState, logout } from '~/features/Auth/authSlice'
 import { BsFillCartFill } from 'react-icons/bs'
 import NotifyDrawer from '~/components/Header/NotifyDrawer/NotifyDrawer'
 import ModalProfile from '~/components/ModalProfile'
@@ -27,6 +27,7 @@ const RightMenu = (props: any) => {
   const [openModalProfile, setOpenModalProfile] = useState(false)
   const navigate = useNavigate()
   const disPatch = useDispatch()
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
   const handleLogin = () => {
     navigate('/employer-login')
@@ -107,6 +108,7 @@ const RightMenu = (props: any) => {
             <NotifyDrawer dataNotify={dataNotify} roleType={roleType} open={openNotifyDrawer} onClose={onCloseDrawer} />
 
             <Button
+              disabled={auth.verify === 1 ? false : true}
               icon={<AiFillMessage />}
               className='btn-message'
               onClick={handleTabPageChat}
@@ -115,6 +117,7 @@ const RightMenu = (props: any) => {
             />
             {roleType === 'EMPLOYER_ROLE' && (
               <Button
+                disabled={auth.verify === 1 ? false : true}
                 icon={<BsFillCartFill />}
                 className='btn-cart'
                 onClick={handleTabPageCart}

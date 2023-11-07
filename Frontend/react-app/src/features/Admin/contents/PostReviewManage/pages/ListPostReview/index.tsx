@@ -67,20 +67,30 @@ const ListPostReview = () => {
   }
   const handleActionRequest = async (type: string, id: string) => {
     if (type === 'APPROVE') {
-      await apiAdmin.postApprovePostRequest(id).then(async (rs) => {
-        console.log('Rs action', rs)
-        await fetchGetListPostRequest().then(() => {
-          toast.success(`Đã thành công duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+      await apiAdmin
+        .postApprovePostRequest(id)
+        .then(async (rs) => {
+          console.log('Rs action', rs)
+          await fetchGetListPostRequest().then(() => {
+            toast.success(`Đã thành công duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+          })
         })
-      })
+        .catch(() => {
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại')
+        })
     }
     if (type === 'REJECT') {
-      await apiAdmin.postRejectPostRequest(id).then(async (rs) => {
-        console.log('Rs action', rs)
-        await fetchGetListPostRequest().then(() => {
-          toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+      await apiAdmin
+        .postRejectPostRequest(id)
+        .then(async (rs) => {
+          console.log('Rs action', rs)
+          await fetchGetListPostRequest().then(() => {
+            toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+          })
         })
-      })
+        .catch(() => {
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại')
+        })
     }
   }
   const handleOnchangePageClick = async (page: number, pageSize: number) => {

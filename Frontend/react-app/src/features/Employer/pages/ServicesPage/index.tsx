@@ -14,7 +14,14 @@ const ServicesPage = () => {
   const navigate = useNavigate()
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
-      if (auth.role !== 1) navigate('/employer-login')
+      if (auth.role !== 1) {
+        navigate('/employer-login')
+        return
+      }
+      if (auth.verify !== 1) {
+        navigate('/employer/active-page')
+        return
+      }
     } else {
       navigate('/employer-login')
     }
@@ -22,14 +29,14 @@ const ServicesPage = () => {
   const items: TabsProps['items'] = [
     {
       key: '1',
-      label: 'ĐĂNG TUYỂN',
+      label: 'ĐĂNG TUYỂN & QUẢNG CÁO',
       children: <PostServices />
-    },
-    {
-      key: '2',
-      label: 'TÌM HỒ SƠ',
-      children: <></>
     }
+    // {
+    //   key: '2',
+    //   label: 'TÌM HỒ SƠ',
+    //   children: <></>
+    // }
   ]
   return (
     <div className='services-page-container'>

@@ -13,9 +13,17 @@ const SettingsPage = () => {
   const navigate = useNavigate()
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
-      if (auth.role !== 2) navigate('/candidate-login')
+      if (auth.role !== 2) {
+        navigate('/candidate-login')
+        return
+      }
+      if (auth.verify !== 1) {
+        navigate('/active-page')
+        return
+      }
     } else {
       navigate('/candidate-login')
+      return
     }
   }, [auth])
   return (

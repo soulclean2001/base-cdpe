@@ -10,12 +10,13 @@ import { MdOutlineLogout } from 'react-icons/md'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { logout } from '~/features/Auth/authSlice'
+import { AuthState, logout } from '~/features/Auth/authSlice'
 import { useState } from 'react'
 import NotifyDrawer from '../NotifyDrawer/NotifyDrawer'
 import ModalProfile from '~/components/ModalProfile'
 import ModalChangePassword from '~/components/ModalChangePassword'
 import { InfoMeState } from '~/features/Account/meSlice'
+import { FaUserCheck } from 'react-icons/fa'
 
 const dataNotify = [
   { id: '1', name: 'VINFAT', actionInfo: 'Đã theo dõi CV của bạn' },
@@ -34,6 +35,7 @@ const dataNotify = [
   { id: '14', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' }
 ]
 const RightMenu = (props: any) => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
   const disPatch = useDispatch()
   const navigate = useNavigate()
@@ -55,9 +57,17 @@ const RightMenu = (props: any) => {
 
   const items: MenuProps['items'] = [
     {
-      label: <NavLink to={'/settings'}>Bảng điều khiển</NavLink>,
+      label: (
+        <>
+          {auth.verify !== 1 ? (
+            <NavLink to={'/active-page'}>Kích hoạt tài khoản</NavLink>
+          ) : (
+            <NavLink to={'/settings'}>Bảng điều khiển</NavLink>
+          )}
+        </>
+      ),
       key: 'key_settings_general',
-      icon: <AiFillDashboard />,
+      icon: <div style={{ paddingRight: '3px' }}>{auth.verify !== 1 ? <FaUserCheck /> : <AiFillDashboard />}</div>,
       style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
@@ -124,6 +134,7 @@ const RightMenu = (props: any) => {
               onClose={onCloseDrawer}
             />
             <Button
+              disabled={auth.verify === 1 ? false : true}
               icon={<AiFillMessage />}
               onClick={handleTabChat}
               className='btn-message'
