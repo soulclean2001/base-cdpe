@@ -13,6 +13,7 @@ import { isNumber, omit } from 'lodash'
 import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
 import NotificationService from './notification.services'
 import { NotificationObject } from '~/models/schemas/Notification.schema'
+import { sendEmailJobApply } from '~/utils/email'
 
 export interface searchJobApplication {
   content?: string
@@ -38,9 +39,9 @@ class JobApplicationService {
       }
       temp = { ...temp, cv_id: new ObjectId(payload.cv_id) }
     }
-    if (payload.application_date) {
-      temp = { ...temp, application_date: new Date(payload.application_date) }
-    }
+    // if (payload.application_date) {
+    //   temp = { ...temp, application_date: new Date(payload.application_date) }
+    // }
 
     if (payload.job_post_id) {
       temp = { ...temp, job_post_id: new ObjectId(payload.job_post_id) }
@@ -61,7 +62,7 @@ class JobApplicationService {
     const job = await databaseServices.job.findOne({
       _id: _payload.job_post_id
     })
-    if (job) {
+    if (job && result) {
       const company = await databaseServices.company.findOne({
         _id: job.company_id
       })
@@ -82,6 +83,17 @@ class JobApplicationService {
           type: 'post/applied'
         })
       }
+
+      await sendEmailJobApply(payload.email, {
+        logo_user: '',
+        company_logo: company?.logo as string,
+        company_name: company?.company_name as string,
+        job_title: job.job_title,
+        salary: job.is_salary_visible ? job.salary_range.min + ' - ' + job.salary_range.max : job.pretty_salary,
+        title: 'Ứng tuyển thành công!',
+        type_apply: _payload.type === 0 ? 'online' : 'PDF',
+        working_location: job.working_locations[0].city_name as string
+      })
     }
 
     return {

@@ -3,7 +3,7 @@ import { ApplyType, JobApplicationStatus } from '../schemas/JobApplication.schem
 
 export interface ApplyReqBody {
   job_post_id: string
-  application_date: string
+  application_date?: string
   cv_link?: string
   cv_id?: string
   full_name: string

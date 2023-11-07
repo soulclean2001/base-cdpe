@@ -13,6 +13,7 @@ const sesClient = new SESClient({
 })
 
 const verifyEmailTemplate = fs.readFileSync(path.resolve('src/templates/verify-email.html'), 'utf8')
+const emailJobApplyTemplate = fs.readFileSync(path.resolve('src/templates/email-job-apply.html'), 'utf8')
 
 const createSendEmailCommand = ({
   fromAddress,
@@ -62,6 +63,35 @@ const sendVerifyEmail = (toAddress: string, subject: string, body: string) => {
     subject
   })
   return sesClient.send(sendEmailCommand)
+}
+
+export const sendEmailJobApply = (
+  toAddress: string,
+  data: {
+    logo_user: string
+    title: string
+    company_name: string
+    company_logo: string
+    job_title: string
+    salary: string
+    working_location: string
+    type_apply: string
+  },
+  template: string = emailJobApplyTemplate
+) => {
+  return sendVerifyEmail(
+    toAddress,
+    'Thông báo ứng tuyển',
+    template
+      .replace('{{logo_user}}', data.logo_user)
+      .replace('{{title}}', data.title)
+      .replace('{{company_name}}', data.company_name)
+      .replace('{{company_logo}}', data.company_name)
+      .replace('{{job_title}}', data.job_title)
+      .replace('{{salary}}', data.salary)
+      .replace('{{working_location}}', data.working_location)
+      .replace('{{type_apply}}', data.type_apply)
+  )
 }
 
 export const sendVerifyRegisterEmail = (

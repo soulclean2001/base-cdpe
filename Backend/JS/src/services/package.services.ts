@@ -56,10 +56,25 @@ export default class PackageService {
 
     const oldUrls = []
     if (oldPkg && oldPkg.preview && data.preview !== undefined) {
-      const convertToS3Url = oldPkg.preview.match(/images\/.*/)
-      if (convertToS3Url && convertToS3Url.length > 0) oldUrls.push(convertToS3Url[0])
+      const previews = []
+      for (let j = 0; j < data.preview.length; j++) {
+        if (data.preview[j].match(/images\/.*/)) {
+          previews.push(data.preview[j])
+        }
+      }
+
+      for (let i = 0; i < oldPkg.preview.length; i++) {
+        if (!previews.includes(oldPkg.preview[i])) {
+          const convertToS3Url = oldPkg.preview[i].match(/images\/.*/)
+          if (convertToS3Url && convertToS3Url.length > 0) oldUrls.push(convertToS3Url[0])
+        }
+      }
     }
-    if (oldUrls.length === 1) await deleteFileFromS3(oldUrls[0])
+    if (oldUrls.length >= 1) {
+      for (let i = 0; i < oldUrls.length; i++) {
+        await deleteFileFromS3(oldUrls[i])
+      }
+    }
 
     return pkg.value
   }
@@ -123,21 +138,25 @@ export default class PackageService {
     return pkg
   }
 
-  static async getAllPackagesByTitle(limit: number = 10, page: number = 1, title: string) {
+  static async getAllPackagesByTitle(limit: number = 10, page: number = 1, filter: { title?: string; type?: string }) {
     // const pkg = await databaseServices.package.find({}).toArray()
 
     const $match: {
       [key: string]: any
     } = {}
 
-    if (title) {
-      const keyword = title.trim()
+    if (filter.title) {
+      const keyword = filter.title.trim()
       const keywords = keyword.split(' ').map(escapeRegExp).join('|')
       const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
 
       $match['title'] = {
         $regex: regex
       }
+    }
+
+    if (filter.type) {
+      $match['type'] = filter.type.toUpperCase()
     }
 
     const [pks, total] = await Promise.all([

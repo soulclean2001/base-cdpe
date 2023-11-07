@@ -26,7 +26,7 @@ export interface JobApplicationType {
   _id?: ObjectId
   job_post_id: ObjectId
   user_id: ObjectId
-  application_date: Date
+  application_date?: Date
   cv_link?: string
   status: JobApplicationStatus
   cv_id?: ObjectId
@@ -62,7 +62,7 @@ export default class JobApplication {
     this._id = data._id
     this.job_post_id = data.job_post_id
     this.user_id = data.user_id
-    this.application_date = data.application_date
+    this.application_date = data.application_date || now
     this.status = data.status
     this.cv_id = data.cv_id
     this.cv_link = data.cv_link || ''

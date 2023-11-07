@@ -73,8 +73,7 @@ class PackageController {
 
     const limit = Number(req.query.limit) || 10
     const page = Number(req.query.page) || 1
-    const title = String(req.query.title) || ''
-    const result = await PackageService.getAllPackagesByTitle(limit, page, title)
+    const result = await PackageService.getAllPackagesByTitle(limit, page, req.query)
     return res.json({
       message: 'Get all package',
       result

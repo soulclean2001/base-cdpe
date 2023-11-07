@@ -16,7 +16,7 @@ export interface PackageType {
   includes: string
   code?: string
   discount_price?: number
-  preview?: string
+  preview?: string[]
   deleted_at?: Date
   created_at?: Date
   updated_at?: Date
@@ -34,7 +34,7 @@ export default class Package {
   includes: string
   code: string
   discount_price: number
-  preview: string
+  preview: string[]
   deleted_at?: Date
   created_at: Date
   updated_at: Date
@@ -52,7 +52,7 @@ export default class Package {
     this.includes = data.includes
     this.code = data.code || ''
     this.discount_price = data.discount_price || data.price
-    this.preview = data.preview || ''
+    this.preview = data.preview || []
     this.created_at = data.created_at || date
     this.updated_at = data.updated_at || date
     this.status = data.status || PackageStatus.ARCHIVE

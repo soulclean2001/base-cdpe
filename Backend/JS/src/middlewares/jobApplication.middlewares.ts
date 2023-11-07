@@ -28,7 +28,8 @@ export const applyJobValidator = validate(
         }
       },
       application_date: {
-        ...isISO8601('application_date')
+        ...isISO8601('application_date'),
+        optional: true
       },
       cv_link: {
         custom: {
