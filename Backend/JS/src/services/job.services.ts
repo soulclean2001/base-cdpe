@@ -534,7 +534,7 @@ export default class JobService {
     }
   }
 
-  static async approveJob(jobId: string) {
+  static async approveJob(jobId: string, userId: string) {
     const job = await databaseServices.job.findOne({
       _id: new ObjectId(jobId)
     })
@@ -544,8 +544,16 @@ export default class JobService {
         message: 'Job not found',
         status: 404
       })
+
+    if (job.status !== JobStatus.Pending) {
+      return {
+        message: 'job status is not pending to approve'
+      }
+    }
+
     const company = await databaseServices.company.findOne({
-      _id: job.company_id
+      _id: job.company_id,
+      'users.user_id': new ObjectId(userId)
     })
 
     if (!company)
@@ -559,12 +567,6 @@ export default class JobService {
         message: 'You are not enough number of posts',
         status: 405
       })
-    }
-
-    if (job.status !== JobStatus.Pending) {
-      return {
-        message: 'job status is not pending to approve'
-      }
     }
 
     const result = await databaseServices.job.findOneAndUpdate(
@@ -636,7 +638,34 @@ export default class JobService {
     }
   }
 
-  static async rejectJob(jobId: string) {
+  static async rejectJob(jobId: string, userId: string) {
+    const job = await databaseServices.job.findOne({
+      _id: new ObjectId(jobId)
+    })
+
+    if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job not found',
+        status: 404
+      })
+
+    if (job.status !== JobStatus.Pending) {
+      return {
+        message: 'job status is not pending to approve'
+      }
+    }
+
+    const company = await databaseServices.company.findOne({
+      _id: job.company_id,
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
     const result = await databaseServices.job.findOneAndUpdate(
       {
         _id: new ObjectId(jobId)

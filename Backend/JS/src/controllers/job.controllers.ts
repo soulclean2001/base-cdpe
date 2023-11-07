@@ -43,14 +43,18 @@ class JobController {
   }
 
   async approveJob(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+
     const { job_id } = req.params
-    const result = await JobService.approveJob(job_id)
+    const result = await JobService.approveJob(job_id, user_id)
     return res.json(result)
   }
 
   async rejectJob(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+
     const { job_id } = req.params
-    const result = await JobService.rejectJob(job_id)
+    const result = await JobService.rejectJob(job_id, user_id)
     return res.json(result)
   }
 
