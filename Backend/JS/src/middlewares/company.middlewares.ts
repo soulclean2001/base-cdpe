@@ -40,6 +40,42 @@ export const updateCompanyValidator = validate(
           }
         }
       },
+
+      pictures: {
+        optional: true,
+        custom: {
+          options: async (value: any, { req }) => {
+            if (!isArray(value)) throw new Error('pictures must be an array')
+
+            for (const v of value) {
+              if (!v) {
+                throw new Error('each value of pictures is not empty')
+              } else if (typeof v !== 'string') {
+                throw new Error('each value of pictures must be string')
+              }
+            }
+            return true
+          }
+        }
+      },
+      videos: {
+        optional: true,
+        custom: {
+          options: async (value: any, { req }) => {
+            if (!isArray(value)) throw new Error('videos must be an array')
+
+            for (const v of value) {
+              if (!v) {
+                throw new Error('each value of videos is not empty')
+              } else if (typeof v !== 'string') {
+                throw new Error('each value of videos must be string')
+              }
+            }
+            return true
+          }
+        }
+      },
+
       company_size: {
         optional: true,
         notEmpty: {

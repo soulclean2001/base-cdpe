@@ -120,6 +120,50 @@ class OrderService {
     }
     od._id = result.insertedId
 
+    const cart = await databaseServices.cart.findOne({
+      user_id: new ObjectId(user_id)
+    })
+
+    const cartItems = await databaseServices.cartItem
+      .find({
+        cart_id: cart?._id
+      })
+      .toArray()
+
+    if (cartItems) {
+      const newCartItems = []
+      for (let i = 0; i < cartItems.length; i++) {
+        for (let j = 0; j < items.length; j++) {
+          if (items[j].item_id === cartItems[i].item.item_id) {
+            if (items[j].quantity < cartItems[i].item.quantity) {
+              cartItems[i].item.quantity = cartItems[i].item.quantity - items[j].quantity
+              newCartItems.push(cartItems[i])
+            } else if (items[j].quantity === cartItems[i].item.quantity) {
+              await databaseServices.cartItem.deleteOne({
+                item: {
+                  item_id: cartItems[i].item.item_id
+                }
+              })
+            }
+            break
+          }
+        }
+      }
+
+      for (let i = 0; i < newCartItems.length; i++) {
+        await databaseServices.cartItem.updateOne(
+          {
+            _id: newCartItems[i]._id
+          },
+          {
+            $set: {
+              item: newCartItems[i].item
+            }
+          }
+        )
+      }
+    }
+
     const servicesSaved = await databaseServices.serviceOrder.insertMany(services)
 
     return {

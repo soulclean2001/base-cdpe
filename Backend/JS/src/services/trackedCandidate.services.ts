@@ -22,7 +22,7 @@ export default class TrackedCandidateService {
     })
 
     if (result) {
-      await databaseServices.trackedCandidate.findOneAndUpdate(
+      const candidate = await databaseServices.trackedCandidate.findOneAndUpdate(
         {
           candidate_id: new ObjectId(candidateId),
           company_id: company._id
@@ -35,9 +35,11 @@ export default class TrackedCandidateService {
           returnDocument: 'after'
         }
       )
+
+      return candidate
     }
 
-    return 'tracked candidate'
+    return {}
   }
 
   static async untrackedCandidate(userId: string, candidateId: string) {

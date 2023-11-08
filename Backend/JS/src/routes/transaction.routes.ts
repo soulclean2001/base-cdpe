@@ -25,7 +25,7 @@ transactionRouter.post(
   wrapAsync(async function (req, res, next) {
     const ordId = req.body.order_id
 
-    if (!ordId || ObjectId.isValid(ordId)) {
+    if (!ordId || !ObjectId.isValid(ordId)) {
       throw new ErrorWithStatus({
         message: 'Invalid order ',
         status: 405
