@@ -99,7 +99,7 @@ class OrderController {
         status: 422
       })
 
-    const result = await OrderService.activeServiceOrder(service_id, user_id)
+    const result = await OrderService.activeServiceOrder(service_id)
 
     return res.json({
       message: 'active service',

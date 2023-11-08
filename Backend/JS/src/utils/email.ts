@@ -76,6 +76,8 @@ export const sendEmailJobApply = (
     salary: string
     working_location: string
     type_apply: string
+    name: string
+    message?: string
   },
   template: string = emailJobApplyTemplate
 ) => {
@@ -83,14 +85,16 @@ export const sendEmailJobApply = (
     toAddress,
     'Thông báo ứng tuyển',
     template
-      .replace('{{logo_user}}', data.logo_user)
-      .replace('{{title}}', data.title)
-      .replace('{{company_name}}', data.company_name)
-      .replace('{{company_logo}}', data.company_name)
-      .replace('{{job_title}}', data.job_title)
-      .replace('{{salary}}', data.salary)
-      .replace('{{working_location}}', data.working_location)
-      .replace('{{type_apply}}', data.type_apply)
+      .replace(/{{logo_user}}/g, data.logo_user)
+      .replace(/{{title}}/g, data.title)
+      .replace(/{{name}}/g, data.name)
+      .replace(/{{company_name}}/g, data.company_name)
+      .replace(/{{company_logo}}/g, data.company_logo)
+      .replace(/{{job_title}}/g, data.job_title)
+      .replace(/{{salary}}/g, data.salary)
+      .replace(/{{working_location}}/g, data.working_location)
+      .replace(/{{type_apply}}/g, data.type_apply)
+      .replace(/{{message}}/g, data.message || '')
   )
 }
 

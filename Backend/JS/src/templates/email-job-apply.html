@@ -1,76 +1,112 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!doctype html>
 <html>
   <head>
-    <!-- Compiled with Bootstrap Email version: 1.3.1 -->
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <meta name="x-apple-disable-message-reformatting" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="format-detection" content="telephone=no, date=no, address=no, email=no" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
-    <style type="text/css">
+    <style>
       body {
-        font-family: 'Roboto';
+        font-family: 'Roboto', Arial, sans-serif;
         font-size: 18px;
         color: #333;
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-    </style>
-  </head>
-  <body>
-    <div
-      class="header"
-      style="
-        background: rgb(2, 0, 36);
+      .header {
         background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 19%, rgba(0, 89, 254, 1) 100%);
         height: 70px;
         color: white;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 30px;
-      "
-    >
-      <div style="display: flex; align-items: center">
-        <p style="margin: 0; font-size: 25px">HFWORK</p>
-      </div>
-      <div>
-        <div
-          style="
-            border-top-left-radius: 50% 50%;
-            border-top-right-radius: 50% 50%;
-            border-bottom-right-radius: 50% 50%;
-            border-bottom-left-radius: 50% 50%;
-            background-color: #fff;
-            height: 50px;
-            width: 50px;
-          "
-        >
-          <img style="width: 100%; border-radius: 50%" src="{{logo_user}}" alt="user" />
-        </div>
-      </div>
-    </div>
-    <div style="padding: 0 25px">
-      <p style="margin-bottom: 5px; font-size: 25px; font-weight: 600">{{title}}</p>
-      <p style="margin-top: 5px; padding-bottom: 10px">Xin chào {{name}},</p>
-      <p>Hồ sơ của bạn đã được gửi đến <b>{{company_name}}</b></p>
-      <div style="background-color: #eff5ff; padding: 25px; border-radius: 5px; display: flex">
-        <div style="margin-right: 20px; width: 80px">
-          <img style="width: 100%; border-radius: 3px" src="{{company_logo}}" alt="logo" />
-        </div>
-        <div>
-          <p style="margin-top: 0"><b>{{job_title}}</b></p>
-          <p style="margin-top: 0; font-size: 16px; color: #8b8888">{{company_name}}</p>
-          <p style="margin-top: 0; font-size: 16px">
-            <span style="color: #f45d2f; font-weight: 600">{{salary}}</span> | <b>{{working_location}}</b>
-          </p>
-          <p style="margin-top: 0; font-size: 16px; color: #8b8888">Loại hồ sơ ứng tuyển: {{type_apply}}</p>
-        </div>
-      </div>
-
-      <p>Nhà tuyển dụng sẽ đánh giá và liên hệ với bạn nhanh nhất nếu hồ sơ của bạn phù hợp.</p>
-    </div>
+      }
+      .header p {
+        margin: 0;
+        font-size: 25px;
+      }
+      .user-img {
+        background-color: #fff;
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        background: url({{logo_user}}) no-repeat center/cover;
+        /* {{logo_user}} */
+        border: 2px solid;
+        margin: 0 auto;
+      }
+      .email-content {
+        padding: 0 25px;
+      }
+      .email-title {
+        margin-bottom: 5px;
+        font-size: 25px;
+        font-weight: 600;
+      }
+      .email-greeting {
+        margin-top: 5px;
+        padding-bottom: 10px;
+      }
+      .email-text {
+        font-size: 16px;
+      }
+      .email-text b {
+        font-weight: 600;
+      }
+      .email-text-company {
+        color: #8b8888;
+      }
+      .email-text-company_title {
+        color: #313030;
+      }
+      .email-text-salary {
+        color: #f45d2f;
+        font-weight: 600;
+      }
+      .company-logo {
+        width: 80px;
+        height: 80px;
+        background: url({{company_logo}}) no-repeat center/cover;
+        background-size: contain;
+        /* {{company_logo}} */
+        border-radius: 3px;
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td class="header" colspan="2">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <p style="padding-left: 30px">HFWORK</p>
+              </td>
+              <td>
+                <div class="user-img"></div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td class="email-content" colspan="2">
+          <p class="email-title">{{title}}</p>
+          <p class="email-greeting">Xin chào {{name}},</p>
+          <p>Hồ sơ của bạn đã được gửi đến <b>{{company_name}}</b></p>
+          <table width="550px" style="background-color: #eff5ff; border-radius: 5px" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="100px">
+                <div class="company-logo"></div>
+              </td>
+              <td>
+                <p class="email-text email-text-company_title"><b>{{job_title}}</b></p>
+                <p class="email-text email-text-company">{{company_name}}</p>
+                <p class="email-text">
+                  <span class="email-text-salary">{{salary}}</span> | <b>{{working_location}}</b>
+                </p>
+                <p class="email-text email-text-company">Loại hồ sơ ứng tuyển: {{type_apply}}</p>
+              </td>
+            </tr>
+          </table>
+          <p>{{message}}</p>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

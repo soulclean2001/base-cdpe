@@ -574,23 +574,13 @@ class OrderService {
     }
   }
 
-  static async activeServiceOrder(id: string, userId: string) {
-    const company = await databaseServices.company.findOne({
-      'users.user_id': new ObjectId(userId)
-    })
-
-    if (!company)
-      throw new ErrorWithStatus({
-        message: 'Company not found',
-        status: 404
-      })
-
+  static async activeServiceOrder(id: string) {
     const service = await databaseServices.serviceOrder.findOne({
       _id: new ObjectId(id)
     })
 
     if (service && service.status === ServicePackageStatus.UnActive) {
-      await databaseServices.serviceOrder.updateOne(
+      const serviceOrder = await databaseServices.serviceOrder.findOneAndUpdate(
         {
           _id: new ObjectId(id)
         },
@@ -598,14 +588,20 @@ class OrderService {
           $set: {
             status: ServicePackageStatus.Active
           }
+        },
+        {
+          returnDocument: 'after'
         }
       )
 
-      if (service.code === PackageType.POST) {
+      const company = await databaseServices.company.findOne({
+        _id: serviceOrder.value?.company_id
+      })
+
+      if (service.code === PackageType.POST && company && serviceOrder) {
         await databaseServices.company.updateOne(
           {
-            'users.user_id': new ObjectId(userId),
-            _id: company._id
+            _id: serviceOrder.value?.company_id
           },
           {
             $set: {
@@ -623,6 +619,7 @@ class OrderService {
         {
           $match: {
             code: 'BANNER',
+            status: 0,
             expired_at: {
               $gte: new Date()
             }
@@ -668,6 +665,7 @@ class OrderService {
         {
           $match: {
             code: 'BANNER',
+            status: 0,
             expired_at: {
               $gte: new Date()
             }

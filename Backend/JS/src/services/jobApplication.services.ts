@@ -84,16 +84,23 @@ class JobApplicationService {
         })
       }
 
-      await sendEmailJobApply(payload.email, {
-        logo_user: '',
-        company_logo: company?.logo as string,
-        company_name: company?.company_name as string,
+      const user = await databaseServices.users.findOne({
+        _id: new ObjectId(userId)
+      })
+      const dataEmail = {
+        logo_user: user?.avatar || '',
+        company_logo: (company?.logo as string) || '',
+        company_name: (company?.company_name as string) || '',
         job_title: job.job_title,
         salary: job.is_salary_visible ? job.salary_range.min + ' - ' + job.salary_range.max : job.pretty_salary,
         title: 'Ứng tuyển thành công!',
         type_apply: _payload.type === 0 ? 'online' : 'PDF',
-        working_location: job.working_locations[0].city_name as string
-      })
+        working_location: job.working_locations[0].city_name as string,
+        name: payload.full_name,
+        message: 'Nhà tuyển dụng sẽ đánh giá và liên hệ với bạn nhanh nhất nếu hồ sơ của bạn phù hợp.'
+      }
+
+      await sendEmailJobApply(payload.email, dataEmail)
     }
 
     return {
@@ -250,6 +257,28 @@ class JobApplicationService {
         recievers: [result.value.user_id.toString()],
         type: 'cv/approved'
       })
+
+      const user = await databaseServices.users.findOne({
+        _id: new ObjectId(result.value.user_id)
+      })
+
+      const dataEmail = {
+        logo_user: user?.avatar || '',
+        company_logo: (company?.logo as string) || '',
+        company_name: (company?.company_name as string) || '',
+        job_title: job?.job_title || '',
+        salary: job?.is_salary_visible
+          ? job.salary_range.min + ' - ' + job.salary_range.max
+          : job?.pretty_salary || 'Thương lượng',
+        title: 'Ứng tuyển thành công!',
+        type_apply: result.value.type === 0 ? 'online' : 'PDF',
+        working_location: (job?.working_locations[0].city_name as string) || '',
+        name: result.value.full_name,
+        message:
+          'Nhà tuyển dụng sẽ liên hệ với bạn nhanh nhất có thể vui lòng kiểm tra email hoặc điện thoại để được nhận thông báo.'
+      }
+
+      await sendEmailJobApply(result.value.email, dataEmail)
     }
 
     return {
