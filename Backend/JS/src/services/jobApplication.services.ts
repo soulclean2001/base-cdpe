@@ -162,7 +162,6 @@ class JobApplicationService {
         {
           $project: {
             profile_status: 0,
-            status: 0,
             deleted_at: 0
           }
         }

@@ -258,7 +258,7 @@ class OrderService {
           },
           {
             $sort: {
-              created_at: sortByDate
+              'order.created_at': sortByDate
             }
           },
           {
@@ -537,15 +537,15 @@ class OrderService {
             }
           },
           {
+            $sort: {
+              'order.created_at': sortByDate
+            }
+          },
+          {
             $skip: limit * (page - 1)
           },
           {
             $limit: limit
-          },
-          {
-            $sort: {
-              'order.created_at': sortByDate
-            }
           }
         ])
         .toArray(),

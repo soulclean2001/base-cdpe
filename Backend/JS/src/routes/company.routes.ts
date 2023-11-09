@@ -20,7 +20,9 @@ companyRouter.patch(
     'logo',
     'background',
     'working_locations',
-    'fields'
+    'fields',
+    'pictures',
+    'videos'
   ]),
   wrapAsync(companyControllers.updateCompany)
 )

@@ -164,30 +164,25 @@ transactionRouter.get(
           }
         }
       )
-      return res.json({
-        result: {
-          code: vnp_Params['vnp_ResponseCode']
+    } else {
+      transaction = await databaseServices.transaction.findOneAndUpdate(
+        {
+          bill_number: vnp_TxnRef
+        },
+        {
+          $set: {
+            transaction_no: vnp_TransactionNo as string,
+            bank_tran_no: vnp_BankTranNo as string,
+            transaction_status: '97',
+            bank_code: vnp_BankCode as string,
+            card_type: vnp_CardType as string
+          }
+        },
+        {
+          returnDocument: 'after'
         }
-      })
+      )
     }
-
-    transaction = await databaseServices.transaction.findOneAndUpdate(
-      {
-        bill_number: vnp_TxnRef
-      },
-      {
-        $set: {
-          transaction_no: vnp_TransactionNo as string,
-          bank_tran_no: vnp_BankTranNo as string,
-          transaction_status: '97',
-          bank_code: vnp_BankCode as string,
-          card_type: vnp_CardType as string
-        }
-      },
-      {
-        returnDocument: 'after'
-      }
-    )
 
     if (transaction && transaction.value) {
       await databaseServices.order.findOneAndUpdate(
@@ -225,10 +220,9 @@ transactionRouter.get(
           })
       }
     }
-
     return res.json({
       result: {
-        code: '97'
+        code: vnp_Params['vnp_ResponseCode']
       }
     })
   })
