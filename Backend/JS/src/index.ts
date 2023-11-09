@@ -63,7 +63,7 @@ export const io = new Server(httpServer, {
 })
 
 socket(io)
-redis.client.connect()
+// redis.client.connect()
 
 app.use('/api/v1', router)
 

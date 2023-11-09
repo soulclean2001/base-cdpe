@@ -10,6 +10,7 @@ export interface CreatePackageReqBody {
   preview?: string[]
   discount_price?: number
   number_of_days_to_expire: number
+  value: number
 }
 
 export interface UpdatePackageReqBody {
@@ -21,4 +22,5 @@ export interface UpdatePackageReqBody {
   discount_price?: number
   preview?: string[]
   number_of_days_to_expire?: number
+  value?: number
 }

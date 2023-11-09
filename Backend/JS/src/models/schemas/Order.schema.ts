@@ -5,7 +5,8 @@ export enum StatusOrder {
   Canceled,
   Success,
   Error,
-  WaitForPay
+  WaitForPay,
+  Paid
 }
 
 export interface OrderType {

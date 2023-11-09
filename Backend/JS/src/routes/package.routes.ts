@@ -24,17 +24,27 @@ packageRouter.patch(
   updatePackageValidator,
   wrapAsync(packageControllers.updatePackage)
 )
-packageRouter.post('/:package_id', isAdmin, wrapAsync(packageControllers.deletePackage))
-packageRouter.delete('/:package_id', isAdmin, wrapAsync(packageControllers.removePackage))
+packageRouter.post('/:package_id', accessTokenValidator, isAdmin, wrapAsync(packageControllers.deletePackage))
+packageRouter.delete('/:package_id', accessTokenValidator, isAdmin, wrapAsync(packageControllers.removePackage))
 // active package
-packageRouter.post('/:package_id/active', isAdmin, wrapAsync(packageControllers.activePackage))
+packageRouter.post('/:package_id/active', accessTokenValidator, isAdmin, wrapAsync(packageControllers.activePackage))
 // GET ALL BY ADMIN
-packageRouter.get('/', wrapAsync(packageControllers.getAllPackages))
+packageRouter.get('/', accessTokenValidator, isAdmin, wrapAsync(packageControllers.getAllPackages))
 
 // GET ALL BY EMPLOYER
-packageRouter.get('/get-by-filter', wrapAsync(packageControllers.getAllPackagesByTitle))
+packageRouter.get(
+  '/get-by-filter',
+  accessTokenValidator,
+  isEmployer,
+  wrapAsync(packageControllers.getAllPackagesByTitle)
+)
 // package employer sở hữu
 packageRouter.get('/me', accessTokenValidator, isEmployer, wrapAsync(packageControllers.getAllPackagesOwn))
-packageRouter.get('/:package_id', packageQueryMiddleware, wrapAsync(packageControllers.getPackage))
+packageRouter.get(
+  '/:package_id',
+  accessTokenValidator,
+  packageQueryMiddleware,
+  wrapAsync(packageControllers.getPackage)
+)
 
 export default packageRouter

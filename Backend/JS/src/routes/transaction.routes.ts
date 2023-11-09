@@ -191,7 +191,7 @@ transactionRouter.get(
         },
         {
           $set: {
-            status: vnp_TransactionStatus === '00' ? StatusOrder.Success : StatusOrder.Canceled
+            status: vnp_TransactionStatus === '00' ? StatusOrder.Paid : StatusOrder.Canceled
           }
         }
       )

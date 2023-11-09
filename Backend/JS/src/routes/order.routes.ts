@@ -14,12 +14,29 @@ orderRouter.get('/list-banner', wrapAsync(orderControllers.getAllCompanyBuyBanne
 orderRouter.get('/best-jobs', wrapAsync(orderControllers.getAllJobHasCompanyBuyBannerStillValid))
 
 // kích hoạt service đã mua thành công
-orderRouter.get(
-  '/active-order/:service_id',
+orderRouter.post('/service/active', accessTokenValidator, isAdmin, wrapAsync(orderControllers.activeServiceOrder))
+
+/*
+  body: {
+    order_id: string
+  }
+*/
+
+orderRouter.post(
+  '/active-order',
   accessTokenValidator,
   isAdmin,
-  wrapAsync(orderControllers.activeServiceOrder)
+  wrapAsync(orderControllers.activeServiceOrderByOrderId)
 )
+
+/*
+  body: {
+    order_id: string
+  }
+*/
+
+orderRouter.post('/cancel-order', accessTokenValidator, isAdmin, wrapAsync(orderControllers.cancelOrderById))
+
 orderRouter.get('/:order_id', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getOrdersDetailByCompany))
 
 export default orderRouter

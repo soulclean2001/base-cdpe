@@ -19,5 +19,15 @@ adminRouter.get(
   isAdmin,
   wrapAsync(transactionControllers.getTransactionsByAdmin)
 )
+adminRouter.get('/sumany', accessTokenValidator, isAdmin, wrapAsync(adminControllers.sumany))
+
+/*
+  query: {
+    month?: number,
+    year?: number || (month ? now year : undefined), ,
+  }
+
+*/
+adminRouter.get('/sales', accessTokenValidator, isAdmin, wrapAsync(adminControllers.sales))
 
 export default adminRouter

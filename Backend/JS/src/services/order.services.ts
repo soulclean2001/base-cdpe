@@ -537,6 +537,28 @@ class OrderService {
             }
           },
           {
+            $lookup: {
+              from: 'company',
+              localField: 'order.company_id',
+              foreignField: '_id',
+              as: 'company'
+            }
+          },
+          {
+            $unwind: {
+              path: '$company',
+              preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $lookup: {
+              from: 'transactions',
+              localField: 'order._id',
+              foreignField: 'order_id',
+              as: 'transactions'
+            }
+          },
+          {
             $sort: {
               'order.created_at': sortByDate
             }
@@ -654,6 +676,54 @@ class OrderService {
           }
         )
       }
+    }
+  }
+
+  static async activeServiceOrderByOrderId(orderId: string) {
+    const order = await databaseServices.order.findOne({
+      _id: new ObjectId(orderId)
+    })
+
+    if (order && order.status === StatusOrder.Paid) {
+      const services = order.services
+      for (let i = 0; i < services.length; i++) {
+        await this.activeServiceOrder(services[i].toString())
+      }
+
+      await databaseServices.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            status: StatusOrder.Success
+          }
+        }
+      )
+    }
+  }
+
+  static async cancelOrderById(orderId: string) {
+    const order = await databaseServices.order.findOne({
+      _id: new ObjectId(orderId)
+    })
+
+    if (order && (order.status === StatusOrder.WaitForPay || order.status === StatusOrder.Processing)) {
+      await databaseServices.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            status: StatusOrder.Canceled
+          }
+        }
+      )
+    } else {
+      throw new ErrorWithStatus({
+        message: 'The order cannot be canceled because it has already been paid',
+        status: 405
+      })
     }
   }
 
