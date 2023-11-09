@@ -76,6 +76,7 @@ const CompanyDetail = () => {
       children: <ListJob companyId={myCompany ? myCompany._id : ''} />
     }
   ]
+  if (!myCompany) return <div style={{ height: '100vh' }}>...</div>
   return (
     <div id='company-detail-page-container'>
       <div className='header-container'>

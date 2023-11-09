@@ -6,52 +6,77 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import './topCarrer.scss'
-
+import apiHome from '~/api/home.api'
 const TopCarrer = (props: any) => {
-  const dataCarrer = [
-    {
-      id: '1',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'BÁN HÀNG',
-      totalJob: 19999
-    },
-    {
-      id: '2',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'IT - PHÂN MỀM',
-      totalJob: 19999
-    },
-    {
-      id: '3',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'MARKETING',
-      totalJob: 19999
-    },
-    {
-      id: '4',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'ĐIỆN / ĐIỆN TỬ',
-      totalJob: 19999
-    },
-    {
-      id: '5',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'TÀI CHÍNH / ĐẦU TƯ',
-      totalJob: 19999
-    },
-    {
-      id: '6',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'DỊCH VỤ KHÁCH HÀNG',
-      totalJob: 19999
-    },
-    {
-      id: '7',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'KẾ TOÁN',
-      totalJob: 19999
-    }
-  ]
+  const [dataCarrer, setDataCarrer] = useState<{ id: string; img: string; name: string; totalJob: number }[]>([])
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+  const fetchData = async () => {
+    let dataCarrer = [
+      {
+        id: '1',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'BẢO HIỂM',
+        totalJob: 19999
+      },
+      {
+        id: '2',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'BÁN LẺ/ BÁN SỈ',
+        totalJob: 19999
+      },
+      {
+        id: '3',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'XUẤT NHẬP KHẨU',
+        totalJob: 19999
+      },
+      {
+        id: '4',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'BÁO CHÍ/ TRUYỀN HÌNH',
+        totalJob: 19999
+      },
+      {
+        id: '5',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'ĐIỆN TỬ VIỄN THÔNG',
+        totalJob: 19999
+      },
+      {
+        id: '6',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'BẤT ĐỘNG SẢN',
+        totalJob: 19999
+      },
+      {
+        id: '7',
+        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        name: 'VẬN TẢI/ KHO VẬN',
+        totalJob: 19999
+      }
+    ]
+
+    await apiHome.getTotalJobsByCareer().then((rs) => {
+      if (!rs.result) return
+      let listTemp: { id: string; img: string; name: string; totalJob: number }[] = []
+      console.log(rs)
+
+      rs.result.map((item: { _id: string; jobs: number }) => {
+        dataCarrer.map((data: { id: string; img: string; name: string; totalJob: number }) => {
+          if (item._id.toString().toUpperCase() === data.name) {
+            data.totalJob = item.jobs
+            listTemp.push(data)
+          }
+        })
+      })
+      setDataCarrer(listTemp)
+      console.log('listTemp', listTemp)
+    })
+  }
+  // set size
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
     return { innerWidth, innerHeight }
@@ -81,6 +106,7 @@ const TopCarrer = (props: any) => {
       window.removeEventListener('resize', handleWindowResize)
     }
   }, [windowSize])
+  //
   return (
     <div className='top-carrer-container'>
       <div className='title'>Ngành Nghề Trọng Điểm</div>

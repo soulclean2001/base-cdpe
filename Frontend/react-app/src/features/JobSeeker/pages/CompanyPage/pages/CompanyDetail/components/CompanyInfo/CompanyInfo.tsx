@@ -16,23 +16,26 @@ interface PropsType {
 }
 const CompanyInfo = (props: any) => {
   const { data }: PropsType = props
-  // const [descriptions, setDescriptions] = useState([''])
-  // useEffect(() => {
-  //   handleFormatInfo()
-  //   console.log(handleFormatInfo())
-  // }, [data])
-  // const handleFormatInfo = () => {
-  //   if (data && data.company_info) {
-  //     setDescriptions(data.company_info.split('\n'))
-  //   }
-  // }
+  const convertToEmbedLink = (url: string) => {
+    // let url = 'https://www.youtube.com/watch?v=xNRJwmlRBNU&ab_channel=ADesignerWhoCodes'
+    let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+    let match = url.match(regExp)
+
+    if (match && match[2].length == 11) {
+      console.log('match[2]', match[2])
+      return `//www.youtube.com/embed/${match[2]}`
+    } else {
+      return 'error'
+    }
+  }
+  if (!data) return <div style={{ height: '100vh' }}>...</div>
   return (
     <div id='tab-company-info-container-in-company-detail'>
       <Row className='top-container'>
         <Col span={24}>
           <h2 className='title-about'>TỔNG QUAN</h2>
         </Col>
-        <Col lg={24} md={24} sm={24} xs={24} className='about-company-container'>
+        <Col lg={12} md={24} sm={24} xs={24} className='about-company-container'>
           <Row className='about-info-container'>
             <Col lg={2} md={6} sm={24} xs={24} className='label-info'>
               Địa chỉ
@@ -83,21 +86,33 @@ const CompanyInfo = (props: any) => {
               </div>
             ))} */}
         </Col>
-        {/* <Col lg={12} md={24} sm={24} xs={24} className='right-img-container'>
-          <Carousel autoplay>
-            <div className='img-carosel-container'>
-              <img src='https://www.vietnamworks.com/_next/image?url=https%3A%2F%2Fimages.vietnamworks.com%2Fcompany_profile%2F80384.jpg&w=1920&q=75' />
-            </div>
-            <div className='img-carosel-container'>
-              <img src='https://www.vietnamworks.com/_next/image?url=https%3A%2F%2Fimages.vietnamworks.com%2Fcompany_profile%2F80350.jpg&w=1920&q=75' />
-            </div>
-          </Carousel>
-        </Col> */}
+        {data.pictures && (
+          <Col lg={12} md={24} sm={24} xs={24} className='right-img-container'>
+            <Carousel autoplay>
+              {data.pictures.map((item: any, index: number) => (
+                <div key={index} className='img-carosel-container'>
+                  <img src={item} />
+                </div>
+              ))}
+            </Carousel>
+          </Col>
+        )}
       </Row>
       <div className='video-company-detail-container'>
         <h2 className='video-title'>VIDEO</h2>
         <div className='video-content'>
-          <BsPlayCircle />
+          {data.videos && data.videos[0] ? (
+            <iframe
+              width={'100%'}
+              height={'400px'}
+              src={convertToEmbedLink(data.videos[0].toString())}
+              allow='autoplay; encrypted-media'
+              allowFullScreen
+              title='video'
+            ></iframe>
+          ) : (
+            <BsPlayCircle />
+          )}
         </div>
       </div>
       {/* <div className='benefit-company-detail-container'>

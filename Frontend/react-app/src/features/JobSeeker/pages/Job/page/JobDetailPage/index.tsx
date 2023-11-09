@@ -238,8 +238,8 @@ const JobDetailPage = () => {
 
           <Col lg={4} md={4} sm={23} xs={23} className='btn-container'>
             <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
-            <Button onClick={showModalApplyCV} size='large' className='btn-apply'>
-              Nộp Đơn
+            <Button disabled={checkApplied} onClick={showModalApplyCV} size='large' className='btn-apply'>
+              {checkApplied ? 'Đã nộp đơn' : 'Nộp Đơn'}
             </Button>
           </Col>
         </Row>

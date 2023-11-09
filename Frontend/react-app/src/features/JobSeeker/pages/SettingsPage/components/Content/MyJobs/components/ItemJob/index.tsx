@@ -2,6 +2,8 @@ import { Button, Col, Row } from 'antd'
 import { AiOutlineHeart } from 'react-icons/ai'
 import { useState, useEffect } from 'react'
 import './style.scss'
+import { JobApplicationStatus } from '~/types/jobAppliacation.type'
+import { useNavigate } from 'react-router-dom'
 interface DataType {
   id: string
   logo: string
@@ -9,45 +11,57 @@ interface DataType {
   nameCompany: string
   province: string
   salary: string
-  status: string | undefined
+  status: string
+  updateDate: string
 }
 interface PropsType {
   data: DataType | undefined
-  type: string | undefined
+  type?: string | undefined
 }
 const ItemJob = (props: any) => {
   const { data, type }: PropsType = props
-  const [statusCSS, setStatusCSS] = useState('pending')
+  const navigate = useNavigate()
+  const [statusCSS, setStatusCSS] = useState('0')
   useEffect(() => {
     handleSetCssStatus()
   }, [data])
   const handleSetCssStatus = () => {
     if (data) {
-      if (data.status === 'Pending') {
+      if (data.status.toString() == '0') {
         setStatusCSS('pending')
         return
-      } else if (data.status === 'Rejected') {
+      } else if (data.status.toString() === '2') {
         setStatusCSS('rejected')
         return
-      } else if (data.status === 'Approved') {
+      } else if (data.status.toString() === '1') {
         setStatusCSS('approved')
         return
-      } else if (data.status === 'Interview') {
+      } else if (data.status.toString() === '4') {
         setStatusCSS('interview')
         return
-      } else if (data.status === 'Hired') {
+      } else if (data.status.toString() === '5') {
         setStatusCSS('hired')
         return
-      } else if (data.status === 'NotContactable') {
+      } else if (data.status.toString() === '7') {
         setStatusCSS('not-contactable')
         return
       } else setStatusCSS('')
     }
   }
-  if (!data) return <>k co data</>
+  const handleClickShowDetail = () => {
+    if (!data) return
+    const convertNameEng = data.jobTitle
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+
+    navigate(`/jobs/${convertName}-id-${data.id}`)
+  }
+  if (!data) return <></>
 
   return (
-    <Row className='item-save-ojb-container' justify={'space-between'}>
+    <Row onClick={handleClickShowDetail} className='item-save-ojb-container' justify={'space-between'}>
       <Col lg={19} md={17} sm={17} xs={24} className='left-container'>
         <div className='logo-container'>
           <img src={data.logo ? data.logo : ''} alt='' />
@@ -69,12 +83,15 @@ const ItemJob = (props: any) => {
       >
         {type === 'ITEM_APPLIED_JOB' && (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <span className={`status-apply-job ${statusCSS}`}>{data.status ? data.status : 'status'}</span>
+            <span className={`status-apply-job ${statusCSS}`}>
+              {Object.values(JobApplicationStatus)[Number(data.status as string)]}
+            </span>
           </div>
         )}
         <div className='btn-wapper'>
           {/* <Button className='btn-follow' icon={<AiOutlineHeart />} /> */}
-          <Button className='btn-show-detail'>Chi tiết</Button>
+          <span className='btn-show-detail'>{data.updateDate?.slice(0, 10) || ''}</span>
+          {/* <span style={{ alignContent: 'flex-end' }}>Ngày update</span> */}
         </div>
       </Col>
     </Row>

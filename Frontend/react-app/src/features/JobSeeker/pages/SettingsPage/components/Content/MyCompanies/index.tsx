@@ -8,24 +8,24 @@ const onChangeTab = (key: string) => {
   console.log(key)
 }
 const items: TabsProps['items'] = [
-  // {
-  //   key: '1',
-  //   label: 'Nhà tuyển dụng xem hồ sơ',
-  //   children: <ItemCompany />
-  // },
   {
     key: '2',
     label: 'Đang theo dõi',
-    children: <ItemCompany />
+    children: <></>
   }
 ]
+interface AnyType {
+  [key: string]: any
+}
 const MyCompanies = () => {
+  const [listFollowed, setListFollowed] = useState<AnyType[]>([])
   useEffect(() => {
     fetchGetCompaniesFollowed()
   }, [])
   const fetchGetCompaniesFollowed = async () => {
     await apiFollow.getCompanyCandidateHasFollowed().then((rs) => {
       console.log('rs', rs)
+      setListFollowed(rs.result)
     })
   }
 
@@ -34,6 +34,29 @@ const MyCompanies = () => {
       <div className='title'>Công Ty Của Tôi</div>
       <div className='list-companies-container'>
         <Tabs className='tab-container' defaultActiveKey='1' items={items} onChange={onChangeTab} />
+        <div style={{ padding: '0 15px 15px 15px' }}>
+          {listFollowed &&
+            listFollowed.map((company) => (
+              <ItemCompany
+                key={company.company._id}
+                data={{
+                  id: company.company._id,
+                  logo: company.company.logo,
+                  nameCompany: company.company.company_name,
+                  industries: company.company.fields?.join(', ') || '',
+                  area:
+                    company.company.working_locations
+                      .map((loc: any) => {
+                        return loc.city_name
+                      })
+                      .filter((value: any, index: number, self: any) => {
+                        return self.indexOf(value) === index
+                      })
+                      ?.join(', ') || ''
+                }}
+              />
+            ))}
+        </div>
       </div>
     </div>
   )

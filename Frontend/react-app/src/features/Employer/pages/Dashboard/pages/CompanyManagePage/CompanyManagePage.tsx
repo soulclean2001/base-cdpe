@@ -35,6 +35,8 @@ export interface CompanyType {
   company_size?: string
   working_locations: WorkingLocation[]
   fields?: string[]
+  pictures?: string[]
+  videos?: string[]
 }
 const listQuantityEmployers = [
   { value: 'Ít hơn 10' },
@@ -57,9 +59,10 @@ const CompanyManagePage = () => {
   const [employerContact, setEmployerContact] = useState('')
   const [fieldCompany, setFieldCompany] = useState<Array<string>>([])
   const [description, setDescription] = useState('')
-
+  const [linkYoutube, setLinkYoutube] = useState('')
   const [fileListLogo, setFileListLogo] = useState<UploadFile[]>([])
   const [fileListBanner, setFileListBanner] = useState<UploadFile[]>([])
+  const [fileListPicture, setFileListPicture] = useState<UploadFile[]>([])
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
   const [btnDisabled, setBtnDisabled] = useState(false)
@@ -70,6 +73,12 @@ const CompanyManagePage = () => {
       fileListLogo.length > 0 && fileListLogo[0].originFileObj ? fileListLogo[0].originFileObj : undefined
     const bannerImage =
       fileListBanner.length > 0 && fileListBanner[0].originFileObj ? fileListBanner[0].originFileObj : undefined
+    const listUrlBefore: string[] = []
+    const listPictureOrigin = fileListPicture.map((file) => {
+      if (file.url) listUrlBefore.push(file.url)
+      return file.originFileObj ? file.originFileObj : file
+    })
+    console.log('listPictureOrigin', listPictureOrigin)
     const data = {
       nameCompany,
       phone,
@@ -86,8 +95,11 @@ const CompanyManagePage = () => {
     if (myCompany && myCompany._id) {
       let urlLogo = ''
       let urlBanner = ''
+      let checkListPicture = ''
+      let listUrlPicture: string[] = []
       if (myCompany.logo && fileListLogo[0] && myCompany._id === fileListLogo[0].uid) urlLogo = 'default'
       if (myCompany.background && fileListBanner[0] && myCompany._id === fileListBanner[0].uid) urlBanner = 'default'
+      // if (JSON.stringify(myCompany.pictures) === JSON.stringify(listUrlBefore)) checkListPicture = 'default'
       if (logoImage) {
         const logoForm = new FormData()
         logoForm.append('image', logoImage)
@@ -109,16 +121,45 @@ const CompanyManagePage = () => {
             return
           })
       }
+      if (listPictureOrigin && listPictureOrigin.length > 0) {
+        const pictureForm = new FormData()
+        listPictureOrigin.map((file) => {
+          console.log('file', file)
+          if (file.lastModified) pictureForm.append('image', file as RcFile)
+          else listUrlPicture.push(file.uid)
+        })
+        console.log('pictureForm', pictureForm.getAll('image'))
+        if (pictureForm.getAll('image').length > 0) {
+          await apiUpload
+            .uploadImage(pictureForm)
+            .then(async (rs) => {
+              if (rs.result) {
+                rs.result.map((item: { type: number; url: string }) => {
+                  listUrlPicture.push(item.url)
+                })
+              }
+            })
+            .catch(() => {
+              toast.error('Lỗi')
+              setBtnDisabled(false)
+              return
+            })
+        }
+      }
+
+      console.log('listUrlPictureAfter', listUrlPicture)
       console.log('urlLogo', urlLogo)
       console.log('urlbanner', urlBanner)
       const request: UpdateCompanyType = {
         company_name: myCompany.company_name !== nameCompany ? nameCompany : '',
         company_info: description,
         company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : '',
-        fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : ''
+        fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : '',
+        videos: linkYoutube ? [linkYoutube] : ''
       }
+      console.log('checkListPicture', checkListPicture)
       await apiCompany
-        .updateCompanyById(myCompany._id, urlLogo, urlBanner, request)
+        .updateCompanyById(myCompany._id, urlLogo, urlBanner, request, checkListPicture, listUrlPicture)
         .then((rs) => {
           setTimeout(() => {
             setBtnDisabled(false)
@@ -148,6 +189,10 @@ const CompanyManagePage = () => {
   const onChangeLogo: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     setFileListLogo(newFileList)
   }
+  const onChangePicture: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setFileListPicture(newFileList)
+    console.log('newFileList', newFileList)
+  }
   const onChangeBanner: UploadProps['onChange'] = async ({ fileList: newFileList, file }) => {
     let src = file.url as string
     // if (!src) {
@@ -173,6 +218,30 @@ const CompanyManagePage = () => {
     if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
       setFileListLogo(listErro)
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      return
+    }
+    if (e.size > 3072000) {
+      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
+      setFileListBanner(listErro)
+      return
+    }
+  }
+  const onClickOkConfirmCropImgPicture = async (e: any) => {
+    console.log('e', e)
+    // const dimension = await imageDimensions(e)
+    const listTemp = fileListPicture.filter((file) => {
+      if (file !== e) {
+        return file
+      }
+    })
+    if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
+      setFileListPicture(listTemp)
+      toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      return
+    }
+    if (e.size > 3072000) {
+      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
+      setFileListPicture(listTemp)
       return
     }
   }
@@ -227,6 +296,7 @@ const CompanyManagePage = () => {
       setDescription(rs.result.company_info)
       setQuantityEmployee(rs.result.company_size)
       setFieldCompany(rs.result.fields)
+      setLinkYoutube(rs.result.videos && rs.result.videos[0] ? rs.result.videos[0] : '')
       if (rs.result.logo) {
         const fileLogo: UploadFile = {
           uid: rs.result._id,
@@ -245,6 +315,18 @@ const CompanyManagePage = () => {
         }
         setFileListBanner([fileBanner])
       }
+      if (rs.result.pictures) {
+        let tempUrl = rs.result.pictures.map((pic: string) => {
+          return {
+            uid: pic,
+            name: 'pciture.png',
+            status: 'done',
+            url: pic
+          }
+        })
+
+        setFileListPicture(tempUrl)
+      }
 
       formCompanyGeneral.setFieldsValue({
         nameCompany: rs.result.company_name,
@@ -252,7 +334,8 @@ const CompanyManagePage = () => {
         description: rs.result.company_info,
         phone: me.phone_number,
         quantityEmployee: rs.result.company_size,
-        fieldCompany: rs.result.fields
+        fieldCompany: rs.result.fields,
+        linkVideo: rs.result.videos && rs.result.videos[0] ? rs.result.videos[0] : ''
       })
     })
   }
@@ -479,7 +562,55 @@ const CompanyManagePage = () => {
               }}
             />
           </Form.Item>
-
+          <div>
+            <div style={{ fontWeight: '500', marginBottom: '10px' }}>Hình ảnh</div>
+            <ImgCrop
+              rotationSlider
+              modalTitle={'Cập nhật hình ảnh'}
+              modalOk={'Lưu'}
+              modalCancel={'Hủy'}
+              onModalOk={(e) => onClickOkConfirmCropImgPicture(e)}
+              showReset
+              showGrid
+              aspect={2 / 1.5}
+            >
+              <Upload
+                // name='logo'
+                style={{ width: 'auto' }}
+                customRequest={dummyRequest}
+                listType='picture-card'
+                fileList={fileListPicture}
+                onChange={onChangePicture}
+                onPreview={onPreview}
+              >
+                {fileListPicture.length < 6 && (
+                  <>
+                    <BiUpload />
+                  </>
+                )}
+              </Upload>
+            </ImgCrop>
+          </div>
+          <Form.Item
+            name='linkVideo'
+            label={<span style={{ fontWeight: '500' }}>Link Video Youtube</span>}
+            rules={[
+              {
+                pattern: new RegExp(
+                  /^(https?:\/\/)?(www\.)?(youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+                ),
+                message: 'Vui lòng nhập đúng định dạng link youtube'
+              }
+            ]}
+          >
+            <Input
+              size='large'
+              placeholder='Nhập link youtube'
+              onChange={(e) => {
+                setLinkYoutube(e.target.value)
+              }}
+            />
+          </Form.Item>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               disabled={btnDisabled}

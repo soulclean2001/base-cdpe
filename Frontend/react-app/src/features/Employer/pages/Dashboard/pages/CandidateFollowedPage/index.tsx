@@ -23,9 +23,9 @@ const CandidateFollowedPage = () => {
     await fetchGetData(valuePageClick)
     console.log('page', valuePageClick)
   }
-  useEffect(() => {
-    fetchGetData()
-  }, [])
+  // useEffect(() => {
+  //   fetchGetData()
+  // }, [])
   useEffect(() => {
     setPageClick(1)
     fetchGetData()
@@ -67,14 +67,14 @@ const CandidateFollowedPage = () => {
                 data={{
                   id: candidate.candidate_id,
                   cv_id: candidate.candidate.cv_id,
-                  avatar: candidate.avatar,
+                  avatar: candidate.cv_info.avatar,
                   nameCandidate: `${candidate.candidate_name}`,
-                  // jobTitle: candidate.cvs.user_info.wanted_job_title,
+                  jobTitle: candidate.cv_info.wanted_job_title,
                   educationLevel: candidate.candidate.education_level,
                   provinceWanted: candidate.candidate.work_location,
-                  expYear: candidate.candidate.experience
+                  expYear: candidate.candidate.experience,
 
-                  // updateDate: candidate.cvs.updated_at.toString().slice(0, 10)
+                  updateDate: candidate.cv_info.updated_at.toString().slice(0, 10)
                 }}
                 hideFollow={true}
               />

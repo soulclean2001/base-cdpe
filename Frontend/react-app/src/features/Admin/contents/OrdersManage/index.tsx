@@ -5,9 +5,10 @@ import './style.scss'
 import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
 import { AiFillCheckCircle, AiFillEdit } from 'react-icons/ai'
 import { ColumnsType } from 'antd/es/table'
-import { FaTrashRestoreAlt } from 'react-icons/fa'
+import { useState, useEffect } from 'react'
 import { TabsProps } from 'antd/lib'
 import { FiSearch } from 'react-icons/fi'
+import apiAdmin, { OrderSearchByAdmin } from '~/api/admin.api'
 interface ServiceType {
   id: string
   nameService: string
@@ -21,6 +22,9 @@ interface DataType {
   orderDate: string
   updateDate: string
   status: string
+}
+interface AnyType {
+  [key: string]: any
 }
 const data: DataType[] = [
   {
@@ -163,9 +167,25 @@ const columns: ColumnsType<DataType> = [
   }
 ]
 const OrdersManage = () => {
+  const [listOrders, setListOrders] = useState<AnyType[]>([])
+  const limit = 2
+  const [currentPage, setCurrentPage] = useState(1)
+  const [total, setTotal] = useState(1)
+
+  useEffect(() => {
+    fetchGetOrders()
+  }, [])
+  const fetchGetOrders = async (page?: string) => {
+    let param: OrderSearchByAdmin = { limit: limit.toString(), page: page ? page : '1', sort_by_date: '1', status: '' }
+    await apiAdmin.getAllOrders(param).then((rs) => {
+      console.log('Rs', rs)
+    })
+  }
+
   const onChangeTab = (key: string) => {
     console.log(key)
   }
+
   const items: TabsProps['items'] = [
     {
       key: 'tab-all',

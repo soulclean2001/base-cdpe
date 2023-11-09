@@ -1,7 +1,7 @@
 import { Button, Col, Radio, RadioChangeEvent, Row, Space } from 'antd'
 import { useState } from 'react'
 import './style.scss'
-import CreatePayment from '../VNPAY/CreatePayment'
+
 import VNPayReturn from '../VNPAY/VNPayReturn'
 import apiOrder, { RequestOrderType } from '~/api/order.api'
 import { useNavigate } from 'react-router-dom'
@@ -87,7 +87,7 @@ const PaymentForm = (props: PropsType) => {
           </Radio.Group>
         </div>
       </div>
-      <CreatePayment orderId={orderId} />
+
       <Button
         disabled={!items || items.length < 1 ? true : false}
         onClick={handleCreateOrder}
@@ -99,7 +99,7 @@ const PaymentForm = (props: PropsType) => {
           Khi gửi đơn hàng Quý khách được xem rằng đã đồng ý với Chính sách bảo mật và Điều khoản dịch vụ.
         </div>
       </div>
-      <VNPayReturn />
+      {/* <VNPayReturn /> */}
     </div>
   )
 }

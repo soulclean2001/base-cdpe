@@ -11,7 +11,7 @@ import { useLocation } from 'react-router-dom'
 import apiPost, { PostRequestSearchType } from '~/api/post.api'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
 import { getAllIndustries } from '~/api/industries.api'
-
+import apiHome from '~/api/home.api'
 // const listField = [
 //   { value: 'Tất cả lĩnh vực' },
 //   { value: 'Bán lẻ/Bán sỉ' },
@@ -46,19 +46,6 @@ const listSalary = [
   { value: '15000001-max', label: 'Trên 15 triệu' }
 ]
 
-const dataTopCompany = [
-  { id: '1', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 1' },
-  { id: '2', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 2' },
-  {
-    id: '3',
-    img: 'https://anhdepfree.com/wp-content/uploads/2022/11/anh-nen-co-chu-cute_60900974387-607x1080.jpg',
-    name: 'KIMBERLY-CLARK 3'
-  },
-  { id: '4', img: 'https://images.vietnamworks.com/logo/pvcom_vip_124084.png', name: 'KIMBERLY-CLARK 4' },
-  { id: '5', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' },
-  { id: '6', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' },
-  { id: '7', img: 'https://cdn.pixabay.com/photo/2014/02/27/16/10/flowers-276014_640.jpg', name: 'KIMBERLY-CLARK 5' }
-]
 interface JobItemType {
   _id: string
   logo: string
@@ -69,9 +56,15 @@ interface JobItemType {
   created_at: string
   is_salary_visible: boolean
 }
-
+interface TopCompanyDataType {
+  id: string
+  name: string
+  logo: string
+  banner: string
+}
 const ListJob = () => {
   const location = useLocation()
+  const [listTopCompany, setListTopCompany] = useState<TopCompanyDataType[]>([])
   const limitOnPage = 2
   const [totalItems, setTotalItems] = useState(1)
   const [activeSort, setActiveSort] = useState('last-post-date')
@@ -147,13 +140,27 @@ const ListJob = () => {
     setRequestSearch({ ...requestSearch, 'salary[min]': min, 'salary[max]': max })
   }
   //set value page click
-  const handleChangePage = (valuePageClick: any) => {
+  const handleChangePage = async (valuePageClick: any) => {
     setPageClick(valuePageClick)
     // setPageClick(valuePageClick)
     // setRequestSearch({ ...requestSearch, page: valuePageClick })
-    getJobs(valuePageClick)
+    await getJobs(valuePageClick)
   }
   //
+  useEffect(() => {
+    fetchTopCompany()
+  }, [])
+  const fetchTopCompany = async () => {
+    await apiHome.getCompaniesBanner().then((rs) => {
+      console.log('top ', rs)
+      let temp = rs.result.map((company: { [key: string]: any }) => {
+        return { id: company._id, name: company.company_name, logo: company.logo, banner: company.background }
+      })
+      console.log('temp', temp)
+      setListTopCompany(temp)
+    })
+  }
+
   return (
     <div className='list-job-page-container'>
       <div className='title'>
@@ -311,8 +318,15 @@ const ListJob = () => {
               <div className='title'>Các Công Ty Hàng Đầu</div>
 
               <Swiper
-                style={{ width: '100%', height: '100%', maxHeight: '190vh' }}
-                slidesPerView={5}
+                autoplay
+                // style={{ width: '100%', height: '100%', maxHeight: '190vh' }}
+                style={{
+                  width: '100%',
+                  // height: '100%',
+                  height: listTopCompany && listTopCompany.length > 5 ? '190vh' : `${listTopCompany.length * 247}px`,
+                  maxHeight: listTopCompany && listTopCompany.length > 5 ? '190vh' : `${listTopCompany.length * 250}px`
+                }}
+                slidesPerView={listTopCompany && listTopCompany.length > 5 ? 5 : listTopCompany.length}
                 direction={'vertical'}
                 // spaceBetween={'180px'}
                 pagination={{
@@ -322,10 +336,10 @@ const ListJob = () => {
                 modules={[SwiperPage, Mousewheel]}
                 className='mySwiper'
               >
-                {dataTopCompany &&
-                  dataTopCompany.map((item) => (
+                {listTopCompany &&
+                  listTopCompany.map((item) => (
                     <SwiperSlide key={item.id} style={{ height: '100%', width: '100%' }}>
-                      <CompanyRightItem />
+                      <CompanyRightItem data={item} />
                     </SwiperSlide>
                   ))}
               </Swiper>

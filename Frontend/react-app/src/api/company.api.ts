@@ -19,6 +19,8 @@ export interface UpdateCompanyType {
   background?: string
   working_locations?: WorkingLocation[]
   fields?: string[] | string
+  pictures?: string[]
+  videos?: string[] | string
 }
 
 export class Company {
@@ -26,7 +28,14 @@ export class Company {
     const rs: ApiResponse = await client.get(`/company/me`)
     return rs
   }
-  public static updateCompanyById = async (id: string, urlLogo: string, urlBanner: string, data: UpdateCompanyType) => {
+  public static updateCompanyById = async (
+    id: string,
+    urlLogo: string,
+    urlBanner: string,
+    data: UpdateCompanyType,
+    checkListPicture?: string,
+    listUrlPicture?: string[]
+  ) => {
     console.log(data)
     let request = {}
 
@@ -34,6 +43,8 @@ export class Company {
 
     if (urlLogo !== 'default') request = { ...request, logo: urlLogo }
     if (urlBanner !== 'default') request = { ...request, background: urlBanner }
+    if (checkListPicture !== 'default') request = { ...request, pictures: listUrlPicture }
+    console.log('my request api', request)
     const rs: ApiResponse = await client.patch(`/company/${id}`, request)
     return rs
   }

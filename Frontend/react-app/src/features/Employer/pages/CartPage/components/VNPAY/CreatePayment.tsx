@@ -1,3 +1,4 @@
+import { MdPayments } from 'react-icons/md'
 import apiPayment from '~/api/payment.api'
 
 const CreatePayment = (props: any) => {
@@ -13,11 +14,12 @@ const CreatePayment = (props: any) => {
   }
 
   return (
-    <div>
-      {/* <input type='text' defaultValue={bankcode} />
-      <input type='text' defaultValue={amount} /> */}
-      <button onClick={handlePayment}>Tạo thanh toán</button>
-    </div>
+    <a
+      onClick={handlePayment}
+      style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+    >
+      <MdPayments />
+    </a>
   )
 }
 

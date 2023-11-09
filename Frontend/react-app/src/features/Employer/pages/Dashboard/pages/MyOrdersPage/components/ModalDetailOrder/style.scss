@@ -1,0 +1,127 @@
+.modal-detail-order {
+  .content-modal-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .order-id {
+      display: flex;
+      justify-content: flex-end;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .info-company-wapper {
+      //   padding: 20px 0;
+
+      .title {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .name {
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+    .info-order-wapper {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+
+      .title-service {
+        font-size: 18px;
+        font-weight: 700;
+      }
+      .list-services {
+        display: flex;
+        flex-direction: column;
+
+        .service-item {
+          box-shadow:
+            rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+            rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+          padding: 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          .name-service {
+            min-width: 40%;
+            max-width: 40%;
+          }
+          .price {
+            text-align: end;
+            min-width: 20%;
+            max-width: 25%;
+          }
+          .quantity {
+            min-width: 10%;
+            max-width: 10%;
+            text-align: center;
+          }
+          .total {
+            text-align: end;
+            min-width: 20%;
+            max-width: 25%;
+            // color: red;
+          }
+        }
+        .header {
+          font-weight: 600;
+          border: none;
+          background-color: rgb(210, 210, 210);
+          border-radius: 7px 7px 0 0;
+        }
+      }
+      .order-detail-info {
+        padding: 0 15px;
+        display: flex;
+        justify-content: space-between;
+        .left-content {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          gap: 5px;
+          .title {
+            font-weight: 500;
+          }
+          .order-date {
+          }
+          .update-date {
+          }
+        }
+        .right-content {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          justify-content: flex-end;
+          .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            .label {
+              font-weight: 500;
+            }
+            .value {
+              font-weight: 500;
+            }
+          }
+        }
+      }
+    }
+    .footer-modal-container {
+      border-radius: 7px;
+      padding: 30px 15px;
+      width: 100%;
+      background-color: rgb(77, 77, 252);
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      span {
+        text-align: center;
+        align-self: flex-end;
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@
   // background: #364d79;
   border-radius: 15px 15px 0 0;
   width: 100%;
+  object-fit: cover;
 }
 
 .banner-info-company-container {
@@ -15,6 +16,7 @@
   justify-content: space-between;
   align-items: center;
   height: 120px;
+
   .info-company-content {
     padding: 10px;
     width: 100%;

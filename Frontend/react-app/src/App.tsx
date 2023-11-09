@@ -68,6 +68,8 @@ import axios from 'axios'
 import apiClient from './api/client'
 import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVAppliedDetailPage'
 import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/CandidateFollowedPage'
+import MyOrdersPage from './features/Employer/pages/Dashboard/pages/MyOrdersPage'
+import VNPayReturn from './features/Employer/pages/CartPage/components/VNPAY/VNPayReturn'
 
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
@@ -184,6 +186,7 @@ function App() {
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
           <Route index element={<Home />} />
           <Route path='active-page' element={<ActivePage />} />
+
           <Route path='jobs' element={<Job />}>
             <Route index element={<ListJob />} />
             <Route path=':infoUrlJobDetail' element={<JobDetailPage />} />
@@ -230,7 +233,16 @@ function App() {
               // </Auth>
             }
           />
-
+          <Route
+            path='order'
+            element={
+              <>
+                <Outlet />
+              </>
+            }
+          >
+            <Route path=':order' element={<VNPayReturn />} />
+          </Route>
           <Route
             path='dashboard'
             element={
@@ -279,6 +291,7 @@ function App() {
             </Route>
 
             <Route path='my-services' element={<MyServicesPage />} />
+            <Route path='my-orders' element={<MyOrdersPage />} />
           </Route>
         </Route>
         <Route path='/employer-sign-up' element={<SignUpEmployer />} />
@@ -303,7 +316,7 @@ function App() {
             </Route>
 
             <Route path='services-manage' element={<ServicesManage />} />
-            <Route path='orders-manage' element={<OrdersManage />} />
+            <Route path='orders-manage' element={<MyOrdersPage roleType={'ADMIN_TYPE'} />} />
           </Route>
           <Route path='chat' element={<ChatPage roleType={'ADMIN_TYPE'} />} />
         </Route>

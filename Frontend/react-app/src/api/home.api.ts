@@ -10,8 +10,8 @@ export class HomeApi {
     const rs: ApiResponse = await client.get(`/orders/best-jobs`)
     return rs
   }
-  public static getTotalJobsByCareer = async (career: string) => {
-    const rs: ApiResponse = await client.get(`/jobs/total-job`, { params: career })
+  public static getTotalJobsByCareer = async () => {
+    const rs: ApiResponse = await client.get(`/jobs/total-job`)
     return rs
   }
 }

@@ -1,6 +1,6 @@
 .item-save-ojb-container {
   margin-bottom: 10px;
-  // cursor: pointer;
+  cursor: pointer;
   border: 1px solid rgb(224, 224, 233);
   border-radius: 5px;
   padding: 15px;
@@ -86,12 +86,13 @@
       }
       .btn-show-detail {
         display: flex;
-        justify-content: center;
-        text-align: center;
-        font-weight: 500;
-        color: rgb(255, 255, 255) !important;
-        background-color: rgb(255, 125, 85) !important;
-        border: 2px solid rgb(255, 125, 85) !important;
+        justify-content: flex-end;
+        text-align: flex-end;
+        font-size: 12px;
+        // font-weight: 500;
+        // color: rgb(255, 255, 255) !important;
+        // background-color: rgb(255, 125, 85) !important;
+        // border: 2px solid rgb(255, 125, 85) !important;
         width: 100%;
         min-width: 70px;
       }
