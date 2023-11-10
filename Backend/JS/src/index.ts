@@ -13,7 +13,7 @@ import http from 'http'
 import { Server } from 'socket.io'
 import socket from './app/socket'
 import { redis } from './app/redis'
-
+process.env.TZ = 'Asia/Ho_Chi_Minh'
 initFolder()
 
 const app = express()

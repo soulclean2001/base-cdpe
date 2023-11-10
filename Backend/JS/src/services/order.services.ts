@@ -134,15 +134,13 @@ class OrderService {
       const newCartItems = []
       for (let i = 0; i < cartItems.length; i++) {
         for (let j = 0; j < items.length; j++) {
-          if (items[j].item_id === cartItems[i].item.item_id) {
+          if (items[j].item_id === cartItems[i].item.item_id.toString()) {
             if (items[j].quantity < cartItems[i].item.quantity) {
               cartItems[i].item.quantity = cartItems[i].item.quantity - items[j].quantity
               newCartItems.push(cartItems[i])
             } else if (items[j].quantity === cartItems[i].item.quantity) {
               await databaseServices.cartItem.deleteOne({
-                item: {
-                  item_id: cartItems[i].item.item_id
-                }
+                _id: cartItems[i]._id
               })
             }
             break

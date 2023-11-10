@@ -69,12 +69,19 @@ class JobApplicationService {
 
       const recievers = company?.users.map((user) => user.user_id.toString()) || []
       if (recievers.length > 0) {
-        await databaseServices.conversationRooms.insertOne(
-          new ConversationRoom({
-            company_id: job.company_id,
-            user_id: new ObjectId(userId)
-          })
-        )
+        const oldCvst = await databaseServices.conversationRooms.findOne({
+          company_id: job.company_id,
+          user_id: new ObjectId(userId)
+        })
+
+        if (!oldCvst) {
+          await databaseServices.conversationRooms.insertOne(
+            new ConversationRoom({
+              company_id: job.company_id,
+              user_id: new ObjectId(userId)
+            })
+          )
+        }
 
         await NotificationService.notify({
           content: `1 ứng viên đã gửi vào bài tuyển dụng ${job?.job_title}`,
