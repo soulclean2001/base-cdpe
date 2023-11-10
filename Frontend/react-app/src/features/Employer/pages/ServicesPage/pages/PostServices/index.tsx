@@ -4,18 +4,10 @@ import './style.scss'
 import { Button } from 'antd'
 import apiPackage from '~/api/package.api'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
-import apiCart, { ItemCartRequestType } from '~/api/cart.api'
+import apiCart from '~/api/cart.api'
+import ReactHtmlParser from 'html-react-parser'
 import { toast } from 'react-toastify'
-const listPostService = [
-  { id: '1', name: 'Đăng Tuyển 30-ngày - M', price: 2000000 },
-  { id: '2', name: 'Đăng Tuyển 30-ngày - Cơ Bản', price: 2300000 }
-]
-const listSupportsService = [{ id: '3', name: 'Thêm - Ưu Tiên Hàng Đầu 30 ngày - M', price: 2000000 }]
 
-const descriptionsData = `Là sự kết hợp các dịch vụ đăng tuyển cơ bản trên trang web vietnamworks.com và Ứng Dụng Di Động của VietnamWorks, bao gồm:
-
-Trên trang web: Tin tuyển dụng được đăng tuyển cơ bản
-Trên Ứng Dụng Di Động: Tin tuyển dụng được đính kèm tag "HOT" và được hiển thị ở khu vực ưu tiên hơn so với các tin đăng tuyển cơ bản trong 30 ngày.`
 interface PackageType {
   [key: string]: any
 }
@@ -23,19 +15,28 @@ const PostServices = () => {
   const [itemActive, setItemActive] = useState('')
   const [descriptions, setDescriptions] = useState([''])
   const [includes, setIncludes] = useState([''])
-  const [listServices, setListServices] = useState<PackageType[]>([])
+  const [listServicesPost, setListServicesPost] = useState<PackageType[]>([])
+  const [listServicesBanner, setListServicesBanner] = useState<PackageType[]>([])
   const [detailService, setDetailService] = useState<PackageType>()
   useEffect(() => {
     fetchData()
   }, [])
   const fetchData = async () => {
-    await apiPackage.getAllPackageForEmployClient({ limit: '1000', page: '1', title: '' }).then((rs) => {
+    await apiPackage.getAllPackageForEmployClient({ limit: '1000', page: '1', title: '', type: 'POST' }).then((rs) => {
       console.log('rs', rs.result.pks)
       if (rs.result.pks) {
-        setListServices(rs.result.pks)
+        setListServicesPost(rs.result.pks)
         setItemActive(rs.result.pks[0]._id)
       }
     })
+    await apiPackage
+      .getAllPackageForEmployClient({ limit: '1000', page: '1', title: '', type: 'BANNER' })
+      .then((rs) => {
+        console.log('rs', rs.result.pks)
+        if (rs.result.pks) {
+          setListServicesBanner(rs.result.pks)
+        }
+      })
   }
   useEffect(() => {
     if (itemActive) fetchDetails(itemActive)
@@ -89,13 +90,13 @@ const PostServices = () => {
         <div className='list-options-post-service list-options-wapper'>
           <div className='title'>ĐĂNG TUYỂN</div>
           <div className='list-options'>
-            {listServices &&
-              listServices.map((item) => (
+            {listServicesPost &&
+              listServicesPost.map((item) => (
                 <div key={item._id} onClick={() => setItemActive(item._id)}>
                   <ServiceItem
                     data={{ id: item._id, name: item.title, price: item.price }}
-                    idActive={itemActive ? itemActive : listServices[0]._id}
-                    hiddenBorder={item._id === listServices[listServices.length - 1]._id ? true : false}
+                    idActive={itemActive ? itemActive : listServicesPost[0]._id}
+                    hiddenBorder={item._id === listServicesPost[listServicesPost.length - 1]._id ? true : false}
                   />
                 </div>
               ))}
@@ -104,13 +105,13 @@ const PostServices = () => {
         <div className='list-options-suport-service list-options-wapper'>
           <div className='title'>QUẢNG CÁO</div>
           <div className='list-options'>
-            {listSupportsService &&
-              listSupportsService.map((item) => (
-                <div key={item.id} onClick={() => setItemActive(item.id)}>
+            {listServicesBanner &&
+              listServicesBanner.map((item) => (
+                <div key={item._id} onClick={() => setItemActive(item._id)}>
                   <ServiceItem
-                    data={item}
+                    data={{ id: item._id, name: item.title, price: item.price }}
                     idActive={itemActive}
-                    hiddenBorder={item.id === listSupportsService[listSupportsService.length - 1].id ? true : false}
+                    hiddenBorder={item._id === listServicesBanner[listServicesBanner.length - 1]._id ? true : false}
                   />
                 </div>
               ))}
@@ -129,10 +130,14 @@ const PostServices = () => {
           </div>
           <div className='descriptions-wapper content-service-wapper'>
             <div className='title'>Mô tả dịch vụ:</div>
-            <div className='descriptions'>
+
+            {/* <div className='descriptions'>
               {descriptions.map((item, index) => (
                 <div key={index}>{item}</div>
               ))}
+            </div> */}
+            <div className='preview__info' style={{ color: '#333333', maxWidth: '100%', wordBreak: 'break-word' }}>
+              {detailService.description ? ReactHtmlParser(detailService.description) : ''}
             </div>
           </div>
           <div className='descriptions-wapper content-service-wapper'>
@@ -151,7 +156,12 @@ const PostServices = () => {
           <div className='picture-preview-wapper content-service-wapper'>
             <div className='title'>Hiển thị trên HFWorks cho Người tìm việc:</div>
             <div className='image-wapper'>
-              <img src='https://images03.vietnamworks.com/buy-packages-online/jobPost_basicJobPostMobile.jpg' alt='' />
+              {detailService.preview &&
+                detailService.preview.map((url: string, index: number) => (
+                  <div style={{ maxWidth: '25%' }} key={index}>
+                    <img src={url} />
+                  </div>
+                ))}
             </div>
           </div>
           <div className='btn-add-to-cart-container'>

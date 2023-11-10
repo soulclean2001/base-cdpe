@@ -620,7 +620,7 @@ const ModalInfoPost = (props: any) => {
     <>
       <Modal
         className='modal-post-detail-container'
-        title={<h2>{idPost ? `THÔNG TIN BÀI ĐĂNG ${idPost}` : title}</h2>}
+        title={<h2>{idPost ? `THÔNG TIN BÀI ĐĂNG #POST_${idPost.slice(-5).toUpperCase()}` : title}</h2>}
         centered
         open={open}
         onOk={handleClose}

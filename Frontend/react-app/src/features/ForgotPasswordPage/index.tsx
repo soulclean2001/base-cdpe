@@ -6,11 +6,17 @@ import bg from '~/assets/alena-aenami-cold-1k.jpg'
 import { AuthState } from '../Auth/authSlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-// import { isExpired } from '~/utils/jwt'
+import { cancelTokenSource } from '~/api/client'
 import { toast } from 'react-toastify'
+import useQueryParams from '~/useQueryParams'
+import Auth from '~/api/auth.api'
+
 const ForgotPasswordPage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
+  const { token } = useQueryParams()
+  const [message, setMessage] = useState('')
+
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role === 2) navigate('/')
@@ -35,17 +41,48 @@ const ForgotPasswordPage = () => {
       setDisabledBtn(false)
     }
   }, [disabledBtn === true && seconds])
-  const handleSubmitSendRequest = () => {
+
+  const handleSubmitForm = async () => {
     setDisabledBtn(true)
-  }
-  const handleSubmitForm = () => {
-    handleSubmitSendRequest()
-    console.log('submit', email)
+    await Auth.forgotPassword(email)
+      .then((rs) => {
+        toast.success(`Yêu cầu của bạn đã được gửi thành công, vui lòng kiểm tra hộp thư gửi đến tài khoản ${email}`)
+      })
+      .catch(() => {
+        toast.error(`Có lỗi xảy ra, vui lòng thử lại`)
+      })
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
+  useEffect(() => {
+    if (token) {
+      verify(token)
+    }
 
+    return () => {
+      cancelTokenSource.cancel()
+    }
+  }, [token])
+
+  const verify = async (token: string) => {
+    await Auth.verifyForgotPassword(token)
+      .then((data) => {
+        console.log('very file pass word', data)
+        if (data.message) {
+          setMessage(data.message)
+        }
+        if (data)
+          navigate('/reset-password', {
+            state: { forgot_password_token: token }
+          })
+      })
+      .catch(() => {
+        toast.error('Mail xác thực đã hết hiệu lực, vui lòng gửi lại yêu cầu mới')
+        naviagte('/forgot-password')
+      })
+  }
+  // if (token) return <ResetPasswordPage token={token} />
   return (
     <div className='forgot-password-page-container' style={{ backgroundImage: `url(${bg})` }}>
       <div className='forgot-password-content-wapper'>

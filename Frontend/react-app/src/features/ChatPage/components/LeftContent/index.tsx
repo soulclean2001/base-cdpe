@@ -31,7 +31,9 @@ const LeftContent = (props: any) => {
     dispatch(setCurrentRoom(room))
     handleActiveItem(room._id)
   }
-
+  useEffect(() => {
+    if (chat.currentRoom) setIdActive(chat.currentRoom._id)
+  }, [chat.currentRoom])
   const handleActiveItem = (id: string) => {
     console.log('active chat id', id)
     setIdActive(id)

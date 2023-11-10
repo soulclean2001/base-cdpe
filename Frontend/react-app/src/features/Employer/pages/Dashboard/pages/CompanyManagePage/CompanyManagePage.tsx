@@ -583,7 +583,7 @@ const CompanyManagePage = () => {
                 onChange={onChangePicture}
                 onPreview={onPreview}
               >
-                {fileListPicture.length < 6 && (
+                {fileListPicture.length < 4 && (
                   <>
                     <BiUpload />
                   </>

@@ -320,7 +320,8 @@ const SignUpEmployer = () => {
                   {
                     ///^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
                     pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
-                    message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
+                    message:
+                      'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
                   }
                 ]}
               >

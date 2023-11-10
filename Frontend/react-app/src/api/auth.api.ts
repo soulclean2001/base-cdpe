@@ -41,7 +41,9 @@ export class Auth {
   public static refreshToken = async (refreshToken: string): Promise<AuthResponse> => {
     return client.post('/users/refresh-token', { refresh_token: refreshToken })
   }
-
+  public static sendVerifyEmail = async (): Promise<AuthResponse> => {
+    return client.post('/users/resend-verify-email')
+  }
   public static verifyEmail = async (token: string): Promise<AuthResponse> => {
     return client.post(
       '/users/verify-email',
@@ -89,6 +91,13 @@ export class Auth {
       forgot_password_token
     })
   }
+  public static changePassword = async (data: {
+    old_password: string
+    password: string
+    confirm_new_password: string
+  }) => {
+    return client.put('/users/change-password', data)
+  }
 }
-//phong_lo
+
 export default Auth

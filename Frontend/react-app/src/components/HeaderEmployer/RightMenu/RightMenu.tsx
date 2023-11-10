@@ -50,12 +50,14 @@ const RightMenu = (props: any) => {
   }
   const items: MenuProps['items'] = [
     {
+      disabled: auth.isLogin && auth.verify === 1 ? false : true,
       label: 'Thông tin cá nhân',
       key: 'key_settings_info',
       icon: <GrUserSettings />,
       style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
+      disabled: auth.isLogin && auth.verify === 1 ? false : true,
       label: 'Đổi mật khẩu',
       key: 'key_changePassword',
       icon: <AiFillLock />,

@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react'
 import ModalCreatePackage from '../../components/ModalCreatePackage'
 import apiPackage from '~/api/package.api'
 import { BiWorld } from 'react-icons/bi'
+import { toast } from 'react-toastify'
 interface DataType {
   id: string
   nameService: string
@@ -58,6 +59,7 @@ const ServicesManage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
   const [listServices, setListServices] = useState<DataType[]>([])
+  const [idDetail, setIdDetail] = useState('')
   useEffect(() => {
     fetchData()
   }, [])
@@ -98,8 +100,19 @@ const ServicesManage = () => {
   const handleActivePackage = async (id: string) => {
     await apiPackage.activePackage(id).then(async (rs) => {
       console.log('rs active', rs)
+      toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} đã được kích hoạt`)
       await fetchData()
     })
+  }
+  const handleDeletePackage = async (id: string) => {
+    await apiPackage.deletedPackage(id).then(async (rs) => {
+      toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} được xóa thành công`)
+      await fetchData()
+    })
+  }
+  const handleOpenDetail = (id: string) => {
+    setIdDetail(id)
+    setIsOpenModal(true)
   }
   const handleOpenModal = () => {
     setIsOpenModal(true)
@@ -183,10 +196,13 @@ const ServicesManage = () => {
       title: 'Xử lý',
       key: 'action',
       fixed: 'right',
-      align: 'center',
+      align: 'left',
       render: (_, record) => (
         <Space size={'middle'} style={{ textAlign: 'center' }}>
-          <a style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+          <a
+            onClick={() => handleOpenDetail(record.id)}
+            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+          >
             <BsFillEyeFill />
           </a>
 
@@ -195,7 +211,10 @@ const ServicesManage = () => {
               <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
                 <AiFillLock />
               </a>
-              <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+              <a
+                onClick={() => handleDeletePackage(record.id)}
+                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              >
                 <BsFillTrashFill />
               </a>
             </>
@@ -208,7 +227,10 @@ const ServicesManage = () => {
               >
                 <BiWorld />
               </a>
-              <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+              <a
+                onClick={() => handleDeletePackage(record.id)}
+                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              >
                 <BsFillTrashFill />
               </a>
             </>
@@ -223,6 +245,11 @@ const ServicesManage = () => {
     }
   ]
   const items: TabsProps['items'] = [
+    {
+      key: 'tab-all',
+      label: <div className='tab-item'>Tất cả</div>,
+      children: <></>
+    },
     {
       key: 'tab-active',
       label: <div className='tab-item'>Hoạt động</div>,
@@ -242,11 +269,16 @@ const ServicesManage = () => {
   return (
     <div className='services-manage-page-container admin-users-manage-container'>
       <div className='title'>Quản lý gói dịch vụ</div>
-      <ModalCreatePackage handleAfterSubmit={handleAfterSubmit} open={isOpenModal} handleClose={handleCloseModal} />
+      <ModalCreatePackage
+        idPackage={idDetail}
+        handleAfterSubmit={handleAfterSubmit}
+        open={isOpenModal}
+        handleClose={handleCloseModal}
+      />
       <Button onClick={handleOpenModal} className='btn-add' size='large' icon={<AiFillPlusCircle />}>
-        Thêm mới
+        Tạo mới
       </Button>
-      <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='1' items={items} />
+      <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='tab-all' items={items} />
       <div className='content-wapper'>
         <Row style={{ gap: '10px', marginBottom: '15px' }}>
           <Col md={8} sm={24} xs={24}>

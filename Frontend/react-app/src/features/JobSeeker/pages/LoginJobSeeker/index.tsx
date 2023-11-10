@@ -154,9 +154,9 @@ const Login: React.FC = () => {
                 </Checkbox>
               </Form.Item>
 
-              <a className='login-form-forgot' href=''>
+              <Link className='login-form-forgot' to='/forgot-password'>
                 Quên mật khẩu
-              </a>
+              </Link>
             </Form.Item>
 
             <Form.Item>
@@ -177,6 +177,7 @@ const Login: React.FC = () => {
                   <Link to={googleOAuthUrl}>Google</Link>
                 </Button>
                 <Button
+                  disabled={true}
                   type='primary'
                   htmlType='submit'
                   className='btn login-facebook-button'
@@ -185,6 +186,7 @@ const Login: React.FC = () => {
                   Facebook
                 </Button>
                 <Button
+                  disabled={true}
                   type='primary'
                   htmlType='submit'
                   className='btn login-linkedin-button'

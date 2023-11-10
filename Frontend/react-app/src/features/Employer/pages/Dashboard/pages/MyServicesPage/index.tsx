@@ -3,53 +3,94 @@ import { ColumnsType } from 'antd/es/table'
 import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
 import { FiSearch } from 'react-icons/fi'
 import { MdPayments } from 'react-icons/md'
+import { useEffect, useState } from 'react'
+import apiPackage, { RequestFilterPackageOwnByMe } from '~/api/package.api'
 import './style.scss'
+import ModalCreatePackage from '~/features/Admin/components/ModalCreatePackage'
+interface DataType {
+  id: string
+  nameService: string
+  validityPeriod: string
+  price: string | number
+  activeDate: string
+  expiryDate: string
+  status: string
+  idPackage: string
+  stt: number
+}
+interface MyServiceType {
+  [key: string]: any
+}
 const MyServicesPage = () => {
-  interface DataType {
-    id: string
-    nameService: string
-    validityPeriod: string
-    price: string | number
-    activeDate: string
-    expiryDate: string
-    status: string
+  const [listMyServices, setListMyServices] = useState<DataType[]>([])
+  const limit = 2
+  const [currentPage, setCurrentPage] = useState(1)
+  const [total, setTotal] = useState(1)
+  const [titlePackage, setTitlePackage] = useState('')
+  const [status, setStatus] = useState('all')
+  const [isOpenModal, setIsOpenModal] = useState(false)
+  const [idPackage, setIdPackage] = useState('')
+
+  const handleOpenModal = (id: string) => {
+    setIdPackage(id)
+    setIsOpenModal(true)
   }
-  const data: DataType[] = [
-    {
-      id: '1',
-      nameService: 'Đăng Tuyển 30 ngày',
-      validityPeriod: '30 ngày',
-      price: 400000,
-      activeDate: '26/08/2023',
-      expiryDate: '26/09/2023',
-      status: 'Hoạt động'
-    },
-    {
-      id: '2',
-      nameService: 'Công ty hàng đầu',
-      validityPeriod: '1 năm',
-      price: 440000,
-      activeDate: '26/08/2023',
-      expiryDate: '26/09/2023',
-      status: 'Hoạt động'
-    },
-    {
-      id: '3',
-      nameService: 'Xem thông tin liên hệ',
-      validityPeriod: '30 ngày',
-      price: 500000,
-      activeDate: '26/08/2023',
-      expiryDate: '26/09/2023',
-      status: 'Hết hạn'
+  const handleCloseModal = () => {
+    setIdPackage('')
+    setIsOpenModal(false)
+  }
+  const handleChangePage = async (page: any) => {
+    setCurrentPage(page)
+    fetchGetMyServices(page)
+  }
+  useEffect(() => {
+    setCurrentPage(1)
+    fetchGetMyServices()
+  }, [titlePackage])
+  const fetchGetMyServices = async (page?: string) => {
+    let request: RequestFilterPackageOwnByMe = {
+      limit: limit.toString(),
+      page: page ? page : '1',
+      status: status === 'all' ? '' : status,
+      title: titlePackage
     }
-  ]
+    await apiPackage.getAllPackageByMe(request).then((rs) => {
+      setTotal(rs.result.total)
+      if (rs.result.packages) {
+        let listTemp = rs.result.packages.map((pkg: MyServiceType, index: number) => {
+          return {
+            stt: index + 1,
+            id: pkg._id,
+            idPackage: pkg.package._id,
+            nameService: `${pkg.package.title} x${pkg.quantity}`,
+            validityPeriod:
+              pkg.package.type === 'POST' ? 'Không giới hạn' : `${pkg.package.number_of_days_to_expire} ngày`,
+            price: pkg.unit_price * pkg.quantity,
+            activeDate: pkg.status.toString() === '0' ? pkg.updated_at.slice(0, 10) : '_',
+            expiryDate: pkg.package.type === 'POST' ? 'Không giới hạn' : pkg.expired_at.slice(0, 10),
+            status: pkg.package.type === 'BANNER' && new Date(pkg.expired_at) < new Date() ? '3' : pkg.status.toString()
+          }
+        })
+        setListMyServices(listTemp)
+      }
+
+      console.log('rs', rs)
+    })
+  }
+
   const columns: ColumnsType<DataType> = [
+    // {
+    //   ellipsis: true,
+    //   title: 'ID',
+    //   dataIndex: 'id',
+    //   key: 'id',
+    //   render: (value, _) => <span key={value}>{`#SV_${value.slice(-5).toUpperCase()}`}</span>
+    // },
     {
       ellipsis: true,
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      render: (value, _) => <span key={value}>{`SV_${value}`}</span>
+      title: 'STT',
+      dataIndex: 'stt',
+      key: 'stt'
     },
     {
       ellipsis: true,
@@ -57,15 +98,15 @@ const MyServicesPage = () => {
       dataIndex: 'nameService',
       key: 'nameService'
     },
+    // {
+    //   ellipsis: true,
+    //   title: 'Thời gian hiệu lực',
+    //   dataIndex: 'validityPeriod',
+    //   key: 'validityPeriod'
+    // },
     {
       ellipsis: true,
-      title: 'Thời gian hiệu lực',
-      dataIndex: 'validityPeriod',
-      key: 'validityPeriod'
-    },
-    {
-      ellipsis: true,
-      title: 'Giá',
+      title: 'Thành tiền',
       dataIndex: 'price',
       key: 'price',
       render: (value, _) => <span key={value}>{value.toLocaleString('vi', { currency: 'VND' })}</span>
@@ -89,10 +130,12 @@ const MyServicesPage = () => {
       key: 'status',
       dataIndex: 'status',
       align: 'center',
-      render: (_, { status }) => (
+      render: (_, record) => (
         <>
-          {status === 'Hoạt động' && <Tag color={'green'}>{status}</Tag>}
-          {status === 'Hết hạn' && <Tag color={'red'}>{status}</Tag>}
+          {record.status.toString() === '0' && <Tag color={'green'}>Đã kích hoạt</Tag>}
+          {record.status.toString() === '1' && <Tag color={'orange'}>Chờ kích hoạt</Tag>}
+          {record.status.toString() === '2' && <Tag color={'red'}>Đã hủy</Tag>}
+          {record.status.toString() === '3' && <Tag color={'red'}>Hết hạn</Tag>}
         </>
       )
     },
@@ -104,7 +147,10 @@ const MyServicesPage = () => {
       align: 'left',
       render: (_, record) => (
         <Space size={'middle'} style={{ textAlign: 'center' }}>
-          <a style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+          <a
+            onClick={() => handleOpenModal(record.idPackage)}
+            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+          >
             <BsFillEyeFill />
           </a>
 
@@ -117,19 +163,27 @@ const MyServicesPage = () => {
       )
     }
   ]
+
   return (
     <div className='my-services-page-container'>
       <div className='admin-users-manage-container'>
         <div className='title'>Dịch vụ của tôi</div>
-
+        <ModalCreatePackage
+          idPackage={idPackage}
+          open={isOpenModal}
+          handleClose={handleCloseModal}
+          roleType={'EMPLOYER_TYPE'}
+        />
         <div className='content-wapper'>
           <Row style={{ gap: '10px', marginBottom: '20px' }}>
             <Col md={8} sm={24} xs={24}>
               <Input
+                allowClear
                 className='input-search-services'
                 size='large'
-                placeholder='ID, tên dịch vụ'
+                placeholder='Tên dịch vụ'
                 prefix={<FiSearch />}
+                onChange={(e) => setTitlePackage(e.target.value)}
               />
             </Col>
           </Row>
@@ -139,7 +193,8 @@ const MyServicesPage = () => {
             className='table-custom users-table'
             scroll={{ x: true }}
             columns={columns}
-            dataSource={data}
+            dataSource={listMyServices}
+            pagination={{ current: currentPage, total: total, onChange: handleChangePage, pageSize: limit }}
           />
         </div>
       </div>

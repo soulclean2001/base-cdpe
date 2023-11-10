@@ -12,7 +12,7 @@ import { RcFile } from 'antd/es/upload'
 import apiUpload from '~/api/upload.api'
 import apiPackage from '~/api/package.api'
 import { CreatePackageReqBody } from '~/api/package.api'
-import { type } from 'os'
+
 const listTypeServices = [
   { value: 'POST', label: 'Đăng bài' },
   { value: 'BANNER', label: 'Quảng cáo công ty' }
@@ -20,13 +20,13 @@ const listTypeServices = [
 const listTimeUse = [
   { value: 7, label: '7 Ngày' },
   { value: 30, label: '30 Ngày' },
-  { value: 60, label: '30 Ngày' },
+  { value: 60, label: '60 Ngày' },
   { value: 90, label: '90 Ngày' },
   { value: 125, label: '125 Ngày' },
   { value: 365, label: '365 Ngày' }
 ]
 const ModalCreatePackage = (props: any) => {
-  const { idPackage, open, handleClose, handleAfterSubmit } = props
+  const { idPackage, open, handleClose, handleAfterSubmit, roleType } = props
   const [form] = Form.useForm()
   const [namePackage, setNamePackage] = useState('')
   const [typePackage, setTypePackage] = useState('')
@@ -39,6 +39,45 @@ const ModalCreatePackage = (props: any) => {
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
 
+  useEffect(() => {
+    if (open && idPackage) {
+      handleGetDetailById()
+    }
+  }, [open])
+  const handleGetDetailById = async () => {
+    await apiPackage.getDetailById(idPackage).then((rs) => {
+      console.log('rs', rs)
+      setNamePackage(rs.result.title)
+      setDescript(rs.result.description)
+      setTypePackage(rs.result.type)
+      setTimeUse(rs.result.number_of_days_to_expire)
+      setTotalPostAccept(rs.result.value)
+      setPrice(rs.result.price)
+      setIncludes(rs.result.includes)
+
+      form.setFieldsValue({
+        serviceName: rs.result.title,
+        typeService: rs.result.type,
+        totalPostAccept: rs.result.value,
+        timeUse: rs.result.number_of_days_to_expire,
+        price: rs.result.price,
+        description: rs.result.description,
+        includes: rs.result.includes
+      })
+      if (rs.result.preview) {
+        let tempUrl = rs.result.preview.map((pic: string) => {
+          return {
+            uid: pic,
+            name: 'pciture.png',
+            status: 'done',
+            url: pic
+          }
+        })
+
+        setFileListPicture(tempUrl)
+      }
+    })
+  }
   const dummyRequest = ({ file, onSuccess }: any) => {
     setTimeout(() => {
       onSuccess('ok')
@@ -127,11 +166,13 @@ const ModalCreatePackage = (props: any) => {
     if (!idPackage) {
       await apiPackage.createPackage(request).then((rs) => {
         console.log('create', rs)
+        toast.success('Tạo mới gói dịch vụ thành công')
         handleAfterSubmit()
       })
     } else {
       await apiPackage.updatePackage(idPackage, request).then((rs) => {
         console.log('update', rs)
+        toast.success(`Cập nhật gói dịch vụ #SV_${idPackage.slice(-5).toUpperCase()} thành công`)
         handleAfterSubmit()
       })
     }
@@ -143,7 +184,9 @@ const ModalCreatePackage = (props: any) => {
   return (
     <Modal
       className='modal-post-detail-container'
-      title={<h2>{idPackage ? `THÔNG TIN DỊCH VỤ ${idPackage}` : 'TẠO MỚI GÓI DỊCH VỤ'}</h2>}
+      title={
+        <h2>{idPackage ? `THÔNG TIN DỊCH VỤ #SV_${idPackage.slice(-5).toUpperCase()}` : 'TẠO MỚI GÓI DỊCH VỤ'}</h2>
+      }
       centered
       open={open}
       onOk={handleClose}
@@ -172,7 +215,12 @@ const ModalCreatePackage = (props: any) => {
               { max: 150, message: 'Đã vượt quá độ dài tối đa' }
             ]}
           >
-            <Input size='large' placeholder='Đăng bài' onChange={(e) => setNamePackage(e.target.value)} />
+            <Input
+              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+              size='large'
+              placeholder='Đăng bài'
+              onChange={(e) => setNamePackage(e.target.value)}
+            />
           </Form.Item>
 
           <Row justify={'space-between'}>
@@ -183,6 +231,7 @@ const ModalCreatePackage = (props: any) => {
                 rules={[{ required: true, message: 'Vui lòng chọn loại dịch vụ' }]}
               >
                 <Select
+                  disabled={idPackage ? true : false}
                   showSearch
                   placeholder={'Chọn loại dịch vụ'}
                   size='large'
@@ -194,12 +243,14 @@ const ModalCreatePackage = (props: any) => {
             {typePackage === 'POST' && (
               <Col md={11} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
                 <Form.Item
+                  rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}
                   initialValue={1}
                   label={<span style={{ fontWeight: '500' }}>Số lượng bài đăng cho phép</span>}
                   name='totalPostAccept'
                   style={{ marginBottom: 0 }}
                 >
                   <InputNumber
+                    disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
                     min={1}
                     max={99999}
                     size='large'
@@ -228,6 +279,7 @@ const ModalCreatePackage = (props: any) => {
                   ]}
                 >
                   <Select
+                    disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
                     showSearch
                     placeholder={'Chọn thời gian sử dụng'}
                     size='large'
@@ -238,8 +290,14 @@ const ModalCreatePackage = (props: any) => {
               </Col>
             )}
           </Row>
-          <Form.Item name='price' initialValue={1} label={<span style={{ fontWeight: '500' }}>Đơn giá</span>}>
+          <Form.Item
+            rules={[{ required: true, message: 'Vui lòng nhập mức giá' }]}
+            name='price'
+            initialValue={1}
+            label={<span style={{ fontWeight: '500' }}>Đơn giá</span>}
+          >
             <InputNumber
+              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
               style={{ width: '100%' }}
               min={1000}
               max={999999999}
@@ -253,11 +311,12 @@ const ModalCreatePackage = (props: any) => {
             />
           </Form.Item>
           <Form.Item
-            name='descriptions'
+            name='description'
             label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}
             rules={[{ required: true, message: 'Vui lòng không để trống mô tả gói dịch vụ' }]}
           >
             <CKEditor
+              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
               data={descript}
               config={{
                 toolbar: [
@@ -284,7 +343,7 @@ const ModalCreatePackage = (props: any) => {
             />
           </Form.Item>
           <Form.Item
-            name='requirements'
+            name='includes'
             label={
               <span style={{ fontWeight: '500' }}>
                 Bao gồm{' '}
@@ -295,7 +354,11 @@ const ModalCreatePackage = (props: any) => {
             }
             rules={[{ required: true, message: 'Vui lòng không để trống' }]}
           >
-            <TextArea size='large' onChange={(e) => setIncludes(e.target.value)} />
+            <TextArea
+              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+              size='large'
+              onChange={(e) => setIncludes(e.target.value)}
+            />
           </Form.Item>
           <div>
             <div style={{ fontWeight: '500', marginBottom: '10px' }}>Hình ảnh</div>
@@ -310,6 +373,7 @@ const ModalCreatePackage = (props: any) => {
               aspect={2 / 1.5}
             >
               <Upload
+                disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
                 // name='logo'
                 style={{ width: 'auto' }}
                 customRequest={dummyRequest}
@@ -318,7 +382,7 @@ const ModalCreatePackage = (props: any) => {
                 onChange={onChangePicture}
                 onPreview={onPreview}
               >
-                {fileListPicture.length < 6 && (
+                {fileListPicture.length < 4 && (
                   <>
                     <BiUpload />
                   </>
@@ -331,7 +395,7 @@ const ModalCreatePackage = (props: any) => {
               Thoát
             </Button>
 
-            {idPackage ? (
+            {idPackage && roleType !== 'EMPLOYER_TYPE' && (
               <Button
                 size='large'
                 htmlType='submit'
@@ -339,7 +403,8 @@ const ModalCreatePackage = (props: any) => {
               >
                 Cập nhật
               </Button>
-            ) : (
+            )}
+            {!idPackage && roleType !== 'EMPLOYER_TYPE' && (
               <Button
                 size='large'
                 htmlType='submit'

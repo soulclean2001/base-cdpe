@@ -100,7 +100,7 @@ const RightContent = (props: any) => {
       </div>
       <div className='list-applied-jobs'>
         {dataContact.map((job) => (
-          <RightItem key={job.id} data={job} />
+          <RightItem key={job.id} infoRoom={{ userId: job.idUser, companyId: job.idCompany }} data={job} />
         ))}
       </div>
     </div>

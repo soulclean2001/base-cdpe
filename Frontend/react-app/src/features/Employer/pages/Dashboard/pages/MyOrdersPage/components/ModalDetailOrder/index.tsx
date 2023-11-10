@@ -84,13 +84,17 @@ const ModalDetailOrder = (props: any) => {
     <Modal
       width={700}
       className='modal-detail-order'
-      title={<h2 style={{ borderBottom: '1px solid gray', paddingBottom: '15px' }}>Chi tiết đơn hàng {idOrder}</h2>}
+      title={
+        <h2 style={{ borderBottom: '1px solid gray', paddingBottom: '15px' }}>
+          Chi tiết đơn hàng #OD_{idOrder.slice(-5).toUpperCase()}
+        </h2>
+      }
       open={isModalOpen}
       onCancel={handleCloseModal}
       footer=''
     >
       <div className='content-modal-detail-container'>
-        <div className='order-id'>Mã đơn hàng: {idOrder}</div>
+        <div className='order-id'>Mã đơn hàng: #OD_{idOrder.slice(-5).toUpperCase()}</div>
         <div className='info-company-wapper'>
           <div className='title'>Thông tin khách hàng</div>
           <div className='name'>Tên: {detailCompany.company_name}</div>

@@ -2,15 +2,21 @@ import { Button, Form, Input } from 'antd'
 import './style.scss'
 import { LockOutlined } from '@ant-design/icons'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import bg from '~/assets/alena-aenami-cold-1k.jpg'
 import { AuthState } from '../Auth/authSlice'
 import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useEffect } from 'react'
 // import { isExpired } from '~/utils/jwt'
+import apiAuth from '~/api/auth.api'
 import { toast } from 'react-toastify'
 const ResetPasswordPage = () => {
+  const location = useLocation()
+
+  const [form] = Form.useForm()
+  const [newPassword, setNewPassword] = useState('')
+  const [rePassword, setRePassword] = useState('')
   const navigate = useNavigate()
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 
@@ -22,15 +28,21 @@ const ResetPasswordPage = () => {
       toast.error('Vui lòng đăng xuất để thực hiện thao tác này!')
     }
   }, [auth])
-  const [form] = Form.useForm()
-  const [newPassword, setNewPassword] = useState('')
-  const [rePassword, setRePassword] = useState('')
-  const handleSubmitForm = () => {
-    const data = {
-      newPassword,
-      rePassword
-    }
-    console.log('submit', data)
+
+  const handleSubmitForm = async () => {
+    if (!location.state || !location.state.forgot_password_token) return
+
+    await apiAuth
+      .resetPassword({
+        confirm_password: rePassword,
+        password: newPassword,
+        forgot_password_token: location.state.forgot_password_token
+      })
+      .then((rs) => {
+        console.log('Rs reset pass', rs)
+        navigate('/')
+        toast.success('Mật khẩu mới đã được cập nhật thành công')
+      })
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -38,7 +50,7 @@ const ResetPasswordPage = () => {
   return (
     <div className='forgot-password-page-container' style={{ backgroundImage: `url(${bg})` }}>
       <div className='forgot-password-content-wapper'>
-        <div className='content-wapper'>
+        <div className='content-wapper' style={{ maxWidth: '460px' }}>
           <h1 onClick={() => navigate('/')}>HFWorks</h1>
           <div className='first-content-container'>
             <h3>Đổi mật khẩu</h3>
@@ -60,8 +72,8 @@ const ResetPasswordPage = () => {
                   rules={[
                     { required: true, message: 'Vui lòng nhập mật khẩu' },
                     {
-                      pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
-                      message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
+                      pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
+                      message: 'Mật khẩu bao gồm chữ in Hoa, in thường, ký tự đặc biệt, số, tối thiểu 6 ký tự'
                     }
                   ]}
                 >

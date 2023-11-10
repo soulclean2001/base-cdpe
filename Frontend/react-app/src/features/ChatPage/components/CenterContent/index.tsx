@@ -9,7 +9,8 @@ import { ApiResponse, ChatType, ConversationType } from '~/types'
 import { AuthState } from '~/features/Auth/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { addMessage, setMessage } from '../../chatSlice'
+import { addMessage, setMessage, addMoreMessage } from '../../chatSlice'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 const CenterContent = (props: any) => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
@@ -27,6 +28,17 @@ const CenterContent = (props: any) => {
     const res: ApiResponse = await apiClient.get(`/conversations/${currentRoom._id}?limit=12&page=1`)
     // setData(res.result)
     dispatch(setMessage(res.result))
+  }
+
+  const fetchMoreConversations = async () => {
+    const res: ApiResponse = await apiClient.get(`/conversations/${currentRoom._id}`, {
+      params: {
+        limit: data.limit,
+        page: data.page + 1
+      }
+    })
+    // setData(res.result)
+    dispatch(addMoreMessage(res.result))
   }
 
   useEffect(() => {
@@ -85,10 +97,29 @@ const CenterContent = (props: any) => {
             : '' || ''}
         </div>
       </div>
-      <div className='list-chat'>
-        {data.conversations.map((item: ConversationType) => (
-          <ChatItem key={item._id} data={item} users={listUsersCompany} role={auth.role} />
-        ))}
+      <div
+        className='list-chat'
+        id='scrollableDiv'
+        style={{
+          // height: 300,
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column-reverse'
+        }}
+      >
+        <InfiniteScroll
+          dataLength={data.conversations.length}
+          next={fetchMoreConversations}
+          style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+          inverse={true} //
+          hasMore={data.page < data.total}
+          loader={<h4>Loading...</h4>}
+          scrollableTarget='scrollableDiv'
+        >
+          {data.conversations.map((item: ConversationType) => (
+            <ChatItem key={item._id} data={item} users={listUsersCompany} role={auth.role} />
+          ))}
+        </InfiniteScroll>
       </div>
       <div className='action-chat-container'>
         <InputEmoji

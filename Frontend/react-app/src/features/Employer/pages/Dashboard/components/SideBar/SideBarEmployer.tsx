@@ -101,14 +101,14 @@ const SideBarEmployer = (props: any) => {
                 Địa điểm làm việc
                 <Link to={'/employer/dashboard/company-location'} />
               </MenuItem>
-              <MenuItem>
+              {/* <MenuItem>
                 Mẫu email
                 <Link to={'/employer/dashboard/email-template'} />
               </MenuItem>
               <MenuItem>
                 Thông tin pháp nhân
                 <Link to={'/employer/dashboard/legal-info'} />
-              </MenuItem>
+              </MenuItem> */}
             </SubMenu>
           </Menu>
           <Menu iconShape='circle'>

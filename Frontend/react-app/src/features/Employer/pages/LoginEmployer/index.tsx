@@ -135,7 +135,8 @@ const LoginEmployer = (props: any) => {
                   { required: true, message: 'Vui lòng nhập mật khẩu' },
                   {
                     pattern: new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z0-9\W]{7,}$/),
-                    message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
+                    message:
+                      'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
                   }
                 ]}
               >

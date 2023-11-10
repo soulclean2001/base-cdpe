@@ -45,10 +45,16 @@ const ModalApplyCV = (props: any) => {
   const [isRemoveFile, setIsRemoveFile] = useState(false)
   useEffect(() => {
     if (open) {
-      if (!auth.isLogin && auth.verify !== 1) {
+      if (!auth.isLogin) {
         navigate('/candidate-login')
         return
+      } else {
+        if (auth.verify !== 1) {
+          navigate('/active-page')
+          return
+        }
       }
+
       getIDCV()
     }
   }, [open])

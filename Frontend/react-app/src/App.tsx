@@ -147,7 +147,7 @@ function App() {
       async () => {
         await getRefreshToken()
       },
-      getTimeExpired(auth.accessToken) * 1000 - 90000 // 86390000
+      getTimeExpired(auth.accessToken) * 1000 - 90000 //86390000
     )
   }, [auth.refreshToken])
   const fetchListRooms = async () => {

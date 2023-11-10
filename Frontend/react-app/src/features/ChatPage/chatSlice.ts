@@ -3,8 +3,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 interface RoomType {
   _id: string
   last_conversation: object
-  user: object
-  company: object
+  user: object //
+  company: object //
 }
 
 interface ConversationType {
@@ -63,6 +63,16 @@ const chatSlice = createSlice({
       return state
     },
 
+    addMoreMessage(state, action) {
+      const current = state.currentRoom?._id
+      const messages = action.payload
+      if (current) {
+        state.messages.conversations = [...state.messages.conversations, ...messages.conversations]
+        state.messages.page = messages.page
+      }
+      return state
+    },
+
     setCurrentRoom(state, action) {
       state.currentRoom = action.payload
       return state
@@ -75,6 +85,6 @@ const chatSlice = createSlice({
   }
 })
 
-export const { setMessage, addMessage, setCurrentRoom, setRooms } = chatSlice.actions
+export const { setMessage, addMessage, setCurrentRoom, setRooms, addMoreMessage } = chatSlice.actions
 
 export default chatSlice.reducer

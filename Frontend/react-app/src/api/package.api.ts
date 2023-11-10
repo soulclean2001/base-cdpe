@@ -2,7 +2,16 @@ import { ApiResponse } from '~/types'
 import client from './client'
 
 import { filterObject } from '~/utils/filterRequestDynamic'
-interface RequestFilterPackageType {
+export interface RequestFilterPackageOwnByMe {
+  title?: string
+  status?: number | string
+  from_date?: string
+  to_date?: string
+  limit?: string
+  page?: string
+}
+export interface RequestFilterPackageType {
+  type?: string
   title?: string
   limit?: string
   page?: string
@@ -37,6 +46,11 @@ export class Package {
     const rs: ApiResponse = await client.get(`/packages/get-by-filter`, { params: request })
     return rs
   }
+  public static getAllPackageByMe = async (request: RequestFilterPackageOwnByMe) => {
+    let filter = filterObject(request)
+    const rs: ApiResponse = await client.get(`/packages/me`, { params: filter })
+    return rs
+  }
   public static getDetailById = async (id: string) => {
     // let filter = filterObject(request)
     const rs: ApiResponse = await client.get(`/packages/${id}`)
@@ -52,13 +66,17 @@ export class Package {
     const rs: ApiResponse = await client.post(`/packages`, filter)
     return rs
   }
-  public static updatePackage = async (id: String, data: UpdatePackageReqBody) => {
+  public static updatePackage = async (id: string, data: UpdatePackageReqBody) => {
     let filter = filterObject(data)
     const rs: ApiResponse = await client.patch(`/packages/${id}`, filter)
     return rs
   }
-  public static activePackage = async (id: String) => {
+  public static activePackage = async (id: string) => {
     const rs: ApiResponse = await client.post(`/packages/${id}/active`)
+    return rs
+  }
+  public static deletedPackage = async (id: string) => {
+    const rs: ApiResponse = await client.post(`/packages/${id}`)
     return rs
   }
 }

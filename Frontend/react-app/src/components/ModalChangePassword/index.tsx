@@ -2,6 +2,10 @@ import { Button, Form, Input, Modal, Select } from 'antd'
 import { useState } from 'react'
 import './style.scss'
 import { LockOutlined } from '@ant-design/icons'
+import apiAuth from '~/api/auth.api'
+import { toast } from 'react-toastify'
+import { logout } from '~/features/Auth/authSlice'
+import { useDispatch } from 'react-redux'
 
 const ModalChangePassword = (props: any) => {
   const { open, handleClose } = props
@@ -10,14 +14,32 @@ const ModalChangePassword = (props: any) => {
   const [newPassword, setNewPassword] = useState('')
   const [rePassword, setRePassword] = useState('')
 
-  const handleSubmitForm = (value: any) => {
-    const data = {
-      oldPassword,
-      newPassword,
-      rePassword
+  const distPatch = useDispatch()
+
+  const handleSubmitForm = async () => {
+    const request: {
+      old_password: string
+      password: string
+      confirm_new_password: string
+    } = {
+      old_password: oldPassword,
+      password: newPassword,
+      confirm_new_password: rePassword
     }
-    console.log('form data post', data)
-    handleClose()
+
+    await apiAuth
+      .changePassword(request)
+      .then((rs) => {
+        console.log('Rs', rs)
+        toast.success('Mật khẩu của bạn đã được cập nhật thành công')
+        handleClose()
+        distPatch(logout())
+        window.location.reload()
+      })
+      .catch(() => {
+        toast.error('Mật khẩu hiện tại không đúng, vui lòng nhập chính xác mật khẩu hiện tại')
+        return
+      })
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -66,9 +88,17 @@ const ModalChangePassword = (props: any) => {
             rules={[
               { required: true, message: 'Vui lòng nhập mật khẩu' },
               {
-                pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
-                message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
-              }
+                pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
+                message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
+              },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('oldPassword') !== value) {
+                    return Promise.resolve()
+                  }
+                  return Promise.reject(new Error('Mật khẩu mới phải khác mật khẩu hiện tại'))
+                }
+              })
             ]}
           >
             <Input.Password
