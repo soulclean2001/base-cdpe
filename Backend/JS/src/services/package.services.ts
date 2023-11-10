@@ -106,6 +106,32 @@ export default class PackageService {
     return pkg.value
   }
 
+  static async archivePackage(package_id: string) {
+    const pkg = await databaseServices.package.findOneAndUpdate(
+      {
+        _id: new ObjectId(package_id)
+      },
+      {
+        $set: {
+          status: PackageStatus.ARCHIVE
+        },
+        $currentDate: {
+          updated_at: true
+        }
+      },
+      {
+        returnDocument: 'after'
+      }
+    )
+    if (!pkg.value) {
+      throw new ErrorWithStatus({
+        message: 'Package not found',
+        status: 404
+      })
+    }
+    return pkg.value
+  }
+
   static async removePackage(package_id: string) {
     const pkg = await databaseServices.package.findOneAndDelete({
       _id: new ObjectId(package_id)
@@ -132,13 +158,85 @@ export default class PackageService {
     return pkg
   }
 
-  static async getAllPackages() {
-    const pkg = await databaseServices.package.find({}).toArray()
+  static async getAllPackagesByAdmin(
+    limit: number = 10,
+    page: number = 1,
+    filter: { title?: string; type?: string; status?: string; sort_by_date?: string }
+  ) {
+    const $match: {
+      [key: string]: any
+    } = {}
 
-    return pkg
+    if (filter.title && filter.title.trim()) {
+      const keyword = filter.title.trim()
+      const keywords = keyword.split(' ').map(escapeRegExp).join('|')
+      const regex = new RegExp(`(?=.*(${keywords})).*`, 'i')
+
+      $match['title'] = {
+        $regex: regex
+      }
+    }
+
+    if (filter.type) {
+      $match['type'] = filter.type.toUpperCase()
+    }
+
+    if (filter.status) {
+      $match['status'] = filter.status.toUpperCase()
+    }
+
+    let sortByDate = -1
+
+    if (filter.sort_by_date && !isNaN(Number(filter.sort_by_date))) {
+      sortByDate = Number(filter.sort_by_date)
+    }
+
+    const [pks, total] = await Promise.all([
+      databaseServices.package
+        .aggregate([
+          {
+            $match: {
+              ...$match
+            }
+          },
+          {
+            $sort: {
+              created_at: sortByDate
+            }
+          },
+          {
+            $skip: limit * (page - 1)
+          },
+          {
+            $limit: limit
+          }
+        ])
+        .toArray(),
+      databaseServices.package
+        .aggregate([
+          {
+            $match
+          },
+          {
+            $count: 'total'
+          }
+        ])
+        .toArray()
+    ])
+
+    return {
+      pks,
+      total: total[0]?.total || 0,
+      limit,
+      page
+    }
   }
 
-  static async getAllPackagesByTitle(limit: number = 10, page: number = 1, filter: { title?: string; type?: string }) {
+  static async getAllPackagesByTitle(
+    limit: number = 10,
+    page: number = 1,
+    filter: { title?: string; type?: string; sort_by_date?: string }
+  ) {
     // const pkg = await databaseServices.package.find({}).toArray()
 
     const $match: {
@@ -158,6 +256,10 @@ export default class PackageService {
     if (filter.type) {
       $match['type'] = filter.type.toUpperCase()
     }
+    let sortByDate = -1
+    if (filter.sort_by_date && !isNaN(Number(filter.sort_by_date))) {
+      sortByDate = Number(filter.sort_by_date)
+    }
 
     const [pks, total] = await Promise.all([
       databaseServices.package
@@ -166,6 +268,11 @@ export default class PackageService {
             $match: {
               ...$match,
               status: PackageStatus.ACTIVE
+            }
+          },
+          {
+            $sort: {
+              created_at: sortByDate
             }
           },
           {
@@ -179,7 +286,10 @@ export default class PackageService {
       databaseServices.package
         .aggregate([
           {
-            $match
+            $match: {
+              ...$match,
+              status: PackageStatus.ACTIVE
+            }
           },
           {
             $count: 'total'

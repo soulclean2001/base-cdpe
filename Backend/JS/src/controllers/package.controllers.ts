@@ -3,6 +3,8 @@ import { Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import PackageService from '~/services/package.services'
 import { TokenPayload } from '~/models/requests/User.request'
+import { ObjectId } from 'mongodb'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class PackageController {
   async createPackage(req: Request<ParamsDictionary, any, CreatePackageReqBody>, res: Response) {
@@ -26,6 +28,13 @@ class PackageController {
 
   async deletePackage(req: Request<ParamsDictionary, any, any>, res: Response) {
     const { package_id } = req.params
+    if (!ObjectId.isValid(package_id)) {
+      throw new ErrorWithStatus({
+        message: 'Package id must be a valid',
+        status: 422
+      })
+    }
+
     const result = await PackageService.deletePackage(package_id)
     return res.json({
       message: 'Package deleted successfully',
@@ -33,8 +42,31 @@ class PackageController {
     })
   }
 
+  async archivePackage(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { package_id } = req.params
+
+    if (!ObjectId.isValid(package_id)) {
+      throw new ErrorWithStatus({
+        message: 'Package id must be a valid',
+        status: 422
+      })
+    }
+    const result = await PackageService.archivePackage(package_id)
+    return res.json({
+      message: 'Package archived successfully',
+      result
+    })
+  }
+
   async removePackage(req: Request<ParamsDictionary, any, any>, res: Response) {
     const { package_id } = req.params
+    if (!ObjectId.isValid(package_id)) {
+      throw new ErrorWithStatus({
+        message: 'Package id must be a valid',
+        status: 422
+      })
+    }
+
     const result = await PackageService.removePackage(package_id)
     return res.json({
       message: 'Package removed successfully',
@@ -44,6 +76,13 @@ class PackageController {
 
   async activePackage(req: Request<ParamsDictionary, any, any>, res: Response) {
     const { package_id } = req.params
+    if (!ObjectId.isValid(package_id)) {
+      throw new ErrorWithStatus({
+        message: 'Package id must be a valid',
+        status: 422
+      })
+    }
+
     const result = await PackageService.activePackage(package_id)
     return res.json({
       message: 'Package actived successfully',
@@ -53,6 +92,7 @@ class PackageController {
 
   async getPackage(req: Request<ParamsDictionary, any, any>, res: Response) {
     const { package_id } = req.params
+
     const result = await PackageService.getPackage(package_id)
     return res.json({
       message: 'Get package',
@@ -61,7 +101,11 @@ class PackageController {
   }
 
   async getAllPackages(req: Request<ParamsDictionary, any, any>, res: Response) {
-    const result = await PackageService.getAllPackages()
+    console.log(req.query)
+
+    const limit = Number(req.query.limit) || 10
+    const page = Number(req.query.page) || 1
+    const result = await PackageService.getAllPackagesByAdmin(limit, page, req.query)
     return res.json({
       message: 'Get all package',
       result

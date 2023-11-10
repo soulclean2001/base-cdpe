@@ -28,10 +28,29 @@ packageRouter.post('/:package_id', accessTokenValidator, isAdmin, wrapAsync(pack
 packageRouter.delete('/:package_id', accessTokenValidator, isAdmin, wrapAsync(packageControllers.removePackage))
 // active package
 packageRouter.post('/:package_id/active', accessTokenValidator, isAdmin, wrapAsync(packageControllers.activePackage))
+packageRouter.post('/:package_id/archive', accessTokenValidator, isAdmin, wrapAsync(packageControllers.archivePackage))
+
 // GET ALL BY ADMIN
+/**
+ * query: {
+ *  sort_by_date,
+ *  type,
+ *  status,
+ *  page,
+ *  limit
+ * }
+ */
 packageRouter.get('/', accessTokenValidator, isAdmin, wrapAsync(packageControllers.getAllPackages))
 
 // GET ALL BY EMPLOYER
+/**
+ * query: {
+ *  sort_by_date,
+ *  type,
+ *  page,
+ *  limit
+ * }
+ */
 packageRouter.get(
   '/get-by-filter',
   accessTokenValidator,

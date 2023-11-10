@@ -13,7 +13,7 @@ import http from 'http'
 import { Server } from 'socket.io'
 import socket from './app/socket'
 import { redis } from './app/redis'
-process.env.TZ = 'Asia/Ho_Chi_Minh'
+
 initFolder()
 
 const app = express()
@@ -66,9 +66,15 @@ socket(io)
 // redis.client.connect()
 
 app.use('/api/v1', router)
+app.get('/now', (req, res) => {
+  return res.json({
+    now: new Date()
+  })
+})
 
 app.use(defaultErrorHandler)
 
 httpServer.listen(port, () => {
   console.log(`server is started on port http://localhost:${port}`)
+  console.log(new Date().toLocaleString())
 })
