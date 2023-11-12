@@ -7,17 +7,22 @@ import { BsFillCheckCircleFill } from 'react-icons/bs'
 import apiCart from '~/api/cart.api'
 import ReactHtmlParser from 'html-react-parser'
 import { toast } from 'react-toastify'
+import { useDispatch, useSelector } from 'react-redux'
+import { EmployerState, plusTotalItemCart } from '~/features/Employer/employerSlice'
+import { RootState } from '~/app/store'
 
 interface PackageType {
   [key: string]: any
 }
 const PostServices = () => {
+  const disPath = useDispatch()
   const [itemActive, setItemActive] = useState('')
   const [descriptions, setDescriptions] = useState([''])
   const [includes, setIncludes] = useState([''])
   const [listServicesPost, setListServicesPost] = useState<PackageType[]>([])
   const [listServicesBanner, setListServicesBanner] = useState<PackageType[]>([])
   const [detailService, setDetailService] = useState<PackageType>()
+  const employer: EmployerState = useSelector((state: RootState) => state.employer)
   useEffect(() => {
     fetchData()
   }, [])
@@ -58,30 +63,33 @@ const PostServices = () => {
     if (inc) setIncludes(inc.split('\n'))
   }
   const handleAddToCart = async () => {
-    await apiCart.getMyCart().then(async (rs) => {
-      let item = { item_id: itemActive, quantity: 1 }
-      await apiCart
-        .getItemById(itemActive)
-        .then(async (rs) => {
-          if (rs.result) {
-            item = { ...item, quantity: rs.result.item.quantity + 1 }
-          }
-        })
-        .catch(() => {
-          console.log('catch')
-        })
-      await apiCart
-        .createOrUpdateItemCart({ item: item })
-        .then((rs) => {
-          console.log('rs add to cart', rs)
+    if (!employer.cart.idCart) return
+    let item = { item_id: itemActive, quantity: 1 }
+    await apiCart
+      .getItemById(itemActive)
+      .then(async (rs) => {
+        if (rs.result) {
+          item = { ...item, quantity: rs.result.item.quantity + 1 }
+        }
+      })
+      .catch(() => {
+        disPath(plusTotalItemCart())
+      })
+    await apiCart
+      .createOrUpdateItemCart({ item: item })
+      .then((rs) => {
+        console.log('rs add to cart', rs)
+        if (item.quantity > 1)
           toast.success(
-            `Bạn đã thành công thêm gói dịch vụ #PACKAGE_${itemActive.slice(-5).toUpperCase()} vào giỏ hàng`
+            `#SV_${itemActive
+              .slice(-5)
+              .toUpperCase()} đã có sẵn trong giỏ hàng, số lượng trong giỏ hàng đã được cập nhật thành công`
           )
-        })
-        .catch(() => {
-          toast.error('Có lỗi xảy ra, vui lòng thử lại')
-        })
-    })
+        else toast.success(`Bạn đã thành công thêm gói dịch vụ #SV_${itemActive.slice(-5).toUpperCase()} vào giỏ hàng`)
+      })
+      .catch(() => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại')
+      })
   }
 
   return (
@@ -124,7 +132,10 @@ const PostServices = () => {
         <div className='right-content-wapper'>
           <div className='title-service'>
             <div className='name'>
-              {detailService.title} - {detailService.number_of_days_to_expire} ngày - {detailService.code}
+              {detailService.title} -{' '}
+              {detailService.type === 'BANNER'
+                ? `${detailService.number_of_days_to_expire} ngày`
+                : `${detailService.value} bài đăng`}{' '}
             </div>
             <div className='price'>{detailService.price.toLocaleString('vi', { currency: 'VND' })} VNĐ</div>
           </div>

@@ -24,12 +24,21 @@ const PaymentForm = (props: PropsType) => {
     console.log('items', items)
     if (!items) return
     let request: RequestOrderType = { items }
-    await apiOrder.postOrder(request).then((rs) => {
-      console.log('rs order', rs)
-      setOrderId(rs.result.order._id)
-      toast.success('Bạn đã tạo đơn đặt hàng thành công')
-      navigate('/employer/dashboard/my-orders')
-    })
+    await apiOrder
+      .postOrder(request)
+      .then((rs) => {
+        console.log('rs order', rs)
+        setOrderId(rs.result.order._id)
+        toast.success('Bạn đã tạo đơn đặt hàng thành công')
+        navigate('/employer/dashboard/my-orders')
+      })
+      .catch(() => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại')
+
+        setTimeout(() => {
+          window.location.reload()
+        }, 500)
+      })
   }
 
   const onChange = (e: RadioChangeEvent) => {
@@ -74,15 +83,15 @@ const PaymentForm = (props: PropsType) => {
             <Space direction='vertical'>
               <Radio value={1}>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <div>Thẻ tín dụng</div>
+                  <div>VNPAY</div>
                 </div>
               </Radio>
 
-              <Radio value={2}>Thẻ ATM</Radio>
+              {/* <Radio value={2}>Thẻ ATM</Radio>
 
               <Radio value={3}>Chuyển khoản</Radio>
 
-              <Radio value={4}>Mã QR</Radio>
+              <Radio value={4}>Mã QR</Radio> */}
             </Space>
           </Radio.Group>
         </div>
@@ -93,10 +102,12 @@ const PaymentForm = (props: PropsType) => {
         onClick={handleCreateOrder}
         size='large'
         style={{ width: '100%', marginTop: '17px', backgroundColor: 'rgb(255, 125, 85)', color: 'white' }}
-      >{`Thanh toán bằng ${methodPayment === 1 ? 'Thẻ tín dụng' : methodPayment === 2 ? 'thẻ ATM' : 'Mã QR'}`}</Button>
+      >
+        Tạo đơn hàng
+      </Button>
       <div>
         <div style={{ textAlign: 'center', fontSize: '11px', padding: '10px 50px' }}>
-          Khi gửi đơn hàng Quý khách được xem rằng đã đồng ý với Chính sách bảo mật và Điều khoản dịch vụ.
+          Khi tạo đơn hàng Quý khách được xem rằng đã đồng ý với Chính sách bảo mật và Điều khoản dịch vụ.
         </div>
       </div>
       {/* <VNPayReturn /> */}

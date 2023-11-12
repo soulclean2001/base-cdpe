@@ -20,7 +20,7 @@ import apiCompany from '~/api/company.api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { CgUnblock } from 'react-icons/cg'
-import { JobApplicationStatus } from '~/types/jobAppliacation.type'
+import { JobApplicationProfileStatus, JobApplicationStatus } from '~/types/jobAppliacation.type'
 interface DataType {
   id: string
   key: string
@@ -55,8 +55,8 @@ const ContentCVManage = (props: any) => {
   const [openModalInfo, setOpenModalInfo] = useState(false)
   const navigate = useNavigate()
   const [dataRowSelected, setDataRowSelected] = useState<DataType>()
-  const [idPost, setIdPost] = useState<string>()
-  const limit = 2
+  const [idJobAppli, setIdJobAppli] = useState<string>()
+  const limit = 5
   const [pageClick, setPageClick] = useState(1)
   const [totalPage, setTotalPage] = useState(1)
   //search fillter
@@ -165,33 +165,23 @@ const ContentCVManage = (props: any) => {
         )
       })
     }
-    fetchGetJobsApplication(pageClick.toString())
+    await fetchGetJobsApplication(pageClick.toString())
+  }
+  const handleActionChangeProfileStatus = async (id: string, profileStatus: string, statusLabel: string) => {
+    await apiJobsApplication.updateProfileStatus(id, profileStatus).then(async () => {
+      toast.success(`#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${statusLabel}`)
+      setPageClick(1)
+      await fetchGetJobsApplication()
+    })
   }
   const items: MenuProps['items'] = [
-    // {
-    //   label: (
-    //     <Tooltip title='Gửi Mail'>
-    //       <a style={{ color: '#1677ff' }}>
-    //         <IoMdMail />
-    //       </a>
-    //     </Tooltip>
-    //   ),
-    //   key: '0'
-    // },
-    // {
-    //   label: (
-    //     <Tooltip title='In CV'>
-    //       <a style={{ color: '#1677ff' }}>
-    //         <AiFillPrinter />
-    //       </a>
-    //     </Tooltip>
-    //   ),
-    //   key: '1'
-    // },
     {
       label: (
         <Tooltip title='Hủy bỏ'>
-          <a style={{ color: '#1677ff' }}>
+          <a
+            onClick={() => handleActionChangeProfileStatus(idJobAppli as string, 'deleted', 'Đã xóa')}
+            style={{ color: '#1677ff' }}
+          >
             <MdDelete />
           </a>
         </Tooltip>
@@ -201,7 +191,10 @@ const ContentCVManage = (props: any) => {
     {
       label: (
         <Tooltip title='Thêm vào sổ đen'>
-          <a style={{ color: '#1677ff' }}>
+          <a
+            onClick={() => handleActionChangeProfileStatus(idJobAppli as string, 'blacklist', 'Đã chặn')}
+            style={{ color: '#1677ff' }}
+          >
             <BiBlock />
           </a>
         </Tooltip>
@@ -384,13 +377,13 @@ const ContentCVManage = (props: any) => {
               </Tooltip> */}
 
                   <Tooltip title='Hủy bỏ'>
-                    <a>
+                    <a onClick={() => handleActionChangeProfileStatus(record.id, 'deleted', 'Hủy bỏ')}>
                       <MdDelete />
                     </a>
                   </Tooltip>
 
                   <Tooltip title='Thêm vào sổ đen'>
-                    <a>
+                    <a onClick={() => handleActionChangeProfileStatus(record.id, 'blacklist', 'Đã chặn')}>
                       <BiBlock />
                     </a>
                   </Tooltip>
@@ -401,7 +394,7 @@ const ContentCVManage = (props: any) => {
           {tabKey === 'tab-back-list' && (
             <>
               <Tooltip title='Bỏ chặn'>
-                <a>
+                <a onClick={() => handleActionChangeProfileStatus(record.id, 'available', 'Hiệu lực')}>
                   <CgUnblock />
                 </a>
               </Tooltip>
@@ -410,7 +403,10 @@ const ContentCVManage = (props: any) => {
           {tabKey === 'tab-deleted' && (
             <>
               <Tooltip title='Hoàn tác'>
-                <a style={{ fontSize: '12px' }}>
+                <a
+                  onClick={() => handleActionChangeProfileStatus(record.id, 'available', 'Hiệu lực')}
+                  style={{ fontSize: '12px' }}
+                >
                   <FaTrashRestoreAlt />
                 </a>
               </Tooltip>
@@ -476,7 +472,7 @@ const ContentCVManage = (props: any) => {
             scroll={{ x: true }}
             onRow={(record) => ({
               onClick: () => {
-                setIdPost(record.id)
+                setIdJobAppli(record.id)
                 setDataRowSelected(record)
               }
             })}

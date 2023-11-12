@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import './rightMenu.scss'
 import RightMenuPhone from '../RightMenuPhone/RightMenuPhone'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { IoMdNotifications } from 'react-icons/io'
 import { AiFillMessage, AiFillLock } from 'react-icons/ai'
 
 import { MdOutlineLogout } from 'react-icons/md'
 import { GrUserSettings } from 'react-icons/gr'
-import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
-import { DownOutlined, UserOutlined } from '@ant-design/icons'
+import { Avatar, Badge, Button, Dropdown, MenuProps, Space } from 'antd'
+import { DownOutlined } from '@ant-design/icons'
 import { useDispatch, useSelector } from 'react-redux'
 import { AuthState, logout } from '~/features/Auth/authSlice'
 import { BsFillCartFill } from 'react-icons/bs'
@@ -17,18 +17,31 @@ import ModalProfile from '~/components/ModalProfile'
 import { InfoMeState } from '~/features/Account/meSlice'
 import { RootState } from '~/app/store'
 
+import { EmployerState, getItemsCart, getMyCart } from '~/features/Employer/employerSlice'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 const dataNotify = [
   { id: '1', name: 'Phan Thanh Phong', actionInfo: 'Đã theo dõi bạn' },
   { id: '2', name: 'Phan Thanh Phong', actionInfo: 'Đã cập nhật CV của anh ấy' }
 ]
 const RightMenu = (props: any) => {
-  const { isLogin, roleType } = props
+  const { roleType } = props
   const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
   const [openModalProfile, setOpenModalProfile] = useState(false)
   const navigate = useNavigate()
   const disPatch = useDispatch()
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
+  const employer: EmployerState = useSelector((state: RootState) => state.employer)
+
+  useEffect(() => {
+    if (auth.isLogin && auth.role === 1 && auth.verify === 1) fetchGetMyCart()
+    console.log('employer', employer.cart)
+  }, [])
+  const fetchGetMyCart = async () => {
+    await dispatchAsync(getMyCart())
+    await dispatchAsync(getItemsCart())
+  }
   const handleLogin = () => {
     navigate('/employer-login')
   }
@@ -118,14 +131,16 @@ const RightMenu = (props: any) => {
               size='large'
             />
             {roleType === 'EMPLOYER_ROLE' && (
-              <Button
-                disabled={auth.verify === 1 ? false : true}
-                icon={<BsFillCartFill />}
-                className='btn-cart'
-                onClick={handleTabPageCart}
-                shape='circle'
-                size='large'
-              />
+              <Badge count={employer.cart.totalItems}>
+                <Button
+                  disabled={auth.verify === 1 ? false : true}
+                  icon={<BsFillCartFill />}
+                  className='btn-cart'
+                  onClick={handleTabPageCart}
+                  shape='circle'
+                  size='large'
+                />
+              </Badge>
             )}
 
             <Dropdown menu={menuProps}>

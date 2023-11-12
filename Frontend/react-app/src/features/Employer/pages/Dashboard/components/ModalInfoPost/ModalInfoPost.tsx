@@ -1013,10 +1013,15 @@ const ModalInfoPost = (props: any) => {
                   name='minSalary'
                   rules={[
                     { required: true, message: 'Vui lòng nhập mức lương tối thiểu' },
-                    { validator: validateMinMax }
+                    { validator: validateMinMax },
+                    { type: 'number', min: 1, message: 'Mức lương tối thiểu là 1' },
+                    { type: 'number', max: 9999999999, message: 'Mức lương tối đa là 9.999.999.999' }
                   ]}
                 >
-                  <Input
+                  <InputNumber
+                    style={{ width: '100%' }}
+                    min={1}
+                    // max={9999999999}
                     onKeyDown={(event) => {
                       if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
                         event.preventDefault()
@@ -1025,7 +1030,7 @@ const ModalInfoPost = (props: any) => {
                     disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối thiểu'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, min: Number(e.target.value) })}
+                    onChange={(e) => setSalaryRange({ ...salaryRange, min: Number(e) })}
                   />
                 </Form.Item>
               </Col>
@@ -1033,9 +1038,17 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   name='maxSalary'
                   style={{ marginBottom: 0 }}
-                  rules={[{ required: true, message: 'Vui lòng nhập mức lương tối đa' }, { validator: validateMinMax }]}
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập mức lương tối đa' },
+                    { validator: validateMinMax },
+                    { type: 'number', min: 1, message: 'Mức lương tối thiểu là 1' },
+                    { type: 'number', max: 9999999999, message: 'Mức lương tối đa là 9.999.999.999' }
+                  ]}
                 >
-                  <Input
+                  <InputNumber
+                    style={{ width: '100%' }}
+                    min={1}
+                    // max={9999999999}
                     onKeyDown={(event) => {
                       if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
                         event.preventDefault()
@@ -1044,7 +1057,7 @@ const ModalInfoPost = (props: any) => {
                     disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối đa'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e.target.value) })}
+                    onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e) })}
                   />
                 </Form.Item>
               </Col>

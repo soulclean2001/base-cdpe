@@ -1,12 +1,14 @@
 import { Col, Row } from 'antd'
 import './footer.scss'
 import { NavLink } from 'react-router-dom'
+import iosImg from '~/assets/iosIMG.png'
+import chPlay from '~/assets/chPlayImg.png'
 const Footer = () => {
   return (
     <div className='footer-container'>
       <>
         <Row className='footer-content'>
-          <Col md={5}>
+          <Col md={5} style={{ padding: '7px' }}>
             <div className='footer-title'>HFWork</div>
             <div>
               <NavLink to={''}>Về HFWork</NavLink>
@@ -26,8 +28,11 @@ const Footer = () => {
             <div>
               <NavLink to={''}>Quy chế hoạt động của HFWork</NavLink>
             </div>
+            <div>
+              <NavLink to={''}>Sơ đồ website</NavLink>
+            </div>
           </Col>
-          <Col md={5}>
+          <Col md={5} style={{ padding: '7px' }}>
             <div className='footer-title'>Dành cho Nhà tuyển dụng</div>
             <div>
               <NavLink to={''}>Đăng tin tuyển dụng</NavLink>
@@ -39,7 +44,7 @@ const Footer = () => {
               <NavLink to={''}>Liên hệ</NavLink>
             </div>
           </Col>
-          <Col md={5}>
+          <Col md={5} style={{ padding: '7px' }}>
             <div>
               <div className='footer-title'>Việc làm theo khu vực</div>
               <div>
@@ -63,7 +68,7 @@ const Footer = () => {
               <NavLink to=''>Tìm việc làm</NavLink>
             </div>
           </Col>
-          <Col md={5}>
+          <Col md={5} style={{ padding: '7px' }}>
             <div>
               <div className='footer-title'>Việc làm theo ngành nghề</div>
               <div>
@@ -82,22 +87,23 @@ const Footer = () => {
                 <NavLink to={''}>Xây dựng</NavLink>
               </div>
             </div>
-            <div>
-              <NavLink to=''>Tìm việc làm</NavLink>
-            </div>
           </Col>
           <Col md={4}>
             <div className='footer-title'>Ứng dụng di động</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '5px', alignItems: 'center' }}>
+              <img style={{ cursor: 'pointer', width: '48%', maxWidth: '110px' }} src={iosImg} alt='' />
+
+              <img style={{ cursor: 'pointer', width: '48%', maxWidth: '110px' }} src={chPlay} alt='' />
+            </div>
           </Col>
         </Row>
       </>
       <div className='footer-address'>
         <span>
-          Copyright © Công Ty Cổ Phần Navigos Group Việt Nam Tầng 20, tòa nhà E.Town Central, 11 Đoàn Văn Bơ, Phường
-          13, Quận 4, TP.HCM, Việt Nam
+          Copyright © Công Ty Cổ Phần HFWorks, 12 Nguyễn Văn Bảo, Phường 4, Gò Vấp, Thành phố Hồ Chí Minh, Việt Nam
         </span>
       </div>
-      <Row className='footer-bottom-container' justify={'center'} align={'middle'}>
+      {/* <Row className='footer-bottom-container' justify={'center'} align={'middle'}>
         <Col md={4} className='footer-name-web'>
           HFWork
         </Col>
@@ -108,7 +114,7 @@ const Footer = () => {
             <Col md={4}>Sơ đồ trang Web</Col>
           </Row>
         </Col>
-      </Row>
+      </Row> */}
     </div>
   )
 }

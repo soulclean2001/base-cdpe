@@ -151,7 +151,7 @@ const LoginEmployer = (props: any) => {
 
               <br />
               <Form.Item style={{ marginBottom: 0 }}>
-                <Link style={{ float: 'right' }} className='login-form-forgot' to={'/employer-forgot-password'}>
+                <Link style={{ float: 'right' }} className='login-form-forgot' to={'/forgot-password'}>
                   Quên mật khẩu
                 </Link>
               </Form.Item>

@@ -38,12 +38,25 @@ const ModalCreatePackage = (props: any) => {
   const [fileListPicture, setFileListPicture] = useState<UploadFile[]>([])
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
-
+  const [statusDetail, setStatusDetail] = useState('')
   useEffect(() => {
-    if (open && idPackage) {
-      handleGetDetailById()
+    if (open) {
+      handleClearForm()
+      if (idPackage) handleGetDetailById()
     }
   }, [open])
+  const handleClearForm = () => {
+    form.resetFields()
+    setNamePackage('')
+    setTypePackage('')
+    setTimeUse(1)
+    setTotalPostAccept(1)
+    setDescript('')
+    setIncludes('')
+    setPrice(1000)
+    setFileListPicture([])
+    setStatusDetail('')
+  }
   const handleGetDetailById = async () => {
     await apiPackage.getDetailById(idPackage).then((rs) => {
       console.log('rs', rs)
@@ -54,7 +67,7 @@ const ModalCreatePackage = (props: any) => {
       setTotalPostAccept(rs.result.value)
       setPrice(rs.result.price)
       setIncludes(rs.result.includes)
-
+      setStatusDetail(rs.result.status)
       form.setFieldsValue({
         serviceName: rs.result.title,
         typeService: rs.result.type,
@@ -216,7 +229,7 @@ const ModalCreatePackage = (props: any) => {
             ]}
           >
             <Input
-              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+              disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
               size='large'
               placeholder='Đăng bài'
               onChange={(e) => setNamePackage(e.target.value)}
@@ -250,7 +263,7 @@ const ModalCreatePackage = (props: any) => {
                   style={{ marginBottom: 0 }}
                 >
                   <InputNumber
-                    disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+                    disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
                     min={1}
                     max={99999}
                     size='large'
@@ -279,7 +292,7 @@ const ModalCreatePackage = (props: any) => {
                   ]}
                 >
                   <Select
-                    disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+                    disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
                     showSearch
                     placeholder={'Chọn thời gian sử dụng'}
                     size='large'
@@ -291,16 +304,21 @@ const ModalCreatePackage = (props: any) => {
             )}
           </Row>
           <Form.Item
-            rules={[{ required: true, message: 'Vui lòng nhập mức giá' }]}
             name='price'
-            initialValue={1}
-            label={<span style={{ fontWeight: '500' }}>Đơn giá</span>}
+            rules={[
+              { required: true, message: 'Vui lòng nhập mức giá' },
+              { type: 'number', min: 1000, message: 'Mức giá tối thiểu là 1000 VND' },
+              { type: 'number', max: 10000000000, message: 'Mức giá tối đa là 10.000.000.000 VND' }
+            ]}
+            initialValue={1000}
+            label={<span style={{ fontWeight: '500' }}>Đơn giá (VNĐ)</span>}
           >
             <InputNumber
-              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+              disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
               style={{ width: '100%' }}
               min={1000}
-              max={999999999}
+              max={10000000000}
+              step={500}
               size='large'
               onKeyDown={(event) => {
                 if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
@@ -316,7 +334,7 @@ const ModalCreatePackage = (props: any) => {
             rules={[{ required: true, message: 'Vui lòng không để trống mô tả gói dịch vụ' }]}
           >
             <CKEditor
-              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+              disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
               data={descript}
               config={{
                 toolbar: [
@@ -355,7 +373,7 @@ const ModalCreatePackage = (props: any) => {
             rules={[{ required: true, message: 'Vui lòng không để trống' }]}
           >
             <TextArea
-              disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+              disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
               size='large'
               onChange={(e) => setIncludes(e.target.value)}
             />
@@ -373,7 +391,7 @@ const ModalCreatePackage = (props: any) => {
               aspect={2 / 1.5}
             >
               <Upload
-                disabled={roleType === 'EMPLOYER_TYPE' ? true : false}
+                disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
                 // name='logo'
                 style={{ width: 'auto' }}
                 customRequest={dummyRequest}
@@ -395,7 +413,7 @@ const ModalCreatePackage = (props: any) => {
               Thoát
             </Button>
 
-            {idPackage && roleType !== 'EMPLOYER_TYPE' && (
+            {idPackage && roleType !== 'EMPLOYER_TYPE' && statusDetail !== 'DELETED' && (
               <Button
                 size='large'
                 htmlType='submit'

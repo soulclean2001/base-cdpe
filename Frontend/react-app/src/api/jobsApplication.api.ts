@@ -55,6 +55,10 @@ export class JobsApplication {
     const rs: ApiResponse = await client.post(`/job-applications/update-status/${id}`, { status })
     return rs
   }
+  public static updateProfileStatus = async (id: string, profile_status: string) => {
+    const rs: ApiResponse = await client.post(`/job-applications/update-profile-status/${id}`, { profile_status })
+    return rs
+  }
 }
 
 export default JobsApplication

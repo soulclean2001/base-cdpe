@@ -16,6 +16,14 @@ export interface RequestFilterPackageType {
   limit?: string
   page?: string
 }
+export interface RequestFilterPackageAdminType {
+  type?: string
+  title?: string
+  limit?: string
+  page?: string
+  status?: number | string
+  sort_by_date?: string
+}
 export interface CreatePackageReqBody {
   type: string
   price: number
@@ -57,8 +65,9 @@ export class Package {
     return rs
   }
   //using for ADMIN
-  public static getAllPackageForAdmin = async () => {
-    const rs: ApiResponse = await client.get(`/packages`)
+  public static getAllPackageForAdmin = async (request: RequestFilterPackageAdminType) => {
+    let filter = filterObject(request)
+    const rs: ApiResponse = await client.get(`/packages`, { params: filter })
     return rs
   }
   public static createPackage = async (data: CreatePackageReqBody) => {
@@ -77,6 +86,10 @@ export class Package {
   }
   public static deletedPackage = async (id: string) => {
     const rs: ApiResponse = await client.post(`/packages/${id}`)
+    return rs
+  }
+  public static archivePackage = async (id: string) => {
+    const rs: ApiResponse = await client.post(`/packages/${id}/archive`)
     return rs
   }
 }

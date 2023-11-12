@@ -70,6 +70,7 @@ import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVApp
 import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/CandidateFollowedPage'
 import MyOrdersPage from './features/Employer/pages/Dashboard/pages/MyOrdersPage'
 import VNPayReturn from './features/Employer/pages/CartPage/components/VNPAY/VNPayReturn'
+import RoadMapPage from './features/RoadMapPage'
 
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
@@ -147,7 +148,7 @@ function App() {
       async () => {
         await getRefreshToken()
       },
-      getTimeExpired(auth.accessToken) * 1000 - 90000 //86390000
+      getTimeExpired(auth.accessToken) * 1000 - 86390000 //86390000
     )
   }, [auth.refreshToken])
   const fetchListRooms = async () => {
@@ -186,7 +187,7 @@ function App() {
         <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
           <Route index element={<Home />} />
           <Route path='active-page' element={<ActivePage />} />
-
+          <Route path='road-map' element={<RoadMapPage />} />
           <Route path='jobs' element={<Job />}>
             <Route index element={<ListJob />} />
             <Route path=':infoUrlJobDetail' element={<JobDetailPage />} />
@@ -223,6 +224,7 @@ function App() {
         <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
           <Route index element={<HomePage />} />
           <Route path='active-page' element={<ActivePage />} />
+          <Route path='road-map' element={<RoadMapPage />} />
           <Route path='services' element={<ServicesPage />} />
           <Route path='chat' element={<ChatPage roleType={'EMPLOYER_TYPE'} />} />
           <Route

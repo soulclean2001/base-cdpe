@@ -23,11 +23,11 @@ interface MyServiceType {
 }
 const MyServicesPage = () => {
   const [listMyServices, setListMyServices] = useState<DataType[]>([])
-  const limit = 2
+  const limit = 5
   const [currentPage, setCurrentPage] = useState(1)
   const [total, setTotal] = useState(1)
   const [titlePackage, setTitlePackage] = useState('')
-  const [status, setStatus] = useState('all')
+  const [status, setStatus] = useState('')
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [idPackage, setIdPackage] = useState('')
 
@@ -46,12 +46,12 @@ const MyServicesPage = () => {
   useEffect(() => {
     setCurrentPage(1)
     fetchGetMyServices()
-  }, [titlePackage])
+  }, [titlePackage, status])
   const fetchGetMyServices = async (page?: string) => {
     let request: RequestFilterPackageOwnByMe = {
       limit: limit.toString(),
       page: page ? page : '1',
-      status: status === 'all' ? '' : status,
+      status: status,
       title: titlePackage
     }
     await apiPackage.getAllPackageByMe(request).then((rs) => {
@@ -176,7 +176,7 @@ const MyServicesPage = () => {
         />
         <div className='content-wapper'>
           <Row style={{ gap: '10px', marginBottom: '20px' }}>
-            <Col md={8} sm={24} xs={24}>
+            <Col md={8} sm={11} xs={24}>
               <Input
                 allowClear
                 className='input-search-services'
@@ -184,6 +184,22 @@ const MyServicesPage = () => {
                 placeholder='Tên dịch vụ'
                 prefix={<FiSearch />}
                 onChange={(e) => setTitlePackage(e.target.value)}
+              />
+            </Col>
+            <Col md={4} sm={11} xs={24}>
+              <Select
+                // allowClear
+                defaultValue='all'
+                size='large'
+                style={{ width: '100%' }}
+                showSearch
+                onChange={(value) => setStatus(value === 'all' ? '' : value)}
+                options={[
+                  { value: 'all', label: 'Tất cả' },
+                  { value: '0', label: 'Đã kích hoạt' },
+                  { value: '1', label: 'Chờ kích hoạt' },
+                  { value: '2', label: 'Đã hủy' }
+                ]}
               />
             </Col>
           </Row>

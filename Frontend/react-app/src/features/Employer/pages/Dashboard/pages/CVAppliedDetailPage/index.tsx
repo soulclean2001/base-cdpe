@@ -5,17 +5,20 @@ import { Avatar, Button, Dropdown, MenuProps, Tooltip, UploadFile } from 'antd'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { BiBlock, BiCommentError, BiSolidUserX } from 'react-icons/bi'
-import { FaUserPlus } from 'react-icons/fa'
+import { FaTrashRestoreAlt, FaUserPlus } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 import apiJobsAppli from '~/api/jobsApplication.api'
 import { ResumeType } from '~/types/resume.type'
 import { defaultResume } from '~/features/JobSeeker/pages/CV'
 import Right from '~/features/JobSeeker/pages/CV/Right'
 import { MdConnectWithoutContact, MdDelete } from 'react-icons/md'
-import { IoMdMail } from 'react-icons/io'
+
 import { FiMoreVertical } from 'react-icons/fi'
 import { JobApplicationStatus } from '~/types/jobAppliacation.type'
 import avatarTemp from '~/assets/logo_temp.jpg'
+import apiJobsApplication from '~/api/jobsApplication.api'
+import { toast } from 'react-toastify'
+import { CgUnblock } from 'react-icons/cg'
 interface DetailType {
   [key: string]: any
 }
@@ -78,21 +81,46 @@ const CVAppliedDetailPage = () => {
       }
     })
   }
+  const fetchActionApplication = async (id: string, type?: string, status?: number) => {
+    if (!id) return
+    if (type === 'APPROVE') {
+      await apiJobsApplication.approveCV(id).then((rs) => {
+        console.log('approve', rs)
+        toast.success(`#CV_${id.slice(-5).toUpperCase()} đã được chấp nhận`)
+        setMyDetail({ ...myDetail, status: 1 })
+      })
+    }
+    if (type === 'REJECT') {
+      await apiJobsApplication.rejectCV(id).then((rs) => {
+        console.log('reject', rs)
+        toast.success(`#CV_${id.slice(-5).toUpperCase()} đã bị từ chối`)
+        setMyDetail({ ...myDetail, status: 2 })
+      })
+    }
+    if (status && status > -1) {
+      await apiJobsApplication.updateStatus(id, status).then((rs) => {
+        console.log('rs update', rs)
+        toast.success(
+          `#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${Object.values(JobApplicationStatus)[status]}`
+        )
+        setMyDetail({ ...myDetail, status: status })
+      })
+    }
+  }
+  const handleActionChangeProfileStatus = async (id: string, profileStatus: string, statusLabel: string) => {
+    await apiJobsApplication.updateProfileStatus(id, profileStatus).then(async () => {
+      toast.success(`#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${statusLabel}`)
+      setMyDetail({ ...myDetail, profile_status: profileStatus })
+    })
+  }
   const items: MenuProps['items'] = [
     {
       label: (
-        <Tooltip title='Gửi Mail'>
-          <a style={{ color: '#1677ff' }}>
-            <IoMdMail />
-          </a>
-        </Tooltip>
-      ),
-      key: '0'
-    },
-    {
-      label: (
         <Tooltip title='Hủy bỏ'>
-          <a style={{ color: '#1677ff' }}>
+          <a
+            onClick={() => handleActionChangeProfileStatus(myDetail && myDetail._id, 'deleted', 'Đã hủy')}
+            style={{ color: '#1677ff' }}
+          >
             <MdDelete />
           </a>
         </Tooltip>
@@ -102,7 +130,10 @@ const CVAppliedDetailPage = () => {
     {
       label: (
         <Tooltip title='Thêm vào sổ đen'>
-          <a style={{ color: '#1677ff' }}>
+          <a
+            onClick={() => handleActionChangeProfileStatus(myDetail && myDetail._id, 'blacklist', 'Đã hủy')}
+            style={{ color: '#1677ff' }}
+          >
             <BiBlock />
           </a>
         </Tooltip>
@@ -144,123 +175,177 @@ const CVAppliedDetailPage = () => {
               </div>
             </div>
             <div className='right-btn-container'>
-              <div className='btn-top-container'>
-                {myDetail.status === 0 && (
-                  <>
-                    <Tooltip title='Chấp nhận CV'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<FaUserPlus />}
-                      />
-                    </Tooltip>
-                    <Tooltip title='Từ chối CV'>
-                      <Button
-                        style={{ fontSize: '22px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<BiSolidUserX />}
-                      />
-                    </Tooltip>
-                  </>
-                )}
-                {myDetail.status === 1 && (
-                  <>
-                    <Tooltip title='Phỏng vấn'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<MdConnectWithoutContact />}
-                      />
-                    </Tooltip>
-                    <Tooltip title='Không thể liên hệ'>
-                      <Button
-                        style={{ fontSize: '22px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<BiCommentError />}
-                      />
-                    </Tooltip>
-                  </>
-                )}
-                {myDetail.status === 3 && (
-                  <>
-                    <Tooltip title='Chấp nhận CV'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<FaUserPlus />}
-                      />
-                    </Tooltip>
-                    <Tooltip title='Từ chối CV'>
-                      <Button
-                        style={{ fontSize: '22px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<BiSolidUserX />}
-                      />
-                    </Tooltip>
-                  </>
-                )}
-                {myDetail.status === 4 && (
-                  <>
-                    <Tooltip title='Nhận việc'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<FaUserPlus />}
-                      />
-                    </Tooltip>
-                    <Tooltip title='Từ chối'>
-                      <Button
-                        style={{ fontSize: '22px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<BiSolidUserX />}
-                      />
-                    </Tooltip>
-                  </>
-                )}
-                {myDetail.status === 7 && (
-                  <>
-                    <Tooltip title='Phỏng vấn'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<MdConnectWithoutContact />}
-                      />
-                    </Tooltip>
-                    <Tooltip title='Từ chối'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<BiSolidUserX />}
-                      />
-                    </Tooltip>
-                  </>
-                )}
-                {myDetail.status !== 2 && myDetail.status !== 5 ? (
-                  <Dropdown menu={{ items }} trigger={['click']}>
-                    <a onClick={(e) => e.preventDefault()}>
-                      <FiMoreVertical />
-                    </a>
-                  </Dropdown>
-                ) : (
-                  <>
-                    <Tooltip title='Hủy bỏ'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<MdDelete />}
-                      />
-                    </Tooltip>
+              {myDetail.profile_status === 'available' && (
+                <div className='btn-top-container'>
+                  {myDetail.status === 0 && (
+                    <>
+                      <Tooltip title='Chấp nhận CV'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, 'APPROVE')}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<FaUserPlus />}
+                        />
+                      </Tooltip>
+                      <Tooltip title='Từ chối CV'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, 'REJECT')}
+                          style={{ fontSize: '22px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<BiSolidUserX />}
+                        />
+                      </Tooltip>
+                    </>
+                  )}
+                  {myDetail.status === 1 && (
+                    <>
+                      <Tooltip title='Phỏng vấn'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, '', 4)}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<MdConnectWithoutContact />}
+                        />
+                      </Tooltip>
+                      <Tooltip title='Không thể liên hệ'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, '', 7)}
+                          style={{ fontSize: '22px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<BiCommentError />}
+                        />
+                      </Tooltip>
+                    </>
+                  )}
+                  {myDetail.status === 3 && (
+                    <>
+                      <Tooltip title='Chấp nhận CV'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, 'APPROVE')}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<FaUserPlus />}
+                        />
+                      </Tooltip>
+                      <Tooltip title='Từ chối CV'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, 'REJECT')}
+                          style={{ fontSize: '22px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<BiSolidUserX />}
+                        />
+                      </Tooltip>
+                    </>
+                  )}
+                  {myDetail.status === 4 && (
+                    <>
+                      <Tooltip title='Nhận việc'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, '', 5)}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<FaUserPlus />}
+                        />
+                      </Tooltip>
+                      <Tooltip title='Từ chối'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, 'REJECT')}
+                          style={{ fontSize: '22px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<BiSolidUserX />}
+                        />
+                      </Tooltip>
+                    </>
+                  )}
+                  {myDetail.status === 7 && (
+                    <>
+                      <Tooltip title='Phỏng vấn'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, '', 4)}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<MdConnectWithoutContact />}
+                        />
+                      </Tooltip>
+                      <Tooltip title='Từ chối'>
+                        <Button
+                          onClick={() => fetchActionApplication(myDetail._id, 'REJECT')}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<BiSolidUserX />}
+                        />
+                      </Tooltip>
+                    </>
+                  )}
+                  {myDetail.status !== 2 && myDetail.status !== 5 ? (
+                    <Dropdown menu={{ items }} trigger={['click']}>
+                      <a onClick={(e) => e.preventDefault()}>
+                        <FiMoreVertical />
+                      </a>
+                    </Dropdown>
+                  ) : (
+                    <>
+                      <Tooltip title='Hủy bỏ'>
+                        <Button
+                          onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<MdDelete />}
+                        />
+                      </Tooltip>
 
-                    <Tooltip title='Thêm vào sổ đen'>
-                      <Button
-                        style={{ fontSize: '18px' }}
-                        className='btn-candidate-detail btn-save-cv'
-                        icon={<BiBlock />}
-                      />
-                    </Tooltip>
-                  </>
-                )}
-              </div>
+                      <Tooltip title='Thêm vào sổ đen'>
+                        <Button
+                          onClick={() => handleActionChangeProfileStatus(myDetail._id, 'blacklist', 'Đã chặn')}
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          icon={<BiBlock />}
+                        />
+                      </Tooltip>
+                    </>
+                  )}
+                </div>
+              )}
+              {myDetail.profile_status === 'blacklist' && (
+                <div className='btn-top-container'>
+                  <Tooltip title='Hủy bỏ'>
+                    <Button
+                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                      style={{ fontSize: '18px' }}
+                      className='btn-candidate-detail btn-save-cv'
+                      icon={<MdDelete />}
+                    />
+                  </Tooltip>
+                  <Tooltip title='Bỏ chặn'>
+                    <Button
+                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'available', 'Hiệu lực')}
+                      style={{ fontSize: '18px' }}
+                      className='btn-candidate-detail btn-save-cv'
+                      icon={<CgUnblock />}
+                    />
+                  </Tooltip>
+                </div>
+              )}
+              {myDetail.profile_status === 'deleted' && (
+                <div className='btn-top-container'>
+                  <Tooltip title='Hoàn tát'>
+                    <Button
+                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                      style={{ fontSize: '18px' }}
+                      className='btn-candidate-detail btn-save-cv'
+                      icon={<FaTrashRestoreAlt />}
+                    />
+                  </Tooltip>
+                  <Tooltip title='Thêm vào sổ đen'>
+                    <Button
+                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'available', 'Hiệu lực')}
+                      style={{ fontSize: '18px' }}
+                      className='btn-candidate-detail btn-save-cv'
+                      icon={<BiBlock />}
+                    />
+                  </Tooltip>
+                </div>
+              )}
             </div>
           </div>
         </div>

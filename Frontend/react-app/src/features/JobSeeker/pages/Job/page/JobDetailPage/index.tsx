@@ -146,6 +146,12 @@ const JobDetailPage = () => {
       children: <ListJob companyId={jobDetail ? jobDetail.company_id : ''} />
     }
   ]
+  if (!jobDetail)
+    return (
+      <div style={{ height: '86vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        Việc làm không tồn tại
+      </div>
+    )
   return (
     <div className='job-detail-page-container'>
       <div

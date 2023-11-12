@@ -56,6 +56,10 @@ const MyCompanies = () => {
                 }}
               />
             ))}
+          {!listFollowed ||
+            (listFollowed.length < 1 && (
+              <span style={{ fontSize: '14px', fontWeight: '300' }}>Bạn chưa theo dõi công ty</span>
+            ))}
         </div>
       </div>
     </div>

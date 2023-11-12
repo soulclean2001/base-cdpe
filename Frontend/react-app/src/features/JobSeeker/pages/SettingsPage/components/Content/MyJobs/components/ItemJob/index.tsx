@@ -1,5 +1,5 @@
-import { Button, Col, Row } from 'antd'
-import { AiOutlineHeart } from 'react-icons/ai'
+import { Col, Row } from 'antd'
+
 import { useState, useEffect } from 'react'
 import './style.scss'
 import { JobApplicationStatus } from '~/types/jobAppliacation.type'
@@ -30,22 +30,28 @@ const ItemJob = (props: any) => {
       if (data.status.toString() == '0') {
         setStatusCSS('pending')
         return
-      } else if (data.status.toString() === '2') {
+      }
+      if (data.status.toString() === '2') {
         setStatusCSS('rejected')
         return
-      } else if (data.status.toString() === '1') {
+      }
+      if (data.status.toString() === '1') {
         setStatusCSS('approved')
         return
-      } else if (data.status.toString() === '4') {
+      }
+      if (data.status.toString() === '4') {
         setStatusCSS('interview')
         return
-      } else if (data.status.toString() === '5') {
+      }
+      if (data.status.toString() === '5') {
         setStatusCSS('hired')
         return
-      } else if (data.status.toString() === '7') {
+      }
+      if (data.status.toString() === '7') {
         setStatusCSS('not-contactable')
         return
-      } else setStatusCSS('')
+      }
+      setStatusCSS('')
     }
   }
   const handleClickShowDetail = () => {

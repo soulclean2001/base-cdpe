@@ -29,7 +29,7 @@ const SideBar = () => {
   const [checkboxCV, setCheckboxCV] = useState(false)
   const currentURL = window.location.href
   const [isModalOpenSettingCV, setIsModalOpenSettingCV] = useState(false)
-  console.log('URL của trang web hiện tại:', currentURL)
+  // console.log('URL của trang web hiện tại:', currentURL)
   //check cv
   // const [dataMyCV, setDataMyCV] = useState('data my cv')
   //

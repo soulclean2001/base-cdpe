@@ -5,6 +5,9 @@ import { MdDelete } from 'react-icons/md'
 import { useState, useEffect } from 'react'
 import apiCart from '~/api/cart.api'
 import { toast } from 'react-toastify'
+import ReactHtmlParser from 'html-react-parser'
+import { useDispatch } from 'react-redux'
+import { minusTotalItemCart } from '~/features/Employer/employerSlice'
 interface DataType {
   id: string
   namePackage: string
@@ -12,33 +15,18 @@ interface DataType {
   totalPayment: number
   quantity: number
   idPackage: string
+  price: number
+  type: string
+  valuePost: number
+  totalDate: number
+  statusPackage: string
 }
 interface ItemType {
   [key: string]: any
 }
 const TableCart = (props: any) => {
   const { handleSetTotalPay } = props
-  const dataSource: DataType[] = [
-    {
-      id: 'id1',
-      idPackage: '1',
-      namePackage: 'Đăng Tuyển 30-ngày - M',
-      descriptions: `Là sự kết hợp các dịch vụ đăng tuyển cơ bản trên trang web vietnamworks.com và Ứng Dụng Di Động của VietnamWorks, bao gồm:
-      Trên trang web: Tin tuyển dụng được đăng tuyển cơ bản
-      Trên Ứng Dụng Di Động: Tin tuyển dụng được đính kèm tag "HOT" và được hiển thị ở khu vực ưu tiên hơn so với các tin đăng tuyển cơ bản trong 30 ngày.`,
-      totalPayment: 200,
-      quantity: 3
-    },
-    {
-      id: 'id2',
-      idPackage: '2',
-      namePackage: 'Đăng Tuyển 30-ngày - Cơ Bản',
-      descriptions: `Tiếp cận gần 5 triệu người truy cập vào website vietnamworks.com mỗi tháng
-      Có cơ hội được gửi trực tiếp đến ứng viên qua 300.000 email thông báo việc làm mỗi ngày`,
-      totalPayment: 400,
-      quantity: 2
-    }
-  ]
+  const [disableInput, setDisableInput] = useState(false)
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
   const [listItems, setListItems] = useState<DataType[]>([])
   const [items, setItems] = useState<
@@ -47,8 +35,8 @@ const TableCart = (props: any) => {
       quantity: number
     }[]
   >([])
-  // const [totalPay, setTotalPay] = useState(0)
-
+  const [hideDescript, setHideDescript] = useState(true)
+  const disPath = useDispatch()
   useEffect(() => {
     fetchGetListItemsCart()
   }, [])
@@ -68,11 +56,16 @@ const TableCart = (props: any) => {
       let list: DataType[] = rs.result.map((item: ItemType) => {
         return {
           id: item._id,
-          namePackage: 'name package',
-          descriptions: 'descrip',
-          totalPayment: 100000 * item.item.quantity,
+          namePackage: item.package.title,
+          descriptions: item.package.description,
+          totalPayment: item.package.price * item.item.quantity,
           quantity: item.item.quantity,
-          idPackage: item.item.item_id
+          idPackage: item.item.item_id,
+          price: item.package.price,
+          type: item.package.type,
+          valuePost: item.package.value,
+          totalDate: item.package.number_of_days_to_expire,
+          statusPackage: item.package.status
         }
       })
 
@@ -80,14 +73,14 @@ const TableCart = (props: any) => {
     })
   }
   const handleChangeQuantity = async (value: number, id: string) => {
-    console.log('value', value, id)
+    setDisableInput(true)
     if (!items || !listItems) return
     await apiCart.createOrUpdateItemCart({ item: { item_id: id, quantity: value } }).then((rs) => {
       console.log('updae', rs)
       const listAfter = listItems.map((item) => {
         if (item.id === rs.result._id) {
           item.quantity = value
-          item.totalPayment = value * 100000
+          item.totalPayment = value * item.price
         }
         return item
       })
@@ -97,6 +90,8 @@ const TableCart = (props: any) => {
       })
       setItems(itemsAfter)
       setListItems(listAfter)
+
+      setDisableInput(false)
     })
     // await fetchGetListItemsCart()
   }
@@ -112,6 +107,7 @@ const TableCart = (props: any) => {
       })
       setItems(listItemsAfter)
       setListItems(listAfter)
+      disPath(minusTotalItemCart())
       toast.success('Xóa dịch vụ khỏi giỏ hàng thành công')
     })
   }
@@ -134,20 +130,32 @@ const TableCart = (props: any) => {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: onSelectChange
+    onChange: onSelectChange,
+    getCheckboxProps: (record: DataType) => ({
+      disabled: record.statusPackage !== 'ACTIVE' // Column configuration not to be checked
+    })
   }
   const columns: ColumnsType<DataType> = [
     {
       // ellipsis: true,
       // width: 'auto',
+
       showSorterTooltip: false,
-      title: 'Sản phẩm',
+      title: 'Gói dịch vụ',
       dataIndex: 'namePackage',
       key: 'namePackage',
       render: (text, record) => (
         <div style={{ minWidth: '200px' }}>
-          <span>{text}</span>
+          <span>
+            {record.namePackage}
+            {' - '}
+            {record.type === 'BANNER' ? `${record.totalDate} ngày` : `${record.valuePost} bài đăng`}
+            {record.statusPackage !== 'ACTIVE' && (
+              <span style={{ fontSize: '12px', color: 'red' }}> (Ngừng kinh doanh)</span>
+            )}
+          </span>
           <Collapse
+            onChange={() => setHideDescript(!hideDescript)}
             className='collapse-descriptions-package'
             size='small'
             ghost
@@ -162,10 +170,17 @@ const TableCart = (props: any) => {
                       fontSize: '12px'
                     }}
                   >
-                    Xem miêu tả
+                    {hideDescript ? 'Xem miêu tả' : 'Ẩn miêu tả'}
                   </span>
                 ),
-                children: <span>{record.descriptions}</span>,
+                children: (
+                  <div
+                    className='preview__info'
+                    style={{ color: '#333333', maxWidth: '100%', wordBreak: 'break-word' }}
+                  >
+                    {record.descriptions ? ReactHtmlParser(record.descriptions) : ''}
+                  </div>
+                ),
                 showArrow: false
               }
             ]}
@@ -191,6 +206,7 @@ const TableCart = (props: any) => {
       key: 'quantity',
       render: (text: number, record) => (
         <InputNumber
+          disabled={disableInput}
           className='custom-input-number'
           step={1}
           keyboard={false}

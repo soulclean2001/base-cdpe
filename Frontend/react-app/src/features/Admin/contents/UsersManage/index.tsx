@@ -9,34 +9,99 @@ import { CgUnblock } from 'react-icons/cg'
 import { FiSearch } from 'react-icons/fi'
 import { FaHistory } from 'react-icons/fa'
 import ModalBlockAccount from './components/ModalBlockAccount'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import apiAdmin, { SearchUserFilter } from '~/api/admin.api'
+import { UserVerifyStatus } from '~/types/user.type'
+import { fetchUsers } from '~/features/User/userSlice'
 interface DataType {
-  key: string
+  id: string
   name: string
   email: string
   signUpDate: string
-  signInRecent: string
+  updateDate: string
   status: string | number
+}
+interface UserType {
+  [key: string]: any
 }
 const UsersManage = () => {
   const [openModalBlockAccount, setOpenModalBlockAccount] = useState(false)
   const [selectedAccountId, setSelectedAccountId] = useState('')
-  const onChangeTab = (key: string) => {
-    console.log(key)
+  const [listUsers, setListUsers] = useState<DataType[]>([])
+  const [role, setRole] = useState('employer')
+  const [content, setContent] = useState('')
+  const [status, setStatus] = useState('')
+  const [verify, setVerify] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [total, setTotal] = useState(1)
+  const limit = 5
+  useEffect(() => {
+    setCurrentPage(1)
+    fetchGetUsers()
+  }, [role, content, status, verify])
+  const fetchGetUsers = async (page?: string) => {
+    let request: SearchUserFilter = {
+      limit: limit.toString(),
+      page: page ? page : '1',
+      content: content,
+      status: status,
+      verify: verify,
+      type: role
+    }
+    await apiAdmin.getUsersByAdmin(request).then((rs) => {
+      console.log('list user', rs)
+      setTotal(rs.result.total)
+      let listTemp = rs.result.employers.map((user: UserType) => {
+        return {
+          id: user._id,
+          name: user.role === 2 ? user.name : user.role === 1 ? user.name : '_',
+          email: user.email,
+          signUpDate: user.created_at.slice(0, 10),
+          updateDate: user.updated_at.slice(0, 10),
+          status: user.status !== 1 ? Object.values(UserVerifyStatus)[user.verify] : 'Đã khóa'
+        }
+      })
+      setListUsers(listTemp)
+    })
   }
-
+  const handleChangeStatus = (status: string) => {
+    if (status === 'all') {
+      setStatus('')
+      setVerify('')
+    }
+    if (status === '2') {
+      setStatus('1')
+      setVerify('2')
+    }
+    if (status === '1') {
+      setStatus('0')
+      setVerify('1')
+    }
+    if (status === '0') {
+      setStatus('0')
+      setVerify('0')
+    }
+  }
+  const handleChangePage = async (page: any) => {
+    setCurrentPage(page)
+    await fetchGetUsers(page.toString())
+  }
   const handleOpenModalBlockAccount = (id: string) => {
     setSelectedAccountId(id)
     setOpenModalBlockAccount(true)
   }
+  const onChangeTab = (key: string) => {
+    setRole(key)
+    console.log(key)
+  }
   const items: TabsProps['items'] = [
     {
-      key: 'tab-employer-manage',
+      key: 'employer',
       label: <div className='tab-item'>Nhà tuyển dụng</div>,
       children: <></>
     },
     {
-      key: 'tab-candidate-manage',
+      key: 'candidate',
       label: <div className='tab-item'>Người tìm việc</div>,
       children: <></>
     }
@@ -45,9 +110,9 @@ const UsersManage = () => {
     {
       ellipsis: true,
       title: 'ID',
-      dataIndex: 'key',
-      key: 'key',
-      render: (value, _) => <span key={value}>{`USER_${value}`}</span>
+      dataIndex: 'id',
+      key: 'id',
+      render: (value, _) => <span key={value}>{`#USER_${value.slice(-5).toUpperCase()}`}</span>
     },
     {
       ellipsis: true,
@@ -69,9 +134,9 @@ const UsersManage = () => {
     },
     {
       ellipsis: true,
-      title: 'Đăng nhập gần đây',
-      key: 'signInRecent',
-      dataIndex: 'signInRecent'
+      title: 'Cập nhật gần đây',
+      key: 'updateDate',
+      dataIndex: 'updateDate'
     },
     {
       ellipsis: true,
@@ -103,7 +168,7 @@ const UsersManage = () => {
 
           {record.status !== 'Đã khóa' ? (
             <Tooltip title='Khóa tài khoản'>
-              <a onClick={() => handleOpenModalBlockAccount(record.key)}>
+              <a onClick={() => handleOpenModalBlockAccount(record.id)}>
                 <BiBlock />
               </a>
             </Tooltip>
@@ -124,33 +189,6 @@ const UsersManage = () => {
     }
   ]
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      name: 'John Brown',
-      email: 'font@gmail.com',
-      signUpDate: '26/09/2023',
-      signInRecent: '26/09/2023',
-      status: 'Đã khóa'
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      email: 'font1@gmail.com',
-      signUpDate: '26/09/2023',
-      signInRecent: '26/09/2023',
-      status: 'Đã kích hoạt'
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      email: 'font2@gmail.com',
-      signUpDate: '26/09/2023',
-      signInRecent: '26/09/2023',
-      status: 'Chưa kích hoạt'
-    }
-  ]
-
   return (
     <div className='admin-users-manage-container'>
       <div className='title'>Quản lý tài khoản</div>
@@ -158,19 +196,39 @@ const UsersManage = () => {
       <div className='content-wapper'>
         <Row style={{ gap: '10px', marginBottom: '15px' }}>
           <Col md={8} sm={16} xs={24}>
-            <Input className='input-search-user' size='large' placeholder='Email, id' prefix={<FiSearch />} />
+            <Input
+              allowClear
+              onChange={(e) => setContent(e.target.value)}
+              className='input-search-user'
+              size='large'
+              placeholder='Email, tên'
+              prefix={<FiSearch />}
+            />
           </Col>
           <Col md={4} sm={7} xs={24}>
             <Select
+              onChange={(value) => handleChangeStatus(value)}
               size='large'
               style={{ width: '100%' }}
               defaultValue='Tất cả'
-              options={[{ value: 'Tất cả' }, { value: 'Đã khóa' }, { value: 'Online' }, { value: 'Offline' }]}
+              options={[
+                { value: 'all', label: 'Tất cả' },
+                { value: '2', label: 'Đã khóa' },
+                { value: '1', label: 'Đã kích hoạt' },
+                { value: '0', label: 'Chưa kích hoạt' }
+              ]}
             />
           </Col>
         </Row>
 
-        <Table className='table-custom users-table' scroll={{ x: true }} columns={columns} dataSource={data} />
+        <Table
+          rowKey={'id'}
+          className='table-custom users-table'
+          scroll={{ x: true }}
+          columns={columns}
+          dataSource={listUsers}
+          pagination={{ current: currentPage, total: total, pageSize: limit, onChange: handleChangePage }}
+        />
         <ModalBlockAccount
           selectedAccountId={selectedAccountId}
           open={openModalBlockAccount}

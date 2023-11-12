@@ -218,7 +218,7 @@ const OrdersManage = () => {
       <div className='title'>Quản lý đơn hàng</div>
       <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='1' items={items} />
       <div className='content-wapper'>
-        <Row style={{ gap: '10px', marginBottom: '15px' }}>
+        {/* <Row style={{ gap: '10px', marginBottom: '15px' }}>
           <Col md={8} sm={16} xs={24}>
             <Input
               className='input-search-services'
@@ -233,10 +233,10 @@ const OrdersManage = () => {
               size='large'
               placeholder={['Từ ngày', 'Đến ngày']}
               format='DD-MM-YYYY'
-              // locale={viVN}
+             
             />
           </Col>
-        </Row>
+        </Row> */}
 
         <Table className='table-custom users-table' scroll={{ x: true }} columns={columns} dataSource={data} />
       </div>

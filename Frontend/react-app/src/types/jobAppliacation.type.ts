@@ -8,3 +8,8 @@ export enum JobApplicationStatus {
   Cancelled = 'Hủy bỏ',
   NotContactable = 'Không thể liên hệ'
 }
+export enum JobApplicationProfileStatus {
+  Available = 'available',
+  BlackList = 'Danh sách đen',
+  Deleted = 'Đã hủy'
+}

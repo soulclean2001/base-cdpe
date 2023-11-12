@@ -18,7 +18,7 @@ interface PropsType {
 }
 const NotifyDrawer = (props: any) => {
   const { open, onClose, roleType, dataNotify }: PropsType = props
-  console.log('drwa', roleType)
+
   return (
     <Drawer
       // closable={false}

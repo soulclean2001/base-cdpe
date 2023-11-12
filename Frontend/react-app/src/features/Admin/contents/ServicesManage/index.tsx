@@ -1,18 +1,18 @@
-import { Button, Col, Input, Row, Select, Space, Table, Tabs, Tag } from 'antd'
+import { Button, Col, Row, Select, Space, Table, Tabs, Tag, Tooltip } from 'antd'
 
 import '../PostReviewManage/style.scss'
 import './style.scss'
 import '../UsersManage/style.scss'
-import { FiSearch } from 'react-icons/fi'
+
 import { ColumnsType } from 'antd/es/table'
 import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
 
-import { AiFillEdit, AiFillLock, AiFillPlusCircle } from 'react-icons/ai'
+import { AiFillLock, AiFillPlusCircle } from 'react-icons/ai'
 import { TabsProps } from 'antd/lib'
 import { FaTrashRestoreAlt } from 'react-icons/fa'
 import { useState, useEffect } from 'react'
 import ModalCreatePackage from '../../components/ModalCreatePackage'
-import apiPackage from '~/api/package.api'
+import apiPackage, { RequestFilterPackageAdminType } from '~/api/package.api'
 import { BiWorld } from 'react-icons/bi'
 import { toast } from 'react-toastify'
 interface DataType {
@@ -28,41 +28,21 @@ interface DataType {
 interface AnyType {
   [key: string]: any
 }
-// const data: DataType[] = [
-//   {
-//     id: '1',
-//     nameService: 'Đăng Tuyển 30 ngày',
-//     validityPeriod: '30 ngày',
-//     price: 400000,
-//     updateDate: '26/09/2023',
-//     status: 'Hoạt động'
-//   },
-//   {
-//     id: '2',
-//     nameService: 'Công ty hàng đầu',
-//     validityPeriod: '1 năm',
-//     price: 440000,
-//     updateDate: '26/09/2023',
-//     status: 'Hoạt động'
-//   },
-//   {
-//     id: '3',
-//     nameService: 'Xem thông tin liên hệ',
-//     validityPeriod: '30 ngày',
-//     price: 500000,
-//     updateDate: '26/09/2023',
-//     status: 'Đã xóa'
-//   }
-// ]
 
 const ServicesManage = () => {
   const [isOpenModal, setIsOpenModal] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
   const [listServices, setListServices] = useState<DataType[]>([])
   const [idDetail, setIdDetail] = useState('')
+  const [currentPage, setCurentPage] = useState(1)
+  const [total, setTotal] = useState(1)
+  const [status, setStatus] = useState('all')
+  const [typePackage, setTypePackage] = useState('all')
+  const limit = 5
   useEffect(() => {
+    setCurentPage(1)
     fetchData()
-  }, [])
+  }, [status, typePackage])
   useEffect(() => {
     if (isSubmit) {
       fetchData()
@@ -70,9 +50,17 @@ const ServicesManage = () => {
     }
   }, [isSubmit])
   const fetchData = async (page?: string) => {
-    await apiPackage.getAllPackageForAdmin().then((rs) => {
+    let request: RequestFilterPackageAdminType = {
+      limit: limit.toString(),
+      page: page ? page : '1',
+      sort_by_date: '1',
+      status: status === 'all' ? '' : status,
+      type: typePackage === 'all' ? '' : typePackage
+    }
+    await apiPackage.getAllPackageForAdmin(request).then((rs) => {
       console.log('rs', rs)
-      const listTemp = rs.result.map((service: AnyType) => {
+      setTotal(rs.result.total)
+      const listTemp = rs.result.pks.map((service: AnyType) => {
         if (service.type === 'POST')
           return {
             id: service._id,
@@ -99,16 +87,28 @@ const ServicesManage = () => {
   }
   const handleActivePackage = async (id: string) => {
     await apiPackage.activePackage(id).then(async (rs) => {
-      console.log('rs active', rs)
       toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} đã được kích hoạt`)
+      setCurentPage(1)
+      await fetchData()
+    })
+  }
+  const handleArchivePackage = async (id: string) => {
+    await apiPackage.archivePackage(id).then(async (rs) => {
+      toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} đã được ẩn`)
+      setCurentPage(1)
       await fetchData()
     })
   }
   const handleDeletePackage = async (id: string) => {
     await apiPackage.deletedPackage(id).then(async (rs) => {
       toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} được xóa thành công`)
+      setCurentPage(1)
       await fetchData()
     })
+  }
+  const handleChangePage = async (page: any) => {
+    setCurentPage(page)
+    await fetchData(page)
   }
   const handleOpenDetail = (id: string) => {
     setIdDetail(id)
@@ -120,14 +120,18 @@ const ServicesManage = () => {
   const handleAfterSubmit = () => {
     setIsSubmit(true)
     setIsOpenModal(false)
+    setIdDetail('')
   }
   const handleCloseModal = () => {
+    setIdDetail('')
     setIsSubmit(false)
     setIsOpenModal(false)
   }
   const onChangeTab = (key: string) => {
+    setStatus(key)
     console.log(key)
   }
+
   const columns: ColumnsType<DataType> = [
     {
       ellipsis: true,
@@ -153,14 +157,14 @@ const ServicesManage = () => {
       title: 'Hiệu lực',
       dataIndex: 'timeUse',
       key: 'timeUse',
-      render: (_, record) => <span>{record.type === 'BANNER' ? `${record.timeUse} ngày` : ''}</span>
+      render: (_, record) => <span>{record.type === 'BANNER' ? `${record.timeUse} ngày` : '_'}</span>
     },
     {
       ellipsis: true,
       title: 'Số bài đăng',
       dataIndex: 'totalPosts',
       key: 'totalPosts',
-      render: (_, record) => <span>{record.type === 'POST' ? record.totalPosts : ''}</span>
+      render: (_, record) => <span>{record.type === 'POST' ? record.totalPosts : '_'}</span>
     },
     {
       ellipsis: true,
@@ -199,46 +203,64 @@ const ServicesManage = () => {
       align: 'left',
       render: (_, record) => (
         <Space size={'middle'} style={{ textAlign: 'center' }}>
-          <a
-            onClick={() => handleOpenDetail(record.id)}
-            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-          >
-            <BsFillEyeFill />
-          </a>
+          <Tooltip title='Chi tiết'>
+            <a
+              onClick={() => handleOpenDetail(record.id)}
+              style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+            >
+              <BsFillEyeFill />
+            </a>
+          </Tooltip>
 
           {record.status === 'ACTIVE' && (
             <>
-              <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
-                <AiFillLock />
-              </a>
-              <a
-                onClick={() => handleDeletePackage(record.id)}
-                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-              >
-                <BsFillTrashFill />
-              </a>
+              <Tooltip title='Ẩn'>
+                <a
+                  onClick={() => handleArchivePackage(record.id)}
+                  style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                >
+                  <AiFillLock />
+                </a>
+              </Tooltip>
+              <Tooltip title='Xóa'>
+                <a
+                  onClick={() => handleDeletePackage(record.id)}
+                  style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                >
+                  <BsFillTrashFill />
+                </a>
+              </Tooltip>
             </>
           )}
           {record.status === 'ARCHIVE' && (
             <>
-              <a
-                onClick={() => handleActivePackage(record.id)}
-                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-              >
-                <BiWorld />
-              </a>
-              <a
-                onClick={() => handleDeletePackage(record.id)}
-                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-              >
-                <BsFillTrashFill />
-              </a>
+              <Tooltip title='Công khai'>
+                <a
+                  onClick={() => handleActivePackage(record.id)}
+                  style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                >
+                  <BiWorld />
+                </a>
+              </Tooltip>
+              <Tooltip title='Xóa'>
+                <a
+                  onClick={() => handleDeletePackage(record.id)}
+                  style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                >
+                  <BsFillTrashFill />
+                </a>
+              </Tooltip>
             </>
           )}
           {record.status === 'DELETED' && (
-            <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
-              <FaTrashRestoreAlt />
-            </a>
+            <Tooltip title='Khôi phục'>
+              <a
+                onClick={() => handleArchivePackage(record.id)}
+                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              >
+                <FaTrashRestoreAlt />
+              </a>
+            </Tooltip>
           )}
         </Space>
       )
@@ -246,22 +268,22 @@ const ServicesManage = () => {
   ]
   const items: TabsProps['items'] = [
     {
-      key: 'tab-all',
+      key: 'all',
       label: <div className='tab-item'>Tất cả</div>,
       children: <></>
     },
     {
-      key: 'tab-active',
+      key: 'ACTIVE',
       label: <div className='tab-item'>Hoạt động</div>,
       children: <></>
     },
     {
-      key: 'tab-archive',
+      key: 'ARCHIVE',
       label: <div className='tab-item'>Ẩn</div>,
       children: <></>
     },
     {
-      key: 'tab-deleted',
+      key: 'DELETED',
       label: <div className='tab-item'>Đã xóa</div>,
       children: <></>
     }
@@ -281,17 +303,22 @@ const ServicesManage = () => {
       <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='tab-all' items={items} />
       <div className='content-wapper'>
         <Row style={{ gap: '10px', marginBottom: '15px' }}>
-          <Col md={8} sm={24} xs={24}>
-            <Input className='input-search-services' size='large' placeholder='ID, tên dịch vụ' prefix={<FiSearch />} />
-          </Col>
-          {/* <Col md={4} sm={7} xs={11}>
+          {/* <Col md={8} sm={24} xs={24}>
+            <Input  className='input-search-services' size='large' placeholder='ID, tên dịch vụ' prefix={<FiSearch />} />
+          </Col> */}
+          <Col md={4} sm={7} xs={11}>
             <Select
+              onChange={(value) => setTypePackage(value)}
               size='large'
               style={{ width: '100%' }}
-              defaultValue='Thời gian hiệu lực'
-              options={[{ value: 'Tất cả thời gian' }, { value: '30 ngày' }, { value: '90 ngày' }, { value: '1 năm' }]}
+              defaultValue='all'
+              options={[
+                { value: 'all', label: 'Tất cả loại' },
+                { value: 'POST', label: 'Đăng bài' },
+                { value: 'BANNER', label: 'Quảng cáo' }
+              ]}
             />
-          </Col> */}
+          </Col>
         </Row>
 
         <Table
@@ -300,6 +327,7 @@ const ServicesManage = () => {
           scroll={{ x: true }}
           columns={columns}
           dataSource={listServices}
+          pagination={{ current: currentPage, total: total, pageSize: limit, onChange: handleChangePage }}
         />
       </div>
     </div>

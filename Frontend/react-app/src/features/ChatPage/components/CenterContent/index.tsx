@@ -113,7 +113,7 @@ const CenterContent = (props: any) => {
           style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
           inverse={true} //
           hasMore={data.page < data.total}
-          loader={<h4>Loading...</h4>}
+          loader={<h4>...</h4>}
           scrollableTarget='scrollableDiv'
         >
           {data.conversations.map((item: ConversationType) => (

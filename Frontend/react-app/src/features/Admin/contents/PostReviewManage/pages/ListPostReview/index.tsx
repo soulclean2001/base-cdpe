@@ -26,7 +26,7 @@ const ListPostReview = () => {
   const [openModalDetailPost, setOpenModalDetailPost] = useState(false)
   const [listPostRequest, setListPostRequest] = useState<DataType[]>([])
   const [total, setTotal] = useState(1)
-  const limit = 2
+  const limit = 5
   const [currentPage, setCurrentPage] = useState(1)
   //request search
   const [content, setContent] = useState('')

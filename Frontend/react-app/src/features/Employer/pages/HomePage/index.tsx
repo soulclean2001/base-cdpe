@@ -7,7 +7,9 @@ import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 // import { isExpired } from '~/utils/jwt'
-
+import homeImg1 from '~/assets/home-offer-5.png'
+import homeImg2 from '~/assets/home-offer-6.png'
+import banner from '~/assets/emp_hero_banner.jpg'
 const HomePage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
@@ -19,28 +21,29 @@ const HomePage = () => {
   const services = [
     {
       title: 'Đăng Tuyển',
-      img: 'https://employer.vietnamworks.com/v2/img/gallery/home-offer-5.svg?v=1693145251',
-      price: '2,160,000',
+      // img: 'https://employer.vietnamworks.com/v2/img/gallery/home-offer-5.svg?v=1693145251',
+      img: homeImg1,
+      price: 'Chỉ từ 500.000',
       descriptions: [
         { value: 'Đảm bảo hài lòng 100%' },
         { value: 'Đăng tuyển nhanh chóng và nhận hồ sơ ngay lập tức' },
         { value: 'Quản lý hồ sơ trực tuyến của bạn dễ dàng' }
       ]
     },
-    {
-      title: 'Tìm hồ sơ',
-      img: 'https://employer.vietnamworks.com/v2/img/gallery/home-offer-2.svg',
-      price: '3,870,000',
-      descriptions: [
-        { value: '30 ngày truy cập không giới hạn hệ thống dữ liệu chuyên nghiệp' },
-        { value: 'Tìm ứng viên hiệu quả và nhanh chóng' },
-        { value: 'Chủ động tìm kiếm ứng viên ngay hôm nay' }
-      ]
-    },
+    // {
+    //   title: 'Tìm hồ sơ',
+    //   img: 'https://employer.vietnamworks.com/v2/img/gallery/home-offer-2.svg',
+    //   price: '3,870,000',
+    //   descriptions: [
+    //     { value: '30 ngày truy cập không giới hạn hệ thống dữ liệu chuyên nghiệp' },
+    //     { value: 'Tìm ứng viên hiệu quả và nhanh chóng' },
+    //     { value: 'Chủ động tìm kiếm ứng viên ngay hôm nay' }
+    //   ]
+    // },
     {
       title: 'Quảng bá thương hiệu',
-      img: 'https://employer.vietnamworks.com/v2/img/gallery/home-offer-6.svg?v=1693145251',
-      price: '23,200,000',
+      img: homeImg2,
+      price: 'Chỉ từ 1.500.000',
       descriptions: [
         {
           value:
@@ -66,7 +69,7 @@ const HomePage = () => {
   return (
     <div className='employer-home-page-container'>
       <div className='services-top-banner'>
-        <img src='https://employer.vietnamworks.com/v2/img/gallery/emp_hero_banner.jpg' alt='' />
+        <img src={banner} alt='' />
       </div>
       <div className='services-content'>
         <div className='services-page-title-container'>

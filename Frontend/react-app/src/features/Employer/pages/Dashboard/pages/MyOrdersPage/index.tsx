@@ -1,4 +1,4 @@
-import { Col, Input, Row, Space, Table, Tabs, Tag } from 'antd'
+import { Col, Input, Row, Space, Table, Tabs, Tag, Tooltip } from 'antd'
 import { DatePicker } from 'antd'
 const { RangePicker } = DatePicker
 import '~/features/Admin/contents/OrdersManage/style.scss'
@@ -11,6 +11,12 @@ import { FiSearch } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 import apiOrder, { RequestSearchOrderType } from '~/api/order.api'
 import apiAdmin from '~/api/admin.api'
+import '../MyServicesPage/style.scss'
+import { MdPayments } from 'react-icons/md'
+import { useEffect, useState } from 'react'
+import CreatePayment from '../../../CartPage/components/VNPAY/CreatePayment'
+import { AiFillCheckCircle } from 'react-icons/ai'
+import ModalDetailOrder from './components/ModalDetailOrder'
 interface OrderAnyType {
   [key: string]: any
 }
@@ -29,19 +35,13 @@ interface DataType {
   updateDate: string
   status: string
 }
-import '../MyServicesPage/style.scss'
-import { MdPayments } from 'react-icons/md'
-import { useEffect, useState } from 'react'
-import CreatePayment from '../../../CartPage/components/VNPAY/CreatePayment'
-import { AiFillCheckCircle } from 'react-icons/ai'
-import ModalDetailOrder from './components/ModalDetailOrder'
 
 const MyOrdersPage = (props: any) => {
   const { roleType } = props
 
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
   const [idOrder, setIdOrder] = useState('')
-  const litmit = 3
+  const litmit = 5
   const [currentPage, setCurrentPage] = useState(1)
   const [listOrders, setListOrders] = useState<DataType[]>([])
   const [status, setStatus] = useState('')
@@ -64,7 +64,7 @@ const MyOrdersPage = (props: any) => {
         let listOrdersTemp: DataType[] = []
         let company = 'name'
         listOrdersTemp = rs.result.orders.map((order: OrderAnyType) => {
-          company = order.order.company_id
+          company = `#KH_${order.company._id.slice(-5).toUpperCase()} - ${order.company.company_name}`
           let packagesTemp: ServiceType[] = []
           order.service_orders.map((service: OrderAnyType) => {
             order.packages.map((pkg: OrderAnyType) => {
@@ -128,10 +128,20 @@ const MyOrdersPage = (props: any) => {
   const handleActiveServicesInOrderSuccess = async (orderId: string) => {
     await apiAdmin
       .activeServicesByOrderId(orderId)
-      .then(async (rs) => {
-        console.log('active', rs)
+      .then(async () => {
         await fetchGetMyOrders(currentPage.toString())
-        toast.success('Đơn hàng đã chuyển sang trạng thái hoàn tất')
+        toast.success('Đơn hàng đã chuyển sang trạng thái Hoàn tất')
+      })
+      .catch(() => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại')
+      })
+  }
+  const handleCancelOrder = async (orderId: string) => {
+    await apiAdmin
+      .cancelOrderById(orderId)
+      .then(async () => {
+        await fetchGetMyOrders(currentPage.toString())
+        toast.success('Đơn hàng đã chuyển sang trạng thái Đã hủy')
       })
       .catch(() => {
         toast.error('Có lỗi xảy ra, vui lòng thử lại')
@@ -235,26 +245,41 @@ const MyOrdersPage = (props: any) => {
       align: 'left',
       render: (_, record) => (
         <Space size={'middle'}>
-          <a
-            onClick={() => handleOpenModal(record.id)}
-            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-          >
-            <BsFillEyeFill />
-          </a>
-          {record.status.toString() === '5' && roleType === 'ADMIN_TYPE' && (
+          <Tooltip title='Chi tiết'>
             <a
-              onClick={() => handleActiveServicesInOrderSuccess(record.id)}
-              style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              onClick={() => handleOpenModal(record.id)}
+              style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
             >
-              <AiFillCheckCircle />
+              <BsFillEyeFill />
             </a>
+          </Tooltip>
+
+          {record.status.toString() === '5' && roleType === 'ADMIN_TYPE' && (
+            <Tooltip title='Hoàn tất'>
+              <a
+                onClick={() => handleActiveServicesInOrderSuccess(record.id)}
+                style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+              >
+                <AiFillCheckCircle />
+              </a>
+            </Tooltip>
           )}
           {record.status.toString() === '4' && (
             <>
-              {roleType !== 'ADMIN_TYPE' && <CreatePayment orderId={record.id} />}
-              <a style={{ fontSize: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
-                <BsFillTrashFill />
-              </a>
+              {roleType !== 'ADMIN_TYPE' ? (
+                <Tooltip title='Thanh toán'>
+                  <CreatePayment orderId={record.id} />
+                </Tooltip>
+              ) : (
+                <Tooltip title='Hủy đơn'>
+                  <a
+                    onClick={() => handleCancelOrder(record.id)}
+                    style={{ fontSize: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                  >
+                    <BsFillTrashFill />
+                  </a>
+                </Tooltip>
+              )}
             </>
           )}
         </Space>

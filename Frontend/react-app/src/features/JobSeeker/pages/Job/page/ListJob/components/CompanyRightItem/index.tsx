@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './style.scss'
 import logoTemp from '~/assets/logo_temp.jpg'
 import bannerTemp from '~/assets/HF_logo.jpg'
@@ -13,6 +13,16 @@ interface PropsType {
 }
 const CompanyRightItem = (props: PropsType) => {
   const { data } = props
+  const navigate = useNavigate()
+  const handleClickShowDetail = (id: string, name: string) => {
+    const convertNameEng = name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+
+    navigate(`/companies/${convertName}-id-${id}`)
+  }
   if (!data) return <>...</>
   return (
     <div className='company-right-item-container'>
@@ -24,7 +34,11 @@ const CompanyRightItem = (props: PropsType) => {
       </div>
       <div className='name'>{data.name}</div>
       {/* <div className='descript'>Tham gia</div> */}
-      <Link to={'/jobs/job-detail'} className='count-jobs'>{`Tham gia cùng chúng tôi`}</Link>
+      <span
+        style={{ color: '#1677FF', cursor: 'pointer' }}
+        onClick={() => handleClickShowDetail(data.id, data.name)}
+        className='count-jobs'
+      >{`Tham gia cùng chúng tôi`}</span>
     </div>
   )
 }
