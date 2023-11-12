@@ -1,10 +1,12 @@
+import { ObjectId } from 'mongodb'
 import { Server, Socket } from 'socket.io'
-import { UserVerifyStatus } from '~/constants/enums'
+import { UserRole, UserVerifyStatus } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { USERS_MESSAGES } from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import { TokenPayload } from '~/models/requests/User.request'
 import ConversationService from '~/services/conversation.services'
+import databaseServices from '~/services/database.services'
 import { verifyAccessToken } from '~/utils/commons'
 const activeConnections: {
   [key: string]: string[]
@@ -69,7 +71,47 @@ const init = (io: Server) => {
       socket.handshake.auth.access_token = newToken
       console.log('update token', socket.handshake.auth.access_token)
     })
+
+    socket.on(
+      'change-job-from-employer',
+      async (data: { companyId: string; jobId: string; status: string; command: string }) => {
+        const company = await databaseServices.company.findOne({
+          _id: new ObjectId(data.companyId)
+        })
+
+        if (!company) return
+
+        const users = await databaseServices.users
+          .find({
+            role: UserRole.Administrators
+          })
+          .toArray()
+
+        const userIds = users.map((user) => user._id.toString())
+
+        for (let i = 0; i < userIds.length; i++) {
+          socket.emit(userIds[i], data)
+        }
+      }
+    )
+
+    socket.on(
+      'change-job-from-admin',
+      async (data: { companyId: string; jobId: string; status: string; command: string }) => {
+        const company = await databaseServices.company.findOne({
+          _id: new ObjectId(data.companyId)
+        })
+
+        if (!company) return
+
+        for (let i = 0; i < company.users.length; i++) {
+          socket.emit(company.users[i].toString(), data)
+        }
+      }
+    )
+
     //
+
     socket.on('join', (userId: string) => {
       // lưu trạng thái kết nối người dùng
       if (userId) {

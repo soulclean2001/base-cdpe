@@ -7,6 +7,7 @@ import { escapeRegExp, isBoolean, isNumber, omit } from 'lodash'
 import NotificationService from './notification.services'
 import { NotificationObject } from '~/models/schemas/Notification.schema'
 import { ProfileStatus } from '~/models/schemas/JobApplication.schema'
+import { UserRole } from '~/constants/enums'
 
 export interface JobSearchOptions {
   visibility?: boolean
@@ -114,14 +115,22 @@ export default class JobService {
     )
 
     if (result && _payload.status === JobStatus.Pending) {
-      const recievers = company.users.map((user) => user.position.toString())
+      const admins = await databaseServices.users
+        .find({
+          role: UserRole.Administrators
+        })
+        .toArray()
 
-      await NotificationService.notify({
-        content: _payload.job_title,
-        object_recieve: NotificationObject.Admin,
-        recievers,
-        type: 'post/pending'
-      })
+      const adminIds = admins.map((admin) => admin._id.toString())
+
+      if (adminIds.length > 0) {
+        await NotificationService.notify({
+          content: _payload.job_title,
+          object_recieve: NotificationObject.Admin,
+          recievers: [...adminIds],
+          type: 'post/pending'
+        })
+      }
     }
 
     return {
@@ -795,13 +804,19 @@ export default class JobService {
     }
 
     if (result && result.value && result.value.status === JobStatus.Pending) {
-      const recievers = company.users.map((user) => user.position.toString())
+      const admins = await databaseServices.users
+        .find({
+          role: UserRole.Administrators
+        })
+        .toArray()
 
-      if (recievers.length > 0)
+      const adminIds = admins.map((admin) => admin._id.toString())
+
+      if (adminIds.length > 0)
         await NotificationService.notify({
           content: result.value.job_title,
           object_recieve: NotificationObject.Admin,
-          recievers,
+          recievers: [...adminIds],
           type: 'post/pending'
         })
     }

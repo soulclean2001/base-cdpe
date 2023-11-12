@@ -208,14 +208,18 @@ transactionRouter.get(
       )
 
       if (vnp_TransactionStatus === '00') {
-        const admin = await databaseServices.users.findOne({
-          role: UserRole.Administrators
-        })
-        if (admin)
+        const admin = await databaseServices.users
+          .find({
+            role: UserRole.Administrators
+          })
+          .toArray()
+
+        const adminIds = admin.map((admin) => admin._id.toString())
+        if (admin.length > 0)
           await NotificationService.notify({
             content: 'Đã có 1 đơn hàng mới giao dịch thành công',
             object_recieve: NotificationObject.Admin,
-            recievers: [admin._id.toString() as string],
+            recievers: [...adminIds],
             type: 'order/success'
           })
       }

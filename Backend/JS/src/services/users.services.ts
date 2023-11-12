@@ -603,7 +603,7 @@ class UsersService {
     const user = await databaseServices.users.findOne({
       _id: new ObjectId(userId),
       role: {
-        $in: [1, 2]
+        $in: [UserRole.Candidate, UserRole.Employer]
       }
     })
 
