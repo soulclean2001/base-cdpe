@@ -93,6 +93,26 @@ class CompanyService {
         {
           $addFields: {
             job_num: {
+              $filter: {
+                input: '$job_num',
+                as: 'job',
+                cond: {
+                  $and: [
+                    {
+                      $eq: ['$$job.status', 0]
+                    },
+                    {
+                      $eq: ['$$job.visibility', true]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          $addFields: {
+            job_num: {
               $size: '$job_num'
             }
           }

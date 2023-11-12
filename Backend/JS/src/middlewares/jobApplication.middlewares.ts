@@ -123,7 +123,7 @@ export const updateStatusValidator = validate(
         isNumeric: true,
         custom: {
           options: (value: any) => {
-            if (!Object.values(JobApplicationStatus).includes(String(value))) {
+            if (!Object.keys(JobApplicationStatus).includes(String(value))) {
               throw new Error('Invalid status: ' + value)
             }
             return true

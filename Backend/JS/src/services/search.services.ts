@@ -370,49 +370,30 @@ class SearchService {
             }
           },
           {
-            $unwind: {
-              path: '$job_num',
-              preserveNullAndEmptyArrays: true
-            }
-          },
-          {
-            $match: {
-              'job_num.visibility': true,
-              'job_num.status': 0
-            }
-          },
-          {
-            $group: {
-              _id: '$_id',
+            $addFields: {
               job_num: {
-                $push: '$job_num'
+                $filter: {
+                  input: '$job_num',
+                  as: 'job',
+                  cond: {
+                    $and: [
+                      {
+                        $eq: ['$$job.status', 0]
+                      },
+                      {
+                        $eq: ['$$job.visibility', true]
+                      }
+                    ]
+                  }
+                }
               }
-            }
-          },
-          {
-            $lookup: {
-              from: 'company',
-              localField: '_id',
-              foreignField: '_id',
-              as: 'company'
-            }
-          },
-          {
-            $unwind: {
-              path: '$company',
-              preserveNullAndEmptyArrays: true
             }
           },
           {
             $addFields: {
-              'company.job_num': {
+              job_num: {
                 $size: '$job_num'
               }
-            }
-          },
-          {
-            $replaceRoot: {
-              newRoot: '$company'
             }
           },
           {
