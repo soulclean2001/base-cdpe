@@ -36,6 +36,12 @@ companyRouter.get(
   idValidator('company_id'),
   wrapAsync(companyControllers.isFollowingCompanyId)
 )
+
+/* 
+  query:{
+    user_id?:string
+  }
+*/
 companyRouter.get('/:company_id', idValidator('company_id'), wrapAsync(companyControllers.getCompanyById))
 
 export default companyRouter

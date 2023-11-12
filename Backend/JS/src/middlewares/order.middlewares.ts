@@ -2,6 +2,7 @@ import { checkSchema } from 'express-validator'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 import { ItemType } from '~/models/schemas/Cart.schema'
+import { PackageStatus } from '~/models/schemas/Package.schema'
 import databaseServices from '~/services/database.services'
 import { validate } from '~/utils/validation'
 
@@ -46,7 +47,8 @@ export const orderItemValidator = validate(
               if (item.item_id) {
                 await databaseServices.package
                   .findOne({
-                    _id: new ObjectId(item.item_id)
+                    _id: new ObjectId(item.item_id),
+                    status: PackageStatus.ACTIVE
                   })
                   .then((rs) => {
                     if (!rs) {

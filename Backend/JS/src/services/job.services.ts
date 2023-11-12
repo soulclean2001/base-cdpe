@@ -6,6 +6,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import { escapeRegExp, isBoolean, isNumber, omit } from 'lodash'
 import NotificationService from './notification.services'
 import { NotificationObject } from '~/models/schemas/Notification.schema'
+import { ProfileStatus } from '~/models/schemas/JobApplication.schema'
 
 export interface JobSearchOptions {
   visibility?: boolean
@@ -202,14 +203,42 @@ export default class JobService {
     }
   }
 
-  static async getJob(jobId: string) {
+  static async getJob(jobId: string, userId?: string) {
     const result = await databaseServices.job.findOne({
       _id: new ObjectId(jobId)
     })
+
+    let is_not_apply = false
+
+    if (userId && result) {
+      const jobs = await databaseServices.job
+        .find({
+          company_id: result.company_id
+        })
+        .toArray()
+
+      const jobIds = jobs.map((job) => job._id)
+
+      const application = await databaseServices.jobApplication
+        .find({
+          profile_status: ProfileStatus.BlackList,
+          user_id: new ObjectId(userId),
+          job_post_id: {
+            $in: jobIds
+          }
+        })
+        .toArray()
+
+      if (application.length > 0) is_not_apply = true
+    }
+
     if (!result) {
       throw new ErrorWithStatus({ message: 'Job not found', status: 404 })
     }
-    return result
+    return {
+      ...result,
+      is_not_apply
+    }
   }
 
   static async getAllJobsByCompanyId(companyId: string) {

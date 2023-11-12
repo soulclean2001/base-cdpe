@@ -114,6 +114,11 @@ class CompanyService {
               $size: '$follow_num'
             }
           }
+        },
+        {
+          $project: {
+            number_of_posts: 0
+          }
         }
       ])
       .toArray()

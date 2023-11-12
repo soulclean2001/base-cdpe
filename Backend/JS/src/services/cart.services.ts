@@ -111,12 +111,12 @@ class CartService {
             path: '$package',
             preserveNullAndEmptyArrays: true
           }
-        },
-        {
-          $project: {
-            'package.status': 0
-          }
         }
+        // {
+        //   $project: {
+        //     'package.status': 0
+        //   }
+        // }
       ])
       .toArray()
 

@@ -598,6 +598,47 @@ class UsersService {
     }
     return options
   }
+
+  async lockOrUnlockUser(userId: string) {
+    const user = await databaseServices.users.findOne({
+      _id: new ObjectId(userId),
+      role: {
+        $in: [1, 2]
+      }
+    })
+
+    if (!user || user.verify === UserVerifyStatus.Unverified) {
+      return false
+    }
+
+    if (user.status === 0) {
+      await databaseServices.users.updateOne(
+        {
+          _id: user._id
+        },
+        {
+          $set: {
+            status: 1,
+            verify: UserVerifyStatus.Banned
+          }
+        }
+      )
+    } else {
+      await databaseServices.users.updateOne(
+        {
+          _id: user._id
+        },
+        {
+          $set: {
+            status: 0,
+            verify: UserVerifyStatus.Verified
+          }
+        }
+      )
+    }
+
+    return true
+  }
 }
 
 export default new UsersService()

@@ -2,6 +2,7 @@ import express from 'express'
 import adminControllers from '~/controllers/admin.controllers'
 import orderControllers from '~/controllers/order.controllers'
 import transactionControllers from '~/controllers/transaction.controllers'
+import usersControllers from '~/controllers/users.controllers'
 import authController from '~/controllers/users.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { accessTokenValidator, isAdmin } from '~/middlewares/users.middlewares'
@@ -29,5 +30,11 @@ adminRouter.get('/sumany', accessTokenValidator, isAdmin, wrapAsync(adminControl
 
 */
 adminRouter.get('/sales', accessTokenValidator, isAdmin, wrapAsync(adminControllers.sales))
+/* 
+  body: {
+    user_id: string
+  }
+*/
+adminRouter.post('/users/lock-or-unlock', accessTokenValidator, isAdmin, wrapAsync(usersControllers.lockOrUnlockUser))
 
 export default adminRouter

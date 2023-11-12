@@ -5,6 +5,7 @@ import { CreateJobBody, PublishJobBody, UpdateJobReqBody } from '~/models/reques
 import JobService, { JobSearchOptions } from '~/services/job.services'
 import { isBoolean } from 'lodash'
 import { ObjectId } from 'mongodb'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class JobController {
   async createJob(req: Request<ParamsDictionary, any, CreateJobBody>, res: Response) {
@@ -60,7 +61,15 @@ class JobController {
 
   async getJob(req: Request<ParamsDictionary, any, any>, res: Response) {
     const { job_id } = req.params
-    const result = await JobService.getJob(job_id)
+    const { user_id } = req.query
+
+    if (user_id && !ObjectId.isValid(user_id as string)) {
+      throw new ErrorWithStatus({
+        message: 'Invalid user ID',
+        status: 422
+      })
+    }
+    const result = await JobService.getJob(job_id, user_id as string)
     return res.json({
       message: 'Get Job',
       result

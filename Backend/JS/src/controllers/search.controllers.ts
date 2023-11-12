@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { ObjectId } from 'mongodb'
+import { ErrorWithStatus } from '~/models/Errors'
 import { Pagination, SearchCandidateReqParam } from '~/models/requests/Search.request'
 import { TokenPayload } from '~/models/requests/User.request'
 import SearchService from '~/services/search.services'
@@ -54,7 +56,12 @@ class SearchController {
 
   async searchCompany(req: Request<ParamsDictionary, any, any, any>, res: Response) {
     const query = req.query
-
+    if (query.user_id && !ObjectId.isValid(query.user_id)) {
+      throw new ErrorWithStatus({
+        message: `Invalid user ID: ${query.user_id}`,
+        status: 422
+      })
+    }
     const result = await SearchService.searchCompany(query, query.user_id)
 
     return res.json({

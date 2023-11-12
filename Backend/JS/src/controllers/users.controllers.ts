@@ -22,6 +22,7 @@ import { UserVerifyStatus } from '~/constants/enums'
 import databaseServices from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { envConfig } from '~/constants/config'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class AuthController {
   public async login(req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) {
@@ -188,7 +189,25 @@ class AuthController {
     const { user_id } = req.decoded_authorization as TokenPayload
     const { password } = req.body
     const result = await usersService.changePassword(user_id, password)
-    return res.json(result)
+    return res.json({
+      result
+    })
+  }
+
+  public async lockOrUnlockUser(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+    const { user_id: uId } = req.body
+    if (!ObjectId.isValid(uId)) {
+      throw new ErrorWithStatus({
+        message: 'Invalid user ID',
+        status: 422
+      })
+    }
+
+    const result = await usersService.lockOrUnlockUser(uId)
+    return res.json({
+      result
+    })
   }
 }
 

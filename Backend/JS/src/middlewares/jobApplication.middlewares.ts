@@ -123,7 +123,7 @@ export const updateStatusValidator = validate(
         isNumeric: true,
         custom: {
           options: (value: any) => {
-            if (!Object.keys(JobApplicationStatus).includes(String(value))) {
+            if (!Object.values(JobApplicationStatus).includes(String(value))) {
               throw new Error('Invalid status: ' + value)
             }
             return true
@@ -142,7 +142,7 @@ export const updateProfileStatusValidator = validate(
         isString: true,
         custom: {
           options: (value: any) => {
-            if (!Object.keys(ProfileStatus).includes(value)) {
+            if (!Object.values(ProfileStatus).includes(value)) {
               throw new Error(
                 'Invalid profile status: ' +
                   value +

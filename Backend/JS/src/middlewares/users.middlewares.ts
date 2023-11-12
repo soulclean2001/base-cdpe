@@ -482,6 +482,15 @@ export const resetPasswordValidator = validate(
 
 export const verifiedUserValidator = (req: Request, res: Response, next: NextFunction) => {
   const { verify } = req.decoded_authorization as TokenPayload
+  if (verify === UserVerifyStatus.Banned) {
+    return next(
+      new ErrorWithStatus({
+        message: 'User was banned please contact the administrator to continue',
+        status: HTTP_STATUS.FORBIDDEN
+      })
+    )
+  }
+
   if (verify !== UserVerifyStatus.Verified) {
     return next(
       new ErrorWithStatus({

@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
+import { ObjectId } from 'mongodb'
 import { UserRole } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
+import { ErrorWithStatus } from '~/models/Errors'
 import { Media } from '~/models/Other'
 import { UpdateCompanyReqBody } from '~/models/requests/Company.request'
 import { TokenPayload } from '~/models/requests/User.request'
@@ -41,6 +43,13 @@ class CompanyController {
   async getCompanyById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
     const { company_id } = req.params
     const { query } = req
+
+    if (query.user_id && !ObjectId.isValid(query.user_id as string)) {
+      throw new ErrorWithStatus({
+        status: 422,
+        message: 'Invalid user id'
+      })
+    }
     const result = await CompanyService.getCompanyById(company_id, query.user_id as string)
 
     return res.json({

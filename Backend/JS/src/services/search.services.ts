@@ -370,10 +370,49 @@ class SearchService {
             }
           },
           {
-            $addFields: {
+            $unwind: {
+              path: '$job_num',
+              preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $match: {
+              'job_num.visibility': true,
+              'job_num.status': 0
+            }
+          },
+          {
+            $group: {
+              _id: '$_id',
               job_num: {
+                $push: '$job_num'
+              }
+            }
+          },
+          {
+            $lookup: {
+              from: 'company',
+              localField: '_id',
+              foreignField: '_id',
+              as: 'company'
+            }
+          },
+          {
+            $unwind: {
+              path: '$company',
+              preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $addFields: {
+              'company.job_num': {
                 $size: '$job_num'
               }
+            }
+          },
+          {
+            $replaceRoot: {
+              newRoot: '$company'
             }
           },
           {
@@ -392,6 +431,11 @@ class SearchService {
               follow_num: {
                 $size: '$follow_num'
               }
+            }
+          },
+          {
+            $project: {
+              number_of_posts: 0
             }
           },
           {
