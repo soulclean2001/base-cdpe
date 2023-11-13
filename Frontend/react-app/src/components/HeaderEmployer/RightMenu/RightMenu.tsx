@@ -19,6 +19,7 @@ import { RootState } from '~/app/store'
 
 import { EmployerState, getItemsCart, getMyCart } from '~/features/Employer/employerSlice'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
 const dataNotify = [
   { id: '1', name: 'Phan Thanh Phong', actionInfo: 'Đã theo dõi bạn' },
   { id: '2', name: 'Phan Thanh Phong', actionInfo: 'Đã cập nhật CV của anh ấy' }
@@ -33,7 +34,7 @@ const RightMenu = (props: any) => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
   const employer: EmployerState = useSelector((state: RootState) => state.employer)
-
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   useEffect(() => {
     if (auth.isLogin && auth.role === 1 && auth.verify === 1) fetchGetMyCart()
     console.log('employer', employer.cart)
@@ -114,13 +115,16 @@ const RightMenu = (props: any) => {
         {me && me.id ? (
           <>
             <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
-            <Button
-              icon={<IoMdNotifications />}
-              className=' btn-notification'
-              onClick={showDrawer}
-              shape='circle'
-              size='large'
-            />
+            <Badge count={notificaions.totalNotRead}>
+              <Button
+                icon={<IoMdNotifications />}
+                className=' btn-notification'
+                onClick={showDrawer}
+                shape='circle'
+                size='large'
+              />
+            </Badge>
+
             <NotifyDrawer dataNotify={dataNotify} roleType={roleType} open={openNotifyDrawer} onClose={onCloseDrawer} />
 
             {roleType === 'EMPLOYER_ROLE' && (

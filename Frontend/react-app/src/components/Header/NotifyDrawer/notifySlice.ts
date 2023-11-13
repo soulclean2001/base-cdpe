@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { stat } from 'fs'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import avatarTemp from '~/assets/HF_logo.jpg'
 export interface NotificationType {
@@ -17,6 +18,7 @@ export interface NotificationType {
 export interface NotifyState {
   notifications: NotificationType[]
   page: number
+  totalNotRead: number
   loading: boolean
   error: any
 }
@@ -27,6 +29,7 @@ interface AnyType {
 const initialState: NotifyState = {
   notifications: [],
   page: 0,
+  totalNotRead: 0,
   loading: false,
   error: undefined
 }
@@ -82,7 +85,10 @@ const notifySlice = createSlice({
   reducers: {
     setIsRead: (state, action) => {
       state.notifications = state.notifications.map((notify) => {
-        if (notify._id === action.payload) notify.is_readed = true
+        if (notify._id === action.payload) {
+          notify.is_readed = true
+          state.totalNotRead = state.totalNotRead - 1
+        }
         return notify
       })
       return state
@@ -94,11 +100,16 @@ const notifySlice = createSlice({
     },
     addNotify: (state, action) => {
       state.notifications = [...state.notifications, action.payload]
+      state.totalNotRead = state.totalNotRead + 1
+      return state
+    },
+    setTotalUnRead: (state, action) => {
+      state.totalNotRead = action.payload
       return state
     }
   }
 })
 
-export const { setIsRead, addNotify, setMoreWhenScroll } = notifySlice.actions
+export const { setIsRead, addNotify, setMoreWhenScroll, setTotalUnRead } = notifySlice.actions
 
 export default notifySlice.reducer

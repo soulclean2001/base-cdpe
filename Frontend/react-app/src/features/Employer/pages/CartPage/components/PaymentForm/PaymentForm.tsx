@@ -6,6 +6,8 @@ import VNPayReturn from '../VNPAY/VNPayReturn'
 import apiOrder, { RequestOrderType } from '~/api/order.api'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+import { minusTotalItemCart } from '~/features/Employer/employerSlice'
 const initHiddens = { hiddenCredit: true, hiddenATMCards: true, hiddenBankings: true }
 interface PropsType {
   totalPay: number
@@ -20,6 +22,7 @@ const PaymentForm = (props: PropsType) => {
   const [hidden, setHidden] = useState(initHiddens)
   const [orderId, setOrderId] = useState('')
   const navigate = useNavigate()
+  const distPatch = useDispatch()
   const handleCreateOrder = async () => {
     console.log('items', items)
     if (!items) return
@@ -29,6 +32,9 @@ const PaymentForm = (props: PropsType) => {
       .then((rs) => {
         console.log('rs order', rs)
         setOrderId(rs.result.order._id)
+        items.map(() => {
+          distPatch(minusTotalItemCart())
+        })
         toast.success('Bạn đã tạo đơn đặt hàng thành công')
         navigate('/employer/dashboard/my-orders')
       })

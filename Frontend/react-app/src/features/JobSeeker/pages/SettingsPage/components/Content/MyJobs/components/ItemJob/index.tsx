@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import './style.scss'
 import { JobApplicationStatus } from '~/types/jobAppliacation.type'
 import { useNavigate } from 'react-router-dom'
+import { format, parseISO } from 'date-fns'
 interface DataType {
   id: string
   logo: string
@@ -100,7 +101,9 @@ const ItemJob = (props: any) => {
         )}
         <div className='btn-wapper'>
           {/* <Button className='btn-follow' icon={<AiOutlineHeart />} /> */}
-          <span className='btn-show-detail'>{data.updateDate?.slice(0, 10) || ''}</span>
+          <span className='btn-show-detail'>
+            {data.updateDate && format(parseISO(data.updateDate), 'dd-MM-yyyy HH:mm:ss')}
+          </span>
           {/* <span style={{ alignContent: 'flex-end' }}>Ngày update</span> */}
         </div>
       </Col>

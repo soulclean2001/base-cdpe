@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
 import { useState, useEffect } from 'react'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
-import { NotifyState, getAllByMe, setMoreWhenScroll } from './notifySlice'
+import { NotifyState, getAllByMe, setMoreWhenScroll, setTotalUnRead } from './notifySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
@@ -54,6 +54,9 @@ const NotifyDrawer = (props: any) => {
   const fetchGetDataNoti = async (page?: string) => {
     let request: RequestNotify = { filter: { page: page ? page : '1', limit: '1' } }
     await dispatchAsync(getAllByMe(request))
+    await apiNotify.getTotalUnRead().then((rs) => {
+      disPath(setTotalUnRead(rs.result))
+    })
     // await apiNotify.getAllByMe(request).then((rs) => {
     //   console.log('list notify', rs)
     //   if (rs.result) {

@@ -15,6 +15,10 @@ export class Notify {
     const rs: ApiResponse = await client.post(`/notifications/${id}`)
     return rs
   }
+  public static getTotalUnRead = async () => {
+    const rs: ApiResponse = await client.get(`/notifications/total-unread`)
+    return rs
+  }
 }
 
 export default Notify
