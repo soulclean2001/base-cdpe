@@ -33,6 +33,17 @@ class NotificationController {
       result
     })
   }
+
+  async getTotalUnread(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id, role } = req.decoded_authorization as TokenPayload
+
+    const result = await NotificationService.getTotalUnread(role, user_id)
+
+    return res.json({
+      message: 'Total Notification Unread',
+      result
+    })
+  }
 }
 
 export default new NotificationController()

@@ -54,6 +54,30 @@ class NotificationService {
     return result
   }
 
+  static async getTotalUnread(role: number, user_id: string) {
+    const object_recieve = this.getObjectRecieveFromRole(role)
+
+    const result = await databaseServices.notification
+      .aggregate([
+        {
+          $match: {
+            object_recieve,
+            recievers: {
+              $in: [user_id]
+            },
+            is_readed: false
+          }
+        },
+        {
+          $count: 'total'
+        }
+      ])
+
+      .toArray()
+
+    return result[0]?.total || 0
+  }
+
   static async notify(data: NotificationType) {
     const notification = new Notification({
       ...data
