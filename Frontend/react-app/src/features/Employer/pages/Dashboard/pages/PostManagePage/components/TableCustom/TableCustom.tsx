@@ -82,7 +82,7 @@ const TableCustom = (props: any) => {
   const [openModalInfo, setOpenModalInfo] = useState(false)
   const [dataRowSelected, setDataRowSelected] = useState<JobType>()
   const [idPost, setIdPost] = useState<string>()
-  const limit = 2
+  const limit = 5
   //publish
   const [isOpenModalPublish, setIsOpenModalPublish] = useState(false)
   const [expiresDate, setExpires] = useState('')

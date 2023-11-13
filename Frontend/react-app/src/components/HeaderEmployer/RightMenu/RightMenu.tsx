@@ -87,8 +87,9 @@ const RightMenu = (props: any) => {
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     if (e.key === 'key_logout') {
       // alert('Bạn có chắc muốn đăng xuất?')
-      window.location.reload()
+
       disPatch(logout())
+      window.location.reload()
     }
     console.log('handle click', e)
     if (e.key === 'key_settings_info') setOpenModalProfile(true)

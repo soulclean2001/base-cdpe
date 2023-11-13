@@ -31,7 +31,7 @@ const PostServices = () => {
       console.log('rs', rs.result.pks)
       if (rs.result.pks) {
         setListServicesPost(rs.result.pks)
-        setItemActive(rs.result.pks[0]._id)
+        if (rs.result.pks[0]) setItemActive(rs.result.pks[0]._id)
       }
     })
     await apiPackage

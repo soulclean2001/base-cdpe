@@ -1,41 +1,33 @@
 import { MenuOutlined } from '@ant-design/icons'
-import { Button, Drawer, Dropdown, MenuProps } from 'antd'
+import { Avatar, Button, Drawer, Dropdown, MenuProps } from 'antd'
 import { NavLink } from 'react-router-dom'
 import './rightMenuPhone.scss'
 import { useState } from 'react'
-import { InfoMeState } from '~/features/JobSeeker/jobSeekerSlice'
-import { RootState } from '~/app/store'
-import { useSelector } from 'react-redux'
-const items: MenuProps['items'] = [
-  {
-    label: (
-      <NavLink to='/login' className='drop-children phone-login'>
-        Đăng nhập
-      </NavLink>
-    ),
-    key: 'phoneLogin'
-  },
-  {
-    label: (
-      <NavLink to='/sign-up' className={'drop-children phone-sign-up'}>
-        Đăng ký
-      </NavLink>
-    ),
-    key: 'phoneSignUp'
-  },
-  {
-    label: (
-      <NavLink to='/employer' className={' drop-children phone-tab-employer'}>
-        Đăng tuyển & Tìm hồ sơ
-      </NavLink>
-    ),
-    key: 'phoneTabEmployer'
-  }
-]
-const RightMenuPhone = () => {
-  const me: InfoMeState = useSelector((state: RootState) => state.jobSeeker)
-  const [open, setOpen] = useState(false)
 
+import { RootState } from '~/app/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { InfoMeState } from '~/features/Account/meSlice'
+import { AuthState, logout } from '~/features/Auth/authSlice'
+import ModalProfile from '~/components/ModalProfile'
+import ModalChangePassword from '~/components/ModalChangePassword'
+
+const styleForItemMenuPhone = {
+  marginBottom: 0,
+  fontSize: '16px',
+  borderTop: '1px solid  #ebebeb',
+  borderBottom: '1px solid #ebebeb',
+  padding: '15px 0',
+  fontWeight: 500,
+  cursor: 'pointer',
+  color: '#333333'
+}
+const RightMenuPhone = () => {
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const [open, setOpen] = useState(false)
+  const [isOpenModalChangePass, setIsOpenModalChangePassword] = useState(false)
+  const [isOpenModalProfile, setIsOpenModalProfile] = useState(false)
+  const distPath = useDispatch()
   const showDrawer = () => {
     setOpen(true)
   }
@@ -46,52 +38,86 @@ const RightMenuPhone = () => {
 
   return (
     <div className='right_menu_container_phone'>
-      {/* <Dropdown menu={{ items }} trigger={['click']}>
-      <MenuOutlined/>
-    </Dropdown> */}
-      {/* <Button type="primary" onClick={showDrawer}>
-        Open
-      </Button> */}
       <MenuOutlined onClick={showDrawer} />
+      <ModalProfile openModal={isOpenModalProfile} handleCloseModal={() => setIsOpenModalProfile(false)} />
+      <ModalChangePassword open={isOpenModalChangePass} handleClose={() => setIsOpenModalChangePassword(false)} />
       <Drawer title='HFWork' placement='right' onClose={onClose} open={open}>
         <div className='menu-content'>
-          {me && me.id ? (
+          {auth.isLogin && me && me.id ? (
             <>
-              <NavLink to={'/settings'}>
-                <p>Tổng quan</p>
-              </NavLink>
-              <NavLink to={'/CV'}>
-                <p>Hồ sơ của tôi</p>
-              </NavLink>
-              <NavLink to={'/settings/my-companies'}>
-                <p>Công ty của tôi</p>
-              </NavLink>
-              <NavLink to={'/settings/my-jobs'}>
-                <p>Việc làm của tôi</p>
-              </NavLink>
-              <NavLink to={'/settings/notify-jobs'}>
-                <p>Thông báo việc làm</p>
-              </NavLink>
-              <NavLink to={'/settings/my-account'}>
-                <p>Cài đặt tài khoản</p>
-              </NavLink>
-              <NavLink to={'/settings/my-account'}>
-                <p>Đổi mật khẩu</p>
-              </NavLink>
-              <NavLink to={'/logout'}>
-                <p>Đăng xuất</p>
-              </NavLink>
+              <div
+                className='info-user-wapper'
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderTop: '1px solid  #ebebeb',
+                  borderBottom: '1px solid #ebebeb',
+                  padding: '15px 0',
+                  marginBottom: '10px'
+                }}
+              >
+                <Avatar size={'large'} src={me.avatar ? me.avatar : ''}></Avatar>
+                <div className='info'>
+                  <div className='name' style={{ fontWeight: 500, fontSize: '16px' }}>
+                    {me.name}
+                  </div>
+                  <div className='email' style={{ fontWeight: 500, fontSize: '16px' }}>
+                    {me.email}
+                  </div>
+                </div>
+              </div>
+              {auth.isLogin && auth.verify !== 1 && (
+                <NavLink to={'/active-page'}>
+                  <p style={styleForItemMenuPhone}>Kích hoạt tài khoản</p>
+                </NavLink>
+              )}
+              {auth.isLogin && auth.verify === 1 && (
+                <>
+                  <NavLink to={'/settings'}>
+                    <p style={styleForItemMenuPhone}>Bảng điều khiển</p>
+                  </NavLink>
+
+                  <p onClick={() => setIsOpenModalProfile(true)} style={styleForItemMenuPhone}>
+                    Thông tin cá nhân
+                  </p>
+
+                  <NavLink to={'/CV'}>
+                    <p style={styleForItemMenuPhone}>Hồ sơ của tôi</p>
+                  </NavLink>
+                  <NavLink to={'/settings/my-companies'}>
+                    <p style={styleForItemMenuPhone}>Công ty đang theo dõi</p>
+                  </NavLink>
+                  <NavLink to={'/settings/my-jobs'}>
+                    <p style={styleForItemMenuPhone}>Việc làm của tôi</p>
+                  </NavLink>
+
+                  <p onClick={() => setIsOpenModalChangePassword(true)} style={styleForItemMenuPhone}>
+                    Đổi mật khẩu
+                  </p>
+                </>
+              )}
+
+              <p
+                onClick={() => {
+                  distPath(logout())
+                  window.location.reload()
+                }}
+                style={{ ...styleForItemMenuPhone, color: 'red' }}
+              >
+                Đăng xuất
+              </p>
             </>
           ) : (
             <>
               <NavLink to={'/candidate-login'}>
-                <p>Đăng nhập</p>
+                <p style={styleForItemMenuPhone}>Đăng nhập</p>
               </NavLink>
               <NavLink to={'/candidate-sign-up'}>
-                <p>Đăng ký</p>
+                <p style={styleForItemMenuPhone}>Đăng ký</p>
               </NavLink>
               <NavLink to={'/employer'}>
-                <p>Đăng tuyển & Tìm hồ sơ</p>
+                <p style={styleForItemMenuPhone}>Đăng tuyển & Tìm hồ sơ</p>
               </NavLink>
             </>
           )}

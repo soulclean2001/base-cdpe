@@ -15,6 +15,7 @@ import { handleAutoChangeSideBarByWidth } from '../../../../employerSlice'
 import { FaIndustry } from 'react-icons/fa'
 import { InfoMeState } from '~/features/Account/meSlice'
 import avatarTemp from '~/assets/logo_temp.jpg'
+import { logout } from '~/features/Auth/authSlice'
 const SideBarEmployer = (props: any) => {
   const dispatch = useDispatch()
   const me: InfoMeState = useSelector((state: RootState) => state.me)
@@ -191,7 +192,15 @@ const SideBarEmployer = (props: any) => {
 
       <SidebarFooter style={{ textAlign: 'center' }}>
         <Menu iconShape='circle'>
-          <MenuItem icon={<AiOutlineLogout />}>Đăng xuất</MenuItem>
+          <MenuItem
+            onClick={() => {
+              dispatch(logout())
+              window.location.reload()
+            }}
+            icon={<AiOutlineLogout />}
+          >
+            Đăng xuất
+          </MenuItem>
         </Menu>
       </SidebarFooter>
     </ProSidebar>
