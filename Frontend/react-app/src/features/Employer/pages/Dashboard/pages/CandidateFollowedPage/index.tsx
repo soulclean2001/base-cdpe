@@ -5,10 +5,14 @@ import CandidateItem from '../FindCandidatePage/components/CandidateItem/Candida
 import { useEffect, useState } from 'react'
 import apiTrackedCanddiate, { RequestTrackedCandidateType } from '~/api/trackedCandidate.api'
 import { FiSearch } from 'react-icons/fi'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
 interface AnyTypeCandidate {
   [key: string]: any
 }
 const CandidateFollowedPage = () => {
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   //search
   const [name, setName] = useState('')
   //page
@@ -23,9 +27,9 @@ const CandidateFollowedPage = () => {
     await fetchGetData(valuePageClick)
     console.log('page', valuePageClick)
   }
-  // useEffect(() => {
-  //   fetchGetData()
-  // }, [])
+  useEffect(() => {
+    if (notificaions.page > 0) fetchGetData(pageClick.toString())
+  }, [notificaions.notifications])
   useEffect(() => {
     setPageClick(1)
     fetchGetData()

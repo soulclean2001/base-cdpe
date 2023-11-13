@@ -16,6 +16,7 @@ import { setPosts } from '~/features/Employer/employerSlice'
 // import viVN from 'antd/es/locale/vi_VN'
 import apiPost, { PostFilterRequestType } from '~/api/post.api'
 import { toast } from 'react-toastify'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
 
 const { RangePicker } = DatePicker
 
@@ -76,7 +77,8 @@ const TableCustom = (props: any) => {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<JobType>>({})
   const dispatch = useDispatch()
   const [isUpdate, setIsUpDate] = useState(false)
-  const employer = useSelector((state: RootState) => state.employer)
+
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const [currentPage, setCurrentPage] = useState(1)
   const [data, setData] = useState<JobType[]>([])
   const [openModalInfo, setOpenModalInfo] = useState(false)
@@ -106,7 +108,9 @@ const TableCustom = (props: any) => {
   }
 
   // get data
-
+  useEffect(() => {
+    if (notificaions.page > 0) fetchData(currentPage.toString())
+  }, [notificaions.notifications])
   useEffect(() => {
     setCurrentPage(1)
     fetchData()
@@ -284,7 +288,7 @@ const TableCustom = (props: any) => {
           <a onClick={() => setOpenModalInfo(true)}>
             <BsFillEyeFill />
           </a>
-          {item.visibility && (
+          {item.visibility && Number(item.status) !== 1 && (
             <a onClick={() => handleHidePost(item.id ? item.id : '')}>
               <AiFillLock />
             </a>
@@ -294,9 +298,11 @@ const TableCustom = (props: any) => {
               <BiWorld />
             </a>
           )}
-          <a onClick={handleOpenModalDelete}>
-            <MdDelete />
-          </a>
+          {Number(item.status) !== 1 && (
+            <a onClick={handleOpenModalDelete}>
+              <MdDelete />
+            </a>
+          )}
         </div>
       ),
       showSorterTooltip: false

@@ -12,6 +12,9 @@ import { useEffect, useState } from 'react'
 import apiAdmin, { JobSearchByAdmin } from '~/api/admin.api'
 import { toast } from 'react-toastify'
 import { format, parseISO } from 'date-fns'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
 interface DataType {
   id: string
   nameJob: string
@@ -22,6 +25,7 @@ interface DataType {
 }
 
 const ListPostReview = () => {
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const [postID, setPostID] = useState('')
   const [openModalDetailPost, setOpenModalDetailPost] = useState(false)
   const [listPostRequest, setListPostRequest] = useState<DataType[]>([])
@@ -34,9 +38,10 @@ const ListPostReview = () => {
   const [status, setStatus] = useState('')
   //
   useEffect(() => {
-    fetchGetListPostRequest()
-  }, [])
+    if (notificaions.page > 0) fetchGetListPostRequest(currentPage.toString())
+  }, [notificaions.notifications])
   useEffect(() => {
+    setCurrentPage(1)
     fetchGetListPostRequest()
   }, [content, dateFormTo, status])
   const fetchGetListPostRequest = async (page?: string) => {
@@ -71,6 +76,12 @@ const ListPostReview = () => {
         .postApprovePostRequest(id)
         .then(async (rs) => {
           console.log('Rs action', rs)
+          if (rs.message === 'job status is not pending to approve') {
+            toast.error(
+              `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
+            )
+            return
+          }
           await fetchGetListPostRequest().then(() => {
             toast.success(`Đã thành công duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
           })
@@ -83,6 +94,12 @@ const ListPostReview = () => {
       await apiAdmin
         .postRejectPostRequest(id)
         .then(async (rs) => {
+          if (rs.message === 'job status is not pending to approve') {
+            toast.error(
+              `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
+            )
+            return
+          }
           console.log('Rs action', rs)
           await fetchGetListPostRequest().then(() => {
             toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)

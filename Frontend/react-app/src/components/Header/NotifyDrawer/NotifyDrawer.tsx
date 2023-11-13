@@ -5,10 +5,11 @@ import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
 import { useState, useEffect } from 'react'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
-import { NotifyState, addNotify, getAllByMe, setNotifications } from './notifySlice'
+import { NotifyState, getAllByMe, setMoreWhenScroll } from './notifySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import InfiniteScroll from 'react-infinite-scroll-component'
 interface DataType {
   id: string
   logo?: string
@@ -33,6 +34,17 @@ const NotifyDrawer = (props: any) => {
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPath = useDispatch()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  const fetchMoreConversations = async () => {
+    const res = await apiNotify.getAllByMe({
+      filter: {
+        limit: '1',
+        page: (notificaions.page + 1).toString()
+      }
+    })
+    // setData(res.result)
+    disPath(setMoreWhenScroll(res.result))
+  }
+
   useEffect(() => {
     fetchGetDataNoti()
   }, [])
@@ -100,18 +112,29 @@ const NotifyDrawer = (props: any) => {
           <div className='list-item-notify'>Bạn không có thông báo</div>
         ) : (
           <div className='list-item-notify'>
-            {notificaions.notifications.map((data) => (
-              <NotifyItem
-                key={data._id}
-                data={{
-                  id: data._id,
-                  actionInfo: data.content,
-                  createDate: data.created_at,
-                  isRead: data.is_readed,
-                  type: data.type
-                }}
-              />
-            ))}
+            <InfiniteScroll
+              dataLength={notificaions.notifications.length}
+              next={fetchMoreConversations}
+              style={{ display: 'flex', flexDirection: 'column-reverse' }} //To put endMessage and loader to the top.
+              inverse={true} //
+              hasMore={notificaions.page < notificaions.notifications.length / notificaions.page}
+              loader={<h4>...</h4>}
+              scrollableTarget='scrollableDiv'
+            >
+              {notificaions.notifications.map((data) => (
+                <NotifyItem
+                  key={data._id}
+                  data={{
+                    id: data._id,
+                    actionInfo: data.content,
+                    createDate: data.created_at,
+                    isRead: data.is_readed,
+                    type: data.type,
+                    logo: data.sender_info?.avatar
+                  }}
+                />
+              ))}
+            </InfiniteScroll>
           </div>
         )}
       </div>

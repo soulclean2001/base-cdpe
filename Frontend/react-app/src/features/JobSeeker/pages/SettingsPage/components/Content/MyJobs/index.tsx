@@ -4,15 +4,20 @@ import { TabsProps } from 'antd/lib'
 import ItemJob from './components/ItemJob'
 import apiJobApplied from '~/api/jobsApplication.api'
 import { useEffect, useState } from 'react'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 
 interface ListJobType {
   [key: string]: any
 }
 const MyJobs = () => {
   const [listJobs, setListJobs] = useState<ListJobType[]>([])
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   useEffect(() => {
-    fetchListJobs()
-  }, [])
+    if (notificaions.page > 0) fetchListJobs()
+  }, [notificaions.notifications])
+
   const fetchListJobs = async () => {
     await apiJobApplied.getAllJobApplicationsFromCandidate().then((rs) => {
       console.log('rs', rs)

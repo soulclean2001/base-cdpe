@@ -19,6 +19,7 @@ import avatarTemp from '~/assets/logo_temp.jpg'
 import apiJobsApplication from '~/api/jobsApplication.api'
 import { toast } from 'react-toastify'
 import { CgUnblock } from 'react-icons/cg'
+import { RiUserStarFill } from 'react-icons/ri'
 interface DetailType {
   [key: string]: any
 }
@@ -195,6 +196,16 @@ const CVAppliedDetailPage = () => {
                           icon={<BiSolidUserX />}
                         />
                       </Tooltip>
+                      {myDetail.type !== 1 && (
+                        <Tooltip title='Tiềm năng'>
+                          <Button
+                            onClick={() => fetchActionApplication(myDetail._id, '', 3)}
+                            style={{ fontSize: '18px' }}
+                            className='btn-candidate-detail btn-save-cv'
+                            icon={<RiUserStarFill />}
+                          />
+                        </Tooltip>
+                      )}
                     </>
                   )}
                   {myDetail.status === 1 && (

@@ -3,7 +3,7 @@ import { DatePicker } from 'antd'
 import { ColumnsType, TableProps } from 'antd/es/table'
 import { SorterResult } from 'antd/es/table/interface'
 import { FiSearch } from 'react-icons/fi'
-
+import { RiUserStarFill } from 'react-icons/ri'
 import { BiBlock, BiCommentError, BiSolidUserX } from 'react-icons/bi'
 const { RangePicker } = DatePicker
 import '../../style.scss'
@@ -21,6 +21,9 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { CgUnblock } from 'react-icons/cg'
 import { JobApplicationStatus } from '~/types/jobAppliacation.type'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 interface DataType {
   id: string
   key: string
@@ -29,7 +32,7 @@ interface DataType {
   phoneNumber: string
   jobPosition: string
   createdTime: string
-  // reviewTime: string | undefined
+  isCVOnline: boolean
   status: string
 }
 
@@ -51,8 +54,9 @@ const listStatus = [
 ]
 const ContentCVManage = (props: any) => {
   const { tabKey } = props
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({})
-  const [openModalInfo, setOpenModalInfo] = useState(false)
+
   const navigate = useNavigate()
   const [dataRowSelected, setDataRowSelected] = useState<DataType>()
   const [idJobAppli, setIdJobAppli] = useState<string>()
@@ -83,6 +87,11 @@ const ContentCVManage = (props: any) => {
       })
     })
   }
+  useEffect(() => {
+    if (notificaions.page > 0) {
+      fetchGetJobsApplication(pageClick.toString())
+    }
+  }, [notificaions.notifications])
   useEffect(() => {
     fetchGetJobsApplication()
   }, [tabKey, content, idJob, dateFormTo, statusApplied])
@@ -115,7 +124,8 @@ const ContentCVManage = (props: any) => {
           phoneNumber: item.phone_number,
           jobPosition: `#JOB_${item.job_post_id.slice(-5).toUpperCase()}`,
           createdTime: format(parseISO(item.application_date), 'dd-MM-yyyy HH:mm:ss'),
-          status: item.status.toString()
+          status: item.status.toString(),
+          isCVOnline: item.type === 1 ? false : true
         }
       })
       setListJobsApplied(listTemp)
@@ -304,6 +314,13 @@ const ContentCVManage = (props: any) => {
                       <BiSolidUserX />
                     </a>
                   </Tooltip>
+                  {record.isCVOnline && (
+                    <Tooltip title='Tiềm năng'>
+                      <a onClick={() => fetchActionApplication(record.id, _, 3)} style={{ fontSize: '14px' }}>
+                        <RiUserStarFill />
+                      </a>
+                    </Tooltip>
+                  )}
                 </>
               )}
               {record.status === '1' && (

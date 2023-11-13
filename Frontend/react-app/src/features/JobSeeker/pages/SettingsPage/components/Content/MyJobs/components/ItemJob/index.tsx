@@ -39,6 +39,10 @@ const ItemJob = (props: any) => {
         setStatusCSS('approved')
         return
       }
+      if (data.status.toString() === '3') {
+        setStatusCSS('potential')
+        return
+      }
       if (data.status.toString() === '4') {
         setStatusCSS('interview')
         return

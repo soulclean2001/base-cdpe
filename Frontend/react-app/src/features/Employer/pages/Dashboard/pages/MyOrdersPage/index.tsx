@@ -17,6 +17,9 @@ import { useEffect, useState } from 'react'
 import CreatePayment from '../../../CartPage/components/VNPAY/CreatePayment'
 import { AiFillCheckCircle } from 'react-icons/ai'
 import ModalDetailOrder from './components/ModalDetailOrder'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 interface OrderAnyType {
   [key: string]: any
 }
@@ -38,7 +41,7 @@ interface DataType {
 
 const MyOrdersPage = (props: any) => {
   const { roleType } = props
-
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false)
   const [idOrder, setIdOrder] = useState('')
   const litmit = 5
@@ -47,6 +50,9 @@ const MyOrdersPage = (props: any) => {
   const [status, setStatus] = useState('')
   const [totalElement, setTotalElement] = useState(1)
   //   const [date, setDate] = useState('')
+  useEffect(() => {
+    if (notificaions.page > 0) fetchGetMyOrders(currentPage.toString())
+  }, [notificaions.notifications])
   useEffect(() => {
     setCurrentPage(1)
     fetchGetMyOrders()

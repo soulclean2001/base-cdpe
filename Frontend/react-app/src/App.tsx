@@ -43,7 +43,7 @@ import AdminOverview from './features/Admin/contents/Overview'
 import UsersManage from './features/Admin/contents/UsersManage'
 import PostReviewManage from './features/Admin/contents/PostReviewManage'
 import ServicesManage from './features/Admin/contents/ServicesManage'
-import OrdersManage from './features/Admin/contents/OrdersManage'
+
 import AdminPage from './features/Admin'
 import OverviewEmployer from './features/Employer/pages/Dashboard/pages/OverviewPage'
 import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
@@ -71,7 +71,7 @@ import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/Can
 import MyOrdersPage from './features/Employer/pages/Dashboard/pages/MyOrdersPage'
 import VNPayReturn from './features/Employer/pages/CartPage/components/VNPAY/VNPayReturn'
 import RoadMapPage from './features/RoadMapPage'
-import { notification } from 'antd'
+
 import { NotificationType, addNotify } from './components/Header/NotifyDrawer/notifySlice'
 
 const titleLoginAdmin = {

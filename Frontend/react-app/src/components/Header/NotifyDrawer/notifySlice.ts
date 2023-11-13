@@ -1,17 +1,22 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
+import avatarTemp from '~/assets/HF_logo.jpg'
 export interface NotificationType {
   _id?: string
   content: string
   type: string
   object_recieve: number
+  object_sent: number
+  sender?: string
   recievers: string[]
   is_readed?: boolean
   created_at?: string
   updated_at?: string
+  sender_info?: { avatar?: string; name?: string; sender?: string }
 }
 export interface NotifyState {
   notifications: NotificationType[]
+  page: number
   loading: boolean
   error: any
 }
@@ -21,6 +26,7 @@ interface AnyType {
 
 const initialState: NotifyState = {
   notifications: [],
+  page: 0,
   loading: false,
   error: undefined
 }
@@ -47,7 +53,27 @@ const notifySlice = createSlice({
     })
     builder.addCase(getAllByMe.fulfilled, (state, action) => {
       const { result, message } = action.payload
+      state.page = 1
       state.notifications = result
+        .map((notify: NotificationType) => {
+          if (notify.type === 'cv/seen') notify.content = notify.content
+          if (notify.type === 'post/created')
+            notify.content = `Nhà tuyển dụng '...' vừa đăng tin tuyển dụng '${notify.content}'`
+          if (notify.type === 'post/approved') {
+            notify.content = `Hệ thống phê duyệt tin tuyển dụng '${notify.content}'`
+            notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+          }
+          if (notify.type === 'post/rejected') {
+            notify.content = `Hệ thống từ chối phê duyệt tin tuyển dụng '${notify.content}'`
+            notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+          }
+
+          if (notify.type === 'post/pending')
+            notify.content = `Bài tuyển dụng ${notify.content} đã được gửi yêu cầu kiểm duyệt`
+
+          return notify
+        })
+        .reverse()
       state.loading = false
       state.error = ''
       return state
@@ -61,8 +87,9 @@ const notifySlice = createSlice({
       })
       return state
     },
-    setNotifications: (state, action) => {
-      state.notifications = [action.payload]
+    setMoreWhenScroll: (state, action) => {
+      state.notifications = [...state.notifications, ...action.payload]
+      state.page = ++state.page
       return state
     },
     addNotify: (state, action) => {
@@ -72,6 +99,6 @@ const notifySlice = createSlice({
   }
 })
 
-export const { setIsRead, addNotify, setNotifications } = notifySlice.actions
+export const { setIsRead, addNotify, setMoreWhenScroll } = notifySlice.actions
 
 export default notifySlice.reducer
