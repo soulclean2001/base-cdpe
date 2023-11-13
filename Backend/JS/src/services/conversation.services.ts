@@ -466,6 +466,12 @@ export default class ConversationService {
 
       if (recievers.length > 0)
         await NotificationService.notify({
+          object_sent: isUserSend
+            ? isAdmin
+              ? NotificationObject.Admin
+              : NotificationObject.Candidate
+            : NotificationObject.Employer,
+          sender: new ObjectId(sender_id),
           content: `Bạn có 1 tin nhắn mới từ ${
             isUserSend ? (isAdmin ? 'quản trị viên' : 'ứng viên') : 'nhà tuyển dụng'
           }`,

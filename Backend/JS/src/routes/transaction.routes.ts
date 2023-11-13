@@ -217,6 +217,7 @@ transactionRouter.get(
         const adminIds = admin.map((admin) => admin._id.toString())
         if (admin.length > 0)
           await NotificationService.notify({
+            object_sent: NotificationObject.Admin,
             content: 'Đã có 1 đơn hàng mới giao dịch thành công',
             object_recieve: NotificationObject.Admin,
             recievers: [...adminIds],

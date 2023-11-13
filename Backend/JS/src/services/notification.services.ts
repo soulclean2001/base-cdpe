@@ -51,7 +51,58 @@ class NotificationService {
 
       .toArray()
 
-    return result
+    const data = []
+    for (let i = 0; i < result.length; i++) {
+      const noti = result[i]
+      if (noti.object_sent === NotificationObject.Employer) {
+        const company = await databaseServices.company.findOne({
+          'users.user_id': noti.sender
+        })
+
+        const sender_info: {
+          name?: string
+          avatar?: string
+          sender?: ObjectId
+        } = {
+          name: company?.company_name,
+          avatar: company?.logo,
+          sender: noti.sender
+        }
+
+        const newObject = { ...noti, sender_info, sender: undefined }
+        data.push(newObject)
+      } else if (noti.object_sent === NotificationObject.Candidate) {
+        const user = await databaseServices.users.findOne({
+          _id: noti.sender
+        })
+
+        const sender_info: {
+          name?: string
+          avatar?: string
+          sender?: ObjectId
+        } = {
+          name: user?.name,
+          avatar: user?.avatar,
+          sender: noti.sender
+        }
+
+        const newObject = { ...noti, sender_info, sender: undefined }
+        data.push(newObject)
+      } else if (noti.object_sent === NotificationObject.Admin) {
+        const sender_info: {
+          name?: string
+          avatar?: string
+        } = {
+          name: 'ADMIN',
+          avatar: 'ADMIN'
+        }
+
+        const newObject = { ...noti, sender_info }
+        data.push(newObject)
+      }
+    }
+
+    return data
   }
 
   static async getTotalUnread(role: number, user_id: string) {

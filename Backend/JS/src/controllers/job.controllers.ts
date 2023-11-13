@@ -47,7 +47,7 @@ class JobController {
     const { user_id } = req.decoded_authorization as TokenPayload
 
     const { job_id } = req.params
-    const result = await JobService.approveJob(job_id, user_id)
+    const result = await JobService.approveJob(job_id)
     return res.json(result)
   }
 
@@ -55,7 +55,7 @@ class JobController {
     const { user_id } = req.decoded_authorization as TokenPayload
 
     const { job_id } = req.params
-    const result = await JobService.rejectJob(job_id, user_id)
+    const result = await JobService.rejectJob(job_id)
     return res.json(result)
   }
 

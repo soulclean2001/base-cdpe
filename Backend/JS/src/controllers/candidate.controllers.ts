@@ -68,11 +68,16 @@ class CandidateController {
 
     const result = await CandidateService.getCandidateById(candidate_id, user_id)
     if (role === UserRole.Employer && result) {
+      const recievers: string[] = [result.user_id.toString()]
+
       const company = await databaseServices.company.findOne({
         'users.user_id': new ObjectId(user_id)
       })
+
       await NotificationService.notify({
-        recievers: [user_id],
+        recievers,
+        sender: new ObjectId(user_id),
+        object_sent: NotificationObject.Employer,
         content: `Nhà tuyển dụng ${company?.company_name} đã xem hồ sơ của bạn`,
         object_recieve: NotificationObject.Candidate,
         type: 'cv/seen'

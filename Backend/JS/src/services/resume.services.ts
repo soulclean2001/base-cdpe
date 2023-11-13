@@ -4,6 +4,8 @@ import databaseServices from './database.services'
 import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 import { deleteFileFromS3 } from '~/utils/s3'
+import NotificationService from './notification.services'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
 
 class ResumeService {
   static async createResume(user_id: string, payload: ResumeRequestBody) {
@@ -62,7 +64,56 @@ class ResumeService {
       }
       if (oldUrls.length === 1) await deleteFileFromS3(oldUrls[0])
     }
+
+    const listFollower = await this.getListFollowers(resume_id)
+    const recievers = listFollower.map((id) => id.toString())
+
+    await NotificationService.notify({
+      content: `Ứng viên tiềm năng ${
+        oldResume?.user_info?.first_name + ' ' + oldResume?.user_info?.last_name
+      } đã cập nhật lại CV của mình`,
+      object_recieve: NotificationObject.Employer,
+      object_sent: NotificationObject.Candidate,
+      recievers,
+      type: 'resume/update',
+      sender: new ObjectId(user_id)
+    })
+
     return result.value
+  }
+
+  static async getListFollowers(cvId: string): Promise<ObjectId[]> {
+    const followers = await databaseServices.candidate
+      .aggregate([
+        {
+          $match: {
+            cv_id: new ObjectId(cvId),
+            cv_public: true
+          }
+        },
+        {
+          $lookup: {
+            from: 'tracked_candidates',
+            localField: '_id',
+            foreignField: 'candidate_id',
+            as: 'follower_ids'
+          }
+        },
+        {
+          $addFields: {
+            follower_ids: '$follower_ids.company_id'
+          }
+        },
+        {
+          $project: {
+            follower_ids: 1,
+            _id: 0
+          }
+        }
+      ])
+      .toArray()
+
+    return followers[0]?.follower_ids || []
   }
 
   static async updateOrCreateResume(user_id: string, payload: ResumeRequestBody) {

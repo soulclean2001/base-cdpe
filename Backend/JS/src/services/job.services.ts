@@ -125,6 +125,8 @@ export default class JobService {
 
       if (adminIds.length > 0) {
         await NotificationService.notify({
+          object_sent: NotificationObject.Employer,
+          sender: company.users[0].user_id,
           content: _payload.job_title,
           object_recieve: NotificationObject.Admin,
           recievers: [...adminIds],
@@ -572,7 +574,7 @@ export default class JobService {
     }
   }
 
-  static async approveJob(jobId: string, userId: string) {
+  static async approveJob(jobId: string) {
     const job = await databaseServices.job.findOne({
       _id: new ObjectId(jobId)
     })
@@ -590,8 +592,7 @@ export default class JobService {
     }
 
     const company = await databaseServices.company.findOne({
-      _id: job.company_id,
-      'users.user_id': new ObjectId(userId)
+      _id: job.company_id
     })
 
     if (!company)
@@ -636,6 +637,7 @@ export default class JobService {
 
       if (recievers.length > 0)
         await NotificationService.notify({
+          object_sent: NotificationObject.Admin,
           content: result.value.job_title,
           type: 'post/approved',
           object_recieve: NotificationObject.Employer,
@@ -664,6 +666,8 @@ export default class JobService {
       if (recievers2.length > 0) {
         await NotificationService.notify({
           content: result.value.job_title,
+          object_sent: NotificationObject.Employer,
+          sender: company.users[0].user_id,
           type: 'post/created',
           object_recieve: NotificationObject.Candidate,
           recievers: recievers2
@@ -676,7 +680,7 @@ export default class JobService {
     }
   }
 
-  static async rejectJob(jobId: string, userId: string) {
+  static async rejectJob(jobId: string) {
     const job = await databaseServices.job.findOne({
       _id: new ObjectId(jobId)
     })
@@ -694,8 +698,7 @@ export default class JobService {
     }
 
     const company = await databaseServices.company.findOne({
-      _id: job.company_id,
-      'users.user_id': new ObjectId(userId)
+      _id: job.company_id
     })
 
     if (!company)
@@ -737,6 +740,7 @@ export default class JobService {
 
       if (recievers.length > 0)
         await NotificationService.notify({
+          object_sent: NotificationObject.Admin,
           content: result.value.job_title,
           type: 'post/rejected',
           object_recieve: NotificationObject.Employer,
@@ -814,6 +818,8 @@ export default class JobService {
 
       if (adminIds.length > 0)
         await NotificationService.notify({
+          object_sent: NotificationObject.Employer,
+          sender: company.users[0].user_id,
           content: result.value.job_title,
           object_recieve: NotificationObject.Admin,
           recievers: [...adminIds],
