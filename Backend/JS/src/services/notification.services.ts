@@ -141,10 +141,55 @@ class NotificationService {
     const recievers = notification.recievers
     const type = notification.type
     const object_recieve = notification.object_recieve
-    if (object_recieve === NotificationObject.All) io.emit('new-broadcast-notification', notification)
+    let notifycation2 = {}
+    if (data.object_sent === NotificationObject.Employer) {
+      const company = await databaseServices.company.findOne({
+        'users.user_id': data.sender
+      })
+
+      const sender_info: {
+        name?: string
+        avatar?: string
+        sender?: ObjectId
+      } = {
+        name: company?.company_name,
+        avatar: company?.logo,
+        sender: data.sender
+      }
+
+      notifycation2 = { ...data, sender_info, sender: undefined }
+    } else if (data.object_sent === NotificationObject.Candidate) {
+      const user = await databaseServices.users.findOne({
+        _id: data.sender
+      })
+
+      const sender_info: {
+        name?: string
+        avatar?: string
+        sender?: ObjectId
+      } = {
+        name: user?.name,
+        avatar: user?.avatar,
+        sender: data.sender
+      }
+
+      notifycation2 = { ...data, sender_info, sender: undefined }
+    } else if (data.object_sent === NotificationObject.Admin) {
+      const sender_info: {
+        name?: string
+        avatar?: string
+      } = {
+        name: 'ADMIN',
+        avatar: 'ADMIN'
+      }
+
+      notifycation2 = { ...data, sender_info }
+    }
+
+    if (object_recieve === NotificationObject.All) io.emit('new-broadcast-notification', notifycation2)
     else
       for (let i = 0; i < recievers.length; i++) {
-        io.to(recievers[i] + '').emit('new-notification', notification)
+        io.to(recievers[i] + '').emit('new-notification', notifycation2)
       }
 
     return notification

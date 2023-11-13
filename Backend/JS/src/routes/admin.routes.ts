@@ -20,7 +20,26 @@ adminRouter.get(
   isAdmin,
   wrapAsync(transactionControllers.getTransactionsByAdmin)
 )
-adminRouter.get('/sumany', accessTokenValidator, isAdmin, wrapAsync(adminControllers.sumany))
+adminRouter.get('/summary', accessTokenValidator, isAdmin, wrapAsync(adminControllers.summary))
+
+/*
+  query: {
+    month?: number,
+    year?: number || (month ? now year : undefined), 
+    f_price: 1 ? sort by price : default sort by total order
+  }
+
+*/
+adminRouter.get('/top10orders', accessTokenValidator, isAdmin, wrapAsync(adminControllers.top10CompanyOrderest))
+
+/*
+  query: {
+    month?: number,
+    year?: number || (month ? now year : undefined), 
+  }
+
+*/
+adminRouter.get('/top10jobs', accessTokenValidator, isAdmin, wrapAsync(adminControllers.top10CompanyHasTheMostJobs))
 
 /*
   query: {
