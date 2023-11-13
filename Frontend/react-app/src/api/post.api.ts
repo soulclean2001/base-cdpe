@@ -34,8 +34,8 @@ export class Post {
     const rs: ApiResponse = await client.get(`/jobs/company/filter`, { params: filterParam })
     return rs
   }
-  public static getPostById = async (id: string) => {
-    const rs: ApiResponse = await client.get(`/jobs/${id}`)
+  public static getPostById = async (id: string, idUser?: string) => {
+    const rs: ApiResponse = await client.get(`/jobs/${id}`, { params: { user_id: idUser } })
     return rs
   }
   public static addPost = async (data: JobType) => {

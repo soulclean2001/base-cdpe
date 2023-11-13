@@ -2,7 +2,7 @@ import { Button, Col, Row } from 'antd'
 import './style.scss'
 import { AiOutlineHeart } from 'react-icons/ai'
 import banner from '~/assets/alena-aenami-cold-1k.jpg'
-
+import { subDays } from 'date-fns'
 import { Tabs } from 'antd'
 import type { TabsProps } from 'antd'
 import { useEffect, useState } from 'react'
@@ -34,11 +34,20 @@ const JobDetailPage = () => {
   const [companyInfo, setCompanyInfo] = useState({})
   const [headerModalApply, setHeaderModalApply] = useState({})
   const [checkApplied, setCheckApplied] = useState(false)
+  const [checkExpires, setCheckExpires] = useState(false)
+  const [checkBacklist, setCheckBacklist] = useState(false)
+
   const getPostById = async () => {
     if (infoUrlJobDetail) {
       const idJobDetail = infoUrlJobDetail.match(/id-(\w+)/)
       if (!idJobDetail || !idJobDetail[1]) return
-      await apiPost.getPostById(idJobDetail[1] as string).then((rs) => {
+      let userId = ''
+      if (auth.user_id) userId = auth.user_id
+      await apiPost.getPostById(idJobDetail[1] as string, userId).then((rs) => {
+        console.log('rs.result.expired_date', rs.result.expired_date)
+        console.log('current date', new Date())
+        if (new Date(rs.result.expired_date) < new Date()) setCheckExpires(true)
+        if (rs.result.is_not_apply) setCheckBacklist(true)
         setJobDetail(rs.result)
         setJobInfo({
           description: rs.result.job_description,
@@ -59,7 +68,6 @@ const JobDetailPage = () => {
       })
       if (auth && auth.isLogin) {
         await apiJobAplli.checkApplied(idJobDetail[1]).then((rs) => {
-          console.log('cehck appli', rs)
           setCheckApplied(rs.result.is_applied)
         })
       }
@@ -199,20 +207,25 @@ const JobDetailPage = () => {
                   } người`}</div>
                   <div className='expiration-date'>{`- Hạn cuối nhận hồ sơ: ${
                     jobDetail && jobDetail.expired_date
-                      ? jobDetail.expired_date.slice(0, 10).split('-').reverse().join('-')
+                      ? subDays(new Date(jobDetail.expired_date), 1)
+                          .toISOString()
+                          .slice(0, 10)
+                          .split('-')
+                          .reverse()
+                          .join('-')
                       : 'dd/MM/YYYY'
                   }`}</div>
                 </Col>
                 <Col lg={6} md={8} sm={24} xs={24} className='btn-container'>
                   <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
                   <Button
-                    disabled={checkApplied}
+                    disabled={checkApplied || checkBacklist || checkExpires ? true : false}
                     onClick={showModalApplyCV}
                     size='large'
                     className='btn-apply'
-                    style={{ backgroundColor: checkApplied ? '#f58968' : '#ff7d55' }}
+                    style={{ backgroundColor: checkApplied || checkBacklist || checkExpires ? '#f58968' : '#ff7d55' }}
                   >
-                    {checkApplied ? 'Đã nộp đơn' : 'Nộp Đơn'}
+                    {checkApplied ? 'Đã nộp đơn' : checkExpires ? 'Hết hạn' : 'Nộp đơn'}
                   </Button>
                   <ModalApplyCV
                     handleSubmit={handleSubmit}
@@ -244,8 +257,14 @@ const JobDetailPage = () => {
 
           <Col lg={4} md={4} sm={23} xs={23} className='btn-container'>
             <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
-            <Button disabled={checkApplied} onClick={showModalApplyCV} size='large' className='btn-apply'>
-              {checkApplied ? 'Đã nộp đơn' : 'Nộp Đơn'}
+            <Button
+              style={{ backgroundColor: checkApplied || checkBacklist || checkExpires ? '#f58968' : '#ff7d55' }}
+              disabled={checkApplied || checkBacklist || checkExpires ? true : false}
+              onClick={showModalApplyCV}
+              size='large'
+              className='btn-apply'
+            >
+              {checkApplied ? 'Đã nộp đơn' : checkExpires ? 'Hết hạn' : 'Nộp đơn'}
             </Button>
           </Col>
         </Row>
