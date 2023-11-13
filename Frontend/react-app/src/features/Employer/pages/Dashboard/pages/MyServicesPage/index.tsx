@@ -1,6 +1,6 @@
 import { Col, Input, Row, Select, Space, Table, Tag } from 'antd'
 import { ColumnsType } from 'antd/es/table'
-import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
+import { BsFillEyeFill } from 'react-icons/bs'
 import { FiSearch } from 'react-icons/fi'
 import { MdPayments } from 'react-icons/md'
 import { useEffect, useState } from 'react'
@@ -73,8 +73,6 @@ const MyServicesPage = () => {
         })
         setListMyServices(listTemp)
       }
-
-      console.log('rs', rs)
     })
   }
 

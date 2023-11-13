@@ -5,14 +5,13 @@ import { FiSearch } from 'react-icons/fi'
 import LeftItem from '../LeftItem'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import apiClient from '~/api/client'
-import { ApiResponse, RoomType } from '~/types'
+
+import { RoomType } from '~/types'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { setCurrentRoom, setRooms } from '../../chatSlice'
+import { setCurrentRoom } from '../../chatSlice'
 
 const LeftContent = (props: any) => {
-  const user = useSelector((state: RootState) => state.user)
   const chat = useSelector((state: RootState) => state.chat)
   const dispatch = useDispatch()
 

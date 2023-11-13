@@ -4,24 +4,10 @@ import { PiStudentFill } from 'react-icons/pi'
 import { TfiCup } from 'react-icons/tfi'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import {
-  Button,
-  Checkbox,
-  Col,
-  DatePicker,
-  Divider,
-  Form,
-  Input,
-  InputNumber,
-  InputRef,
-  Modal,
-  Row,
-  Select,
-  Space
-} from 'antd'
-import TextArea from 'antd/es/input/TextArea'
+import { Button, Checkbox, Col, DatePicker, Divider, Form, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
+
 import { ImLocation } from 'react-icons/im'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import { toast } from 'react-toastify'
 import { BsFillAirplaneFill, BsTrashFill } from 'react-icons/bs'
@@ -38,7 +24,6 @@ import { DataOptionType } from '../ModalWorkLocation'
 import { RootState } from '~/app/store'
 import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
 import { getAllIndustries } from '~/api/industries.api'
-import { format, addDays } from 'date-fns'
 
 //data lo
 
@@ -75,7 +60,7 @@ const listBenefit = [
 //
 export const IconLabelSalary = (props: any) => {
   const { value } = props
-  // console.log('value', value)
+
   if (value === 'Thưởng') {
     return <GiReceiveMoney />
   }
@@ -316,7 +301,7 @@ const ModalInfoPost = (props: any) => {
   const handleDeletedRowLocation = (key: number) => {
     if (arrLocations.length > 1) {
       const oldSelectedObj = arrLocations.filter((item) => item.key === key)
-      console.log('oldSelectedObj', oldSelectedObj)
+
       const oldSelected = oldSelectedObj[0].selected
       if (oldSelected !== '_') {
         const changeData = listLocation.map((item: SelectionLocationData) => {
@@ -328,11 +313,11 @@ const ModalInfoPost = (props: any) => {
           }
           return item
         })
-        console.log('changeData', changeData)
+
         setListLocation(changeData)
       }
       const filterData = arrLocations.filter((item) => item.key !== key)
-      console.log('filterData', filterData)
+
       setArrLocations(filterData)
       form.resetFields([`location_${key}`])
     }
@@ -357,7 +342,6 @@ const ModalInfoPost = (props: any) => {
       }
       return item
     })
-    console.log('map data', mapData)
     setArrSkills(mapData)
   }
   const handleAddRowBenefit = () => {
@@ -367,7 +351,6 @@ const ModalInfoPost = (props: any) => {
     ])
   }
   const handleDeletedRowBenefit = (key: number) => {
-    console.log(key)
     if (arrBenefits.length > 1) {
       const arrFilter = arrBenefits.filter((benefit) => benefit.key !== key)
       setArrBenefits(arrFilter)
@@ -468,7 +451,6 @@ const ModalInfoPost = (props: any) => {
     }
     // expired_date: expireDate ? expireDate : format(addDays(new Date(), 7), 'yyyy-MM-dd'),
     if (publish) job = { ...job, expired_date: expireDate }
-    console.log('form data post', job)
 
     // call api
     if (idPost) {
@@ -479,7 +461,7 @@ const ModalInfoPost = (props: any) => {
   const updatePost = async (job: JobType) => {
     await apiPost
       .updatePost(idPost, job)
-      .then((rs) => {
+      .then(() => {
         const postUpdate: JobTypeFull = employer.posts.data.filter((post: any) => {
           return post.id === idPost
         })[0]
@@ -571,7 +553,7 @@ const ModalInfoPost = (props: any) => {
         // })
         return locationCompany
       })
-      console.log('mapLocations', mapLocations)
+
       setListLocation(mapLocations)
 
       //
@@ -594,7 +576,7 @@ const ModalInfoPost = (props: any) => {
         return { key: index, data: benefit }
       })
       setArrBenefits(mapBenefits)
-      console.log('arrBenefits', arrBenefits)
+
       //
       setSalaryRange(rs.salary_range)
       setQuantityAccept(rs.number_of_employees_needed)
@@ -956,7 +938,7 @@ const ModalInfoPost = (props: any) => {
                   ]
                 }}
                 editor={ClassicEditor}
-                onChange={(event, editor) => {
+                onChange={(_, editor) => {
                   const data = editor.getData()
                   setJobDescription(data)
                 }}
@@ -1001,7 +983,7 @@ const ModalInfoPost = (props: any) => {
                   ]
                 }}
                 editor={ClassicEditor}
-                onChange={(event, editor) => {
+                onChange={(_, editor) => {
                   const data = editor.getData()
                   setJobRequirement(data)
                 }}

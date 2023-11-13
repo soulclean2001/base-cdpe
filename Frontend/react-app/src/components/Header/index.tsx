@@ -1,4 +1,4 @@
-import { Component, useState } from 'react'
+import { useState } from 'react'
 import LeftMenu from './LeftMenu/LeftMenu'
 import RightMenu from './RightMenu/RightMenu'
 import { NavLink } from 'react-router-dom'

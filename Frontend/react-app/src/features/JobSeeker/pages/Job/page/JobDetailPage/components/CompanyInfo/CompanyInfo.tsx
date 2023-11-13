@@ -4,19 +4,9 @@ import { Col, Row } from 'antd'
 import ReactHtmlParser from 'html-react-parser'
 import { FaUsers } from 'react-icons/fa'
 import { AiFillPhone, AiTwotoneMail } from 'react-icons/ai'
-import { useEffect, useState } from 'react'
+
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
-// const descriptionsData = `Thành lập từ năm 2005, Golden Gate (Công Ty CP Thương Mại Dịch Vụ Cổng Vàng) là đơn vị tiên phong áp dụng mô hình chuỗi nhà hàng tại Việt Nam, với 5 phong cách ẩm thực chính, bao gồm: Lẩu, Nướng, Á, Âu và quán cà phê. Golden Gate hiện sở hữu hơn 22 thương hiệu cùng gần 400 nhà hàng đa phong cách trên 40 tỉnh thành, phục vụ 18 triệu lượt khách hàng mỗi năm và vẫn đang không ngừng nỗ lực phát triển hơn.
 
-// Tầm nhìn: "Lựa chọn Ẩm thực số 1"
-// Sứ mệnh: "Nhân viên hạnh phúc - Khách hàng hài lòng"
-// Triết lí kinh doanh: "Nâng cao chất lượng cuộc sống"
-// Gía trị cốt lõi:
-// CHÍNH TRỰC – Làm điều đúng, ngay cả khi không ai quan sát
-// NHÂN VĂN – Yêu thương con người và hành động tử tế
-// HIỆU SUẤT CAO – Làm nhanh, chính xác và tạo ra giá trị vượt trội
-
-// Lấy con người làm trung tâm, chúng tôi luôn mong muốn sẽ có thêm những cộng sự mới, sống và làm việc cùng Golden Gate.`
 interface DataType {
   info: string
   working_locations: WorkingLocation[]

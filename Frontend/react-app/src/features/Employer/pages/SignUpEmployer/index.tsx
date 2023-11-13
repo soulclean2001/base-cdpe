@@ -157,18 +157,7 @@ const SignUpEmployer = () => {
         locationsFinal.push(location.value)
       }
     })
-    const data = {
-      email,
-      password,
-      rePassword,
-      name,
-      sex,
-      phone,
-      nameCompany,
-      position,
-      locationsFinal,
-      checkAccept
-    }
+
     const req: AuthRequestRegistry = {
       email: email,
       password: password,
@@ -193,7 +182,6 @@ const SignUpEmployer = () => {
       .catch(() => {
         toast.error('Email đã tồn tại, vui lòng chọn Email khác')
       })
-    console.log('form data sign up', data)
   }
 
   const onFinishFailed = (errorInfo: any) => {
@@ -546,7 +534,6 @@ const SignUpEmployer = () => {
                 title={<h1>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h1>}
                 centered
                 open={openModalLocation}
-                // onOk={() => console.log('xxxx')}
                 onCancel={() => setOpenModalLocation(false)}
                 width={'50%'}
                 footer=''

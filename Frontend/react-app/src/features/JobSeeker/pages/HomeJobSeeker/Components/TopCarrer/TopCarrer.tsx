@@ -7,7 +7,7 @@ import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import './topCarrer.scss'
 import apiHome from '~/api/home.api'
-const TopCarrer = (props: any) => {
+const TopCarrer = () => {
   const [dataCarrer, setDataCarrer] = useState<{ id: string; img: string; name: string; totalJob: number }[]>([])
 
   useEffect(() => {
@@ -62,7 +62,6 @@ const TopCarrer = (props: any) => {
     await apiHome.getTotalJobsByCareer().then((rs) => {
       if (!rs.result) return
       let listTemp: { id: string; img: string; name: string; totalJob: number }[] = []
-      console.log(rs)
 
       rs.result.map((item: { _id: string; jobs: number }) => {
         dataCarrer.map((data: { id: string; img: string; name: string; totalJob: number }) => {
@@ -73,7 +72,6 @@ const TopCarrer = (props: any) => {
         })
       })
       setDataCarrer(listTemp)
-      console.log('listTemp', listTemp)
     })
   }
   // set size

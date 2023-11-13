@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react'
 import useQueryParams from './useQueryParams'
 import Auth from './api/auth.api'
-import { useDispatch, useSelector } from 'react-redux'
-import { AuthState, setAccountStatus, setStateLogin, setToken } from './features/Auth/authSlice'
+
+import { setAccountStatus, setStateLogin, setToken } from './features/Auth/authSlice'
 import { cancelTokenSource } from './api/client'
-import { RootState } from './app/store'
+
 import { decodeToken } from './utils/jwt'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
 export const VerifyEmail = () => {
-  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [message, setMessage] = useState('')
   // email-verifications?token=
   const { token } = useQueryParams()
@@ -30,7 +29,7 @@ export const VerifyEmail = () => {
     const data = await Auth.verifyEmail(token)
     if (data.result) {
       const { refresh_token, access_token } = data.result
-      console.log('data.result', data.result)
+
       if (typeof access_token === 'string' && typeof refresh_token === 'string') {
         const dataDecode = await decodeToken(access_token)
         dispatchAsync(setToken({ accessToken: access_token, refreshToken: refresh_token }))

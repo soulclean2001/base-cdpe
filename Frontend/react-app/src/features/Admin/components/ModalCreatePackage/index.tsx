@@ -2,7 +2,7 @@ import { Button, Col, Form, Input, InputNumber, Modal, Row, Select, Upload, Uplo
 import './style.scss'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import TextArea from 'antd/es/input/TextArea'
 import ImgCrop from 'antd-img-crop'
 import { UploadFile } from 'antd/lib'
@@ -92,6 +92,7 @@ const ModalCreatePackage = (props: any) => {
     })
   }
   const dummyRequest = ({ file, onSuccess }: any) => {
+    console.log('file', file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)
@@ -366,7 +367,7 @@ const ModalCreatePackage = (props: any) => {
                 ]
               }}
               editor={ClassicEditor}
-              onChange={(event, editor) => {
+              onChange={(_, editor) => {
                 const data = editor.getData()
                 setDescript(data)
               }}

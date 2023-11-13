@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 import './style.scss'
 import ModalUpdateProfile from '../ModalUpdateProfile'
-import apiMe, { MeResponseType } from '~/api/me.api'
+import apiMe from '~/api/me.api'
 import { InfoMeState, setMyProfile } from '~/features/Account/meSlice'
 import bannerTemp from '~/assets/banner_temp.jpg'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,7 +11,6 @@ import { RootState } from '~/app/store'
 const ModalProfile = (props: any) => {
   const dispatch = useDispatch()
   const { openModal, handleCloseModal } = props
-  const [myInfo, setMyInfo] = useState<MeResponseType>()
   const [idUser, setIdUser] = useState('')
   const [avatar, setAvatar] = useState('')
   const [name, setName] = useState('')
@@ -29,8 +28,6 @@ const ModalProfile = (props: any) => {
   }, [openModal, openUpdateProfile])
   const getMyInfo = async () => {
     await apiMe.getMe().then((rs) => {
-      console.log('me', rs)
-      setMyInfo(rs.result)
       setIdUser(rs.result._id)
       setAvatar(rs.result.avatar)
       setName(rs.result.name)

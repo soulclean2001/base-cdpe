@@ -1,12 +1,6 @@
-import { Avatar } from 'antd'
 import './style.scss'
 import { ConversationType, UserRole } from '~/types'
-interface DataType {
-  id: string
-  userId: string
-  logo: string
-  chatValue: string
-}
+
 interface PropsType {
   data: ConversationType
   isMe: boolean

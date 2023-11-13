@@ -1,13 +1,12 @@
-import { Col, Input, Row, Select, Space, Table, Tabs, Tag } from 'antd'
-import { DatePicker } from 'antd'
-const { RangePicker } = DatePicker
+import { Space, Table, Tabs, Tag } from 'antd'
+
 import './style.scss'
 import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
-import { AiFillCheckCircle, AiFillEdit } from 'react-icons/ai'
+import { AiFillCheckCircle } from 'react-icons/ai'
 import { ColumnsType } from 'antd/es/table'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { TabsProps } from 'antd/lib'
-import { FiSearch } from 'react-icons/fi'
+
 import apiAdmin, { OrderSearchByAdmin } from '~/api/admin.api'
 interface ServiceType {
   id: string
@@ -23,9 +22,9 @@ interface DataType {
   updateDate: string
   status: string
 }
-interface AnyType {
-  [key: string]: any
-}
+// interface AnyType {
+//   [key: string]: any
+// }
 const data: DataType[] = [
   {
     key: '1',
@@ -167,10 +166,10 @@ const columns: ColumnsType<DataType> = [
   }
 ]
 const OrdersManage = () => {
-  const [listOrders, setListOrders] = useState<AnyType[]>([])
+  // const [listOrders, setListOrders] = useState<AnyType[]>([])
   const limit = 2
-  const [currentPage, setCurrentPage] = useState(1)
-  const [total, setTotal] = useState(1)
+  // const [currentPage, setCurrentPage] = useState(1)
+  // const [total, setTotal] = useState(1)
 
   useEffect(() => {
     fetchGetOrders()

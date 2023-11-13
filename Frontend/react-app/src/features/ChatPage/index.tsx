@@ -1,5 +1,5 @@
 // import { Col, Row } from 'antd'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import './style.scss'
 import LeftContent from './components/LeftContent'
 import CenterContent from './components/CenterContent'

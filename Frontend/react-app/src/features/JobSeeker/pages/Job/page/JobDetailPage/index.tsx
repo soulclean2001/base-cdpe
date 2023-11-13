@@ -44,8 +44,6 @@ const JobDetailPage = () => {
       let userId = ''
       if (auth.user_id) userId = auth.user_id
       await apiPost.getPostById(idJobDetail[1] as string, userId).then((rs) => {
-        console.log('rs.result.expired_date', rs.result.expired_date)
-        console.log('current date', new Date())
         if (new Date(rs.result.expired_date) < new Date()) setCheckExpires(true)
         if (rs.result.is_not_apply) setCheckBacklist(true)
         setJobDetail(rs.result)

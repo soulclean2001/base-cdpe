@@ -90,10 +90,8 @@ const ListJob = () => {
   }, [requestSearch])
   const getJobs = async (page?: string) => {
     await apiPost.searchJobs({ ...requestSearch, page: page ? page : '1' }).then((rs) => {
-      console.log('Rs', rs)
       let jobs: JobItemType[] = []
       rs.result.jobs.map((job: any) => {
-        console.log('job', job)
         jobs.push({
           _id: job._id,
           logo: job.company.logo,
@@ -120,7 +118,6 @@ const ListJob = () => {
     if (event.target.id === 'salary-hight-to-low')
       setRequestSearch({ ...requestSearch, sort_by_salary: '-1', sort_by_post_date: '' })
     setActiveSort(event.target.id)
-    // console.log('event.target.id', event.target.id)
   }
 
   const handleSetSalary = (value: string) => {
@@ -152,11 +149,10 @@ const ListJob = () => {
   }, [])
   const fetchTopCompany = async () => {
     await apiHome.getCompaniesBanner().then((rs) => {
-      console.log('top ', rs)
       let temp = rs.result.map((company: { [key: string]: any }) => {
         return { id: company._id, name: company.company_name, logo: company.logo, banner: company.background }
       })
-      console.log('temp', temp)
+
       setListTopCompany(temp)
     })
   }

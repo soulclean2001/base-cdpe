@@ -1,7 +1,7 @@
-import { Button, Col, Image, Row } from 'antd'
+import { Button, Col, Row } from 'antd'
 import './style.scss'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 const ServiceItem = (props: any) => {
   const descriptions: [{ value: string }] = props.descriptions

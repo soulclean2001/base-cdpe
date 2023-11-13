@@ -65,7 +65,8 @@ export const employerSlice = createSlice({
       state.cart.error = payload
     })
     builder.addCase(getMyCart.fulfilled, (state, action) => {
-      const { result, message } = action.payload
+      const { result } = action.payload
+
       state.cart.idCart = result._id
 
       state.cart.loading = false
@@ -81,7 +82,8 @@ export const employerSlice = createSlice({
       state.cart.error = payload
     })
     builder.addCase(getItemsCart.fulfilled, (state, action) => {
-      const { result, message } = action.payload
+      const { result } = action.payload
+
       state.cart.totalItems = result.length
 
       state.cart.loading = false

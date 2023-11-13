@@ -1,4 +1,3 @@
-import iconReact from '../../../../../../assets/react.svg'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { useState, useEffect } from 'react'
@@ -26,64 +25,7 @@ const TopJob = () => {
       setListData(rs.result)
     })
   }
-  const dataTopJob = [
-    {
-      id: '1',
-      logo: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg',
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    },
-    {
-      id: '2',
-      logo: iconReact,
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    },
-    {
-      id: '3',
-      logo: iconReact,
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    },
-    {
-      id: '4',
-      logo: iconReact,
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    },
-    {
-      id: '5',
-      logo: iconReact,
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    },
-    {
-      id: '6',
-      logo: iconReact,
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    },
-    {
-      id: '7',
-      logo: iconReact,
-      nameJob: 'Nhân viên quan hệ khách hàng ABCXYZ',
-      nameCompany: 'Công ty trách nhiệm hữu hạng 10 thành viên BBBB',
-      salary: 'Thương lượng',
-      area: 'TP. Hồ Chí Minh'
-    }
-  ]
+
   const handleClickShowDetail = (idJob: string, nameJob: string) => {
     const convertNameEng = nameJob
       .normalize('NFD')

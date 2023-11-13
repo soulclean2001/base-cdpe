@@ -1,4 +1,4 @@
-import { Avatar, Button, Input, Modal, Upload } from 'antd'
+import { Button, Input, Modal, Upload } from 'antd'
 import { Radio } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import { useEffect, useState } from 'react'
@@ -37,6 +37,7 @@ const ModalUpdateProfile = (props: PropsType) => {
     setBirthDay(e.target.value)
   }
   const dummyRequest = ({ file, onSuccess }: any) => {
+    console.log('file', file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)
@@ -52,7 +53,6 @@ const ModalUpdateProfile = (props: PropsType) => {
     }
   }
   const onChangeLogo: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-    console.log('xxx', newFileList)
     setFileListAvatar(newFileList)
   }
   const onPreview = async (file: UploadFile) => {
@@ -73,7 +73,6 @@ const ModalUpdateProfile = (props: PropsType) => {
     if (openModal === true) getMyInfo()
   }, [openModal])
   const getMyInfo = async () => {
-    console.log('me', data)
     setMyInfo(data)
     setIdUser(data._id)
     setName(data.name)
@@ -108,7 +107,7 @@ const ModalUpdateProfile = (props: PropsType) => {
     if (avatarImage) {
       const logoForm = new FormData()
       logoForm.append('image', avatarImage)
-      console.log('img from', logoForm)
+
       urlAvatar = await apiUpload.uploadImage(logoForm).then(async (rs) => {
         return rs.result[0].url
       })
@@ -119,7 +118,7 @@ const ModalUpdateProfile = (props: PropsType) => {
       phone_number: myInfo.phone_number !== phone ? phone : '',
       gender: myInfo.gender !== gender ? gender : ''
     }
-    await apiMe.updateMe(request, urlAvatar).then((rs) => {
+    await apiMe.updateMe(request, urlAvatar).then(() => {
       toast.success('Cập nhật thông tin thành công')
       handleCloseModal()
     })

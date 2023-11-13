@@ -24,7 +24,6 @@ const MyCompanies = () => {
   }, [])
   const fetchGetCompaniesFollowed = async () => {
     await apiFollow.getCompanyCandidateHasFollowed().then((rs) => {
-      console.log('rs', rs)
       setListFollowed(rs.result)
     })
   }

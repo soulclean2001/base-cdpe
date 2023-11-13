@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import ReactHtmlParser from 'html-react-parser'
 import './style.scss'
 import { BsFillCalendarCheckFill, BsFillInboxesFill } from 'react-icons/bs'
@@ -6,22 +5,7 @@ import { SiLevelsdotfyi } from 'react-icons/si'
 import { Col, Row } from 'antd'
 import { MdWork } from 'react-icons/md'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
-// const descriptionsData = ` • Truyền thông hiệu quả EVP của Golden Gate đến các ứng viên tiềm năng với chiến lược đa kênh nhất quán.\n Chịu trách nhiệm quản lý hệ thống các kênh tuyển dụng số bao gồm: website, fanpage, tiktok, linkedin... để đăng tải thông tin, quảng cáo, duy trì, cập nhật nội dung và ý kiến phản hồi của ứng viên\n • Phụ trách xây dựng/ thiết kế hình ảnh sáng tạo để quảng bá tuyển dụng & đẩy mạnh thương hiệu tuyển dụng`
-// const requirementsData = `• Truyền thông hiệu quả EVP của Golden Gate đến các ứng viên tiềm năng với chiến lược đa kênh nhất quán. Chịu trách nhiệm quản lý hệ thống các kênh tuyển dụng số bao gồm: website, fanpage, tiktok, linkedin... để đăng tải thông tin, quảng cáo, duy trì, cập nhật nội dung và ý kiến phản hồi của ứng viên
 
-// • Phụ trách xây dựng/ thiết kế hình ảnh sáng tạo để quảng bá tuyển dụng & đẩy mạnh thương hiệu tuyển dụng
-
-// • Nâng cao nhận thức về thương hiệu, thu hút người theo dõi thương hiệu, quản lý thương hiệu và sự hiện diện của Golden Gate với tư cách là một nhà tuyển dụng chuyên nghiệp, hấp dẫn trên các kênh
-
-// • Lên kế hoạch và tổ chức tham gia các sự kiện ngày hội Tuyển dụng tại các trường Đại học.
-
-// • Phối hợp cùng phòng Marketing và team tuyển dụng triển khai các chiến dịch quảng bá và đẩy mạnh thương hiệu tuyển dụng
-
-// • Tham gia vào các dự án nâng cao trải nghiệm ứng viên/nhân viên cùng với các bộ phận chức năng của Nhân sự
-
-// • Thực hiện báo cáo, đánh giá các hoạt động truyền thông, các chuỗi nội dung đã thực hiện và đề xuất những phương án hoặc hành động tiếp theo
-
-// • Các công việc khác theo yêu cầu của Quản lý`
 interface JobInfoType {
   description: string
   requirement: string

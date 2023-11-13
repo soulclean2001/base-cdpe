@@ -99,9 +99,9 @@ const TableCustom = (props: any) => {
   const [content, setContent] = useState('')
   const [rangeDate, setRangeDate] = useState<Array<string>>([])
 
-  const handleChange: TableProps<JobType>['onChange'] = async (pagination, filters, sorter) => {
+  const handleChange: TableProps<JobType>['onChange'] = async (pagination, _, sorter) => {
     // console.log('log data', pagination, filters, sorter)
-    console.log(pagination.current as number)
+
     setCurrentPage(pagination.current as number)
     setSortedInfo(sorter as SorterResult<JobType>)
     await fetchData(pagination.current?.toString())
@@ -142,9 +142,8 @@ const TableCustom = (props: any) => {
     if (content) request = { ...request, content }
     if (rangeDate && rangeDate[0] && rangeDate[1])
       request = { ...request, from_day: rangeDate[0], to_day: rangeDate[1] }
-    console.log('request', request)
+
     await apiPost.getPostsFormEmployer(request).then((rs) => {
-      console.log(rs)
       dispatch(setPosts(rs.result))
       setData(rs.result.data)
       setTotal(rs.result.total)

@@ -1,20 +1,20 @@
-import { Avatar, Button } from 'antd'
+import { Avatar } from 'antd'
 import { BiSend } from 'react-icons/bi'
 import './style.scss'
 import InputEmoji from 'react-input-emoji'
 import { useState, useEffect } from 'react'
 import ChatItem from '../ChatItem'
 import apiClient from '~/api/client'
-import { ApiResponse, ChatType, ConversationType } from '~/types'
+import { ApiResponse, ConversationType } from '~/types'
 import { AuthState } from '~/features/Auth/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { addMessage, setMessage, addMoreMessage } from '../../chatSlice'
+import { setMessage, addMoreMessage } from '../../chatSlice'
 import InfiniteScroll from 'react-infinite-scroll-component'
-
-const CenterContent = (props: any) => {
+import logoTemp from '~/assets/logo_temp.jpg'
+const CenterContent = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
-  const user = useSelector((state: RootState) => state.user)
+
   const chat = useSelector((state: RootState) => state.chat)
 
   const data = chat.messages
@@ -47,7 +47,7 @@ const CenterContent = (props: any) => {
 
   const [text, setText] = useState('')
 
-  const handleOnEnter = async (text: any) => {
+  const handleOnEnter = async () => {
     await handleSendMessage()
   }
 
@@ -86,7 +86,7 @@ const CenterContent = (props: any) => {
               ? data.infor_receiver.logo
                 ? data.infor_receiver.logo
                 : data.infor_receiver.avatar
-              : '' || ''
+              : logoTemp || logoTemp
           }
         />
         <div className='name'>

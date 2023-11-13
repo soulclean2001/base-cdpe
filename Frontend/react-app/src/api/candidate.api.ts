@@ -29,17 +29,14 @@ export interface RequestTurnOnFindingJobs {
 
 export class Candidate {
   public static searchCandidate = async (data: SearchCandidateReqBody) => {
-    console.log('data', data)
     const rs: ApiResponse = await client.get(`/search/candidate`, { params: data })
     return rs
   }
   public static createTurnOnFindingJobs = async (data: RequestTurnOnFindingJobs) => {
-    console.log('data', data)
     const rs: ApiResponse = await client.post(`/candidates`, data)
     return rs
   }
   public static updateTurnOnFindingJobs = async (data: RequestTurnOnFindingJobs) => {
-    console.log('data', data)
     const rs: ApiResponse = await client.patch(`/candidates`, data)
     return rs
   }

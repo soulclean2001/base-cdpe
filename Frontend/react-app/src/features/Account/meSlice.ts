@@ -47,7 +47,8 @@ const meSlice = createSlice({
       state.error = payload
     })
     builder.addCase(getMe.fulfilled, (state, action) => {
-      const { result, message } = action.payload
+      const { result } = action.payload
+
       state.email = result.email
       state.id = result._id
       state.name = result.name

@@ -20,7 +20,6 @@ const MyJobs = () => {
 
   const fetchListJobs = async () => {
     await apiJobApplied.getAllJobApplicationsFromCandidate().then((rs) => {
-      console.log('rs', rs)
       setListJobs(rs.result)
     })
   }
@@ -60,7 +59,7 @@ const MyJobs = () => {
                   logo: job.job.company.logo,
                   jobTitle: job.job.job_title,
                   nameCompany: job.job.company.company_name,
-                  salary: !job.job.is_salary_visible
+                  salary: job.job.is_salary_visible
                     ? `${job.job.salary_range.min.toLocaleString('vi', {
                         currency: 'VND'
                       })} - ${job.job.salary_range.max.toLocaleString('vi', { style: 'currency', currency: 'VND' })}`

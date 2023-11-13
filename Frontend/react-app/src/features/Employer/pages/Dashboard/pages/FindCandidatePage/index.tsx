@@ -83,20 +83,20 @@ const FindCandidatePage = () => {
   foreign_language_level?: string
   education_level?: string
   */
-  const [dataSearch, setDataSearch] = useState<SearchCandidateReqBody>({
-    page: '1',
-    limit: '3',
-    name: nameCandidate,
-    job: wannaJob,
-    education_level: education,
-    exp_year_from: expYear?.min,
-    exp_year_to: expYear?.max,
-    foreign_language: language,
-    foreign_language_level: levelLanguage,
-    level: level,
-    industry: industries,
-    work_location: province
-  })
+  // const [dataSearch, setDataSearch] = useState<SearchCandidateReqBody>({
+  //   page: '1',
+  //   limit: '3',
+  //   name: nameCandidate,
+  //   job: wannaJob,
+  //   education_level: education,
+  //   exp_year_from: expYear?.min,
+  //   exp_year_to: expYear?.max,
+  //   foreign_language: language,
+  //   foreign_language_level: levelLanguage,
+  //   level: level,
+  //   industry: industries,
+  //   work_location: province
+  // })
   //
   const showDrawer = () => {
     setOpen(true)
@@ -119,17 +119,7 @@ const FindCandidatePage = () => {
   }
   const handleSubmitForm = async () => {
     setPageClick(1)
-    const data = {
-      nameCandidate,
-      wannaJob,
-      industries,
-      province,
-      expYear,
-      level,
-      language,
-      levelLanguage,
-      education
-    }
+
     const dataSearch: SearchCandidateReqBody = {
       page: '1',
       limit: limitOnPage.toString(),
@@ -147,8 +137,6 @@ const FindCandidatePage = () => {
     await fetchGetData(dataSearch).then(() => {
       onCloseDrawer()
     })
-    console.log('form data post', data)
-    console.log('data search', dataSearch)
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -167,7 +155,6 @@ const FindCandidatePage = () => {
   const handleChangePage = async (valuePageClick: any) => {
     setPageClick(valuePageClick)
     await fetchGetData({ limit: limitOnPage.toString(), page: valuePageClick })
-    console.log('page', valuePageClick)
   }
   //
   useEffect(() => {
@@ -175,7 +162,6 @@ const FindCandidatePage = () => {
   }, [])
   const fetchGetData = async (data: SearchCandidateReqBody) => {
     await apiSearchCandidate.searchCandidate(data).then((rs) => {
-      console.log(rs, rs.result)
       setListCandidate(rs.result.profiles)
       setTotalItems(rs.result.total)
     })

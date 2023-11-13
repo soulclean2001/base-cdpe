@@ -1,7 +1,6 @@
 import JobItem from '../../../../Components/JobItem/JobItem'
-import './style.scss'
 
-const ShowMoreJob = (props: any) => {
+const ShowMoreJob = () => {
   const customStyleItem = {
     backgroundColorBeforeHover: 'white',
     backgroundColorAfterHover: 'rgb(239, 245, 255)',

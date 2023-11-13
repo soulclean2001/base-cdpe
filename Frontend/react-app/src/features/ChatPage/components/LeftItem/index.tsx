@@ -1,15 +1,15 @@
 import { Avatar, Button } from 'antd'
 import './style.scss'
 import { FiMoreHorizontal } from 'react-icons/fi'
-import { useState } from 'react'
+
 import { RoomType } from '~/types'
-interface DataType {
-  id: string
-  logo: string
-  name: string
-  latestChat: string
-  latestTime: string
-}
+// interface DataType {
+//   id: string
+//   logo: string
+//   name: string
+//   latestChat: string
+//   latestTime: string
+// }
 interface PropsType {
   isActive: boolean
   data: RoomType

@@ -1,13 +1,13 @@
 import { Outlet, useNavigate, useOutlet } from 'react-router-dom'
 import AdminSideBar from './components/AdminSideBar'
 import './style.scss'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useEffect, useState } from 'react'
 import { RootState } from '~/app/store'
 import HeaderEmployer from '~/components/HeaderEmployer'
 import AdminOverview from './contents/Overview'
 import { AuthState } from '../Auth/authSlice'
-import { isExpired } from '~/utils/jwt'
+
 const AdminPage = () => {
   const outlet = useOutlet()
   const auth: AuthState = useSelector((state: RootState) => state.auth)

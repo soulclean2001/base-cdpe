@@ -1,5 +1,5 @@
 import { Button, Form, Input } from 'antd'
-import './style.scss'
+
 import { LockOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -38,8 +38,7 @@ const ResetPasswordPage = () => {
         password: newPassword,
         forgot_password_token: location.state.forgot_password_token
       })
-      .then((rs) => {
-        console.log('Rs reset pass', rs)
+      .then(() => {
         navigate('/')
         toast.success('Mật khẩu mới đã được cập nhật thành công')
       })

@@ -1,7 +1,7 @@
 import { ResumeType } from '~/types/resume.type'
 import './Right.scss'
 import { Avatar, Button, UploadFile } from 'antd'
-import { usePDF, Margin } from 'react-to-pdf'
+import { usePDF } from 'react-to-pdf'
 import { RcFile } from 'antd/es/upload'
 import { useState, useEffect } from 'react'
 import { omit } from 'lodash'
@@ -76,7 +76,7 @@ const Right = (props: RightPropsType) => {
             )}
 
             {personalInfo &&
-              Object.keys(personalInfo).map((key, index) => {
+              Object.keys(personalInfo).map((key) => {
                 if (key === 'property_name') {
                   return (
                     <h4 key={key} className='preview__title-info'>

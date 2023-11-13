@@ -58,7 +58,6 @@ const ServicesManage = () => {
       type: typePackage === 'all' ? '' : typePackage
     }
     await apiPackage.getAllPackageForAdmin(request).then((rs) => {
-      console.log('rs', rs)
       setTotal(rs.result.total)
       const listTemp = rs.result.pks.map((service: AnyType) => {
         if (service.type === 'POST')
@@ -81,26 +80,26 @@ const ServicesManage = () => {
           status: service.status
         }
       })
-      console.log('listTemp', listTemp)
+
       setListServices(listTemp)
     })
   }
   const handleActivePackage = async (id: string) => {
-    await apiPackage.activePackage(id).then(async (rs) => {
+    await apiPackage.activePackage(id).then(async () => {
       toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} đã được kích hoạt`)
       setCurentPage(1)
       await fetchData()
     })
   }
   const handleArchivePackage = async (id: string) => {
-    await apiPackage.archivePackage(id).then(async (rs) => {
+    await apiPackage.archivePackage(id).then(async () => {
       toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} đã được ẩn`)
       setCurentPage(1)
       await fetchData()
     })
   }
   const handleDeletePackage = async (id: string) => {
-    await apiPackage.deletedPackage(id).then(async (rs) => {
+    await apiPackage.deletedPackage(id).then(async () => {
       toast.success(`Gói dịch vụ #SV_${id.slice(-5).toUpperCase()} được xóa thành công`)
       setCurentPage(1)
       await fetchData()

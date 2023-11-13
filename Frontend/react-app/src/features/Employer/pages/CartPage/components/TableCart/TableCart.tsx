@@ -42,7 +42,7 @@ const TableCart = (props: any) => {
   }, [])
   useEffect(() => {
     let total = 0
-    console.log('items', items)
+
     listItems.map((itemCart) => {
       items.map((item) => {
         if (item.item_id === itemCart.idPackage) total += itemCart.totalPayment
@@ -76,7 +76,6 @@ const TableCart = (props: any) => {
     setDisableInput(true)
     if (!items || !listItems) return
     await apiCart.createOrUpdateItemCart({ item: { item_id: id, quantity: value } }).then((rs) => {
-      console.log('updae', rs)
       const listAfter = listItems.map((item) => {
         if (item.id === rs.result._id) {
           item.quantity = value
@@ -97,8 +96,7 @@ const TableCart = (props: any) => {
   }
   const handleDeleteItemCart = async (id: string) => {
     if (!listItems || !items) return
-    await apiCart.deleteIemCart(id).then((rs) => {
-      console.log('rs del', rs)
+    await apiCart.deleteIemCart(id).then(() => {
       const listAfter = listItems.filter((item) => {
         return item.idPackage !== id
       })
@@ -124,7 +122,7 @@ const TableCart = (props: any) => {
       })
     })
     setItems(listChecked)
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys)
+
     setSelectedRowKeys(newSelectedRowKeys)
   }
 
@@ -144,7 +142,7 @@ const TableCart = (props: any) => {
       title: 'Gói dịch vụ',
       dataIndex: 'namePackage',
       key: 'namePackage',
-      render: (text, record) => (
+      render: (_, record) => (
         <div style={{ minWidth: '200px' }}>
           <span>
             {record.namePackage}
@@ -194,7 +192,7 @@ const TableCart = (props: any) => {
       title: 'Thành tiền',
       dataIndex: 'totalPayment',
       key: 'totalPayment',
-      render: (value, record) => <>{value.toLocaleString('vi', { currency: 'VND' })} VND</>
+      render: (value, _) => <>{value.toLocaleString('vi', { currency: 'VND' })} VND</>
     },
     {
       align: 'center',
@@ -204,7 +202,7 @@ const TableCart = (props: any) => {
       title: 'Số lượng',
       dataIndex: 'quantity',
       key: 'quantity',
-      render: (text: number, record) => (
+      render: (_, record) => (
         <InputNumber
           disabled={disableInput}
           className='custom-input-number'

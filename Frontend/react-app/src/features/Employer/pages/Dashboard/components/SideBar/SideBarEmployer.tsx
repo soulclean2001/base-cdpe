@@ -19,7 +19,7 @@ import { logout } from '~/features/Auth/authSlice'
 const SideBarEmployer = (props: any) => {
   const dispatch = useDispatch()
   const me: InfoMeState = useSelector((state: RootState) => state.me)
-  const { image, collapsed, toggled, handleToggleSidebar, hidden, roleType } = props
+  const { toggled, handleToggleSidebar, hidden, roleType } = props
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window

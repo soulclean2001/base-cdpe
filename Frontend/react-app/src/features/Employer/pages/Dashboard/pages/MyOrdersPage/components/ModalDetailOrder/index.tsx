@@ -27,10 +27,8 @@ const ModalDetailOrder = (props: any) => {
   const fetchData = async () => {
     if (roleType === 'ADMIN_TYPE') {
       await apiAdmin.getDetailOrderById(idOrder).then(async (rs) => {
-        console.log('rs detai', rs)
         setDetailData(rs.result)
         await apiCompany.getDetailCompany(rs.result.order.company_id).then((rs) => {
-          console.log('detail copmpany', rs)
           setDetailCompany(rs.result)
         })
         const listTemp: AnyType[] = []
@@ -48,15 +46,13 @@ const ModalDetailOrder = (props: any) => {
           })
         })
         setTotalPayment(totalTemp)
-        console.log('listTemp', listTemp)
+
         setListServices(listTemp)
       })
     } else {
       await apiOrder.getDetailOrder(idOrder).then(async (rs) => {
-        console.log('rs detai', rs)
         setDetailData(rs.result)
         await apiCompany.getDetailCompany(rs.result.order.company_id).then((rs) => {
-          console.log('detail copmpany', rs)
           setDetailCompany(rs.result)
         })
         const listTemp: AnyType[] = []
@@ -74,7 +70,7 @@ const ModalDetailOrder = (props: any) => {
           })
         })
         setTotalPayment(totalTemp)
-        console.log('listTemp', listTemp)
+
         setListServices(listTemp)
       })
     }

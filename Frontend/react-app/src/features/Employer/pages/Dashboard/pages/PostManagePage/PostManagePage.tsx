@@ -9,7 +9,6 @@ const PostManagePage = () => {
   const [openModalAddPost, setOpenModalAddPost] = useState(false)
   const [isSubmit, setIsSubmit] = useState(false)
   const onChangeTab = (key: string) => {
-    console.log('tab key', key)
     setTabKey(key)
   }
   const handleAfterSubmit = () => {

@@ -1,23 +1,17 @@
-import { Button, Dropdown, Menu, MenuProps, Space, Table, Tooltip } from 'antd'
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
-import { FilterValue, SorterResult } from 'antd/es/table/interface'
-import { useEffect, useState } from 'react'
-import { AiFillEdit, AiFillPrinter } from 'react-icons/ai'
+import { Dropdown, MenuProps, Table, Tooltip } from 'antd'
+import { ColumnsType, TableProps } from 'antd/es/table'
+import { SorterResult } from 'antd/es/table/interface'
+import { useState } from 'react'
+import { AiFillPrinter } from 'react-icons/ai'
 import { BiBlock, BiCommentError, BiSolidUserX } from 'react-icons/bi'
 // import './style.scss'
-import {
-  BsClipboard2XFill,
-  BsClipboardCheckFill,
-  BsFillCheckCircleFill,
-  BsFillEyeFill,
-  BsPencilSquare
-} from 'react-icons/bs'
+import { BsFillEyeFill } from 'react-icons/bs'
 import { FaUserCheck } from 'react-icons/fa'
-import { FaClipboardQuestion, FaUserXmark } from 'react-icons/fa6'
+
 import { FiMoreVertical } from 'react-icons/fi'
 import { ImUserCheck } from 'react-icons/im'
 import { IoMdMail } from 'react-icons/io'
-import { MdCancel, MdConnectWithoutContact, MdDelete, MdWifiTetheringError } from 'react-icons/md'
+import { MdConnectWithoutContact, MdDelete } from 'react-icons/md'
 
 interface DataType {
   id: string
@@ -127,9 +121,6 @@ const TableApplied = () => {
     setSortedInfo(sorter as SorterResult<DataType>)
   }
 
-  const clearAll = () => {
-    setSortedInfo({})
-  }
   const items: MenuProps['items'] = [
     {
       label: (
@@ -265,7 +256,7 @@ const TableApplied = () => {
       render: (_, record) => (
         <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
           <Tooltip title='Xem CV'>
-            <a onClick={() => setOpenModalInfo(true)}>
+            <a>
               <BsFillEyeFill />
             </a>
           </Tooltip>
@@ -367,15 +358,7 @@ const TableApplied = () => {
       showSorterTooltip: false
     }
   ]
-  const [openModalInfo, setOpenModalInfo] = useState(false)
-  const [dataRowSelected, setDataRowSelected] = useState<DataType>()
-  const [idPost, setIdPost] = useState<string>()
-  useEffect(() => {
-    console.log('data row selected', dataRowSelected)
-  }, [dataRowSelected])
-  const handleCloseModalInfo = () => {
-    setOpenModalInfo(false)
-  }
+
   return (
     <>
       {/* <Space style={{ marginBottom: 16 }}>
@@ -385,12 +368,6 @@ const TableApplied = () => {
         className='table-custom'
         // style={{ maxWidth: '70vw', overflow: 'auto' }}
         scroll={{ x: true }}
-        onRow={(record) => ({
-          onClick: () => {
-            setIdPost(record.id)
-            setDataRowSelected(record)
-          }
-        })}
         columns={columns}
         dataSource={data}
         onChange={handleChange}

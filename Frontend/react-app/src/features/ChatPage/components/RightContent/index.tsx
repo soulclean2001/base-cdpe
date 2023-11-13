@@ -16,32 +16,7 @@ interface DataType {
   nameCompany: string | undefined
   titleJob: string
 }
-const dataJobApplied = [
-  {
-    idUser: 'u1',
-    idJob: 'idJob1',
-    idCompany: 'idCompany1',
-    logo: '',
-    titleName: 'name job1',
-    nameCompany: 'Công ty X'
-  },
-  {
-    idUser: 'u2',
-    idJob: 'idJob2',
-    idCompany: 'idCompany2',
-    logo: '',
-    titleName: 'name job2',
-    nameCompany: 'name company 2'
-  }
-]
-const dataCandidate = [
-  { idUser: 'u1', idJob: '', idCompany: '', logo: '', titleName: 'Phong', nameCompany: '' },
-  { idUser: 'u2', idJob: '', idCompany: '', logo: '', titleName: 'Hiếu', nameCompany: '' }
-]
-const dataUserConnect = [
-  { idUser: 'u1', idJob: '', idCompany: '', logo: '', titleName: 'Công ty X', nameCompany: '' },
-  { idUser: 'u2', idJob: '', idCompany: '', logo: '', titleName: 'Phong', nameCompany: '' }
-]
+
 const RightContent = (props: any) => {
   const { roleType } = props
 

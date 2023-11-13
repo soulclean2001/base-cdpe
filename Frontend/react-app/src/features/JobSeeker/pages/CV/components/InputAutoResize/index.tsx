@@ -1,5 +1,5 @@
 // InputAutoResize.tsx
-import { useState, useEffect, MutableRefObject, InputHTMLAttributes, useRef } from 'react'
+import { useEffect, MutableRefObject, InputHTMLAttributes } from 'react'
 import './InputAutoResize.scss'
 
 interface InputAutoResizeProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -8,8 +8,8 @@ interface InputAutoResizeProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const InputAutoResize = (props: InputAutoResizeProps) => {
-  const { value, onChange, id, style, width } = props
-  const [inputWidth, setInputWidth] = useState<number | null>(100)
+  const { value, id, style, width } = props
+  const inputWidth = 100
 
   useEffect(() => {
     const inputElement = document.getElementById(`auto-resize-input-${id}`)

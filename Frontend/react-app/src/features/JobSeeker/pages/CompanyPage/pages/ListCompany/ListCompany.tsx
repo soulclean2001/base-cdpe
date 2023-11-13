@@ -25,7 +25,6 @@ const ListCompany = () => {
       .then((rs) => {
         setListCompany(rs.result.companies)
         setTotalPage(rs.result.total)
-        console.log('Rs', rs)
       })
   }
   const handleChangePage = (valuePageClick: any) => {

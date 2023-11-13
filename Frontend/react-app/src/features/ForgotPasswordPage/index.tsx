@@ -15,7 +15,6 @@ const ForgotPasswordPage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   const { token } = useQueryParams()
-  const [message, setMessage] = useState('')
 
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
@@ -45,7 +44,7 @@ const ForgotPasswordPage = () => {
   const handleSubmitForm = async () => {
     setDisabledBtn(true)
     await Auth.forgotPassword(email)
-      .then((rs) => {
+      .then(() => {
         toast.success(`Yêu cầu của bạn đã được gửi thành công, vui lòng kiểm tra hộp thư gửi đến tài khoản ${email}`)
       })
       .catch(() => {
@@ -68,10 +67,6 @@ const ForgotPasswordPage = () => {
   const verify = async (token: string) => {
     await Auth.verifyForgotPassword(token)
       .then((data) => {
-        console.log('very file pass word', data)
-        if (data.message) {
-          setMessage(data.message)
-        }
         if (data)
           navigate('/reset-password', {
             state: { forgot_password_token: token }

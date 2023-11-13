@@ -1,6 +1,6 @@
 import { Col, Input, Pagination, Row } from 'antd'
 import '../FindCandidatePage/style.scss'
-import './style.scss'
+
 import CandidateItem from '../FindCandidatePage/components/CandidateItem/CandidateItem'
 import { useEffect, useState } from 'react'
 import apiTrackedCanddiate, { RequestTrackedCandidateType } from '~/api/trackedCandidate.api'
@@ -25,7 +25,6 @@ const CandidateFollowedPage = () => {
   const handleChangePage = async (valuePageClick: any) => {
     setPageClick(valuePageClick)
     await fetchGetData(valuePageClick)
-    console.log('page', valuePageClick)
   }
   useEffect(() => {
     if (notificaions.page > 0) fetchGetData(pageClick.toString())
@@ -41,7 +40,6 @@ const CandidateFollowedPage = () => {
       name: name
     }
     await apiTrackedCanddiate.getAllByMe(request).then((rs) => {
-      console.log(rs, rs.result)
       setListCandidate(rs.result.list)
       setTotalItems(rs.result.total)
     })

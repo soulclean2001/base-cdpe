@@ -19,23 +19,7 @@ import { InfoMeState } from '~/features/Account/meSlice'
 import { FaUserCheck } from 'react-icons/fa'
 import { NotifyState } from '../NotifyDrawer/notifySlice'
 
-const dataNotify = [
-  { id: '1', name: 'VINFAT', actionInfo: 'Đã theo dõi CV của bạn' },
-  { id: '2', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '3', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '4', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '5', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '6', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '7', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '8', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '9', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '10', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '11', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '12', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '13', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' },
-  { id: '14', name: 'Apple', actionInfo: 'Đã duyệt CV của bạn' }
-]
-const RightMenu = (props: any) => {
+const RightMenu = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
@@ -134,12 +118,7 @@ const RightMenu = (props: any) => {
               />
             </Badge>
 
-            <NotifyDrawer
-              dataNotify={dataNotify}
-              roleType='CANDIDATE_ROLE'
-              open={openNotifyDrawer}
-              onClose={onCloseDrawer}
-            />
+            <NotifyDrawer roleType='CANDIDATE_ROLE' open={openNotifyDrawer} onClose={onCloseDrawer} />
             <Button
               disabled={auth.verify === 1 ? false : true}
               icon={<AiFillMessage />}

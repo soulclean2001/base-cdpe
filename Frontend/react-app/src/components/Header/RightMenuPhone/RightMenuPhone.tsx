@@ -1,5 +1,5 @@
 import { MenuOutlined } from '@ant-design/icons'
-import { Avatar, Button, Drawer, Dropdown, MenuProps } from 'antd'
+import { Avatar, Drawer } from 'antd'
 import { NavLink } from 'react-router-dom'
 import './rightMenuPhone.scss'
 import { useState } from 'react'

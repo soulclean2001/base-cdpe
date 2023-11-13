@@ -20,10 +20,7 @@ import { RootState } from '~/app/store'
 import { EmployerState, getItemsCart, getMyCart } from '~/features/Employer/employerSlice'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
-const dataNotify = [
-  { id: '1', name: 'Phan Thanh Phong', actionInfo: 'Đã theo dõi bạn' },
-  { id: '2', name: 'Phan Thanh Phong', actionInfo: 'Đã cập nhật CV của anh ấy' }
-]
+
 const RightMenu = (props: any) => {
   const { roleType } = props
   const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
@@ -37,7 +34,6 @@ const RightMenu = (props: any) => {
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   useEffect(() => {
     if (auth.isLogin && auth.role === 1 && auth.verify === 1) fetchGetMyCart()
-    console.log('employer', employer.cart)
   }, [])
   const fetchGetMyCart = async () => {
     await dispatchAsync(getMyCart())
@@ -52,9 +48,7 @@ const RightMenu = (props: any) => {
   const handleTabJobSeeker = () => {
     navigate('/')
   }
-  const handleTabDashboar = () => {
-    navigate('/employer/dashboard')
-  }
+
   const handleTabPageCart = () => {
     navigate('/employer/cart')
   }
@@ -92,9 +86,8 @@ const RightMenu = (props: any) => {
       disPatch(logout())
       window.location.reload()
     }
-    console.log('handle click', e)
+
     if (e.key === 'key_settings_info') setOpenModalProfile(true)
-    console.log('handle click', e)
   }
   const menuProps = {
     items,
@@ -125,7 +118,7 @@ const RightMenu = (props: any) => {
               />
             </Badge>
 
-            <NotifyDrawer dataNotify={dataNotify} roleType={roleType} open={openNotifyDrawer} onClose={onCloseDrawer} />
+            <NotifyDrawer roleType={roleType} open={openNotifyDrawer} onClose={onCloseDrawer} />
 
             {roleType === 'EMPLOYER_ROLE' && (
               <>

@@ -1,4 +1,4 @@
-import { Col, Input, Row, Select, Table, Dropdown, MenuProps, Tooltip, Modal } from 'antd'
+import { Col, Input, Row, Select, Table, Dropdown, MenuProps, Tooltip } from 'antd'
 import { DatePicker } from 'antd'
 import { ColumnsType, TableProps } from 'antd/es/table'
 import { SorterResult } from 'antd/es/table/interface'
@@ -58,7 +58,7 @@ const ContentCVManage = (props: any) => {
   const [sortedInfo, setSortedInfo] = useState<SorterResult<DataType>>({})
 
   const navigate = useNavigate()
-  const [dataRowSelected, setDataRowSelected] = useState<DataType>()
+  // const [dataRowSelected, setDataRowSelected] = useState<DataType>()
   const [idJobAppli, setIdJobAppli] = useState<string>()
   const limit = 5
   const [pageClick, setPageClick] = useState(1)
@@ -82,7 +82,7 @@ const ContentCVManage = (props: any) => {
         const list = rs.result.map((job: any) => {
           return { value: job._id, label: `#JOB_${job._id.slice(-5).toUpperCase()} - ${job.job_title}` }
         })
-        console.log('list job', [...listJobs, ...list])
+
         setListJobs([...listJobs, ...list])
       })
     })
@@ -113,7 +113,6 @@ const ContentCVManage = (props: any) => {
     }
 
     await apiJobsApplication.getJobsApplicationByFilter(request).then((rs) => {
-      console.log('rs', rs)
       setTotalPage(rs.result.total)
       const listTemp: DataType[] = rs.result.jas.map((item: any) => {
         return {
@@ -131,18 +130,13 @@ const ContentCVManage = (props: any) => {
       setListJobsApplied(listTemp)
     })
   }
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`)
-  }
+
   const handleChangeRowTable: TableProps<DataType>['onChange'] = async (pagination, filters, sorter) => {
     console.log('log data', pagination, filters, sorter)
     setPageClick(pagination.current as number)
     setSortedInfo(sorter as SorterResult<DataType>)
     await fetchGetJobsApplication(pagination.current?.toString())
   }
-  useEffect(() => {
-    console.log('data row selected', dataRowSelected)
-  }, [dataRowSelected])
 
   const handleClickShowDetail = (name: string, id: string) => {
     const convertNameEng = name
@@ -156,20 +150,17 @@ const ContentCVManage = (props: any) => {
   const fetchActionApplication = async (id: string, type?: string, status?: number) => {
     if (!id) return
     if (type === 'APPROVE') {
-      await apiJobsApplication.approveCV(id).then((rs) => {
-        console.log('approve', rs)
+      await apiJobsApplication.approveCV(id).then(() => {
         toast.success(`#CV_${id.slice(-5).toUpperCase()} đã được chấp nhận`)
       })
     }
     if (type === 'REJECT') {
-      await apiJobsApplication.rejectCV(id).then((rs) => {
-        console.log('reject', rs)
+      await apiJobsApplication.rejectCV(id).then(() => {
         toast.success(`#CV_${id.slice(-5).toUpperCase()} đã bị từ chối`)
       })
     }
     if (status && status > -1) {
-      await apiJobsApplication.updateStatus(id, status).then((rs) => {
-        console.log('rs update', rs)
+      await apiJobsApplication.updateStatus(id, status).then(() => {
         toast.success(
           `#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${Object.values(JobApplicationStatus)[status]}`
         )
@@ -490,7 +481,7 @@ const ContentCVManage = (props: any) => {
             onRow={(record) => ({
               onClick: () => {
                 setIdJobAppli(record.id)
-                setDataRowSelected(record)
+                // setDataRowSelected(record)
               }
             })}
             columns={columns}

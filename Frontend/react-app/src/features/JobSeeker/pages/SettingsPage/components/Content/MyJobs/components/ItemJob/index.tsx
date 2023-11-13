@@ -5,6 +5,7 @@ import './style.scss'
 import { JobApplicationStatus } from '~/types/jobAppliacation.type'
 import { useNavigate } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
+import avatarTemp from '~/assets/HF_logo.jpg'
 interface DataType {
   id: string
   logo: string
@@ -75,7 +76,7 @@ const ItemJob = (props: any) => {
     <Row onClick={handleClickShowDetail} className='item-save-ojb-container' justify={'space-between'}>
       <Col lg={19} md={17} sm={17} xs={24} className='left-container'>
         <div className='logo-container'>
-          <img src={data.logo ? data.logo : ''} alt='' />
+          <img src={data.logo ? data.logo : avatarTemp} alt='' />
         </div>
         <div className='info-job'>
           <div className='name-job'>{data.jobTitle ? data.jobTitle : 'job title'}</div>
@@ -85,8 +86,8 @@ const ItemJob = (props: any) => {
         </div>
       </Col>
       <Col
-        lg={3}
-        md={5}
+        lg={4}
+        md={6}
         sm={6}
         xs={24}
         className='right-container'

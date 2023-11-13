@@ -70,7 +70,7 @@ interface CandidateType {
   [key: string]: any
 }
 const CVSettings = (props: any) => {
-  const { open, handleClose, handleTurnOnFindCV, isTurnOn, idCV } = props
+  const { open, handleClose, handleTurnOnFindCV, idCV } = props
   const [form] = Form.useForm()
   const [carrers, setCarrers] = useState([])
   const [provinces, setProvinces] = useState([])

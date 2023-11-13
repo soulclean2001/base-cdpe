@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import apiStatistics, { RequestOverview } from '~/api/statistics.api'
 
 const AdminOverview = () => {

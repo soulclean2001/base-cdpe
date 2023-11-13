@@ -9,7 +9,6 @@ import { useState } from 'react'
 const ManageCV = () => {
   const [tabKey, setTabKey] = useState('tab-applied-cv')
   const onChange = (key: string) => {
-    console.log(key)
     setTabKey(key)
   }
 

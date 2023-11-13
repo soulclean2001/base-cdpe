@@ -1,4 +1,4 @@
-import { Col, Input, Row, Select, Space, Table, Tabs, Tag } from 'antd'
+import { Col, Input, Row, Select, Space, Table, Tag } from 'antd'
 import '../../../UsersManage/style.scss'
 // import './style.scss'
 import { ColumnsType } from 'antd/es/table'
@@ -54,7 +54,6 @@ const ListPostReview = () => {
       page: page ? page : '1'
     }
     await apiAdmin.getAllPostRequest(request).then((rs) => {
-      console.log('rs', rs)
       const listTemp: DataType[] = []
       rs.result.jobs.map((job: any) => {
         listTemp.push({
@@ -75,7 +74,6 @@ const ListPostReview = () => {
       await apiAdmin
         .postApprovePostRequest(id)
         .then(async (rs) => {
-          console.log('Rs action', rs)
           if (rs.message === 'job status is not pending to approve') {
             toast.error(
               `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
@@ -100,7 +98,7 @@ const ListPostReview = () => {
             )
             return
           }
-          console.log('Rs action', rs)
+
           await fetchGetListPostRequest().then(() => {
             toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
           })
@@ -110,7 +108,7 @@ const ListPostReview = () => {
         })
     }
   }
-  const handleOnchangePageClick = async (page: number, pageSize: number) => {
+  const handleOnchangePageClick = async (page: number) => {
     setCurrentPage(page)
     await fetchGetListPostRequest(page.toString())
   }

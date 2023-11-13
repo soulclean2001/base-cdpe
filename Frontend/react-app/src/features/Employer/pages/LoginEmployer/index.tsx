@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons'
 
@@ -8,15 +8,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { UserRole } from '~/types'
 import Auth from '~/api/auth.api'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
-import { AuthLogin, AuthState, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
+import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
 import { decodeToken } from '~/utils/jwt'
 import { toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
-import { RootState } from '~/app/store'
 
 const LoginEmployer = (props: any) => {
-  const auth: AuthState = useSelector((state: RootState) => state.auth)
-
   const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
 
@@ -32,9 +28,7 @@ const LoginEmployer = (props: any) => {
     if (token) {
       const dataDecode = await decodeToken(token.accessToken)
       if (hiddenTabSignUp) {
-        console.log('dataDecode.role', dataDecode.role)
         if (dataDecode.role.toString() === '0') {
-          console.log('check')
           const action: AuthLogin = { isLogin: true, loading: false, error: '' }
           dispatchAsync(setToken(token))
           dispatchAsync(setAccountStatus(dataDecode))
@@ -72,11 +66,8 @@ const LoginEmployer = (props: any) => {
         if (response.result && response.result.access_token && response.result.refresh_token) {
           await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
         }
-
-        console.log(response)
       })
-      .catch((error) => {
-        console.log('error', error)
+      .catch(() => {
         toast.error('Tài khoản hoặc mật khẩu không đúng')
         // setLoading(false)
       })

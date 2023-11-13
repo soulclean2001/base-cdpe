@@ -3,7 +3,7 @@ import './style.scss'
 import { TabsProps } from 'antd/lib'
 import { ColumnsType } from 'antd/es/table'
 import { BiBlock } from 'react-icons/bi'
-import { BsFillEyeFill } from 'react-icons/bs'
+
 import { CgUnblock } from 'react-icons/cg'
 
 import { FiSearch } from 'react-icons/fi'
@@ -12,7 +12,7 @@ import ModalBlockAccount from './components/ModalBlockAccount'
 import { useState, useEffect } from 'react'
 import apiAdmin, { SearchUserFilter } from '~/api/admin.api'
 import { UserVerifyStatus } from '~/types/user.type'
-import { fetchUsers } from '~/features/User/userSlice'
+
 interface DataType {
   id: string
   name: string
@@ -49,7 +49,6 @@ const UsersManage = () => {
       type: role
     }
     await apiAdmin.getUsersByAdmin(request).then((rs) => {
-      console.log('list user', rs)
       setTotal(rs.result.total)
       let listTemp = rs.result.employers.map((user: UserType) => {
         return {
@@ -92,7 +91,6 @@ const UsersManage = () => {
   }
   const onChangeTab = (key: string) => {
     setRole(key)
-    console.log(key)
   }
   const items: TabsProps['items'] = [
     {

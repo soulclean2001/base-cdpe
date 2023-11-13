@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import './style.scss'
 import logoTemp from '~/assets/logo_temp.jpg'
 import bannerTemp from '~/assets/HF_logo.jpg'

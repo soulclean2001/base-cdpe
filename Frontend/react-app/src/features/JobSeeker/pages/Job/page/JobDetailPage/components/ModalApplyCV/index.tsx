@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './style.scss'
-import { Button, Form, Input, Modal, Radio, Space, Upload, UploadFile, UploadProps, message } from 'antd'
+import { Button, Form, Input, Modal, Radio, Space, Upload, UploadFile, UploadProps } from 'antd'
 import { FaFileUpload } from 'react-icons/fa'
 import { RadioChangeEvent } from 'antd/lib'
 import { Link, useNavigate } from 'react-router-dom'
@@ -42,7 +42,7 @@ const ModalApplyCV = (props: any) => {
   const [fileCV, setFileCV] = useState<UploadFile>()
   const [idCV, setIdCV] = useState('')
   const [isDisabledSelected, setIsDisabledSelected] = useState(false)
-  const [isRemoveFile, setIsRemoveFile] = useState(false)
+
   useEffect(() => {
     if (open) {
       if (!auth.isLogin) {
@@ -60,7 +60,6 @@ const ModalApplyCV = (props: any) => {
   }, [open])
   const getIDCV = async () => {
     await apiResume.getAllByMe().then((rs) => {
-      console.log('me', rs)
       if (!rs.result[0]) setIsDisabledSelected(true)
       else {
         setIsDisabledSelected(false)
@@ -99,7 +98,7 @@ const ModalApplyCV = (props: any) => {
           toast.error('Có lỗi xảy ra, vui lòng thử lại')
         })
     }
-    console.log('data final', data)
+
     let request: ApplyReqBody = {
       application_date: data.applicationDate,
       email: data.email,
@@ -112,7 +111,7 @@ const ModalApplyCV = (props: any) => {
     }
     await apiJobAppli
       .applyJob(request)
-      .then((rs) => {
+      .then(() => {
         toast.success('Bạn đã nộp đơn xin việc thành công')
 
         handleSubmit()
@@ -127,14 +126,11 @@ const ModalApplyCV = (props: any) => {
     console.log('Failed:', errorInfo)
   }
   const onChangeTypeCV = (e: RadioChangeEvent) => {
-    console.log('radio checked', e.target.value)
-
     setTypeCV(e.target.value)
   }
   const beforeUpload: UploadProps = {
     multiple: false,
     beforeUpload: (file) => {
-      console.log('check file', file)
       const isPDF = file.type === 'application/pdf'
       if (!isPDF) {
         toast.error(`${file.name} không phải định dạng PDF`)
@@ -147,12 +143,12 @@ const ModalApplyCV = (props: any) => {
       return isPDF
     },
     onChange: (info) => {
-      console.log('info.file', info)
       if (info.fileList[0]) setFileCV(info.fileList[0])
       else setFileCV(undefined)
     }
   }
   const dummyRequest = ({ file, onSuccess }: any) => {
+    console.log(file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)

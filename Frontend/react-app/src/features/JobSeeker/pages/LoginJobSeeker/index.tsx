@@ -4,19 +4,11 @@ import { FacebookOutlined, GooglePlusOutlined, LinkedinOutlined, LockOutlined, M
 import { Button, Checkbox, Form, Input } from 'antd'
 import './login.scss'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
-import { useSelector } from 'react-redux'
-import {
-  AuthLogin,
-  AuthPayload,
-  AuthState,
-  postLogin,
-  setAccountStatus,
-  setStateLogin,
-  setToken
-} from '~/features/Auth/authSlice'
-import { RootState } from '~/app/store'
+
+import { AuthLogin, AuthPayload, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
+
 import { NavLink } from 'react-router-dom'
-import { decodeToken, isExpired } from '~/utils/jwt'
+import { decodeToken } from '~/utils/jwt'
 import Auth from '~/api/auth.api'
 // import { getMe } from '~/api/users.api'
 // import { getMe } from '../../jobSeekerSlice'
@@ -50,14 +42,12 @@ export interface LoginData {
 const Login: React.FC = () => {
   const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
-  const dispatch = useAppDispatch()
   const handleBackHome = () => {
     navigate('/')
   }
 
-  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | undefined>(undefined)
+
   const [token, setTokenLogin] = useState<AuthPayload>()
   //old code
   // useEffect(() => {
@@ -101,8 +91,7 @@ const Login: React.FC = () => {
           setTokenLogin({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
         }
       })
-      .catch((error) => {
-        console.log('error', error)
+      .catch(() => {
         toast.error('Tài khoản hoặc mật khẩu không đúng')
         setLoading(false)
       })

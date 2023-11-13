@@ -1,18 +1,17 @@
-import { Col, Input, Row, Space, Table, Tabs, Tag, Tooltip } from 'antd'
-import { DatePicker } from 'antd'
-const { RangePicker } = DatePicker
+import { Space, Table, Tabs, Tag, Tooltip } from 'antd'
+
 import '~/features/Admin/contents/OrdersManage/style.scss'
 import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
 import './style.scss'
 import { ColumnsType } from 'antd/es/table'
 
 import { TabsProps } from 'antd/lib'
-import { FiSearch } from 'react-icons/fi'
+
 import { toast } from 'react-toastify'
 import apiOrder, { RequestSearchOrderType } from '~/api/order.api'
 import apiAdmin from '~/api/admin.api'
 import '../MyServicesPage/style.scss'
-import { MdPayments } from 'react-icons/md'
+
 import { useEffect, useState } from 'react'
 import CreatePayment from '../../../CartPage/components/VNPAY/CreatePayment'
 import { AiFillCheckCircle } from 'react-icons/ai'
@@ -66,7 +65,6 @@ const MyOrdersPage = (props: any) => {
     }
     if (roleType === 'ADMIN_TYPE') {
       await apiAdmin.getAllOrders(request).then((rs) => {
-        console.log('rs', rs)
         let listOrdersTemp: DataType[] = []
         let company = 'name'
         listOrdersTemp = rs.result.orders.map((order: OrderAnyType) => {
@@ -94,13 +92,12 @@ const MyOrdersPage = (props: any) => {
             updateDate: order.order.updated_at.slice(0, 10)
           }
         })
-        console.log('listOrdersTemp', listOrdersTemp)
+
         setListOrders(listOrdersTemp)
         setTotalElement(rs.result.total)
       })
     } else {
       await apiOrder.getAllByMe(request).then((rs) => {
-        console.log('rs', rs)
         let listOrdersTemp: DataType[] = []
         listOrdersTemp = rs.result.orders.map((order: OrderAnyType) => {
           let packagesTemp: ServiceType[] = []
@@ -125,7 +122,7 @@ const MyOrdersPage = (props: any) => {
             updateDate: order.order.updated_at.slice(0, 10)
           }
         })
-        console.log('listOrdersTemp', listOrdersTemp)
+
         setListOrders(listOrdersTemp)
         setTotalElement(rs.result.total)
       })
@@ -160,7 +157,6 @@ const MyOrdersPage = (props: any) => {
   }
   const onChangeTab = (key: string) => {
     setStatus(key === 'tab-all' ? '' : key)
-    console.log(key)
   }
   const handleOpenModal = (id: string) => {
     setIdOrder(id)

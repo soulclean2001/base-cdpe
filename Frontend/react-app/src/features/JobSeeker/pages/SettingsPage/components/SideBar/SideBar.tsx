@@ -12,7 +12,6 @@ import { AiFillDashboard } from 'react-icons/ai'
 import { BiSolidFactory } from 'react-icons/bi'
 import { MdWork } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
-import { CheckboxChangeEvent } from 'antd/es/checkbox'
 
 import CVSettings from '../Content/CVSettings'
 import apiResume from '~/api/resume.api'
@@ -72,15 +71,13 @@ const SideBar = () => {
   //   } else setDisableTurnOnFindCV(false)
   // }, [dataMyCV])
   const onClickMenu: MenuProps['onClick'] = (e) => {
-    console.log('click ', e)
     if (e.key === '1') navigation('/settings')
     if (e.key === '2') navigation('/CV')
     if (e.key === '3') navigation('/settings/CV-settings')
     if (e.key === '4') navigation('/settings/my-companies')
     if (e.key === '5') navigation('/settings/my-jobs')
   }
-  const onChangeCheckbox = (e: CheckboxChangeEvent) => {
-    console.log(`checked = ${e.target.checked}`)
+  const onChangeCheckbox = () => {
     setIsModalOpenSettingCV(true)
   }
 
@@ -91,7 +88,6 @@ const SideBar = () => {
     setIsModalOpenSettingCV(false)
   }
   const handleTurnOnFindCV = (isTurnOn: boolean) => {
-    console.log('on', isTurnOn)
     setCheckboxCV(isTurnOn)
   }
 

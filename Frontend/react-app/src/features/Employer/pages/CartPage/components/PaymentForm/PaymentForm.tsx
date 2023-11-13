@@ -2,13 +2,12 @@ import { Button, Col, Radio, RadioChangeEvent, Row, Space } from 'antd'
 import { useState } from 'react'
 import './style.scss'
 
-import VNPayReturn from '../VNPAY/VNPayReturn'
 import apiOrder, { RequestOrderType } from '~/api/order.api'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useDispatch } from 'react-redux'
 import { minusTotalItemCart } from '~/features/Employer/employerSlice'
-const initHiddens = { hiddenCredit: true, hiddenATMCards: true, hiddenBankings: true }
+
 interface PropsType {
   totalPay: number
   items: {
@@ -19,19 +18,15 @@ interface PropsType {
 const PaymentForm = (props: PropsType) => {
   const { totalPay, items }: PropsType = props
   const [methodPayment, setMethodPayment] = useState(1)
-  const [hidden, setHidden] = useState(initHiddens)
-  const [orderId, setOrderId] = useState('')
+
   const navigate = useNavigate()
   const distPatch = useDispatch()
   const handleCreateOrder = async () => {
-    console.log('items', items)
     if (!items) return
     let request: RequestOrderType = { items }
     await apiOrder
       .postOrder(request)
-      .then((rs) => {
-        console.log('rs order', rs)
-        setOrderId(rs.result.order._id)
+      .then(() => {
         items.map(() => {
           distPatch(minusTotalItemCart())
         })
@@ -48,16 +43,6 @@ const PaymentForm = (props: PropsType) => {
   }
 
   const onChange = (e: RadioChangeEvent) => {
-    console.log('radio checked', e.target.value)
-    if (e.target.value === 1) {
-      setHidden({ ...initHiddens, hiddenCredit: false })
-    }
-    if (e.target.value === 2) {
-      setHidden({ ...initHiddens, hiddenATMCards: false })
-    }
-    if (e.target.value === 3) {
-      setHidden({ ...initHiddens, hiddenBankings: false })
-    }
     setMethodPayment(e.target.value)
   }
   return (

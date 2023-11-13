@@ -1,12 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import {
-  FacebookOutlined,
-  GooglePlusOutlined,
-  LinkedinOutlined,
-  LockOutlined,
-  MailOutlined,
-  UserOutlined
-} from '@ant-design/icons'
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input } from 'antd'
 import './signup.scss'
 import { NavLink } from 'react-router-dom'
@@ -44,12 +37,6 @@ const SignUp = () => {
     }
   }
   const handleSubmitSignup = async () => {
-    const data = {
-      name,
-      email,
-      password,
-      rePassword
-    }
     const req: AuthRequestRegistry = {
       email: email,
       password: password,
@@ -69,8 +56,6 @@ const SignUp = () => {
       .catch(() => {
         toast.error('Email đã tồn tại, vui lòng chọn Email khác')
       })
-    console.log('form data sign up', data)
-    console.log('form data sign up', data)
   }
 
   const onFinishFailed = (errorInfo: any) => {

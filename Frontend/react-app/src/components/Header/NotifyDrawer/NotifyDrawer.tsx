@@ -3,7 +3,7 @@ import './style.scss'
 import { Drawer } from 'antd'
 import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import { NotifyState, getAllByMe, setMoreWhenScroll, setTotalUnRead } from './notifySlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,12 +25,10 @@ interface PropsType {
   roleType: string
   dataNotify: Array<DataType>
 }
-interface AnyType {
-  [key: string]: any
-}
+
 const NotifyDrawer = (props: any) => {
-  const { open, onClose, roleType, dataNotify }: PropsType = props
-  const [listNotify, setListNotify] = useState<DataType[]>([])
+  const { open, onClose, roleType }: PropsType = props
+
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPath = useDispatch()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
@@ -48,9 +46,7 @@ const NotifyDrawer = (props: any) => {
   useEffect(() => {
     fetchGetDataNoti()
   }, [])
-  useEffect(() => {
-    console.log('notificaions.notifications', notificaions.notifications)
-  }, [notificaions.notifications])
+
   const fetchGetDataNoti = async (page?: string) => {
     let request: RequestNotify = { filter: { page: page ? page : '1', limit: '1' } }
     await dispatchAsync(getAllByMe(request))

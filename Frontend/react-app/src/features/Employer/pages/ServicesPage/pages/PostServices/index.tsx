@@ -17,7 +17,7 @@ interface PackageType {
 const PostServices = () => {
   const disPath = useDispatch()
   const [itemActive, setItemActive] = useState('')
-  const [descriptions, setDescriptions] = useState([''])
+
   const [includes, setIncludes] = useState([''])
   const [listServicesPost, setListServicesPost] = useState<PackageType[]>([])
   const [listServicesBanner, setListServicesBanner] = useState<PackageType[]>([])
@@ -28,7 +28,6 @@ const PostServices = () => {
   }, [])
   const fetchData = async () => {
     await apiPackage.getAllPackageForEmployClient({ limit: '1000', page: '1', title: '', type: 'POST' }).then((rs) => {
-      console.log('rs', rs.result.pks)
       if (rs.result.pks) {
         setListServicesPost(rs.result.pks)
         if (rs.result.pks[0]) setItemActive(rs.result.pks[0]._id)
@@ -37,7 +36,6 @@ const PostServices = () => {
     await apiPackage
       .getAllPackageForEmployClient({ limit: '1000', page: '1', title: '', type: 'BANNER' })
       .then((rs) => {
-        console.log('rs', rs.result.pks)
         if (rs.result.pks) {
           setListServicesBanner(rs.result.pks)
         }
@@ -48,18 +46,13 @@ const PostServices = () => {
   }, [itemActive])
   const fetchDetails = async (id: string) => {
     await apiPackage.getDetailById(id).then((rs) => {
-      console.log('detail', rs)
       setDetailService(rs.result)
     })
   }
   useEffect(() => {
-    if (detailService && detailService.description && detailService.includes)
-      handleFormatInfo(detailService.description, detailService.includes)
+    if (detailService && detailService.description && detailService.includes) handleFormatInfo(detailService.includes)
   }, [detailService])
-  const handleFormatInfo = (des?: string, inc?: string) => {
-    if (des) {
-      setDescriptions(des.split('\n'))
-    }
+  const handleFormatInfo = (inc?: string) => {
     if (inc) setIncludes(inc.split('\n'))
   }
   const handleAddToCart = async () => {

@@ -12,7 +12,7 @@ import { RcFile } from 'antd/es/upload'
 import { DeleteRowOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import { EducationLevel, LanguageLevel, ResumeRequestBody, ResumeType, SkillLevel } from '~/types/resume.type'
+import { LanguageLevel, ResumeType, SkillLevel } from '~/types/resume.type'
 import Right from './Right'
 import { AiOutlineUpload } from 'react-icons/ai'
 import { AuthState } from '~/features/Auth/authSlice'
@@ -301,13 +301,11 @@ const CV = () => {
 
   const [data, setData] = useState<ResumeType>(defaultResume)
 
-  console.log('KEYS', data2)
   useEffect(() => {
     fetchGetMyResume()
   }, [])
   const fetchGetMyResume = async () => {
     await apiResume.getAllByMe().then((rs) => {
-      console.log('resume', rs)
       if (rs.result[0]) {
         setData(rs.result[0])
         if (rs.result[0].user_info.avatar && rs.result[0].user_info.avatar !== '_')
@@ -331,24 +329,24 @@ const CV = () => {
       }
     })
   }
-  console.log(data)
+
   const {
-    additional_info,
+    // additional_info,
     courses,
     educations,
     employment_histories,
     extra_curricular_activities,
     hobbies,
     internships,
-    is_show,
+    // is_show,
     languages,
     professional_summary,
     references,
     skills,
     social_or_website,
-    status,
-    title,
-    user_id,
+    // status,
+    // title,
+    // user_id,
     user_info
   } = data
   const [fileList, setFileList] = useState<UploadFile[]>([
@@ -360,7 +358,7 @@ const CV = () => {
     // }
   ])
 
-  const onFocusInput = () => {}
+  // const onFocusInput = () => {}
   const preventRequest = () => false
   const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     setFileList(newFileList)
@@ -381,7 +379,7 @@ const CV = () => {
     imgWindow?.document.write(image.outerHTML)
   }
 
-  const handleAddMoreUserInfoDetails = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleAddMoreUserInfoDetails = () => {
     setIsAddInfo(!isAddInfo)
   }
 
@@ -478,8 +476,6 @@ const CV = () => {
   }
 
   const handleSetSubDataArray = (parentIndex: number, parentKey: string, index: number, key: string, value: string) => {
-    console.log(parentIndex, parentKey)
-
     setData((prevData) => {
       let arrObj = prevData[parentKey]
       let arrData = arrObj[parentIndex].data || []
@@ -580,13 +576,10 @@ const CV = () => {
     }
     let request = { ...data, updated_at: '', user_id: '', _id: '', user_info: { ...data.user_info, avatar: urlAvatar } }
     // request = { ...data, 'user_info.avatar': urlAvatar }
-    console.log('file', fileList)
-    console.log('urlAvatar', urlAvatar)
-    console.log('request', request)
+
     await apiResume
       .createOrUpdateResume(request)
-      .then((rs) => {
-        console.log('after update', rs)
+      .then(() => {
         toast.success('Hồ sơ của bạn đã được cập nhật thành công')
         setDisableBtn(false)
       })
@@ -2506,19 +2499,9 @@ const EditorCustom = (data: string, handleSetData: (value: string) => void) => {
         ]
       }}
       editor={ClassicEditor}
-      onReady={(editor) => {
-        // You can store the "editor" and use when it is needed.
-        // console.log('Editor is ready to use!', editor)
-      }}
-      onChange={(event, editor) => {
+      onChange={(_, editor) => {
         const data = editor.getData()
         handleSetData(data)
-      }}
-      onBlur={(event, editor) => {
-        // console.log('Blur.', editor)
-      }}
-      onFocus={(event, editor) => {
-        // console.log('Focus.', editor)
       }}
     />
   )

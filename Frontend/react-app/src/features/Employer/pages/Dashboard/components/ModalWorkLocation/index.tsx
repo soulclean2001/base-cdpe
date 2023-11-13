@@ -133,7 +133,6 @@ const ModalWorkLocation = (props: any) => {
       title={dataUpdate ? <h2>{`CẬP NHẬT ĐỊA ĐIỂM`}</h2> : <h2>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h2>}
       centered
       open={open}
-      // onOk={() => console.log('xxxx')}
       onCancel={handleClose}
       footer=''
     >

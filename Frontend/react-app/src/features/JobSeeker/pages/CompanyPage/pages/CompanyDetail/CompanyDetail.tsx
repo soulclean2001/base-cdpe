@@ -1,6 +1,6 @@
 import { Button, Col, Row, Tabs, TabsProps } from 'antd'
 import './style.scss'
-import { AiFillFlag } from 'react-icons/ai'
+
 import { BsFillShareFill } from 'react-icons/bs'
 import CompanyInfo from './components/CompanyInfo/CompanyInfo'
 import ListJob from './components/ListJob/ListJob'
@@ -29,15 +29,13 @@ const CompanyDetail = () => {
   const getDetailCompany = async () => {
     if (!infoUrlCompanyDetail) return
     const idCompany = infoUrlCompanyDetail.match(/id-(\w+)/)
-    console.log('idCompany', idCompany?.[1])
+
     if (!idCompany) return
     await apiCompany.getDetailCompany(idCompany[1]).then((rs) => {
-      console.log('rs detail', rs)
       setMyCompany(rs.result)
     })
     if (auth && auth.isLogin) {
       await apiCompany.checkFollowed(idCompany[1]).then((rs) => {
-        console.log('check', rs)
         setIsFollowed(rs.result)
       })
     }
@@ -49,19 +47,16 @@ const CompanyDetail = () => {
       return
     }
     if (type === 'FOLLOW') {
-      await apiFollow.follow(myCompany._id).then((rs) => {
+      await apiFollow.follow(myCompany._id).then(() => {
         toast.success('Bạn đã theo dõi công ty thành công')
         setIsFollowed(true)
       })
     } else {
-      await apiFollow.unFollow({ company_id: myCompany._id }).then((rs) => {
+      await apiFollow.unFollow({ company_id: myCompany._id }).then(() => {
         toast.success('Bạn đã bỏ theo dõi công ty thành công')
         setIsFollowed(false)
       })
     }
-  }
-  const onChange = (key: string) => {
-    console.log(key)
   }
 
   const items: TabsProps['items'] = [
@@ -118,7 +113,7 @@ const CompanyDetail = () => {
             <Button size='large' className='btn-share' icon={<BsFillShareFill />} />
           </Col>
         </Row>
-        <Tabs className='tab-company-detail' defaultActiveKey='1' items={items} onChange={onChange} />
+        <Tabs className='tab-company-detail' defaultActiveKey='1' items={items} />
       </div>
     </div>
   )

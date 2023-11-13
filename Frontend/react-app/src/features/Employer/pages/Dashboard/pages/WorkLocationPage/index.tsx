@@ -53,11 +53,10 @@ const WorkLocationPage = () => {
       return workLocation.branch_name !== dataSelected.branch_name
     })
     const request: UpdateCompanyType = { working_locations: listFilter }
-    await apiCompany.updateCompanyById(idCompany, 'default', 'default', request).then((rs) => {
+    await apiCompany.updateCompanyById(idCompany, 'default', 'default', request).then(() => {
       setData(listFilter)
       toast.success('Xóa địa điểm làm việc thành công')
     })
-    console.log('listFilter', listFilter)
   }
 
   useEffect(() => {
@@ -68,7 +67,6 @@ const WorkLocationPage = () => {
   }, [])
   const getInfoCompany = async () => {
     await apiCompany.getMyCompany().then((rs) => {
-      console.log(rs)
       setIdCompany(rs.result._id)
       setData(rs.result.working_locations)
     })

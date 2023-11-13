@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { stat } from 'fs'
+
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import avatarTemp from '~/assets/HF_logo.jpg'
 export interface NotificationType {
@@ -21,9 +21,6 @@ export interface NotifyState {
   totalNotRead: number
   loading: boolean
   error: any
-}
-interface AnyType {
-  [key: string]: any
 }
 
 const initialState: NotifyState = {
@@ -55,7 +52,7 @@ const notifySlice = createSlice({
       state.error = payload
     })
     builder.addCase(getAllByMe.fulfilled, (state, action) => {
-      const { result, message } = action.payload
+      const { result } = action.payload
       state.page = 1
       state.notifications = result
         .map((notify: NotificationType) => {
@@ -104,7 +101,6 @@ const notifySlice = createSlice({
       return state
     },
     setTotalUnRead: (state, action) => {
-      console.log('slice', action.payload)
       state.totalNotRead = action.payload
       return state
     }

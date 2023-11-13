@@ -17,7 +17,6 @@ const BannerCarousel = () => {
   }, [])
   const fetchGetData = async () => {
     await apiHome.getCompaniesBanner().then(async (rs) => {
-      console.log('list ', rs)
       if (!rs.result) {
         await apiCompany.searchCompany({ limit: '10', page: '1' }).then((rs) => {
           setListData(rs.result.companies)

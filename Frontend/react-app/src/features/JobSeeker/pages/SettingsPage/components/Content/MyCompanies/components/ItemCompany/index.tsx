@@ -1,6 +1,6 @@
 import { Button, Col, Row } from 'antd'
 import './style.scss'
-import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai'
+import { AiFillHeart } from 'react-icons/ai'
 import { useNavigate } from 'react-router-dom'
 interface DataType {
   id: string

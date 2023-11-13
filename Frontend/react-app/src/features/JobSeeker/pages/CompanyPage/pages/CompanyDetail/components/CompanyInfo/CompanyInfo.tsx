@@ -1,16 +1,11 @@
 import { Carousel, Col, Row } from 'antd'
 import './style.scss'
-import { useEffect, useState } from 'react'
+
 import { BsPlayCircle } from 'react-icons/bs'
 import ReactHtmlParser from 'html-react-parser'
 import { TypeCompanyDetail } from '../../CompanyDetail'
 import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
-// const descriptionsData = `History and Background
-// Formed in spring 2004 the practice has thoroughly embraced BIM and has been using Revit (but also ArchiCAD and other BIM software) since 2006.
 
-// All architectural staff are qualified architects, the majority having attended HCMC University. WA Projects has an exceptionally low turnover of staff, which has been key to our continued success.
-
-// Our sustained growth has been, and continues to be by recommendation - the best form of marketing ! Our strength is in our ability to deliver consistently high-quality architectural packages, drawings and BIM models on programme that are to`
 interface PropsType {
   data: TypeCompanyDetail
 }
@@ -22,7 +17,6 @@ const CompanyInfo = (props: any) => {
     let match = url.match(regExp)
 
     if (match && match[2].length == 11) {
-      console.log('match[2]', match[2])
       return `//www.youtube.com/embed/${match[2]}`
     } else {
       return 'error'

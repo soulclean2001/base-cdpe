@@ -62,6 +62,7 @@ const authSlice = createSlice({
     })
     builder.addCase(postLogin.fulfilled, (state, action) => {
       const { result, message } = action.payload
+      console.log(message)
       const { access_token, refresh_token } = result
       state.accessToken = access_token as string
       // const cookies = new Cookies()
@@ -86,6 +87,7 @@ const authSlice = createSlice({
     },
     setAccountStatus(state, action: PayloadAction<TokenPayload>) {
       const { role, verify, token_type, user_id } = action.payload
+      console.log(token_type)
       state.role = role
       state.verify = verify
       state.user_id = user_id

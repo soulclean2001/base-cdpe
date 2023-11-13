@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Modal, Row, Select, Upload, Image as ImageAnt } from 'antd'
+import { Button, Col, Form, Input, Modal, Row, Select, Upload } from 'antd'
 import ImgCrop from 'antd-img-crop'
 import { useState, useEffect } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
@@ -6,7 +6,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import type { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface'
 import './style.scss'
 import { BiUpload } from 'react-icons/bi'
-import TextArea from 'antd/es/input/TextArea'
+
 import { imageDimensions } from '~/utils/image'
 import { toast } from 'react-toastify'
 import apiCompany, { UpdateCompanyType } from '~/api/company.api'
@@ -53,10 +53,9 @@ const CompanyManagePage = () => {
   const [formCompanyGeneral] = Form.useForm()
   const [myCompany, setMyCompany] = useState<CompanyType>()
   const [nameCompany, setNameCompany] = useState('')
-  const [phone, setPhone] = useState('')
-  const [address, setAddress] = useState('')
+
   const [quantityEmployee, setQuantityEmployee] = useState('')
-  const [employerContact, setEmployerContact] = useState('')
+
   const [fieldCompany, setFieldCompany] = useState<Array<string>>([])
   const [description, setDescription] = useState('')
   const [linkYoutube, setLinkYoutube] = useState('')
@@ -78,18 +77,7 @@ const CompanyManagePage = () => {
       if (file.url) listUrlBefore.push(file.url)
       return file.originFileObj ? file.originFileObj : file
     })
-    console.log('listPictureOrigin', listPictureOrigin)
-    const data = {
-      nameCompany,
-      phone,
-      fieldCompany,
-      address,
-      quantityEmployee,
-      employerContact,
-      description,
-      logoImage,
-      bannerImage
-    }
+
     console.log(logoImage)
     console.log(myCompany)
     if (myCompany && myCompany._id) {
@@ -160,11 +148,9 @@ const CompanyManagePage = () => {
       console.log('checkListPicture', checkListPicture)
       await apiCompany
         .updateCompanyById(myCompany._id, urlLogo, urlBanner, request, checkListPicture, listUrlPicture)
-        .then((rs) => {
-          setTimeout(() => {
-            setBtnDisabled(false)
-            toast.success('Cập nhật thông tin công ty thành công')
-          }, 1000)
+        .then(() => {
+          setBtnDisabled(false)
+          toast.success('Cập nhật thông tin công ty thành công')
         })
         .catch(() => {
           setBtnDisabled(false)
@@ -172,14 +158,13 @@ const CompanyManagePage = () => {
           return
         })
     }
-
-    console.log('form data post', data)
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
 
   const dummyRequest = ({ file, onSuccess }: any) => {
+    console.log(file)
     setTimeout(() => {
       onSuccess('ok')
     }, 0)
@@ -213,7 +198,7 @@ const CompanyManagePage = () => {
   }
   const onClickOkConfirmCropImgLogo = async (e: any) => {
     const listErro: UploadFile[] = []
-    const dimension = await imageDimensions(e)
+    // const dimension = await imageDimensions(e)
     console.log('eee', e.type)
     if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
       setFileListLogo(listErro)
@@ -291,8 +276,7 @@ const CompanyManagePage = () => {
     await apiCompany.getMyCompany().then((rs: any) => {
       setMyCompany(rs.result)
       setNameCompany(rs.result.company_name)
-      setEmployerContact(me.name)
-      setPhone(me.phone_number)
+
       setDescription(rs.result.company_info)
       setQuantityEmployee(rs.result.company_size)
       setFieldCompany(rs.result.fields)
@@ -484,14 +468,7 @@ const CompanyManagePage = () => {
                 label={<span style={{ fontWeight: '500' }}>Người Liên Hệ</span>}
                 rules={[{ required: true, message: 'Vui lòng không để trống người liên hệ' }]}
               >
-                <Input
-                  readOnly
-                  size='large'
-                  placeholder='Ví dụ: Nguyễn Văn B'
-                  onChange={(e) => {
-                    setEmployerContact(e.target.value)
-                  }}
-                />
+                <Input readOnly size='large' placeholder='Ví dụ: Nguyễn Văn B' />
               </Form.Item>
             </Col>
             <Col md={7} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -500,14 +477,7 @@ const CompanyManagePage = () => {
                 label={<span style={{ fontWeight: '500' }}>Điện Thoại</span>}
                 rules={[{ required: true, message: 'Vui lòng không để trống số điện thoại' }]}
               >
-                <Input
-                  readOnly
-                  size='large'
-                  placeholder='Nhập số điện thoại'
-                  onChange={(e) => {
-                    setPhone(e.target.value)
-                  }}
-                />
+                <Input readOnly size='large' placeholder='Nhập số điện thoại' />
               </Form.Item>
             </Col>
           </Row>
@@ -563,7 +533,7 @@ const CompanyManagePage = () => {
                 ]
               }}
               editor={ClassicEditor}
-              onChange={(event, editor) => {
+              onChange={(_, editor) => {
                 const data = editor.getData()
                 setDescription(data)
               }}

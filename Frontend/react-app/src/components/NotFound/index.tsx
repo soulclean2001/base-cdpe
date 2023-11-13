@@ -1,4 +1,3 @@
-import './style.scss'
 import notfound from '../../assets/not_found_404.jpg'
 const NotFoundPage = () => {
   return (

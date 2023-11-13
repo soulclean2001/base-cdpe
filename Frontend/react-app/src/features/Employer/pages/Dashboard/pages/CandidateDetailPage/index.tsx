@@ -37,7 +37,6 @@ const CandidateDetailPage = (props: any) => {
       const idCandidateUrl = infoUrlCandidate.match(/id-(\w+)/)
       if (idCandidateUrl && idCandidateUrl[1]) {
         await apiCandidate.getCandidateDetail(idCandidateUrl[1]).then((rs) => {
-          console.log('detail rs', rs)
           setDataCandidate(rs.result)
           setDataCV(rs.result.cv)
           setFileList([
@@ -57,8 +56,7 @@ const CandidateDetailPage = (props: any) => {
     if (type === 'FOLLOW') {
       await apiTrackedCandidate
         .follow(dataCandidate._id)
-        .then((rs) => {
-          console.log('follow rs', rs)
+        .then(() => {
           setDataCandidate({ ...dataCandidate, is_follwing: true })
           toast.success('Bạn đã theo dõi thành công')
         })
@@ -68,8 +66,7 @@ const CandidateDetailPage = (props: any) => {
     } else {
       await apiTrackedCandidate
         .unFollow(dataCandidate._id)
-        .then((rs) => {
-          console.log('unfollow rs', rs)
+        .then(() => {
           setDataCandidate({ ...dataCandidate, is_follwing: false })
           toast.success('Bạn đã bỏ theo dõi thành công')
         })

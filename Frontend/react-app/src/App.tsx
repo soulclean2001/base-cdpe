@@ -1,5 +1,5 @@
 import Layout from './Layout'
-import { Routes, Route, useNavigate, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet } from 'react-router-dom'
 
 import 'antd/dist/reset.css'
 
@@ -11,13 +11,12 @@ import Login from './features/JobSeeker/pages/LoginJobSeeker'
 
 import HomePage from './features/Employer/pages/HomePage'
 import DashboardEmployer from './features/Employer/pages/Dashboard'
-import Auth from './features/Auth'
+
 import { ApiResponse, ConversationType, RoomType, UserRole } from './types'
 import Home from './features/JobSeeker/pages/HomeJobSeeker'
 import OauthGoogleLogin from './features/JobSeeker/pages/LoginJobSeeker/OauthGoogleLogin'
 import { VerifyEmail } from './VerifyEmail'
-import { VerifyForgotPasswordToken } from './VerifyForgotPasswordToken'
-import ResetPassword from './ResetPassword'
+
 import CompanyPage from './features/JobSeeker/pages/CompanyPage'
 import 'react-toastify/dist/ReactToastify.css'
 import CV from '~/features/JobSeeker/pages/CV'
@@ -49,10 +48,10 @@ import OverviewEmployer from './features/Employer/pages/Dashboard/pages/Overview
 import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
 
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
-import { AuthPayload, AuthState, logout, setToken } from './features/Auth/authSlice'
+import { AuthState, setToken } from './features/Auth/authSlice'
 import { RootState } from './app/store'
 import { useDispatch, useSelector } from 'react-redux'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { getTimeExpired, isExpired } from './utils/jwt'
 import { getMe } from './features/Account/meSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
@@ -81,16 +80,13 @@ const titleLoginAdmin = {
 export let socket: Socket
 
 function App() {
-  const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
-  const chat = useSelector((state: RootState) => state.chat)
-  const user = useSelector((state: RootState) => state.user)
-  const [loop, setLoop] = useState<any>()
+
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 
   const connectSocket = async () => {
-    return new Promise((resolve, reject) => {
+    return new Promise(() => {
       socket = io(import.meta.env.VITE_API_URL, {
         auth: {
           Authorization: `Bearer ${auth.accessToken}`
@@ -135,7 +131,6 @@ function App() {
       })
       fetchListRooms()
       socket.on('new-notification', (notify: NotificationType) => {
-        console.log('noti socket', notify)
         dispatch(addNotify(notify))
       })
     }
