@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import './rightMenu.scss'
 import RightMenuPhone from '../RightMenuPhone/RightMenuPhone'
-import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
+import { Avatar, Badge, Button, Dropdown, MenuProps, Space } from 'antd'
 import { IoMdNotifications } from 'react-icons/io'
 import { AiFillDashboard, AiFillLock, AiFillMessage } from 'react-icons/ai'
 import { DownOutlined } from '@ant-design/icons'
@@ -17,6 +17,7 @@ import ModalProfile from '~/components/ModalProfile'
 import ModalChangePassword from '~/components/ModalChangePassword'
 import { InfoMeState } from '~/features/Account/meSlice'
 import { FaUserCheck } from 'react-icons/fa'
+import { NotifyState } from '../NotifyDrawer/notifySlice'
 
 const dataNotify = [
   { id: '1', name: 'VINFAT', actionInfo: 'Đã theo dõi CV của bạn' },
@@ -37,6 +38,7 @@ const dataNotify = [
 const RightMenu = (props: any) => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPatch = useDispatch()
   const navigate = useNavigate()
   const [openModalProfile, setOpenModalProfile] = useState(false)
@@ -122,13 +124,16 @@ const RightMenu = (props: any) => {
           <>
             <ModalChangePassword open={openModalChangePassword} handleClose={() => setOpenModalChangePassword(false)} />
             <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
-            <Button
-              icon={<IoMdNotifications />}
-              onClick={showDrawer}
-              className=' btn-notification'
-              shape='circle'
-              size='large'
-            />
+            <Badge count={notificaions.totalNotRead}>
+              <Button
+                icon={<IoMdNotifications />}
+                onClick={showDrawer}
+                className=' btn-notification'
+                shape='circle'
+                size='large'
+              />
+            </Badge>
+
             <NotifyDrawer
               dataNotify={dataNotify}
               roleType='CANDIDATE_ROLE'

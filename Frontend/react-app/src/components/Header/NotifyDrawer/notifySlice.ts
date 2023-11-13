@@ -104,6 +104,7 @@ const notifySlice = createSlice({
       return state
     },
     setTotalUnRead: (state, action) => {
+      console.log('slice', action.payload)
       state.totalNotRead = action.payload
       return state
     }
