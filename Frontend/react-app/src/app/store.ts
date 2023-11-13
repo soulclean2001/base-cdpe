@@ -18,6 +18,7 @@ import employerReducer from '../features/Employer/employerSlice'
 // import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
 import chatReducer from '~/features/ChatPage/chatSlice'
 import meReducer from '~/features/Account/meSlice'
+import notifyReducer from '~/components/Header/NotifyDrawer/notifySlice'
 const persistConfig: PersistConfig<any> = {
   key: 'root',
   version: 1,
@@ -32,7 +33,8 @@ const rootReducer = combineReducers({
   employer: employerReducer,
   // jobSeeker: jobSeekerReducer,
   chat: chatReducer,
-  me: meReducer
+  me: meReducer,
+  notify: notifyReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

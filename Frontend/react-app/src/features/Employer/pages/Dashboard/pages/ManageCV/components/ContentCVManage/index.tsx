@@ -11,7 +11,7 @@ import { BsFillEyeFill } from 'react-icons/bs'
 import { FaTrashRestoreAlt, FaUserCheck, FaUserPlus } from 'react-icons/fa'
 import { FiMoreVertical } from 'react-icons/fi'
 import { ImUserCheck } from 'react-icons/im'
-import { IoMdMail } from 'react-icons/io'
+
 import { MdConnectWithoutContact, MdDelete } from 'react-icons/md'
 import { format, parseISO } from 'date-fns'
 import { useEffect, useState } from 'react'
@@ -20,7 +20,7 @@ import apiCompany from '~/api/company.api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { CgUnblock } from 'react-icons/cg'
-import { JobApplicationProfileStatus, JobApplicationStatus } from '~/types/jobAppliacation.type'
+import { JobApplicationStatus } from '~/types/jobAppliacation.type'
 interface DataType {
   id: string
   key: string

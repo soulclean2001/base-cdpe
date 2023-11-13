@@ -122,25 +122,28 @@ const RightMenu = (props: any) => {
             />
             <NotifyDrawer dataNotify={dataNotify} roleType={roleType} open={openNotifyDrawer} onClose={onCloseDrawer} />
 
-            <Button
-              disabled={auth.verify === 1 ? false : true}
-              icon={<AiFillMessage />}
-              className='btn-message'
-              onClick={handleTabPageChat}
-              shape='circle'
-              size='large'
-            />
             {roleType === 'EMPLOYER_ROLE' && (
-              <Badge count={employer.cart.totalItems}>
+              <>
+                {' '}
                 <Button
                   disabled={auth.verify === 1 ? false : true}
-                  icon={<BsFillCartFill />}
-                  className='btn-cart'
-                  onClick={handleTabPageCart}
+                  icon={<AiFillMessage />}
+                  className='btn-message'
+                  onClick={handleTabPageChat}
                   shape='circle'
                   size='large'
                 />
-              </Badge>
+                <Badge count={employer.cart.totalItems}>
+                  <Button
+                    disabled={auth.verify === 1 ? false : true}
+                    icon={<BsFillCartFill />}
+                    className='btn-cart'
+                    onClick={handleTabPageCart}
+                    shape='circle'
+                    size='large'
+                  />
+                </Badge>
+              </>
             )}
 
             <Dropdown menu={menuProps}>

@@ -71,6 +71,8 @@ import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/Can
 import MyOrdersPage from './features/Employer/pages/Dashboard/pages/MyOrdersPage'
 import VNPayReturn from './features/Employer/pages/CartPage/components/VNPAY/VNPayReturn'
 import RoadMapPage from './features/RoadMapPage'
+import { notification } from 'antd'
+import { NotificationType, addNotify } from './components/Header/NotifyDrawer/notifySlice'
 
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
@@ -132,6 +134,10 @@ function App() {
         dispatch(addMessage(conversation))
       })
       fetchListRooms()
+      socket.on('new-notification', (notify: NotificationType) => {
+        console.log('noti socket', notify)
+        dispatch(addNotify(notify))
+      })
     }
 
     return () => {
@@ -148,7 +154,7 @@ function App() {
       async () => {
         await getRefreshToken()
       },
-      getTimeExpired(auth.accessToken) * 1000 - 86390000 //86390000
+      getTimeExpired(auth.accessToken) * 1000 - 90000 //86390000
     )
   }, [auth.refreshToken])
   const fetchListRooms = async () => {

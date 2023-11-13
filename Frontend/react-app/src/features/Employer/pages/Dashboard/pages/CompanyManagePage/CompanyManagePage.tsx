@@ -430,7 +430,14 @@ const CompanyManagePage = () => {
               <Form.Item
                 name='nameCompany'
                 label={<span style={{ fontWeight: '500' }}>Tên Công Ty</span>}
-                rules={[{ required: true, message: 'Vui lòng không để trống tên công ty' }]}
+                rules={[
+                  {
+                    validator: (_, value) =>
+                      value && value.trim() !== ''
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                  }
+                ]}
               >
                 <Input
                   size='large'

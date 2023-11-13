@@ -208,7 +208,14 @@ const ModalApplyCV = (props: any) => {
               label={<span style={{ fontWeight: 500 }}>Họ & tên</span>}
               style={{ marginBottom: '10px' }}
               name={'name'}
-              rules={[{ required: true, message: 'Vui lòng nhập thông tin.' }]}
+              rules={[
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
+              ]}
             >
               <Input onChange={(e) => setFullName(e.target.value)} size='large' placeholder='Nhập họ & tên' />
             </Form.Item>
@@ -217,7 +224,12 @@ const ModalApplyCV = (props: any) => {
               style={{ marginBottom: '10px' }}
               name={'email'}
               rules={[
-                { required: true, message: 'Vui lòng nhập thông tin.' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
                 { type: 'email', message: 'Vui lòng nhập đúng định dạng Email' }
               ]}
             >
@@ -228,7 +240,12 @@ const ModalApplyCV = (props: any) => {
               style={{ marginBottom: '10px' }}
               name={'phone'}
               rules={[
-                { required: true, message: 'Vui lòng không để trống số điện thoại' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
                 {
                   pattern: new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/),
                   message:

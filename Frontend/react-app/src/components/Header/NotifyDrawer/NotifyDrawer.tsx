@@ -3,12 +3,20 @@ import './style.scss'
 import { Drawer } from 'antd'
 import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
-
+import { useState, useEffect } from 'react'
+import apiNotify, { RequestNotify } from '~/api/notify.api'
+import { NotifyState, addNotify, getAllByMe, setNotifications } from './notifySlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 interface DataType {
   id: string
-  logo: string
-  name: string
-  actionInfo: string
+  logo?: string
+  name?: string
+  actionInfo?: string
+  createDate?: string
+  isRead?: boolean
+  type?: string
 }
 interface PropsType {
   open: boolean
@@ -16,9 +24,41 @@ interface PropsType {
   roleType: string
   dataNotify: Array<DataType>
 }
+interface AnyType {
+  [key: string]: any
+}
 const NotifyDrawer = (props: any) => {
   const { open, onClose, roleType, dataNotify }: PropsType = props
-
+  const [listNotify, setListNotify] = useState<DataType[]>([])
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
+  const disPath = useDispatch()
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  useEffect(() => {
+    fetchGetDataNoti()
+  }, [])
+  useEffect(() => {
+    console.log('notificaions.notifications', notificaions.notifications)
+  }, [notificaions.notifications])
+  const fetchGetDataNoti = async (page?: string) => {
+    let request: RequestNotify = { filter: { page: page ? page : '1', limit: '1' } }
+    await dispatchAsync(getAllByMe(request))
+    // await apiNotify.getAllByMe(request).then((rs) => {
+    //   console.log('list notify', rs)
+    //   if (rs.result) {
+    //     let tempt = rs.result.map((noti: AnyType) => {
+    //       return {
+    //         id: noti._id,
+    //         actionInfo: noti.content,
+    //         createDate: noti.created_at,
+    //         isRead: noti.is_readed,
+    //         type: noti.type
+    //       }
+    //     })
+    //     setListNotify(tempt)
+    //     disPath(setNotifications(rs.result))
+    //   }
+    // })
+  }
   return (
     <Drawer
       // closable={false}
@@ -56,12 +96,21 @@ const NotifyDrawer = (props: any) => {
             </>
           )}
         </div>
-        {!dataNotify ? (
+        {!notificaions.notifications ? (
           <div className='list-item-notify'>Bạn không có thông báo</div>
         ) : (
           <div className='list-item-notify'>
-            {dataNotify.map((data) => (
-              <NotifyItem key={data.id} data={data} />
+            {notificaions.notifications.map((data) => (
+              <NotifyItem
+                key={data._id}
+                data={{
+                  id: data._id,
+                  actionInfo: data.content,
+                  createDate: data.created_at,
+                  isRead: data.is_readed,
+                  type: data.type
+                }}
+              />
             ))}
           </div>
         )}

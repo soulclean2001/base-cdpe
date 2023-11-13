@@ -423,12 +423,12 @@ const ModalInfoPost = (props: any) => {
     })
     const skills = arrSkills
       .map((skill) => {
-        if (skill.value !== '') return skill.value
+        if (skill.value && skill.value.trim() !== '') return skill.value
       })
       .filter((skill) => !!skill)
     const benefits = arrBenefits
       .map((benefit) => {
-        if (benefit.data.value !== '' && benefit.data.type !== '') return benefit.data
+        if (benefit.data.value && benefit.data.value.trim() !== '' && benefit.data.type !== '') return benefit.data
       })
       .filter((benefit) => !!benefit)
     // const data = {
@@ -645,8 +645,14 @@ const ModalInfoPost = (props: any) => {
               name='jobTitle'
               label={<span style={{ fontWeight: '500' }}>Chức Danh</span>}
               rules={[
-                { required: true, message: 'Vui lòng không để trống tên công việc' },
-                { max: 150, message: 'Đã vượt quá độ dài tối đa' }
+                // { required: true, message: 'Vui lòng không để trống tên công việc' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
               ]}
             >
               <Input
@@ -800,7 +806,16 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   name='branchName'
                   label={<span style={{ fontWeight: '500' }}>Tên Trụ Sở</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống tên trụ sở' }]}
+                  rules={[
+                    // { required: true, message: 'Vui lòng không để trống tên trụ sở' },
+
+                    {
+                      validator: (_, value) =>
+                        value && value.trim() !== ''
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                    }
+                  ]}
                 >
                   <Input
                     size='large'
@@ -853,7 +868,16 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   name='address'
                   label={<span style={{ fontWeight: '500' }}>Địa chỉ</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
+                  rules={[
+                    // { required: true, message: 'Vui lòng không để trống tên công việc' },
+
+                    {
+                      validator: (_, value) =>
+                        value && value.trim() !== ''
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                    }
+                  ]}
                 >
                   <Input
                     size='large'
@@ -895,7 +919,16 @@ const ModalInfoPost = (props: any) => {
             <Form.Item
               name='descriptions'
               label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}
-              rules={[{ required: true, message: 'Vui lòng không để trống mô tả công việc' }]}
+              rules={[
+                // { required: true, message: 'Vui lòng không để trống mô tả công việc' },
+
+                {
+                  validator: () =>
+                    jobDescription && jobDescription.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
+              ]}
             >
               {/* <TextArea
                 disabled={roleType === 'ADMIN_ROLE' ? true : false}
@@ -932,7 +965,15 @@ const ModalInfoPost = (props: any) => {
             <Form.Item
               name='requirements'
               label={<span style={{ fontWeight: '500' }}>Yêu Cầu Công Việc</span>}
-              rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu công việc' }]}
+              rules={[
+                // { required: true, message: 'Vui lòng không để trống yêu cầu công việc' },
+                {
+                  validator: () =>
+                    jobRequirement && jobRequirement.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
+              ]}
             >
               {/* <TextArea
                 disabled={roleType === 'ADMIN_ROLE' ? true : false}
@@ -975,7 +1016,15 @@ const ModalInfoPost = (props: any) => {
                       style={{ margin: 0 }}
                       key={sk.key}
                       name={`skill_${sk.key}`}
-                      rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' }]}
+                      rules={[
+                        // { required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' },
+                        {
+                          validator: (_, value) =>
+                            value && value.trim() !== ''
+                              ? Promise.resolve()
+                              : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                        }
+                      ]}
                     >
                       <Input
                         disabled={roleType === 'ADMIN_ROLE' ? true : false}

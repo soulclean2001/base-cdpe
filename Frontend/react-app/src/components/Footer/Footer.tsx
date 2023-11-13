@@ -3,7 +3,11 @@ import './footer.scss'
 import { NavLink } from 'react-router-dom'
 import iosImg from '~/assets/iosIMG.png'
 import chPlay from '~/assets/chPlayImg.png'
+import { AuthState } from '~/features/Auth/authSlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 const Footer = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   return (
     <div className='footer-container'>
       <>
@@ -29,7 +33,7 @@ const Footer = () => {
               <NavLink to={''}>Quy chế hoạt động của HFWork</NavLink>
             </div>
             <div>
-              <NavLink to={''}>Sơ đồ website</NavLink>
+              <NavLink to={auth.role === 1 ? '/employer/road-map' : 'road-map'}>Sơ đồ website</NavLink>
             </div>
           </Col>
           <Col md={5} style={{ padding: '7px' }}>

@@ -77,8 +77,7 @@ const ModalWorkLocation = (props: any) => {
     const data = {
       dataLocationBranch
     }
-    console.log('data location', dataLocationBranch)
-    console.log('list', list)
+
     //check exist location name branch
     let checkBranchName = false
     let listAffter: WorkingLocation[] = []
@@ -97,8 +96,6 @@ const ModalWorkLocation = (props: any) => {
         })
 
         listAffter = [...listFilter, dataLocationBranch]
-        console.log('listFilter', listFilter)
-        console.log('listAffter', listAffter)
       } else {
         list.forEach((location: WorkingLocation) => {
           if (location.branch_name === data.dataLocationBranch.branch_name.toString()) {
@@ -109,8 +106,6 @@ const ModalWorkLocation = (props: any) => {
         })
 
         listAffter = [...list, dataLocationBranch]
-        // console.log("listFilter",listFilter)
-        console.log('listAffter', listAffter)
       }
     } else listAffter = [dataLocationBranch]
 
@@ -154,7 +149,15 @@ const ModalWorkLocation = (props: any) => {
         <Form.Item
           name='branchName'
           label={<span style={{ fontWeight: '500' }}>Tên Trụ Sở</span>}
-          rules={[{ required: true, message: 'Vui lòng không để trống tên trụ sở' }]}
+          rules={[
+            {
+              validator: (_, value) =>
+                value && value.trim() !== ''
+                  ? Promise.resolve()
+                  : Promise.reject(new Error('Nội dung không được bỏ trống'))
+            },
+            { max: 150, message: 'Đã vượt quá độ dài tối đa' }
+          ]}
         >
           <Input
             size='large'
@@ -232,7 +235,15 @@ const ModalWorkLocation = (props: any) => {
         <Form.Item
           name='address'
           label={<span style={{ fontWeight: '500' }}>Địa chỉ</span>}
-          rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
+          rules={[
+            {
+              validator: (_, value) =>
+                value && value.trim() !== ''
+                  ? Promise.resolve()
+                  : Promise.reject(new Error('Nội dung không được bỏ trống'))
+            },
+            { max: 150, message: 'Đã vượt quá độ dài tối đa' }
+          ]}
         >
           <Input
             size='large'

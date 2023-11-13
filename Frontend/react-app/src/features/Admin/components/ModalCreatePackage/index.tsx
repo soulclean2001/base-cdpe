@@ -224,7 +224,12 @@ const ModalCreatePackage = (props: any) => {
             name='serviceName'
             label={<span style={{ fontWeight: '500' }}>Tên dịch vụ</span>}
             rules={[
-              { required: true, message: 'Vui lòng không để trống tên dịch vụ' },
+              {
+                validator: (_, value) =>
+                  value && value.trim() !== ''
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('Nội dung không được bỏ trống'))
+              },
               { max: 150, message: 'Đã vượt quá độ dài tối đa' }
             ]}
           >
@@ -331,7 +336,14 @@ const ModalCreatePackage = (props: any) => {
           <Form.Item
             name='description'
             label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}
-            rules={[{ required: true, message: 'Vui lòng không để trống mô tả gói dịch vụ' }]}
+            rules={[
+              {
+                validator: () =>
+                  descript && descript.trim() !== ''
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('Nội dung không được bỏ trống'))
+              }
+            ]}
           >
             <CKEditor
               disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
@@ -370,7 +382,14 @@ const ModalCreatePackage = (props: any) => {
                 </span>
               </span>
             }
-            rules={[{ required: true, message: 'Vui lòng không để trống' }]}
+            rules={[
+              {
+                validator: (_, value) =>
+                  value && value.trim() !== ''
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('Nội dung không được bỏ trống'))
+              }
+            ]}
           >
             <TextArea
               disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}

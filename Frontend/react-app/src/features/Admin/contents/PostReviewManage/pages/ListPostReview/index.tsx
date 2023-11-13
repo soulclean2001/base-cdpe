@@ -205,7 +205,7 @@ const ListPostReview = () => {
               style={{ width: '100%' }}
               size='large'
               placeholder={['Từ ngày', 'Đến ngày']}
-              format='DD-MM-YYYY'
+              format='YYYY-MM-DD'
               // locale={viVN}
             />
           </Col>
