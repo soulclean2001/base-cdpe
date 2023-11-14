@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 import { Media } from '~/models/Other'
 import { omit } from 'lodash'
 import { deleteFileFromS3 } from '~/utils/s3'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class CompanyService {
   static async updateCompany({
@@ -172,6 +173,163 @@ class CompanyService {
     ])
 
     return companyFollowed ? true : false
+  }
+
+  static async sales(userId: string, query: { year?: string; month?: string }) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
+    const filter: {
+      month?: number
+      year?: number
+    } = {}
+
+    if (query.year && !isNaN(Number(query.year))) {
+      filter.year = Number(query.year)
+    }
+
+    if (query.month && !isNaN(Number(query.month))) {
+      filter.month = Number(query.month)
+
+      if (!filter.year) {
+        filter.year = new Date().getFullYear()
+      }
+    }
+
+    const total = await databaseServices.order
+      .aggregate([
+        {
+          $match: {
+            status: {
+              $in: [5, 2]
+            },
+            company_id: company._id
+          }
+        },
+        {
+          $project: {
+            month: {
+              $month: '$created_at'
+            },
+            year: {
+              $year: '$created_at'
+            },
+            total: 1
+          }
+        },
+        {
+          $match: {
+            ...filter
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: {
+              $sum: '$total'
+            }
+          }
+        }
+      ])
+      .toArray()
+
+    return total[0]?.total || 0
+  }
+
+  static async totalJobs(userId: string, isPublish?: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
+    const match: {
+      [key: string]: any
+    } = {}
+
+    if (isPublish && isPublish === '1') {
+      match['status'] = 0
+      match['visibility'] = true
+    }
+
+    const total = await databaseServices.job
+      .aggregate([
+        {
+          $match: {
+            ...match,
+            company_id: company._id
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total_jobs: {
+              $sum: 1
+            }
+          }
+        }
+      ])
+      .toArray()
+
+    return total[0]?.total_jobs || 0
+  }
+
+  static async top10HasTheMostJobApplications(userId: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'Company not found',
+        status: 404
+      })
+
+    const result = await databaseServices.job
+      .aggregate([
+        {
+          $match: {
+            company_id: company._id
+          }
+        },
+        {
+          $lookup: {
+            from: 'job_applications',
+            localField: '_id',
+            foreignField: 'job_post_id',
+            as: 'total_job_applications'
+          }
+        },
+        {
+          $addFields: {
+            total_job_applications: {
+              $size: '$total_job_applications'
+            }
+          }
+        },
+        {
+          $sort: {
+            total_job_applications: -1
+          }
+        },
+        {
+          $limit: 10
+        }
+      ])
+      .toArray()
+
+    return result
   }
 }
 

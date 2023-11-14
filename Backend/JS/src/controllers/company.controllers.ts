@@ -50,6 +50,7 @@ class CompanyController {
         message: 'Invalid user id'
       })
     }
+
     const result = await CompanyService.getCompanyById(company_id, query.user_id as string)
 
     return res.json({
@@ -66,6 +67,38 @@ class CompanyController {
 
     return res.json({
       message: 'is following company',
+      result
+    })
+  }
+
+  async sales(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { role, user_id } = req.decoded_authorization as TokenPayload
+
+    const result = await CompanyService.sales(user_id, req.query)
+
+    return res.json({
+      message: 'sales',
+      result
+    })
+  }
+
+  async totalJobs(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { role, user_id } = req.decoded_authorization as TokenPayload
+    const { is_publish } = req.query
+    const result = await CompanyService.totalJobs(user_id, is_publish as string)
+
+    return res.json({
+      message: 'total jobs',
+      result
+    })
+  }
+
+  async top10HasTheMostJobApplications(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { role, user_id } = req.decoded_authorization as TokenPayload
+    const result = await CompanyService.top10HasTheMostJobApplications(user_id)
+
+    return res.json({
+      message: 'top 10 has the most job applications',
       result
     })
   }

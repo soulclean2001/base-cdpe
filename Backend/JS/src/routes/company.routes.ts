@@ -3,7 +3,7 @@ import companyControllers from '~/controllers/company.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
 import { updateCompanyValidator } from '~/middlewares/company.middlewares'
 import { idValidator } from '~/middlewares/jobApplication.middlewares'
-import { accessTokenValidator } from '~/middlewares/users.middlewares'
+import { accessTokenValidator, isEmployer } from '~/middlewares/users.middlewares'
 import { UpdateCompanyReqBody } from '~/models/requests/Company.request'
 import wrapAsync from '~/utils/handlers'
 
@@ -35,6 +35,30 @@ companyRouter.get(
   accessTokenValidator,
   idValidator('company_id'),
   wrapAsync(companyControllers.isFollowingCompanyId)
+)
+
+/*
+  query: {
+    month?: number,
+    year?: number || (month ? now year : undefined), 
+  }
+
+*/
+companyRouter.get('/sales', accessTokenValidator, isEmployer, wrapAsync(companyControllers.sales))
+
+/*
+  undefined = để trống
+  query: {
+    is_publish: 1 || undefined
+  }
+
+*/
+companyRouter.get('/total-jobs', accessTokenValidator, isEmployer, wrapAsync(companyControllers.totalJobs))
+companyRouter.get(
+  '/top-10-jobs-has-the-most-applications',
+  accessTokenValidator,
+  isEmployer,
+  wrapAsync(companyControllers.top10HasTheMostJobApplications)
 )
 
 /* 
