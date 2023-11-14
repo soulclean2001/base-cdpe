@@ -229,7 +229,7 @@ const ListPostReview = () => {
               onChange={(value) => setStatus(value === 'all' ? '' : value)}
               size='large'
               style={{ width: '100%' }}
-              defaultValue='Tất cả'
+              defaultValue='all'
               options={[
                 { value: 'all', label: 'Tất cả trạng thái' },
                 { value: '1', label: 'Đang chờ' },

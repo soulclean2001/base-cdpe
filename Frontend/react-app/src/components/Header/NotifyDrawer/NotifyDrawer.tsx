@@ -48,7 +48,7 @@ const NotifyDrawer = (props: any) => {
   }, [])
 
   const fetchGetDataNoti = async (page?: string) => {
-    let request: RequestNotify = { filter: { page: page ? page : '1', limit: '1' } }
+    let request: RequestNotify = { filter: { page: page ? page : '1', limit: '1000' } }
     await dispatchAsync(getAllByMe(request))
     await apiNotify.getTotalUnRead().then((rs) => {
       disPath(setTotalUnRead(rs.result))
@@ -120,9 +120,9 @@ const NotifyDrawer = (props: any) => {
               loader={<h4>...</h4>}
               scrollableTarget='scrollableDiv'
             >
-              {notificaions.notifications.map((data) => (
+              {notificaions.notifications.map((data, index) => (
                 <NotifyItem
-                  key={data._id}
+                  key={index}
                   data={{
                     id: data._id,
                     actionInfo: data.content,

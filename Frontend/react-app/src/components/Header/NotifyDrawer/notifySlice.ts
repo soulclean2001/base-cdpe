@@ -58,7 +58,7 @@ const notifySlice = createSlice({
         .map((notify: NotificationType) => {
           if (notify.type === 'cv/seen') notify.content = notify.content
           if (notify.type === 'post/created')
-            notify.content = `Nhà tuyển dụng '...' vừa đăng tin tuyển dụng '${notify.content}'`
+            notify.content = `Nhà tuyển dụng ${notify.sender_info?.name} vừa đăng tin tuyển dụng '${notify.content}'`
           if (notify.type === 'post/approved') {
             notify.content = `Hệ thống phê duyệt tin tuyển dụng '${notify.content}'`
             notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
@@ -96,7 +96,23 @@ const notifySlice = createSlice({
       return state
     },
     addNotify: (state, action) => {
-      state.notifications = [...state.notifications, action.payload]
+      const notify = action.payload
+      if (notify.type === 'cv/seen') notify.content = notify.content
+      if (notify.type === 'post/created')
+        notify.content = `Nhà tuyển dụng ${notify.sender_info?.name} vừa đăng tin tuyển dụng '${notify.content}'`
+      if (notify.type === 'post/approved') {
+        notify.content = `Hệ thống phê duyệt tin tuyển dụng '${notify.content}'`
+        notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+      }
+      if (notify.type === 'post/rejected') {
+        notify.content = `Hệ thống từ chối phê duyệt tin tuyển dụng '${notify.content}'`
+        notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+      }
+
+      if (notify.type === 'post/pending')
+        notify.content = `Bài tuyển dụng ${notify.content} đã được gửi yêu cầu kiểm duyệt`
+
+      state.notifications = [...state.notifications, notify]
       state.totalNotRead = state.totalNotRead + 1
       return state
     },

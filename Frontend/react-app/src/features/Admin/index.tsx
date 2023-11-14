@@ -17,10 +17,14 @@ const AdminPage = () => {
   const [widthContent, setWidthContent] = useState('100%')
 
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken) {
-      if (auth.role !== 0) navigate('/admin-login')
+    if (auth && auth.isLogin) {
+      if (auth.role > 0) {
+        navigate('/admin-login')
+        return
+      }
     } else {
       navigate('/admin-login')
+      return
     }
   }, [auth])
   useEffect(() => {

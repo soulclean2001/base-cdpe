@@ -35,7 +35,7 @@ const ListJob = (props: any) => {
   }
   return (
     <div className='list-job-company-detail'>
-      {displayedData && displayedData.length > 0 && (
+      {displayedData && displayedData.length > 0 ? (
         <>
           <Row className='title-container'>
             <Col lg={17} md={15} sm={24} xs={24}>
@@ -86,8 +86,9 @@ const ListJob = (props: any) => {
             total={listJobs.length}
           />
         </>
+      ) : (
+        <>Không tìm thấy việc làm khác</>
       )}
-      Không tìm thấy việc làm khác
     </div>
   )
 }

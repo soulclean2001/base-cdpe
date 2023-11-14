@@ -131,6 +131,10 @@ function App() {
       })
       fetchListRooms()
       socket.on('new-notification', (notify: NotificationType) => {
+        console.log('new notify', notify)
+
+        notify = { ...notify, created_at: new Date().toISOString() }
+
         dispatch(addNotify(notify))
       })
     }
