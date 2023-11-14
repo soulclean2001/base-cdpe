@@ -45,7 +45,7 @@ const RightMenu = () => {
     {
       label: (
         <>
-          {auth.verify !== 1 ? (
+          {auth.verify.toString() === '0' ? (
             <NavLink to={'/active-page'}>Kích hoạt tài khoản</NavLink>
           ) : (
             <NavLink to={'/settings'}>Bảng điều khiển</NavLink>
@@ -53,7 +53,11 @@ const RightMenu = () => {
         </>
       ),
       key: 'key_settings_general',
-      icon: <div style={{ paddingRight: '3px' }}>{auth.verify !== 1 ? <FaUserCheck /> : <AiFillDashboard />}</div>,
+      icon: (
+        <div style={{ paddingRight: '3px' }}>
+          {auth.verify.toString() === '0' ? <FaUserCheck /> : <AiFillDashboard />}
+        </div>
+      ),
       style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {

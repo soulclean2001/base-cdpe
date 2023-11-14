@@ -67,7 +67,7 @@ const RightMenuPhone = () => {
                   </div>
                 </div>
               </div>
-              {auth.isLogin && auth.verify !== 1 && (
+              {auth.isLogin && auth.verify.toString() === '0' && (
                 <NavLink to={'/active-page'}>
                   <p style={styleForItemMenuPhone}>Kích hoạt tài khoản</p>
                 </NavLink>

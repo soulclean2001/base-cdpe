@@ -14,7 +14,7 @@ const HomePage = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && auth.role !== 1) {
+    if ((auth.isLogin && auth.accessToken && auth.role !== 1) || auth.verify === 2) {
       navigate('/employer-login')
     }
   }, [auth])

@@ -17,7 +17,7 @@ const SettingsPage = () => {
         navigate('/candidate-login')
         return
       }
-      if (auth.verify !== 1) {
+      if (auth.verify.toString() === '0') {
         navigate('/active-page')
         return
       }

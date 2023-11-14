@@ -49,7 +49,7 @@ const ModalApplyCV = (props: any) => {
         navigate('/candidate-login')
         return
       } else {
-        if (auth.verify !== 1) {
+        if (auth.verify.toString() === '0') {
           navigate('/active-page')
           return
         }

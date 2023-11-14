@@ -124,7 +124,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth.isLogin && auth.verify === 1 && auth.accessToken && !isExpired(auth.accessToken)) {
       connectSocket()
       socket.on('new-message', (conversation: ConversationType) => {
         dispatch(addMessage(conversation))

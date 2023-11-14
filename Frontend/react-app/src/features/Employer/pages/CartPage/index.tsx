@@ -24,14 +24,17 @@ const CartPage = () => {
         navigate('/employer-login')
         return
       }
-      if (auth.verify !== 1) {
+      if (auth.verify.toString() === '0') {
         navigate('/employer/active-page')
         return
       }
-    } else {
-      navigate('/employer-login')
-      return
+      if (auth.verify === 2) {
+        navigate('/employer-login')
+        return
+      }
     }
+    navigate('/employer-login')
+    return
   }, [auth])
   const handleSetTotalPay = (
     total: number,

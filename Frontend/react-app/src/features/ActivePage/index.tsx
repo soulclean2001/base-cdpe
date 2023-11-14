@@ -16,7 +16,7 @@ const ActivePage = () => {
   const [seconds, setSeconds] = useState(10)
   const [disabledBtn, setDisabledBtn] = useState(false)
   useEffect(() => {
-    if (!auth.isLogin) {
+    if (!auth.isLogin || auth.verify === 2) {
       if (auth.role === 2) {
         navigate('/candidate-login')
         return

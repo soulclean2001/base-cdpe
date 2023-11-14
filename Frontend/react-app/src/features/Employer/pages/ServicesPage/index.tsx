@@ -18,7 +18,7 @@ const ServicesPage = () => {
         navigate('/employer-login')
         return
       }
-      if (auth.verify !== 1) {
+      if (auth.verify.toString() === '0') {
         navigate('/employer/active-page')
         return
       }

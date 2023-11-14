@@ -79,7 +79,7 @@ const RightMenuPhone = () => {
                 </div>
               </div>
             </div>
-            {auth.verify !== 1 ? (
+            {auth.verify.toString() === '0' ? (
               <p onClick={() => navigate('/employer/active-page')} style={styleForItemMenuPhone}>
                 Kích hoạt tài khoản
               </p>
