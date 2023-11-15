@@ -790,6 +790,62 @@ class JobApplicationService {
       message: result ? `Update profile status: '${status}' OK` : `Update profile status: '${status}' Failed`
     }
   }
+
+  static async totalJobApplication(userId: string) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'No company found',
+        status: 404
+      })
+
+    const result = await databaseServices.jobApplication
+      .aggregate([
+        {
+          $match: {
+            company_id: company._id
+          }
+        },
+        {
+          $group: {
+            _id: '$company_id',
+            post_id: {
+              $push: '$_id'
+            }
+          }
+        },
+        {
+          $unwind: {
+            path: '$post_id',
+            preserveNullAndEmptyArrays: true
+          }
+        },
+        {
+          $lookup: {
+            from: 'job_applications',
+            localField: 'post_id',
+            foreignField: 'job_post_id',
+            as: 'posts'
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total_applied: {
+              $sum: {
+                $size: '$posts'
+              }
+            }
+          }
+        }
+      ])
+      .toArray()
+
+    return result[0]?.total_applied || 0
+  }
 }
 
 export default JobApplicationService

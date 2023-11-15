@@ -151,6 +151,17 @@ class JobApplicationController {
       result
     })
   }
+
+  async totalJobApplication(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization
+
+    const result = await JobApplicationService.totalJobApplication(user_id)
+
+    return res.json({
+      message: 'total job applied by company',
+      result
+    })
+  }
 }
 
 export default new JobApplicationController()

@@ -101,4 +101,11 @@ jobApplicationRouter.get(
   wrapAsync(jobApplicationControllers.checkIsApplied)
 )
 
+jobApplicationRouter.get(
+  '/company/totalJobApplied',
+  accessTokenValidator,
+  isEmployer,
+  wrapAsync(jobApplicationControllers.totalJobApplication)
+)
+
 export default jobApplicationRouter
