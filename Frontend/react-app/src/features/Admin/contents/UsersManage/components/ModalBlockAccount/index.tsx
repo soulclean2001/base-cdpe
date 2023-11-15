@@ -1,13 +1,26 @@
 import { Button, Form, Modal, Select } from 'antd'
 import './style.scss'
+import apiAdmin from '~/api/admin.api'
 
+import { toast } from 'react-toastify'
 const ModalBlockAccount = (props: any) => {
-  const { open, handleCancel, selectedAccountId } = props
+  const { open, handleCancel, selectedAccountId, isBanned, handleAfterSubmit } = props
   const [form] = Form.useForm()
 
-  const handleSubmitForm = () => {
-    console.log('form data post')
-    handleCancel()
+  const handleSubmitForm = async () => {
+    if (!selectedAccountId) return
+    await apiAdmin
+      .postBlockOrUnLockUser(selectedAccountId)
+      .then((rs) => {
+        if (rs.result) {
+          if (isBanned) toast.success(`Bạn đã bỏ chặn #USER_${selectedAccountId.slice(-5).toUpperCase()} thành công`)
+          if (!isBanned) toast.success(`Bạn đã chặn #USER_${selectedAccountId.slice(-5).toUpperCase()} thành công`)
+          handleAfterSubmit()
+        }
+      })
+      .catch(() => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại')
+      })
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -18,7 +31,7 @@ const ModalBlockAccount = (props: any) => {
       footer=''
       className='modal-block-account'
       // width={'60%'}
-      title={<h4 className='header-container'>Tài khoản {selectedAccountId}</h4>}
+      title={<h4 className='header-container'>Tài khoản #USER_{selectedAccountId.slice(-5).toUpperCase()}</h4>}
       open={open}
       onCancel={handleCancel}
     >
@@ -32,7 +45,11 @@ const ModalBlockAccount = (props: any) => {
           onFinishFailed={onFinishFailed}
           layout='vertical'
         >
-          <Form.Item
+          <div>
+            Bạn có chắc muốn {isBanned ? 'bỏ khóa' : 'khóa'} tài khoản #USER_{selectedAccountId.slice(-5).toUpperCase()}
+            ?
+          </div>
+          {/* <Form.Item
             label={<span style={{ fontWeight: 500 }}>Thời gian khóa</span>}
             style={{ marginBottom: '10px' }}
             name={'timeBlock'}
@@ -46,7 +63,7 @@ const ModalBlockAccount = (props: any) => {
                 { value: '1 năm', label: '1 năm' }
               ]}
             />
-          </Form.Item>
+          </Form.Item> */}
 
           <div
             className='btn-container'
@@ -57,7 +74,7 @@ const ModalBlockAccount = (props: any) => {
             </Button>
 
             <Button size='middle' htmlType='submit' className='btn-submit-block-account'>
-              Khóa
+              {isBanned ? 'Bỏ khóa' : 'Khóa'}
             </Button>
           </div>
           {/* <ToastContainer

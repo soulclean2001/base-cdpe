@@ -13,11 +13,13 @@ import { AuthState } from '~/features/Auth/authSlice'
 // import SideBarEmployer from './components/SideBar/SideBarEmployer'
 
 const DashboarEmployer = () => {
+  const url = window.location.href
   const dispatch = useDispatch()
   const collap = useSelector((state: RootState) => state.employer.collapsed)
   const [widthContent, setWidthContent] = useState('82.2%')
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
+  const [cssHeader, setCssHeader] = useState('')
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken) {
       if (auth.role !== 1) {
@@ -44,6 +46,7 @@ const DashboarEmployer = () => {
       setWidthContent('100%')
     }
   }, [collap])
+
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
     return { innerWidth, innerHeight }
@@ -70,7 +73,20 @@ const DashboarEmployer = () => {
       <SideBarEmployer roleType={'EMPLOYER_ROLE'} />
       {/* </div> */}
 
-      <div className='employer-dashboard-content' style={{ width: widthContent }}>
+      <div
+        className='employer-dashboard-content'
+        style={{
+          color:
+            url === 'http://127.0.0.1:3001/employer/dashboard' || url === 'https://hfworks.id.vn/employer/dashboard'
+              ? 'white'
+              : 'black',
+          width: widthContent,
+          background:
+            url === 'http://127.0.0.1:3001/employer/dashboard' || url === 'https://hfworks.id.vn/employer/dashboard'
+              ? 'linear-gradient(270deg, #005aff, #001744)'
+              : 'white'
+        }}
+      >
         <FaBars hidden={hiddenButtonCollapsed} onClick={() => dispatch(handleChangeSideBar())} />
 
         <Outlet />

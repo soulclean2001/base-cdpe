@@ -1,5 +1,5 @@
 import Layout from './Layout'
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
 
 import 'antd/dist/reset.css'
 
@@ -25,7 +25,6 @@ import MyAccountManagePage from './features/Employer/pages/Dashboard/pages/MyAcc
 import CompanyManagePage from './features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
 import CartPage from './features/Employer/pages/CartPage'
 import SettingsPage from './features/JobSeeker/pages/SettingsPage'
-import Overview from './features/JobSeeker/pages/SettingsPage/components/Content/Overview/Overview'
 import ManageCV from './features/Employer/pages/Dashboard/pages/ManageCV/ManageCV'
 import JobDetailPage from './features/JobSeeker/pages/Job/page/JobDetailPage'
 import ListJob from './features/JobSeeker/pages/Job/page/ListJob/ListJob'
@@ -48,7 +47,7 @@ import OverviewEmployer from './features/Employer/pages/Dashboard/pages/Overview
 import ListPostReview from './features/Admin/contents/PostReviewManage/pages/ListPostReview'
 
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
-import { AuthState, setToken } from './features/Auth/authSlice'
+import { AuthState, logout, setAccountStatus, setToken } from './features/Auth/authSlice'
 import { RootState } from './app/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
@@ -62,7 +61,7 @@ import ActivePage from './features/ActivePage'
 import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
-import { ToastContainer } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
 import axios from 'axios'
 import apiClient from './api/client'
 import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVAppliedDetailPage'
@@ -72,7 +71,7 @@ import VNPayReturn from './features/Employer/pages/CartPage/components/VNPAY/VNP
 import RoadMapPage from './features/RoadMapPage'
 
 import { NotificationType, addNotify } from './components/Header/NotifyDrawer/notifySlice'
-
+import { decodeToken } from '~/utils/jwt'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -82,6 +81,7 @@ export let socket: Socket
 function App() {
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 
@@ -100,20 +100,25 @@ function App() {
   const getRefreshToken = async () => {
     if (!auth.refreshToken || !auth.accessToken) return
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/users/refresh-token', {
+      const response = await apiClient.post('/users/refresh-token', {
         refresh_token: auth.refreshToken
       })
-
       const { access_token, refresh_token } = response.data.result
+      const decode = await decodeToken(access_token)
 
+      if (decode.verify === 2) {
+        toast.error('Tài khoản của bạn đã bị khóa, vui lòng đăng nhập hoặc đăng ký tài khoản khác để tiếp tục')
+        dispatch(logout())
+        return
+      }
       dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
-
+      dispatch(setAccountStatus(decode))
       if (socket) {
         socket.emit('update_token', access_token)
       }
     } catch (e) {}
   }
-
+  // để đây đã đợi xíu đừng sửa
   const getProfile = async () => {
     await dispatchAsync(getMe())
   }
@@ -124,7 +129,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (auth.isLogin && auth.verify === 1 && auth.accessToken && !isExpired(auth.accessToken)) {
+    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken)) {
       connectSocket()
       socket.on('new-message', (conversation: ConversationType) => {
         dispatch(addMessage(conversation))
@@ -137,8 +142,26 @@ function App() {
 
         dispatch(addNotify(notify))
       })
-    }
 
+      socket.on('lock-user', (_) => {
+        dispatch(logout())
+        window.location.reload()
+      })
+
+      socket.on('verify', (_) => {
+        console.log('verify')
+        if (auth.role === 2) {
+          window.location.href = '/'
+        }
+        if (auth.role === 1) {
+          window.location.href = '/employer'
+        }
+      })
+
+      socket.on('test', (_) => {
+        console.log('test socket')
+      })
+    }
     return () => {
       if (socket) {
         socket.disconnect()
@@ -153,9 +176,10 @@ function App() {
       async () => {
         await getRefreshToken()
       },
-      getTimeExpired(auth.accessToken) * 1000 - 90000 //86390000
+      getTimeExpired(auth.accessToken) * 1000 - 50000
+      // getTimeExpired(auth.accessToken) * 1000 - 86390000
     )
-  }, [auth.refreshToken])
+  }, [auth.refreshToken, auth.verify])
   const fetchListRooms = async () => {
     let rooms: RoomType[] = []
     if (auth.role === UserRole.Employer) {
@@ -211,7 +235,7 @@ function App() {
               // </Auth>
             }
           >
-            <Route index element={<Overview />} />
+            <Route index element={<MyJobs />} />
 
             <Route path='my-companies' element={<MyCompanies />} />
             <Route path='my-jobs' element={<MyJobs />} />

@@ -287,7 +287,7 @@ const TableCustom = (props: any) => {
           <a onClick={() => setOpenModalInfo(true)}>
             <BsFillEyeFill />
           </a>
-          {item.visibility && Number(item.status) !== 1 && (
+          {item.visibility && (
             <a onClick={() => handleHidePost(item.id ? item.id : '')}>
               <AiFillLock />
             </a>
@@ -297,11 +297,14 @@ const TableCustom = (props: any) => {
               <BiWorld />
             </a>
           )}
-          {Number(item.status) !== 1 && (
+          {/* {Number(item.status) !== 1 && (
             <a onClick={handleOpenModalDelete}>
               <MdDelete />
             </a>
-          )}
+          )} */}
+          <a onClick={handleOpenModalDelete}>
+            <MdDelete />
+          </a>
         </div>
       ),
       showSorterTooltip: false

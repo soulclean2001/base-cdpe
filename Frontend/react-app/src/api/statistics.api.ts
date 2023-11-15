@@ -44,6 +44,10 @@ export class Resume {
     const rs: ApiResponse = await client.get(`/company/top-10-jobs-has-the-most-applications`)
     return rs
   }
+  public static getTotalJobApplications = async () => {
+    const rs: ApiResponse = await client.get(`/job-applications/company/totalJobApplied`)
+    return rs
+  }
   //
 }
 

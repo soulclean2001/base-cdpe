@@ -68,6 +68,11 @@ const Login: React.FC = () => {
     //
     if (token) {
       const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.verify === 2) {
+        toast.error('Tài khoản của bạn đã bị khóa, vui lòng đăng ký tài khoản mới để đăng nhập vào hệ thống !!')
+        setLoading(false)
+        return
+      }
       if (dataDecode.role && dataDecode.role === 2) {
         const action: AuthLogin = { isLogin: true, loading: false, error: '' }
         dispatchAsync(setToken(token))

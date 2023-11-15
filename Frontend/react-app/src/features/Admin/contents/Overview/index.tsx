@@ -23,7 +23,7 @@ export const options = {
   }
 }
 
-const labelsOneYear = [
+export const labelsOneYear = [
   'Tháng 1',
   'Tháng 2',
   'Tháng 3',
@@ -37,8 +37,8 @@ const labelsOneYear = [
   'Tháng 11',
   'Tháng 12'
 ]
-const labelsTenYearBeforeToNow: string[] = []
-const getTenYearBeforeToNow = (year: number) => {
+export const labelsTenYearBeforeToNow: string[] = []
+export const getTenYearBeforeToNow = (year: number) => {
   // let tenYearAgo = new Date().getFullYear() - 10
   let tenYearAgo = year - 10
   for (let i = tenYearAgo; i <= tenYearAgo + 10; ++i) {
@@ -253,7 +253,7 @@ const AdminOverview = () => {
       </Col>
       <Col md={24} sm={24} xs={24} className='chart-wapper'>
         <div className='chart-header'>
-          <h2>BIỂU ĐỒ</h2>
+          <h2>BIỂU ĐỒ DOANH THU</h2>
           <Radio.Group onChange={onChange} value={type}>
             {dataSales.map((data, index) => (
               <div key={index}>{data}</div>

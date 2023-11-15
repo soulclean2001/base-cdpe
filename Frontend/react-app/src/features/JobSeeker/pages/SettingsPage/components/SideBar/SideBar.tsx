@@ -158,45 +158,37 @@ const SideBar = () => {
           onClick={onClickMenu}
           mode='inline'
           defaultSelectedKeys={
-            currentURL === 'http://127.0.0.1:3001/settings'
-              ? ['1']
-              : currentURL === 'http://127.0.0.1:3001/settings/my-companies'
-              ? ['4']
-              : currentURL === 'http://127.0.0.1:3001/settings/my-jobs'
+            currentURL === 'http://127.0.0.1:3001/settings' || currentURL === 'https://hfworks.id.vn/settings'
               ? ['5']
-              : ['1']
+              : currentURL === 'http://127.0.0.1:3001/settings/my-companies' ||
+                currentURL === 'https://hfworks.id.vn/settings/my-companies'
+              ? ['4']
+              : currentURL === 'http://127.0.0.1:3001/settings/my-jobs' ||
+                currentURL === 'https://hfworks.id.vn/settings/my-jobs'
+              ? ['5']
+              : ['5']
           }
           items={[
-            {
-              key: '1',
-              icon: (
-                <span style={{ fontSize: '22px', color: 'gray' }}>
-                  <AiFillDashboard />
-                </span>
-              ),
-              label: 'Tổng Quan',
-              style: { display: 'flex', alignItems: 'center', marginTop: '10px' }
-            },
-            {
-              key: '2',
-              icon: (
-                <span style={{ fontSize: '22px', color: 'gray' }}>
-                  <FaClipboardUser />
-                </span>
-              ),
-              label: 'Hồ Sơ Của Tôi',
-              style: { display: 'flex', alignItems: 'center' }
-            },
             // {
-            //   key: '3',
+            //   key: '1',
             //   icon: (
             //     <span style={{ fontSize: '22px', color: 'gray' }}>
-            //       <FaUserCog />
+            //       <AiFillDashboard />
             //     </span>
             //   ),
-            //   label: 'Thiết Lập Hồ Sơ',
-            //   style: { display: 'flex', alignItems: 'center' }
+            //   label: 'Tổng Quan',
+            //   style: { display: 'flex', alignItems: 'center', marginTop: '10px' }
             // },
+            {
+              key: '5',
+              icon: (
+                <span style={{ fontSize: '22px', color: 'gray' }}>
+                  <MdWork />
+                </span>
+              ),
+              label: 'Việc Làm Của Tôi',
+              style: { display: 'flex', alignItems: 'center' }
+            },
             {
               key: '4',
               icon: (
@@ -208,15 +200,26 @@ const SideBar = () => {
               style: { display: 'flex', alignItems: 'center' }
             },
             {
-              key: '5',
+              key: '2',
               icon: (
                 <span style={{ fontSize: '22px', color: 'gray' }}>
-                  <MdWork />
+                  <FaClipboardUser />
                 </span>
               ),
-              label: 'Việc Làm Của Tôi',
+              label: 'Hồ Sơ Của Tôi',
               style: { display: 'flex', alignItems: 'center' }
             }
+            // {
+            //   key: '3',
+            //   icon: (
+            //     <span style={{ fontSize: '22px', color: 'gray' }}>
+            //       <FaUserCog />
+            //     </span>
+            //   ),
+            //   label: 'Thiết Lập Hồ Sơ',
+            //   style: { display: 'flex', alignItems: 'center' }
+            // },
+
             // {
             //   key: '6',
             //   icon: (

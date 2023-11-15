@@ -7,7 +7,7 @@ import { BiBlock } from 'react-icons/bi'
 import { CgUnblock } from 'react-icons/cg'
 
 import { FiSearch } from 'react-icons/fi'
-import { FaHistory } from 'react-icons/fa'
+// import { FaHistory } from 'react-icons/fa'
 import ModalBlockAccount from './components/ModalBlockAccount'
 import { useState, useEffect } from 'react'
 import apiAdmin, { SearchUserFilter } from '~/api/admin.api'
@@ -20,6 +20,7 @@ interface DataType {
   signUpDate: string
   updateDate: string
   status: string | number
+  verify: number
 }
 interface UserType {
   [key: string]: any
@@ -27,6 +28,8 @@ interface UserType {
 const UsersManage = () => {
   const [openModalBlockAccount, setOpenModalBlockAccount] = useState(false)
   const [selectedAccountId, setSelectedAccountId] = useState('')
+  const [isBanned, setIsBanned] = useState(false)
+  const [isSubmit, setIsSubmit] = useState(false)
   const [listUsers, setListUsers] = useState<DataType[]>([])
   const [role, setRole] = useState('employer')
   const [content, setContent] = useState('')
@@ -39,6 +42,12 @@ const UsersManage = () => {
     setCurrentPage(1)
     fetchGetUsers()
   }, [role, content, status, verify])
+  useEffect(() => {
+    if (isSubmit) {
+      fetchGetUsers(currentPage.toString())
+      setIsSubmit(false)
+    }
+  }, [isSubmit])
   const fetchGetUsers = async (page?: string) => {
     let request: SearchUserFilter = {
       limit: limit.toString(),
@@ -57,7 +66,8 @@ const UsersManage = () => {
           email: user.email,
           signUpDate: user.created_at.slice(0, 10),
           updateDate: user.updated_at.slice(0, 10),
-          status: user.status !== 1 ? Object.values(UserVerifyStatus)[user.verify] : 'Đã khóa'
+          status: user.status !== 1 ? Object.values(UserVerifyStatus)[user.verify] : 'Đã khóa',
+          verify: user.verify
         }
       })
       setListUsers(listTemp)
@@ -69,7 +79,7 @@ const UsersManage = () => {
       setVerify('')
     }
     if (status === '2') {
-      setStatus('1')
+      setStatus('')
       setVerify('2')
     }
     if (status === '1') {
@@ -85,9 +95,15 @@ const UsersManage = () => {
     setCurrentPage(page)
     await fetchGetUsers(page.toString())
   }
-  const handleOpenModalBlockAccount = (id: string) => {
+  const handleOpenModalBlockAccount = (id: string, verify: number) => {
+    if (verify === 2) setIsBanned(true)
+    else setIsBanned(false)
     setSelectedAccountId(id)
     setOpenModalBlockAccount(true)
+  }
+  const handleAfterSubmit = () => {
+    setIsSubmit(true)
+    setOpenModalBlockAccount(false)
   }
   const onChangeTab = (key: string) => {
     setRole(key)
@@ -163,25 +179,28 @@ const UsersManage = () => {
               <BsFillEyeFill />
             </a>
           </Tooltip> */}
-
-          {record.status !== 'Đã khóa' ? (
-            <Tooltip title='Khóa tài khoản'>
-              <a onClick={() => handleOpenModalBlockAccount(record.id)}>
-                <BiBlock />
-              </a>
-            </Tooltip>
-          ) : (
-            <Tooltip title='Bỏ khóa tài khoản'>
-              <a>
-                <CgUnblock />
-              </a>
-            </Tooltip>
-          )}
-          <Tooltip title='Lịch sử hoạt động'>
+          {record.verify > 0 && (
+            <>
+              {record.status !== 'Đã khóa' ? (
+                <Tooltip title='Khóa tài khoản'>
+                  <a onClick={() => handleOpenModalBlockAccount(record.id, record.verify)}>
+                    <BiBlock />
+                  </a>
+                </Tooltip>
+              ) : (
+                <Tooltip title='Bỏ khóa tài khoản'>
+                  <a onClick={() => handleOpenModalBlockAccount(record.id, record.verify)}>
+                    <CgUnblock />
+                  </a>
+                </Tooltip>
+              )}
+              {/* <Tooltip title='Lịch sử hoạt động'>
             <a>
               <FaHistory />
             </a>
-          </Tooltip>
+          </Tooltip> */}
+            </>
+          )}
         </Space>
       )
     }
@@ -228,8 +247,10 @@ const UsersManage = () => {
           pagination={{ current: currentPage, total: total, pageSize: limit, onChange: handleChangePage }}
         />
         <ModalBlockAccount
+          handleAfterSubmit={handleAfterSubmit}
           selectedAccountId={selectedAccountId}
           open={openModalBlockAccount}
+          isBanned={isBanned}
           handleCancel={() => setOpenModalBlockAccount(false)}
         />
       </div>

@@ -67,6 +67,10 @@ export class Admin {
     const rs: ApiResponse = await client.get(`/admin/users`, { params: request })
     return rs
   }
+  public static postBlockOrUnLockUser = async (user_id: string) => {
+    const rs: ApiResponse = await client.post(`/admin/users/lock-or-unlock`, { user_id })
+    return rs
+  }
 }
 
 export default Admin

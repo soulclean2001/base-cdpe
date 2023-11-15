@@ -20,11 +20,13 @@ import { RootState } from '~/app/store'
 import { EmployerState, getItemsCart, getMyCart } from '~/features/Employer/employerSlice'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import ModalChangePassword from '~/components/ModalChangePassword'
 
 const RightMenu = (props: any) => {
   const { roleType } = props
   const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
   const [openModalProfile, setOpenModalProfile] = useState(false)
+  const [openModalChangePassword, setOpenModalChangePassword] = useState(false)
   const navigate = useNavigate()
   const disPatch = useDispatch()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
@@ -88,6 +90,7 @@ const RightMenu = (props: any) => {
     }
 
     if (e.key === 'key_settings_info') setOpenModalProfile(true)
+    if (e.key === 'key_changePassword') setOpenModalChangePassword(true)
   }
   const menuProps = {
     items,
@@ -104,6 +107,8 @@ const RightMenu = (props: any) => {
 
   return (
     <div className='right_menu_container'>
+      <ModalChangePassword open={openModalChangePassword} handleClose={() => setOpenModalChangePassword(false)} />
+
       <div className='right_menu_container_pc'>
         {me && me.id ? (
           <>

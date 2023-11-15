@@ -15,7 +15,7 @@ import { toast } from 'react-toastify'
 const LoginEmployer = (props: any) => {
   const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
-
+  const [loading, setLoading] = useState<boolean>(false)
   const { hiddenTabSignUp, titleForm } = props
   const [form] = Form.useForm()
 
@@ -27,6 +27,11 @@ const LoginEmployer = (props: any) => {
   const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
     if (token) {
       const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.verify === 2) {
+        toast.error('Tài khoản của bạn đã bị khóa, vui lòng đăng ký tài khoản mới để đăng nhập vào hệ thống !!')
+
+        return
+      }
       if (hiddenTabSignUp) {
         if (dataDecode.role.toString() === '0') {
           const action: AuthLogin = { isLogin: true, loading: false, error: '' }
@@ -34,10 +39,10 @@ const LoginEmployer = (props: any) => {
           dispatchAsync(setAccountStatus(dataDecode))
           dispatchAsync(setStateLogin(action))
           navigate('/admin')
+          return
         } else {
-          toast.error('Tài khoản không tồn tạii')
-
-          // setLoading(false)
+          toast.error('Tài khoản không tồn tại')
+          return
         }
       } else {
         if (dataDecode.role && dataDecode.role === 1) {
@@ -46,16 +51,17 @@ const LoginEmployer = (props: any) => {
           dispatchAsync(setAccountStatus(dataDecode))
           dispatchAsync(setStateLogin(action))
           navigate('/employer')
+          return
         } else {
           toast.error('Tài khoản không tồn tại')
           return
-          // setLoading(false)
         }
       }
     }
   }
 
   const handleSubmitLogin = async () => {
+    setLoading(true)
     const data = {
       username: email,
       password,
@@ -66,10 +72,11 @@ const LoginEmployer = (props: any) => {
         if (response.result && response.result.access_token && response.result.refresh_token) {
           await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
         }
+        setLoading(false)
       })
       .catch(() => {
         toast.error('Tài khoản hoặc mật khẩu không đúng')
-        // setLoading(false)
+        setLoading(false)
       })
   }
 
@@ -147,7 +154,7 @@ const LoginEmployer = (props: any) => {
                 </Link>
               </Form.Item>
               <Form.Item>
-                <Button type='primary' htmlType='submit' className='login-form-button'>
+                <Button disabled={loading} type='primary' htmlType='submit' className='login-form-button'>
                   Đăng nhập
                 </Button>
               </Form.Item>

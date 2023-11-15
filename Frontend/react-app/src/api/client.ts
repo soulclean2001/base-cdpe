@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from 'axios'
 import { EnhancedStore } from '@reduxjs/toolkit'
 import Auth from './auth.api'
 import { logout, setToken } from '~/features/Auth/authSlice'
+import { resetProfile } from '~/features/Account/meSlice'
 
 let store: EnhancedStore
 export const cancelTokenSource = axios.CancelToken.source()
@@ -55,6 +56,9 @@ const responseInterceptorId = instance.interceptors.response.use(
 
     if (responseInterceptorId) axios.interceptors.response.eject(responseInterceptorId)
 
+    if (error.response.status === 401) {
+      store.dispatch(logout())
+    }
     return Promise.reject(error)
     return Auth.refreshToken(refreshToken)
       .then((response) => {

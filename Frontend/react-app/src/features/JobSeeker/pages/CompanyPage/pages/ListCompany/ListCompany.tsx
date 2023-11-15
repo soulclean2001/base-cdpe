@@ -66,7 +66,7 @@ const ListCompany = () => {
           </Col>
         </Row>
         <Row className='list-company'>
-          {listCompany &&
+          {listCompany && listCompany.length > 0 ? (
             listCompany.map((item) => (
               <Col lg={8} md={12} sm={24} xs={24} key={item._id} style={{ padding: '10px' }}>
                 <CompanyItem
@@ -80,7 +80,10 @@ const ListCompany = () => {
                   totalJobs={item.job_num}
                 />
               </Col>
-            ))}
+            ))
+          ) : (
+            <>Không tìm thấy</>
+          )}
         </Row>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px 0' }}>

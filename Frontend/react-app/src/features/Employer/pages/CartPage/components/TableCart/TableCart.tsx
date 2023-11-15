@@ -149,7 +149,7 @@ const TableCart = (props: any) => {
             {' - '}
             {record.type === 'BANNER' ? `${record.totalDate} ngày` : `${record.valuePost} bài đăng`}
             {record.statusPackage !== 'ACTIVE' && (
-              <span style={{ fontSize: '12px', color: 'red' }}> (Ngừng kinh doanh)</span>
+              <span style={{ fontSize: '12px', color: 'red' }}> (Ngừng hoạt động)</span>
             )}
           </span>
           <Collapse

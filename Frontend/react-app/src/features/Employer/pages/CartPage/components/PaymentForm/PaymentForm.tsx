@@ -92,7 +92,12 @@ const PaymentForm = (props: PropsType) => {
         disabled={!items || items.length < 1 ? true : false}
         onClick={handleCreateOrder}
         size='large'
-        style={{ width: '100%', marginTop: '17px', backgroundColor: 'rgb(255, 125, 85)', color: 'white' }}
+        style={{
+          width: '100%',
+          marginTop: '17px',
+          backgroundColor: !items || items.length < 1 ? 'rgb(245, 137, 104)' : 'rgb(255, 125, 85)',
+          color: 'white'
+        }}
       >
         Tạo đơn hàng
       </Button>
