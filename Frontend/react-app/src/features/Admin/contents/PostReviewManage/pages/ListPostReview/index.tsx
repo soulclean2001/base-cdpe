@@ -1,4 +1,4 @@
-import { Col, Input, Row, Select, Space, Table, Tag } from 'antd'
+import { Col, Input, Row, Select, Space, Table, Tag, Tooltip } from 'antd'
 import '../../../UsersManage/style.scss'
 // import './style.scss'
 import { ColumnsType } from 'antd/es/table'
@@ -36,6 +36,7 @@ const ListPostReview = () => {
   const [content, setContent] = useState('')
   const [dateFormTo, setDateFormTo] = useState<string[]>()
   const [status, setStatus] = useState('')
+  const [isSubmit, setIsSubmit] = useState(false)
   //
   useEffect(() => {
     if (notificaions.page > 0) fetchGetListPostRequest(currentPage.toString())
@@ -44,6 +45,12 @@ const ListPostReview = () => {
     setCurrentPage(1)
     fetchGetListPostRequest()
   }, [content, dateFormTo, status])
+  useEffect(() => {
+    if (isSubmit) {
+      fetchGetListPostRequest(currentPage.toString())
+      setIsSubmit(false)
+    }
+  }, [isSubmit])
   const fetchGetListPostRequest = async (page?: string) => {
     let request: JobSearchByAdmin = {
       content: content,
@@ -108,6 +115,10 @@ const ListPostReview = () => {
         })
     }
   }
+  const handleAfterSubmit = () => {
+    setIsSubmit(true)
+    setOpenModalDetailPost(false)
+  }
   const handleOnchangePageClick = async (page: number) => {
     setCurrentPage(page)
     await fetchGetListPostRequest(page.toString())
@@ -170,28 +181,34 @@ const ListPostReview = () => {
       align: 'left',
       render: (_, record) => (
         <Space size={'middle'} style={{ textAlign: 'center' }}>
-          <a
-            onClick={() => handleOpenModalDetailPost(record.id)}
-            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-          >
-            <BsFillEyeFill />
-          </a>
+          <Tooltip title='Chi tiết'>
+            <a
+              onClick={() => handleOpenModalDetailPost(record.id)}
+              style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+            >
+              <BsFillEyeFill />
+            </a>
+          </Tooltip>
           {record.status !== 1 ? (
             <></>
           ) : (
             <>
-              <a
-                onClick={() => handleActionRequest('APPROVE', record.id)}
-                style={{ fontSize: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-              >
-                <BsFillCheckCircleFill />
-              </a>
-              <a
-                onClick={() => handleActionRequest('REJECT', record.id)}
-                style={{ fontSize: '17px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-              >
-                <TiDelete />
-              </a>
+              <Tooltip title='Chấp nhận'>
+                <a
+                  onClick={() => handleActionRequest('APPROVE', record.id)}
+                  style={{ fontSize: '12px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                >
+                  <BsFillCheckCircleFill />
+                </a>
+              </Tooltip>
+              <Tooltip title='Từ chối'>
+                <a
+                  onClick={() => handleActionRequest('REJECT', record.id)}
+                  style={{ fontSize: '17px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+                >
+                  <TiDelete />
+                </a>
+              </Tooltip>
             </>
           )}
         </Space>
@@ -240,6 +257,7 @@ const ListPostReview = () => {
           </Col>
         </Row>
         <ModalInfoPost
+          handleAfterSubmit={handleAfterSubmit}
           open={openModalDetailPost}
           idPost={postID}
           roleType='ADMIN_ROLE'

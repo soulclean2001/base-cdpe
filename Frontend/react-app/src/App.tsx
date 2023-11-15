@@ -1,5 +1,5 @@
 import Layout from './Layout'
-import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
+import { Routes, Route, Outlet } from 'react-router-dom'
 
 import 'antd/dist/reset.css'
 
@@ -62,7 +62,7 @@ import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
 import { ToastContainer, toast } from 'react-toastify'
-import axios from 'axios'
+
 import apiClient from './api/client'
 import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVAppliedDetailPage'
 import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/CandidateFollowedPage'
@@ -81,7 +81,6 @@ export let socket: Socket
 function App() {
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
-  const navigate = useNavigate()
 
   const auth: AuthState = useSelector((state: RootState) => state.auth)
 

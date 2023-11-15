@@ -219,7 +219,15 @@ const OverviewEmployer = () => {
       <Col md={24} sm={24} xs={24} className='table-top-wapper'>
         <h2>TOP VIỆC LÀM CÓ LƯỢT ỨNG TUYỂN NHIỀU NHẤT</h2>
         <div className='top-order-wapper'>
-          {dataTop10.length > 0 && <Table pagination={false} rowKey={'id'} columns={columns} dataSource={dataTop10} />}
+          {dataTop10.length > 0 && (
+            <Table
+              style={{ width: '100%' }}
+              pagination={false}
+              rowKey={'id'}
+              columns={columns}
+              dataSource={dataTop10}
+            />
+          )}
         </div>
       </Col>
 

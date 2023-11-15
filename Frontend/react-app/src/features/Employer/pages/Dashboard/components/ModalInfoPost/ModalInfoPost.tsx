@@ -24,7 +24,7 @@ import { DataOptionType } from '../ModalWorkLocation'
 import { RootState } from '~/app/store'
 import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
 import { getAllIndustries } from '~/api/industries.api'
-
+import apiAdmin from '~/api/admin.api'
 //data lo
 
 const listLevel = [
@@ -166,7 +166,7 @@ const ModalInfoPost = (props: any) => {
   const [arrLocations, setArrLocations] = useState(initLocation)
   const [arrSkills, setArrSkills] = useState([{ key: 0, value: '' }])
   const [arrBenefits, setArrBenefits] = useState([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
-
+  const [status, setStatus] = useState<string>('')
   //
 
   const [formLocation] = Form.useForm()
@@ -576,7 +576,7 @@ const ModalInfoPost = (props: any) => {
         return { key: index, data: benefit }
       })
       setArrBenefits(mapBenefits)
-
+      setStatus(rs.status)
       //
       setSalaryRange(rs.salary_range)
       setQuantityAccept(rs.number_of_employees_needed)
@@ -597,7 +597,45 @@ const ModalInfoPost = (props: any) => {
     })
   }
   //
+  const handleActionRequest = async (type: string, id: string) => {
+    if (type === 'APPROVE') {
+      await apiAdmin
+        .postApprovePostRequest(id)
+        .then(async (rs) => {
+          if (rs.message === 'job status is not pending to approve') {
+            toast.error(
+              `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
+            )
+            return
+          }
 
+          toast.success(`Đã thành công duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+          handleAfterSubmit()
+        })
+        .catch(() => {
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại')
+        })
+    }
+    if (type === 'REJECT') {
+      await apiAdmin
+        .postRejectPostRequest(id)
+        .then(async (rs) => {
+          if (rs.message === 'job status is not pending to approve') {
+            toast.error(
+              `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
+            )
+            return
+          }
+
+          handleAfterSubmit()
+          toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+        })
+        .catch(() => {
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại')
+        })
+    }
+  }
+  //
   return (
     <>
       <Modal
@@ -1216,12 +1254,12 @@ const ModalInfoPost = (props: any) => {
               <Button size='large' style={{ width: '100px' }} onClick={handleClose}>
                 Thoát
               </Button>
-              {idPost && roleType === 'ADMIN_ROLE' ? (
+              {idPost && roleType === 'ADMIN_ROLE' && Number(status) === 1 ? (
                 <>
-                  <Button className='btn-reject' size='large' onClick={handleClose}>
+                  <Button className='btn-reject' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
                     Từ chối
                   </Button>
-                  <Button className='btn-approved' size='large' onClick={handleClose}>
+                  <Button className='btn-approved' size='large' onClick={() => handleActionRequest('REJECT', idPost)}>
                     Chấp nhận
                   </Button>
                 </>

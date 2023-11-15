@@ -1,3 +1,4 @@
+import { Tooltip } from 'antd'
 import { MdPayments } from 'react-icons/md'
 import apiPayment from '~/api/payment.api'
 
@@ -14,12 +15,14 @@ const CreatePayment = (props: any) => {
   }
 
   return (
-    <a
-      onClick={handlePayment}
-      style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-    >
-      <MdPayments />
-    </a>
+    <Tooltip title='Thanh toán'>
+      <a
+        onClick={handlePayment}
+        style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+      >
+        <MdPayments />
+      </a>
+    </Tooltip>
   )
 }
 

@@ -1,4 +1,4 @@
-import { Col, Input, Row, Select, Space, Table, Tag } from 'antd'
+import { Col, Input, Row, Select, Space, Table, Tag, Tooltip } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { BsFillEyeFill } from 'react-icons/bs'
 import { FiSearch } from 'react-icons/fi'
@@ -145,18 +145,21 @@ const MyServicesPage = () => {
       align: 'left',
       render: (_, record) => (
         <Space size={'middle'} style={{ textAlign: 'center' }}>
-          <a
-            onClick={() => handleOpenModal(record.idPackage)}
-            style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
-          >
-            <BsFillEyeFill />
-          </a>
-
-          {record.status === 'Hết hạn' && (
-            <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
-              <MdPayments />
+          <Tooltip title='Chi tiết'>
+            <a
+              onClick={() => handleOpenModal(record.idPackage)}
+              style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
+            >
+              <BsFillEyeFill />
             </a>
-          )}
+          </Tooltip>
+          <Tooltip title='Gia hạn'>
+            {record.status === 'Hết hạn' && (
+              <a style={{ fontSize: '14px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
+                <MdPayments />
+              </a>
+            )}
+          </Tooltip>
         </Space>
       )
     }

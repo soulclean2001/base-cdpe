@@ -1,4 +1,4 @@
-import { Button, Col, Input, Modal, Row, Select, Table, Tag } from 'antd'
+import { Button, Col, Input, Modal, Row, Select, Table, Tag, Tooltip } from 'antd'
 import { ColumnsType, TableProps } from 'antd/es/table'
 import { SorterResult } from 'antd/es/table/interface'
 import { useEffect, useState } from 'react'
@@ -284,27 +284,36 @@ const TableCustom = (props: any) => {
       fixed: 'right',
       render: (_, item) => (
         <div style={{ display: 'flex', gap: '5px' }}>
-          <a onClick={() => setOpenModalInfo(true)}>
-            <BsFillEyeFill />
-          </a>
-          {item.visibility && (
-            <a onClick={() => handleHidePost(item.id ? item.id : '')}>
-              <AiFillLock />
+          <Tooltip title='Chi tiết'>
+            <a onClick={() => setOpenModalInfo(true)}>
+              <BsFillEyeFill />
             </a>
+          </Tooltip>
+
+          {item.visibility && (
+            <Tooltip title='Ẩn'>
+              <a onClick={() => handleHidePost(item.id ? item.id : '')}>
+                <AiFillLock />
+              </a>
+            </Tooltip>
           )}
           {!item.visibility && Number(item.status) !== 1 && (
-            <a onClick={() => setIsOpenModalPublish(true)}>
-              <BiWorld />
-            </a>
+            <Tooltip title='Công khai'>
+              <a onClick={() => setIsOpenModalPublish(true)}>
+                <BiWorld />
+              </a>
+            </Tooltip>
           )}
           {/* {Number(item.status) !== 1 && (
             <a onClick={handleOpenModalDelete}>
               <MdDelete />
             </a>
           )} */}
-          <a onClick={handleOpenModalDelete}>
-            <MdDelete />
-          </a>
+          <Tooltip title='Xóa'>
+            <a onClick={handleOpenModalDelete}>
+              <MdDelete />
+            </a>
+          </Tooltip>
         </div>
       ),
       showSorterTooltip: false
