@@ -304,8 +304,8 @@ class UsersService {
       })
 
     const [new_access_token, new_refresh_token] = await Promise.all([
-      this.signAccessToken({ user_id, verify, role: user.role }),
-      this.signRefreshToken({ user_id, verify, exp })
+      this.signAccessToken({ user_id, verify: user.verify, role: user.role }),
+      this.signRefreshToken({ user_id, verify: user.verify, exp })
     ])
 
     await databaseServices.refreshTokens.deleteOne({ token: refresh_token })
@@ -623,6 +623,10 @@ class UsersService {
           }
         }
       )
+
+      await databaseServices.refreshTokens.deleteMany({
+        user_id: user._id
+      })
     } else {
       await databaseServices.users.updateOne(
         {
