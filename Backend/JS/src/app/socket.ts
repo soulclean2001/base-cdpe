@@ -8,7 +8,7 @@ import { TokenPayload } from '~/models/requests/User.request'
 import ConversationService from '~/services/conversation.services'
 import databaseServices from '~/services/database.services'
 import { verifyAccessToken } from '~/utils/commons'
-const activeConnections: {
+export const activeConnections: {
   [key: string]: string[]
 } = {}
 

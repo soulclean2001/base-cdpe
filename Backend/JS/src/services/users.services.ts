@@ -15,6 +15,8 @@ import axios from 'axios'
 import { sendVerifyRegisterEmail, sendForgotPasswordEmail } from '~/utils/email'
 import Company from '~/models/schemas/Company.schema'
 import { PositionType } from '~/models/requests/Company.request'
+import { io } from '..'
+import { activeConnections } from '~/app/socket'
 
 export interface QueryUserEmployerFilter {
   content?: string
@@ -349,7 +351,7 @@ class UsersService {
         user_id: new ObjectId(user_id)
       })
     )
-
+    io.to(user_id).emit('verify', {})
     return { access_token, refresh_token }
   }
 
@@ -627,6 +629,7 @@ class UsersService {
       await databaseServices.refreshTokens.deleteMany({
         user_id: user._id
       })
+      io.to(user._id.toString()).emit('lock-user', {})
     } else {
       await databaseServices.users.updateOne(
         {

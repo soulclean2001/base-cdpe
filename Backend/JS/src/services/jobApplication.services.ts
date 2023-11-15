@@ -802,7 +802,7 @@ class JobApplicationService {
         status: 404
       })
 
-    const result = await databaseServices.jobApplication
+    const result = await databaseServices.job
       .aggregate([
         {
           $match: {
