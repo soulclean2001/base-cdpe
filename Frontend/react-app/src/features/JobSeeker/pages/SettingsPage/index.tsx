@@ -21,6 +21,10 @@ const SettingsPage = () => {
         navigate('/active-page')
         return
       }
+      if (auth.verify === 2) {
+        navigate('/candidate-login')
+        return
+      }
     } else {
       navigate('/candidate-login')
       return

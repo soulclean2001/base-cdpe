@@ -32,9 +32,10 @@ const DashboarEmployer = () => {
         navigate('/employer-login')
         return
       }
+    } else {
+      navigate('/employer-login')
+      return
     }
-    navigate('/employer-login')
-    return
   }, [auth])
   useEffect(() => {
     if (collap) {

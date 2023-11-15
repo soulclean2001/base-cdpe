@@ -11,7 +11,7 @@ const Job = () => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken && auth.role !== 2) {
+    if ((auth && auth.isLogin && auth.accessToken && auth.role !== 2) || auth.verify === 2) {
       navigate('/candidate-login')
     }
   }, [auth])

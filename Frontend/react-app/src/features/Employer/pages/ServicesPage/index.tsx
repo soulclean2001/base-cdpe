@@ -22,6 +22,10 @@ const ServicesPage = () => {
         navigate('/employer/active-page')
         return
       }
+      if (auth.verify === 2) {
+        navigate('/employer-login')
+        return
+      }
     } else {
       navigate('/employer-login')
     }

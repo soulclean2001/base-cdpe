@@ -32,9 +32,11 @@ const CartPage = () => {
         navigate('/employer-login')
         return
       }
+      return
+    } else {
+      navigate('/employer-login')
+      return
     }
-    navigate('/employer-login')
-    return
   }, [auth])
   const handleSetTotalPay = (
     total: number,
