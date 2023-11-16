@@ -135,8 +135,9 @@ const MyOrdersPage = (props: any) => {
         await fetchGetMyOrders(currentPage.toString())
         toast.success('Đơn hàng đã chuyển sang trạng thái Hoàn tất')
       })
-      .catch(() => {
+      .catch(async () => {
         toast.error('Có lỗi xảy ra, vui lòng thử lại')
+        await fetchGetMyOrders(currentPage.toString())
       })
   }
   const handleCancelOrder = async (orderId: string) => {
@@ -146,8 +147,9 @@ const MyOrdersPage = (props: any) => {
         await fetchGetMyOrders(currentPage.toString())
         toast.success('Đơn hàng đã chuyển sang trạng thái Đã hủy')
       })
-      .catch(() => {
+      .catch(async () => {
         toast.error('Có lỗi xảy ra, vui lòng thử lại')
+        await fetchGetMyOrders(currentPage.toString())
       })
   }
 
