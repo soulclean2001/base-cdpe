@@ -77,12 +77,14 @@ const ModalProfile = (props: any) => {
         <h3>Thông tin cá nhân</h3>
         <div style={{ display: 'flex' }}>
           <div className='info-left'>
+            <p>Email</p>
             <p>Điện thoại</p>
             <p>Giới tính</p>
             <p>Ngày sinh</p>
           </div>
 
           <div className='info-right'>
+            <p>{me.email}</p>
             <p>{phone ? phone : '_'}</p>
             <p>{gender}</p>
             <p>{birthDay ? birthDay : '_'}</p>

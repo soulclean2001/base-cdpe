@@ -36,10 +36,10 @@ const ModalDetailOrder = (props: any) => {
         rs.result.service_orders.map((service: AnyType) => {
           rs.result.packages.map((pkg: AnyType) => {
             if (pkg._id === service.package_id) {
-              totalTemp += pkg.price * service.quantity
+              totalTemp += pkg.discount_price * service.quantity
               listTemp.push({
-                name: `#SV_${pkg._id.slice(-5).toUpperCase()} - ${pkg.title} ${pkg.number_of_days_to_expire} ngày`,
-                price: pkg.price,
+                name: `#SV_${pkg._id.slice(-5).toUpperCase()} - ${pkg.title}`,
+                price: pkg.discount_price,
                 quantity: service.quantity
               })
             }
@@ -60,10 +60,10 @@ const ModalDetailOrder = (props: any) => {
         rs.result.service_orders.map((service: AnyType) => {
           rs.result.packages.map((pkg: AnyType) => {
             if (pkg._id === service.package_id) {
-              totalTemp += pkg.price * service.quantity
+              totalTemp += pkg.discount_price * service.quantity
               listTemp.push({
-                name: `#SV_${pkg._id.slice(-5).toUpperCase()} - ${pkg.title} ${pkg.number_of_days_to_expire} ngày`,
-                price: pkg.price,
+                name: `#SV_${pkg._id.slice(-5).toUpperCase()} - ${pkg.title}`,
+                price: pkg.discount_price,
                 quantity: service.quantity
               })
             }

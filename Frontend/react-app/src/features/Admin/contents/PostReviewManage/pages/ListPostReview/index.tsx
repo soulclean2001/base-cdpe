@@ -227,7 +227,7 @@ const ListPostReview = () => {
               onChange={(e) => setContent(e.target.value)}
               className='input-search-user'
               size='large'
-              placeholder='ID, tên công việc, công ty'
+              placeholder='Tên công việc, công ty'
               prefix={<FiSearch />}
             />
           </Col>

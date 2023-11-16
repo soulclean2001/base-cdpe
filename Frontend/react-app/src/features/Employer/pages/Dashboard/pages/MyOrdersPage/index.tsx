@@ -106,7 +106,7 @@ const MyOrdersPage = (props: any) => {
               if (pkg._id === service.package_id) {
                 packagesTemp.push({
                   id: pkg._id,
-                  nameService: `${pkg.title}-${pkg.number_of_days_to_expire} ngày`,
+                  nameService: `${pkg.title}`,
                   quantity: service.quantity,
                   idService_order: service._id
                 })

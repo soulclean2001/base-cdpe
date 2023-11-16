@@ -43,6 +43,31 @@ const RightMenu = () => {
 
   const items: MenuProps['items'] = [
     {
+      key: 'header-info',
+      label: (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            borderTop: '1px solid  #ebebeb',
+            borderBottom: '1px solid #ebebeb',
+            padding: '15px 0'
+          }}
+        >
+          <Avatar size={'large'} src={me.avatar ? me.avatar : ''}></Avatar>
+          <div className='info'>
+            <div className='name' style={{ fontWeight: 500, fontSize: '16px' }}>
+              {me.name}
+            </div>
+            <div className='email' style={{ fontWeight: 500, fontSize: '16px' }}>
+              {me.email}
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
       label: (
         <>
           {auth.verify.toString() === '0' ? (

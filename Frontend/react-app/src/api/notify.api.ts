@@ -8,7 +8,12 @@ export interface RequestNotify {
 }
 export class Notify {
   public static getAllByMe = async (request: RequestNotify) => {
-    const rs: ApiResponse = await client.get(`/notifications`, { params: request })
+    const rs: ApiResponse = await client.get(`/notifications`, {
+      params: {
+        page: request.filter.page,
+        limit: request.filter.limit
+      }
+    })
     return rs
   }
   public static seeNotify = async (id: string) => {

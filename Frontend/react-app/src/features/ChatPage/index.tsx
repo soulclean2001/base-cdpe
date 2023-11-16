@@ -15,16 +15,13 @@ const ChatPage = (props: any) => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const navigate = useNavigate()
   useEffect(() => {
-    if (auth && auth.isLogin && auth.accessToken) {
+    if (auth && auth.isLogin && auth.accessToken && auth.verify !== 2) {
       if (auth.role === 2) {
         if (auth.verify.toString() === '0') {
           navigate('/active-page')
           return
         }
-        if (auth.verify === 2) {
-          navigate('/candidate-login')
-          return
-        }
+
         navigate('/chat')
         return
       }
@@ -33,10 +30,7 @@ const ChatPage = (props: any) => {
           navigate('/employer/active-page')
           return
         }
-        if (auth.verify === 2) {
-          navigate('/candidate-login')
-          return
-        }
+
         navigate('/employer/chat')
         return
       }
@@ -45,10 +39,7 @@ const ChatPage = (props: any) => {
           navigate('/admin/active-page')
           return
         }
-        if (auth.verify === 2) {
-          navigate('/candidate-login')
-          return
-        }
+
         navigate('/admin/chat')
         return
       }

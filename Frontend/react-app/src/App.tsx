@@ -52,7 +52,7 @@ import { RootState } from './app/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { getTimeExpired, isExpired } from './utils/jwt'
-import { getMe } from './features/Account/meSlice'
+import { getMe, resetProfile } from './features/Account/meSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
 import { Socket, io } from 'socket.io-client'
 import { setSocket } from './features/User/userSlice'
@@ -108,6 +108,7 @@ function App() {
       if (decode.verify === 2) {
         toast.error('Tài khoản của bạn đã bị khóa, vui lòng đăng nhập hoặc đăng ký tài khoản khác để tiếp tục')
         dispatch(logout())
+        dispatch(resetProfile())
         return
       }
       dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
@@ -137,9 +138,8 @@ function App() {
       socket.on('new-notification', (notify: NotificationType) => {
         console.log('new notify', notify)
 
-        notify = { ...notify, created_at: new Date().toISOString() }
-
-        dispatch(addNotify(notify))
+        // notify = { ...notify, created_at: new Date().toISOString() }
+        if (notify.recievers.includes(auth.user_id)) dispatch(addNotify(notify))
       })
 
       socket.on('lock-user', (_) => {

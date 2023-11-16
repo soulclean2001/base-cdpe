@@ -10,6 +10,7 @@ import { RootState } from '~/app/store'
 
 import ModalChangePassword from '~/components/ModalChangePassword'
 import ModalProfile from '~/components/ModalProfile'
+import NotifyDrawer from '~/components/Header/NotifyDrawer/NotifyDrawer'
 const styleForItemMenuPhone = {
   marginBottom: 0,
   fontSize: '16px',
@@ -26,6 +27,7 @@ const RightMenuPhone = () => {
   const me: InfoMeState = useSelector((state: RootState) => state.me)
   const [isOpenModalChangePass, setIsOpenModalChangePassword] = useState(false)
   const [isOpenModalProfile, setIsOpenModalProfile] = useState(false)
+  const [isShowDrawerNotify, setIsShowDrawerNotify] = useState(false)
   const navigate = useNavigate()
   const distPath = useDispatch()
   const showDrawer = () => {
@@ -38,6 +40,11 @@ const RightMenuPhone = () => {
 
   return (
     <div className='right_menu_container_phone'>
+      <NotifyDrawer
+        open={isShowDrawerNotify}
+        onClose={() => setIsShowDrawerNotify(false)}
+        roleType={auth.role === 1 ? 'EMPLOYER_ROLE' : 'ADMIN_ROLE'}
+      />
       <MenuOutlined onClick={showDrawer} />
       <ModalProfile openModal={isOpenModalProfile} handleCloseModal={() => setIsOpenModalProfile(false)} />
       <ModalChangePassword open={isOpenModalChangePass} handleClose={() => setIsOpenModalChangePassword(false)} />
@@ -85,9 +92,23 @@ const RightMenuPhone = () => {
               </p>
             ) : (
               <>
+                <p onClick={() => setIsShowDrawerNotify(true)} style={styleForItemMenuPhone}>
+                  Thông báo
+                </p>
                 <p onClick={() => setIsOpenModalProfile(true)} style={styleForItemMenuPhone}>
                   Thông tin cá nhân
                 </p>
+
+                {auth.role === 1 && (
+                  <>
+                    <p onClick={() => navigate('/employer/cart')} style={styleForItemMenuPhone}>
+                      Giỏ hàng
+                    </p>
+                    <p onClick={() => navigate('/employer/chat')} style={styleForItemMenuPhone}>
+                      Tin nhắn
+                    </p>
+                  </>
+                )}
 
                 <p onClick={() => setIsOpenModalChangePassword(true)} style={styleForItemMenuPhone}>
                   Đổi mật khẩu

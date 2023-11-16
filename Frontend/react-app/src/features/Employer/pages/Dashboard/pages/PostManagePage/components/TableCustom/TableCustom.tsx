@@ -290,7 +290,7 @@ const TableCustom = (props: any) => {
             </a>
           </Tooltip>
 
-          {item.visibility && (
+          {item.visibility && Number(item.status) !== 1 && (
             <Tooltip title='Ẩn'>
               <a onClick={() => handleHidePost(item.id ? item.id : '')}>
                 <AiFillLock />

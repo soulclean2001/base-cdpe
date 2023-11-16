@@ -58,6 +58,7 @@ const responseInterceptorId = instance.interceptors.response.use(
 
     if (error.response.status === 401) {
       store.dispatch(logout())
+      store.dispatch(resetProfile())
     }
     return Promise.reject(error)
     return Auth.refreshToken(refreshToken)

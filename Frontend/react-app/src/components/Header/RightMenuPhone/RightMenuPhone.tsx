@@ -10,6 +10,7 @@ import { InfoMeState } from '~/features/Account/meSlice'
 import { AuthState, logout } from '~/features/Auth/authSlice'
 import ModalProfile from '~/components/ModalProfile'
 import ModalChangePassword from '~/components/ModalChangePassword'
+import NotifyDrawer from '../NotifyDrawer/NotifyDrawer'
 
 const styleForItemMenuPhone = {
   marginBottom: 0,
@@ -27,6 +28,7 @@ const RightMenuPhone = () => {
   const [open, setOpen] = useState(false)
   const [isOpenModalChangePass, setIsOpenModalChangePassword] = useState(false)
   const [isOpenModalProfile, setIsOpenModalProfile] = useState(false)
+  const [isShowDrawerNotify, setIsShowDrawerNotify] = useState(false)
   const distPath = useDispatch()
   const showDrawer = () => {
     setOpen(true)
@@ -38,6 +40,11 @@ const RightMenuPhone = () => {
 
   return (
     <div className='right_menu_container_phone'>
+      <NotifyDrawer
+        open={isShowDrawerNotify}
+        onClose={() => setIsShowDrawerNotify(false)}
+        roleType={'CANDIDATE_ROLE'}
+      />
       <MenuOutlined onClick={showDrawer} />
       <ModalProfile openModal={isOpenModalProfile} handleCloseModal={() => setIsOpenModalProfile(false)} />
       <ModalChangePassword open={isOpenModalChangePass} handleClose={() => setIsOpenModalChangePassword(false)} />
@@ -74,6 +81,9 @@ const RightMenuPhone = () => {
               )}
               {auth.isLogin && auth.verify === 1 && (
                 <>
+                  <p onClick={() => setIsShowDrawerNotify(true)} style={styleForItemMenuPhone}>
+                    Thông báo
+                  </p>
                   <NavLink to={'/settings'}>
                     <p style={styleForItemMenuPhone}>Bảng điều khiển</p>
                   </NavLink>
@@ -84,6 +94,9 @@ const RightMenuPhone = () => {
 
                   <NavLink to={'/CV'}>
                     <p style={styleForItemMenuPhone}>Hồ sơ của tôi</p>
+                  </NavLink>
+                  <NavLink to={'/chat'}>
+                    <p style={styleForItemMenuPhone}>Tin nhắn</p>
                   </NavLink>
                   <NavLink to={'/settings/my-companies'}>
                     <p style={styleForItemMenuPhone}>Công ty đang theo dõi</p>
