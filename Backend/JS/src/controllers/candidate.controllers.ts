@@ -74,14 +74,19 @@ class CandidateController {
         'users.user_id': new ObjectId(user_id)
       })
 
-      await NotificationService.notify({
-        recievers,
-        sender: new ObjectId(user_id),
-        object_sent: NotificationObject.Employer,
-        content: `Nhà tuyển dụng ${company?.company_name} đã xem hồ sơ của bạn`,
-        object_recieve: NotificationObject.Candidate,
-        type: 'cv/seen'
-      })
+      await NotificationService.notify(
+        {
+          recievers,
+          sender: new ObjectId(user_id),
+          object_sent: NotificationObject.Employer,
+          content: `Nhà tuyển dụng ${company?.company_name} đã xem hồ sơ của bạn`,
+          object_recieve: NotificationObject.Candidate,
+          type: 'cv/seen'
+        },
+        {
+          candidate_id
+        }
+      )
     }
 
     return res.json({

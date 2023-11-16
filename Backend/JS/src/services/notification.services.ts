@@ -63,10 +63,12 @@ class NotificationService {
           name?: string
           avatar?: string
           sender?: ObjectId
+          company_id?: ObjectId
         } = {
           name: company?.company_name,
           avatar: company?.logo,
-          sender: noti.sender
+          sender: noti.sender,
+          company_id: company?._id
         }
 
         const newObject = { ...noti, sender_info, sender: undefined }
@@ -129,10 +131,13 @@ class NotificationService {
     return result[0]?.total || 0
   }
 
-  static async notify(data: NotificationType) {
-    const notification = new Notification({
-      ...data
-    })
+  static async notify(data: NotificationType, additionData?: { [key: string]: any }) {
+    const notification = new Notification(
+      {
+        ...data
+      },
+      additionData
+    )
 
     const result = await databaseServices.notification.insertOne(notification)
 
@@ -151,13 +156,15 @@ class NotificationService {
         name?: string
         avatar?: string
         sender?: ObjectId
+        company_id?: ObjectId
       } = {
         name: company?.company_name,
         avatar: company?.logo,
-        sender: data.sender
+        sender: data.sender,
+        company_id: company?._id
       }
 
-      notifycation2 = { ...data, sender_info, sender: undefined }
+      notifycation2 = { ...notification, sender_info, sender: undefined }
     } else if (data.object_sent === NotificationObject.Candidate) {
       const user = await databaseServices.users.findOne({
         _id: data.sender
@@ -173,7 +180,7 @@ class NotificationService {
         sender: data.sender
       }
 
-      notifycation2 = { ...data, sender_info, sender: undefined }
+      notifycation2 = { ...notification, sender_info, sender: undefined }
     } else if (data.object_sent === NotificationObject.Admin) {
       const sender_info: {
         name?: string
@@ -183,7 +190,7 @@ class NotificationService {
         avatar: 'ADMIN'
       }
 
-      notifycation2 = { ...data, sender_info }
+      notifycation2 = { ...notification, sender_info }
     }
 
     if (object_recieve === NotificationObject.All) io.emit('new-broadcast-notification', notifycation2)

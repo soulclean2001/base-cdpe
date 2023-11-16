@@ -68,16 +68,25 @@ class ResumeService {
     const listFollower = await this.getListFollowers(resume_id)
     const recievers = listFollower.map((id) => id.toString())
 
-    await NotificationService.notify({
-      content: `Ứng viên tiềm năng ${
-        oldResume?.user_info?.first_name + ' ' + oldResume?.user_info?.last_name
-      } đã cập nhật lại CV của mình`,
-      object_recieve: NotificationObject.Employer,
-      object_sent: NotificationObject.Candidate,
-      recievers,
-      type: 'resume/update',
-      sender: new ObjectId(user_id)
+    const candidate = await databaseServices.candidate.findOne({
+      user_id: new ObjectId(user_id)
     })
+
+    await NotificationService.notify(
+      {
+        content: `Ứng viên tiềm năng ${
+          oldResume?.user_info?.first_name + ' ' + oldResume?.user_info?.last_name
+        } đã cập nhật lại CV của mình`,
+        object_recieve: NotificationObject.Employer,
+        object_sent: NotificationObject.Candidate,
+        recievers,
+        type: 'resume/update',
+        sender: new ObjectId(user_id)
+      },
+      {
+        candidate_id: candidate?._id
+      }
+    )
 
     return result.value
   }

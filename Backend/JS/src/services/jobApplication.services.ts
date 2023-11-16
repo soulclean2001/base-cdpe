@@ -83,14 +83,20 @@ class JobApplicationService {
           )
         }
 
-        await NotificationService.notify({
-          sender: new ObjectId(userId),
-          object_sent: NotificationObject.Candidate,
-          content: `1 ứng viên đã gửi vào bài tuyển dụng ${job?.job_title}`,
-          object_recieve: NotificationObject.Employer,
-          recievers,
-          type: 'post/applied'
-        })
+        await NotificationService.notify(
+          {
+            sender: new ObjectId(userId),
+            object_sent: NotificationObject.Candidate,
+            content: `1 ứng viên đã gửi cv vào bài tuyển dụng ${job?.job_title}`,
+            object_recieve: NotificationObject.Employer,
+            recievers,
+            type: 'post/applied'
+          },
+          {
+            job_id: job._id,
+            job_applied_id: result.insertedId
+          }
+        )
       }
 
       const user = await databaseServices.users.findOne({
@@ -259,14 +265,19 @@ class JobApplicationService {
         _id: job?.company_id
       })
 
-      await NotificationService.notify({
-        object_sent: NotificationObject.Employer,
-        sender: company?.users[0].user_id,
-        content: `CV của bạn đã được nhà tuyển dụng '${company?.company_name}' phê duyệt`,
-        object_recieve: NotificationObject.Candidate,
-        recievers: [result.value.user_id.toString()],
-        type: 'cv/approved'
-      })
+      await NotificationService.notify(
+        {
+          object_sent: NotificationObject.Employer,
+          sender: company?.users[0].user_id,
+          content: `CV của bạn đã được nhà tuyển dụng '${company?.company_name}' phê duyệt`,
+          object_recieve: NotificationObject.Candidate,
+          recievers: [result.value.user_id.toString()],
+          type: 'cv/approved'
+        },
+        {
+          job_applied_id: result.value._id
+        }
+      )
 
       const user = await databaseServices.users.findOne({
         _id: new ObjectId(result.value.user_id)
@@ -393,14 +404,19 @@ class JobApplicationService {
 
       const msg = this.getMessageStatus(status, company?.company_name as string)
       if (status === JobApplicationStatus.Approved || status === JobApplicationStatus.Potential)
-        await NotificationService.notify({
-          object_sent: NotificationObject.Employer,
-          sender: company?.users[0].user_id,
-          content: msg?.content as string,
-          object_recieve: NotificationObject.Candidate,
-          recievers: [result.value.user_id.toString()],
-          type: msg?.type as string
-        })
+        await NotificationService.notify(
+          {
+            object_sent: NotificationObject.Employer,
+            sender: company?.users[0].user_id,
+            content: msg?.content as string,
+            object_recieve: NotificationObject.Candidate,
+            recievers: [result.value.user_id.toString()],
+            type: msg?.type as string
+          },
+          {
+            job_applied_id: jobApplication._id
+          }
+        )
     }
 
     return {

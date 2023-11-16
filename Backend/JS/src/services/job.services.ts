@@ -124,14 +124,19 @@ export default class JobService {
       const adminIds = admins.map((admin) => admin._id.toString())
 
       if (adminIds.length > 0) {
-        await NotificationService.notify({
-          object_sent: NotificationObject.Employer,
-          sender: company.users[0].user_id,
-          content: _payload.job_title,
-          object_recieve: NotificationObject.Admin,
-          recievers: [...adminIds],
-          type: 'post/pending'
-        })
+        await NotificationService.notify(
+          {
+            object_sent: NotificationObject.Employer,
+            sender: company.users[0].user_id,
+            content: _payload.job_title,
+            object_recieve: NotificationObject.Admin,
+            recievers: [...adminIds],
+            type: 'post/pending'
+          },
+          {
+            job_id: result.insertedId
+          }
+        )
       }
     }
 
@@ -636,13 +641,16 @@ export default class JobService {
       const recievers = company?.users.map((user) => user.user_id.toString()) || []
 
       if (recievers.length > 0)
-        await NotificationService.notify({
-          object_sent: NotificationObject.Admin,
-          content: result.value.job_title,
-          type: 'post/approved',
-          object_recieve: NotificationObject.Employer,
-          recievers
-        })
+        await NotificationService.notify(
+          {
+            object_sent: NotificationObject.Admin,
+            content: result.value.job_title,
+            type: 'post/approved',
+            object_recieve: NotificationObject.Employer,
+            recievers
+          },
+          { job_id: job._id }
+        )
 
       // cập nhật số lượng
       await databaseServices.company.updateOne(
@@ -664,14 +672,17 @@ export default class JobService {
 
       const recievers2 = user_company_followings.map((user) => user.user_id.toString())
       if (recievers2.length > 0) {
-        await NotificationService.notify({
-          content: result.value.job_title,
-          object_sent: NotificationObject.Employer,
-          sender: company.users[0].user_id,
-          type: 'post/created',
-          object_recieve: NotificationObject.Candidate,
-          recievers: recievers2
-        })
+        await NotificationService.notify(
+          {
+            content: result.value.job_title,
+            object_sent: NotificationObject.Employer,
+            sender: company.users[0].user_id,
+            type: 'post/created',
+            object_recieve: NotificationObject.Candidate,
+            recievers: recievers2
+          },
+          { job_id: job._id }
+        )
       }
     }
 
@@ -739,13 +750,16 @@ export default class JobService {
       const recievers = company?.users.map((user) => user.user_id.toString()) || []
 
       if (recievers.length > 0)
-        await NotificationService.notify({
-          object_sent: NotificationObject.Admin,
-          content: result.value.job_title,
-          type: 'post/rejected',
-          object_recieve: NotificationObject.Employer,
-          recievers
-        })
+        await NotificationService.notify(
+          {
+            object_sent: NotificationObject.Admin,
+            content: result.value.job_title,
+            type: 'post/rejected',
+            object_recieve: NotificationObject.Employer,
+            recievers
+          },
+          { job_id: job._id }
+        )
     }
 
     return {
@@ -817,14 +831,17 @@ export default class JobService {
       const adminIds = admins.map((admin) => admin._id.toString())
 
       if (adminIds.length > 0)
-        await NotificationService.notify({
-          object_sent: NotificationObject.Employer,
-          sender: company.users[0].user_id,
-          content: result.value.job_title,
-          object_recieve: NotificationObject.Admin,
-          recievers: [...adminIds],
-          type: 'post/pending'
-        })
+        await NotificationService.notify(
+          {
+            object_sent: NotificationObject.Employer,
+            sender: company.users[0].user_id,
+            content: result.value.job_title,
+            object_recieve: NotificationObject.Admin,
+            recievers: [...adminIds],
+            type: 'post/pending'
+          },
+          { job_id: result.value._id }
+        )
     }
 
     return {

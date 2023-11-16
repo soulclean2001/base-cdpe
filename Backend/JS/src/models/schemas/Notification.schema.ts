@@ -19,6 +19,7 @@ export interface NotificationType {
   is_readed?: boolean
   created_at?: Date
   updated_at?: Date
+  [key: string]: any
 }
 
 class Notification {
@@ -31,9 +32,10 @@ class Notification {
   recievers: string[]
   is_readed: boolean
   created_at: Date
-  updated_at: Date
+  updated_at: Date;
+  [key: string]: any
 
-  constructor(data: NotificationType) {
+  constructor(data: NotificationType, additionalData?: { [key: string]: any }) {
     const now = new Date()
     this._id = data._id
     this.content = data.content
@@ -45,6 +47,9 @@ class Notification {
     this.is_readed = data.is_readed || false
     this.created_at = data.created_at || now
     this.updated_at = data.updated_at || now
+    for (const key in additionalData) {
+      this[key] = additionalData[key]
+    }
   }
 }
 

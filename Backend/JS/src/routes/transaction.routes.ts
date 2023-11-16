@@ -185,7 +185,7 @@ transactionRouter.get(
     }
 
     if (transaction && transaction.value) {
-      await databaseServices.order.findOneAndUpdate(
+      const order = await databaseServices.order.findOneAndUpdate(
         {
           _id: transaction.value.order_id
         },
@@ -193,6 +193,9 @@ transactionRouter.get(
           $set: {
             status: vnp_TransactionStatus === '00' ? StatusOrder.Paid : StatusOrder.Canceled
           }
+        },
+        {
+          returnDocument: 'after'
         }
       )
 
@@ -214,15 +217,20 @@ transactionRouter.get(
           })
           .toArray()
 
-        const adminIds = admin.map((admin) => admin._id.toString())
+        const adminIds: string[] = admin.map((admin) => admin._id.toString())
         if (admin.length > 0)
-          await NotificationService.notify({
-            object_sent: NotificationObject.Admin,
-            content: 'Đã có 1 đơn hàng mới giao dịch thành công',
-            object_recieve: NotificationObject.Admin,
-            recievers: [...adminIds],
-            type: 'order/success'
-          })
+          await NotificationService.notify(
+            {
+              object_sent: NotificationObject.Admin,
+              content: 'Đã có 1 đơn hàng mới giao dịch thành công',
+              object_recieve: NotificationObject.Admin,
+              recievers: [...adminIds],
+              type: 'order/success'
+            },
+            {
+              order_id: order.value?._id
+            }
+          )
       }
     }
     return res.json({
