@@ -51,6 +51,16 @@ class NotificationService {
 
       .toArray()
 
+    const total = await databaseServices.notification
+      .find({
+        object_recieve,
+        recievers: {
+          $in: [user_id]
+        }
+      })
+
+      .toArray()
+
     const data = []
     for (let i = 0; i < result.length; i++) {
       const noti = result[i]
@@ -104,7 +114,12 @@ class NotificationService {
       }
     }
 
-    return data
+    return {
+      notifications: data,
+      page,
+      limit,
+      total: total.length
+    }
   }
 
   static async getTotalUnread(role: number, user_id: string) {
