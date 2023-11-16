@@ -90,7 +90,7 @@ const init = (io: Server) => {
         const userIds = users.map((user) => user._id.toString())
 
         for (let i = 0; i < userIds.length; i++) {
-          socket.emit(userIds[i], data)
+          socket.to(userIds[i]).emit('change-job', data)
         }
       }
     )
@@ -105,7 +105,7 @@ const init = (io: Server) => {
         if (!company) return
 
         for (let i = 0; i < company.users.length; i++) {
-          socket.emit(company.users[i].toString(), data)
+          socket.to(company.users[i].toString()).emit('change-job', data)
         }
       }
     )

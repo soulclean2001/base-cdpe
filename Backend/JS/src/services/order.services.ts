@@ -103,7 +103,7 @@ class OrderService {
 
     const discount_percent = 0
     total = total - total * discount_percent
-
+    total = total + total * 0.1
     const od = new Order({
       company_id: company._id,
       services: itemIds,
