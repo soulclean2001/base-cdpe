@@ -61,7 +61,7 @@ const NotifyDrawer = (props: any) => {
   const handleScroll = async (e: any) => {
     const target = e.target
     if (
-      target.scrollTop + target.clientHeight === target.scrollHeight &&
+      target.scrollTop + target.clientHeight >= target.scrollHeight &&
       notificaions.notifications.length < notificaions.total
     ) {
       await fetchMoreNotifications()
