@@ -3,7 +3,7 @@ import './style.scss'
 import { Drawer } from 'antd'
 import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import { NotifyState, getAllByMe, setMoreWhenScroll, setTotalUnRead } from './notifySlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -28,6 +28,8 @@ interface PropsType {
 
 const NotifyDrawer = (props: any) => {
   const { open, onClose, roleType }: PropsType = props
+  const [isLoading, setIsLoading] = useState(false)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
 
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPath = useDispatch()
@@ -60,13 +62,27 @@ const NotifyDrawer = (props: any) => {
   }
   const handleScroll = async (e: any) => {
     const target = e.target
+    // console.log(
+    //   target.scrollTop,
+    //   target.clientHeight,
+    //   target.scrollTop + target.clientHeight,
+    //   target.scrollHeight,
+    //   target.scrollHeight - target.scrollHeight * 0.1
+    // )
+    if (isLoading) return
     if (
-      target.scrollTop + target.clientHeight >= target.scrollHeight &&
+      target.scrollTop + target.clientHeight >= target.scrollHeight - target.scrollHeight * 0.1 &&
       notificaions.notifications.length < notificaions.total
     ) {
-      await fetchMoreNotifications()
+      setIsLoading(true)
+      setTimeout(async () => {
+        await fetchMoreNotifications().then(() => {
+          setIsLoading(false)
+        })
+      }, 1000)
     }
   }
+
   return (
     <Drawer
       // closable={false}

@@ -73,7 +73,7 @@ const JobDetailPage = () => {
   }
   useEffect(() => {
     getPostById()
-  }, [])
+  }, [infoUrlJobDetail])
   useEffect(() => {
     if (isSubmit) {
       getPostById()

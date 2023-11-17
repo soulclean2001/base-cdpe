@@ -36,6 +36,8 @@ interface DataType {
   orderDate: string
   updateDate: string
   status: string
+  isProcessing?: boolean
+  timeExProcessed?: number
 }
 
 const MyOrdersPage = (props: any) => {
@@ -46,6 +48,9 @@ const MyOrdersPage = (props: any) => {
   const litmit = 5
   const [currentPage, setCurrentPage] = useState(1)
   const [listOrders, setListOrders] = useState<DataType[]>([])
+
+  console.log(listOrders)
+
   const [status, setStatus] = useState('')
   const [totalElement, setTotalElement] = useState(1)
   //   const [date, setDate] = useState('')
@@ -89,7 +94,9 @@ const MyOrdersPage = (props: any) => {
             services: packagesTemp,
             totalPayment: order.order.total,
             orderDate: order.order.created_at.slice(0, 10),
-            updateDate: order.order.updated_at.slice(0, 10)
+            updateDate: order.order.updated_at.slice(0, 10),
+            isProcessing: order.is_processing,
+            timeExProcessed: order.time_ex_processed
           }
         })
 
@@ -119,7 +126,9 @@ const MyOrdersPage = (props: any) => {
             services: packagesTemp,
             totalPayment: order.order.total,
             orderDate: order.order.created_at.slice(0, 10),
-            updateDate: order.order.updated_at.slice(0, 10)
+            updateDate: order.order.updated_at.slice(0, 10),
+            isProcessing: order.is_processing,
+            timeExProcessed: order.time_ex_processed
           }
         })
 
@@ -234,7 +243,19 @@ const MyOrdersPage = (props: any) => {
       align: 'center',
       render: (_, record) => (
         <>
-          {record.status.toString() === '4' && <Tag color={'orange'}>Chờ thanh toán</Tag>}
+          {record.status.toString() === '4' && (
+            <>
+              <Tag color={'orange'}>Chờ thanh toán</Tag>{' '}
+              {record.isProcessing ? (
+                <Tag color={'orange'}>
+                  Đang có phiên giao dịch kết thúc vào{' '}
+                  {new Date((record.timeExProcessed as number) * 1000).toLocaleString()}
+                </Tag>
+              ) : (
+                ''
+              )}{' '}
+            </>
+          )}
           {record.status.toString() === '5' && <Tag color={'cyan'}>Đã thanh toán</Tag>}
           {record.status.toString() === '2' && <Tag color={'green'}>Hoàn tất</Tag>}
           {record.status.toString() === '1' && <Tag color={'red'}>Đã hủy</Tag>}

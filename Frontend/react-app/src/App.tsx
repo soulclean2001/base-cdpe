@@ -118,7 +118,7 @@ function App() {
       }
     } catch (e) {}
   }
-  // để đây đã đợi xíu đừng sửa
+
   const getProfile = async () => {
     await dispatchAsync(getMe())
   }
