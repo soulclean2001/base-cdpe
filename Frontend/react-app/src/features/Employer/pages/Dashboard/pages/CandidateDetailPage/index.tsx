@@ -30,8 +30,9 @@ const CandidateDetailPage = (props: any) => {
   const [dataCandidate, setDataCandidate] = useState<DetailType>()
   const [dataCV, setDataCV] = useState<ResumeType>(defaultResume)
   useEffect(() => {
+    if (!infoUrlCandidate) return
     fetchGetDetailCandidate()
-  }, [])
+  }, [infoUrlCandidate])
   const fetchGetDetailCandidate = async () => {
     if (infoUrlCandidate) {
       const idCandidateUrl = infoUrlCandidate.match(/id-(\w+)/)

@@ -45,7 +45,7 @@ const CVAppliedDetailPage = () => {
   const [docs, setDocs] = useState<{ uri: string; fileType: string; fileName: string }[]>([])
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [infoUrlAppliedCV])
   const fetchData = async () => {
     if (!infoUrlAppliedCV) return
     const idCandidateUrl = infoUrlAppliedCV.match(/id-(\w+)/)

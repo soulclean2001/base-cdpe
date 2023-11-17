@@ -25,7 +25,7 @@ const CompanyDetail = () => {
   const navigate = useNavigate()
   useEffect(() => {
     getDetailCompany()
-  }, [])
+  }, [infoUrlCompanyDetail])
   const getDetailCompany = async () => {
     if (!infoUrlCompanyDetail) return
     const idCompany = infoUrlCompanyDetail.match(/id-(\w+)/)
