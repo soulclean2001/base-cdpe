@@ -313,7 +313,7 @@ const ModalCreatePackage = (props: any) => {
             name='price'
             rules={[
               { required: true, message: 'Vui lòng nhập mức giá' },
-              { type: 'number', min: 1000, message: 'Mức giá tối thiểu là 1000 VND' },
+              { type: 'number', min: 10000, message: 'Mức giá tối thiểu là 10000 VND' },
               { type: 'number', max: 10000000000, message: 'Mức giá tối đa là 10.000.000.000 VND' }
             ]}
             initialValue={1000}
@@ -322,7 +322,7 @@ const ModalCreatePackage = (props: any) => {
             <InputNumber
               disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}
               style={{ width: '100%' }}
-              min={1000}
+              min={10000}
               max={10000000000}
               step={500}
               size='large'
