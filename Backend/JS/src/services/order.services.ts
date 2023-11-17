@@ -639,6 +639,14 @@ class OrderService {
         .toArray()
     ])
 
+    for (let i = 0; i < orders.length; i++) {
+      const isExist = await redis.get(orders[i]._id.toString())
+      const timeEx = await redis.ex(orders[i]._id.toString())
+
+      orders[i].is_processing = isExist ? true : false
+      orders[i].time_ex_processed = timeEx
+    }
+
     return {
       orders,
       total: total[0]?.total || 0,
