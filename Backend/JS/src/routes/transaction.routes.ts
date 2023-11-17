@@ -17,6 +17,7 @@ import NotificationService from '~/services/notification.services'
 import { NotificationObject } from '~/models/schemas/Notification.schema'
 import { UserRole } from '~/constants/enums'
 import wrapAsync from '~/utils/handlers'
+import { redis } from '~/app/redis'
 
 const transactionRouter = express.Router()
 
@@ -52,6 +53,17 @@ transactionRouter.post(
         message: 'Order was canceled',
         status: 204
       })
+
+    const orderExists = await redis.get(ordId)
+
+    if (orderExists) {
+      throw new ErrorWithStatus({
+        message: 'Order is processing, please wait for it to be processed',
+        status: 405
+      })
+    }
+
+    await redis.set(ordId, 'is processing order', 60 * 15)
 
     process.env.TZ = 'Asia/Ho_Chi_Minh'
 
@@ -232,7 +244,9 @@ transactionRouter.get(
             }
           )
       }
+      redis.del(transaction.value.order_id.toString())
     }
+
     return res.json({
       result: {
         code: vnp_Params['vnp_ResponseCode']

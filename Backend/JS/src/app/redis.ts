@@ -30,7 +30,9 @@ const deleteClient = util.promisify(client.del).bind(client)
 
 const set = async (key: string, value: any, ttl?: number) => {
   if (ttl) {
-    await setExClient(key, ttl, value)
+    await client.set(key, value, {
+      EX: ttl
+    })
   } else {
     await setClient(key, value)
   }
@@ -54,13 +56,15 @@ const setValueArray = async (user_id: string, values: string[]) => {
 }
 
 const get = async (key: string) => {
-  const data = await getClient(key)
+  return client.get(key)
+}
 
-  return data
+const ex = async (key: string) => {
+  return client.expireTime(key)
 }
 
 const del = async (key: string) => {
-  const data = await deleteClient(key)
+  const data = await client.del(key)
   return data
 }
 
@@ -73,6 +77,7 @@ const exists = async (key: string) => {
 export const redis = {
   set,
   get,
+  ex,
   del,
   exists,
   client,

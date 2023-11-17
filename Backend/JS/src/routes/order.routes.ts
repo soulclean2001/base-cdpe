@@ -38,5 +38,6 @@ orderRouter.post(
 orderRouter.post('/cancel-order', accessTokenValidator, isAdmin, wrapAsync(orderControllers.cancelOrderById))
 
 orderRouter.get('/:order_id', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getOrdersDetailByCompany))
+orderRouter.get('/:order_id/info-payment', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getInfoOrder))
 
 export default orderRouter

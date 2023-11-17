@@ -63,12 +63,29 @@ export const io = new Server(httpServer, {
 })
 
 socket(io)
-// redis.client.connect()
+redis.client.connect()
 
 app.use('/api/v1', router)
 app.get('/now', (req, res) => {
   return res.json({
     now: new Date()
+  })
+})
+
+app.get('/set', (req, res) => {
+  redis.set('test', 12345, 900)
+  return res.json({
+    now: new Date()
+  })
+})
+
+app.get('/get', async (req, res) => {
+  const test = await redis.get('test')
+  const ex = await redis.ex('test')
+  console.log(test, ex)
+
+  return res.json({
+    test: test
   })
 })
 

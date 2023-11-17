@@ -5,6 +5,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import ServiceOrder, { ServicePackageStatus } from '~/models/schemas/ServiceOrder.schema'
 import { fi } from '@faker-js/faker'
 import { PackageType } from '~/constants/enums'
+import { redis } from '~/app/redis'
 
 interface QueryOrder {
   status?: string
@@ -328,6 +329,14 @@ class OrderService {
         ])
         .toArray()
     ])
+
+    for (let i = 0; i < orders.length; i++) {
+      const isExist = await redis.get(orders[i]._id.toString())
+      const timeEx = await redis.ex(orders[i]._id.toString())
+
+      orders[i].is_processing = isExist ? true : false
+      orders[i].time_ex_processed = timeEx
+    }
 
     return {
       orders,
@@ -705,6 +714,15 @@ class OrderService {
     const order = await databaseServices.order.findOne({
       _id: new ObjectId(orderId)
     })
+
+    const orderExist = await redis.get(orderId)
+
+    if (orderExist) {
+      throw new ErrorWithStatus({
+        message: 'Order is processing, please wait until it is processed',
+        status: 405
+      })
+    }
 
     if (order && (order.status === StatusOrder.WaitForPay || order.status === StatusOrder.Processing)) {
       await databaseServices.order.updateOne(

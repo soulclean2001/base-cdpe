@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { ParamsDictionary } from 'express-serve-static-core'
 import { ObjectId } from 'mongodb'
+import { redis } from '~/app/redis'
 import { ErrorWithStatus } from '~/models/Errors'
 import { TokenPayload } from '~/models/requests/User.request'
 import OrderService from '~/services/order.services'
@@ -162,6 +163,26 @@ class OrderController {
     return res.json({
       message: 'get successfully',
       result
+    })
+  }
+
+  async getInfoOrder(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const orderId = req.params.order_id
+    if (!ObjectId.isValid(orderId))
+      throw new ErrorWithStatus({
+        message: 'Invalid order identifier',
+        status: 422
+      })
+
+    const orderExist = await redis.get(orderId)
+    const timeEx = await redis.ex(orderId)
+
+    return res.json({
+      message: 'get infor order',
+      result: {
+        order_id: orderExist ? orderId : null,
+        time_ex: timeEx
+      }
     })
   }
 }
