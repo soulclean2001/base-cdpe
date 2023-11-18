@@ -256,6 +256,14 @@ class OrderService {
             }
           },
           {
+            $lookup: {
+              from: 'transactions',
+              localField: 'order._id',
+              foreignField: 'order_id',
+              as: 'transactions'
+            }
+          },
+          {
             $sort: {
               'order.created_at': sortByDate
             }
@@ -411,6 +419,14 @@ class OrderService {
             foreignField: 'order_id',
             as: 'service_orders'
           }
+        },
+        {
+          $lookup: {
+            from: 'transactions',
+            localField: 'order._id',
+            foreignField: 'order_id',
+            as: 'transactions'
+          }
         }
       ])
       .toArray()
@@ -471,6 +487,14 @@ class OrderService {
             localField: '_id',
             foreignField: 'order_id',
             as: 'service_orders'
+          }
+        },
+        {
+          $lookup: {
+            from: 'transactions',
+            localField: 'order._id',
+            foreignField: 'order_id',
+            as: 'transactions'
           }
         }
       ])
