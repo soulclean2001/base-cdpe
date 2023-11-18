@@ -3,5 +3,6 @@ export enum StatusOrder {
   Canceled = 'Đã hủy',
   Success = 'Hoàn tất',
   Error = 'Lỗi',
-  WaitForPay = 'Chờ thanh toán'
+  WaitForPay = 'Chờ thanh toán',
+  Paid = 'Đã thanh toán'
 }

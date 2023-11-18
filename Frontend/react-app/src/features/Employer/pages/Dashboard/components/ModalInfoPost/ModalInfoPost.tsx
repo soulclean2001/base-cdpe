@@ -604,7 +604,9 @@ const ModalInfoPost = (props: any) => {
         .then(async (rs) => {
           if (rs.message === 'job status is not pending to approve') {
             toast.error(
-              `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
+              `#POST_${id
+                .slice(-5)
+                .toUpperCase()} không thuộc trạng thái đang chờ hoặc đã duyệt, vui lòng tải lại trang để thử lại`
             )
             return
           }
@@ -1254,7 +1256,7 @@ const ModalInfoPost = (props: any) => {
               <Button size='large' style={{ width: '100px' }} onClick={handleClose}>
                 Thoát
               </Button>
-              {idPost && roleType === 'ADMIN_ROLE' && Number(status) === 1 ? (
+              {idPost && roleType === 'ADMIN_ROLE' && Number(status) === 1 && (
                 <>
                   <Button className='btn-reject' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
                     Từ chối
@@ -1263,8 +1265,11 @@ const ModalInfoPost = (props: any) => {
                     Chấp nhận
                   </Button>
                 </>
-              ) : (
-                <></>
+              )}
+              {idPost && roleType === 'ADMIN_ROLE' && Number(status).toString() === '0' && (
+                <Button className='btn-reject' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
+                  Từ chối
+                </Button>
               )}
               {idPost ? (
                 <Button

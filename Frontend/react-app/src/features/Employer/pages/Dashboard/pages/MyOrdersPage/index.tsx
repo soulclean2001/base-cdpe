@@ -19,6 +19,7 @@ import ModalDetailOrder from './components/ModalDetailOrder'
 import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
+import { format, parseISO } from 'date-fns'
 interface OrderAnyType {
   [key: string]: any
 }
@@ -38,6 +39,7 @@ interface DataType {
   status: string
   isProcessing?: boolean
   timeExProcessed?: number
+  [key: string]: any
 }
 
 const MyOrdersPage = (props: any) => {
@@ -48,8 +50,7 @@ const MyOrdersPage = (props: any) => {
   const litmit = 5
   const [currentPage, setCurrentPage] = useState(1)
   const [listOrders, setListOrders] = useState<DataType[]>([])
-
-  console.log(listOrders)
+  const [transactions, setTransactions] = useState([])
 
   const [status, setStatus] = useState('')
   const [totalElement, setTotalElement] = useState(1)
@@ -80,7 +81,7 @@ const MyOrdersPage = (props: any) => {
               if (pkg._id === service.package_id) {
                 packagesTemp.push({
                   id: pkg._id,
-                  nameService: `${pkg.title}-${pkg.number_of_days_to_expire} ngày`,
+                  nameService: `${pkg.title}`,
                   quantity: service.quantity,
                   idService_order: service._id
                 })
@@ -93,10 +94,11 @@ const MyOrdersPage = (props: any) => {
             status: order.order.status.toString(),
             services: packagesTemp,
             totalPayment: order.order.total,
-            orderDate: order.order.created_at.slice(0, 10),
-            updateDate: order.order.updated_at.slice(0, 10),
+            orderDate: format(parseISO(order.order.created_at), 'dd-MM-yyyy HH:mm:ss'),
+            updateDate: format(parseISO(order.order.updated_at), 'dd-MM-yyyy HH:mm:ss'),
             isProcessing: order.is_processing,
-            timeExProcessed: order.time_ex_processed
+            timeExProcessed: order.time_ex_processed,
+            transactions: order.transactions
           }
         })
 
@@ -106,6 +108,7 @@ const MyOrdersPage = (props: any) => {
     } else {
       await apiOrder.getAllByMe(request).then((rs) => {
         let listOrdersTemp: DataType[] = []
+
         listOrdersTemp = rs.result.orders.map((order: OrderAnyType) => {
           let packagesTemp: ServiceType[] = []
           order.service_orders.map((service: OrderAnyType) => {
@@ -125,10 +128,11 @@ const MyOrdersPage = (props: any) => {
             status: order.order.status.toString(),
             services: packagesTemp,
             totalPayment: order.order.total,
-            orderDate: order.order.created_at.slice(0, 10),
-            updateDate: order.order.updated_at.slice(0, 10),
+            orderDate: format(parseISO(order.order.created_at), 'dd-MM-yyyy HH:mm:ss'),
+            updateDate: format(parseISO(order.order.updated_at), 'dd-MM-yyyy HH:mm:ss'),
             isProcessing: order.is_processing,
-            timeExProcessed: order.time_ex_processed
+            timeExProcessed: order.time_ex_processed,
+            transactions: order.transactions
           }
         })
 
@@ -169,9 +173,10 @@ const MyOrdersPage = (props: any) => {
   const onChangeTab = (key: string) => {
     setStatus(key === 'tab-all' ? '' : key)
   }
-  const handleOpenModal = (id: string) => {
+  const handleOpenModal = (id: string, transactions: []) => {
     setIdOrder(id)
     setIsOpenModalDetail(true)
+    setTransactions(transactions)
   }
   const handleCloseModal = () => {
     setIsOpenModalDetail(false)
@@ -272,7 +277,7 @@ const MyOrdersPage = (props: any) => {
         <Space size={'middle'}>
           <Tooltip title='Chi tiết'>
             <a
-              onClick={() => handleOpenModal(record.id)}
+              onClick={() => handleOpenModal(record.id, record.transactions)}
               style={{ fontSize: '15px', textAlign: 'center', display: 'flex', justifyContent: 'center' }}
             >
               <BsFillEyeFill />
@@ -339,7 +344,10 @@ const MyOrdersPage = (props: any) => {
     }
   ]
   return (
-    <div className='order-manage-page-container admin-users-manage-container my-orders-page-container'>
+    <div
+      style={{ borderTop: roleType === 'ADMIN_TYPE' ? '1px solid rgb(215, 214, 214)' : 'none' }}
+      className='order-manage-page-container admin-users-manage-container my-orders-page-container'
+    >
       <div className='title'>{roleType === 'ADMIN_TYPE' ? 'Quản lý đơn hàng' : 'Quản lý đơn hàng của tôi'}</div>
       <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='tab-all' items={items} />
       <div className='content-wapper'>
@@ -378,6 +386,7 @@ const MyOrdersPage = (props: any) => {
           dataSource={listOrders}
         />
         <ModalDetailOrder
+          transactions={transactions}
           roleType={roleType}
           idOrder={idOrder}
           isModalOpen={isOpenModalDetail}

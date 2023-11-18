@@ -8,6 +8,9 @@ import { DatePicker, Radio, Select } from 'antd'
 import { RadioChangeEvent } from 'antd/lib'
 import { FaCrown } from 'react-icons/fa'
 import './style.scss'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export const options = {
@@ -49,6 +52,7 @@ interface AnyType {
   [key: string]: any
 }
 const AdminOverview = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [typeChart, setTypeChart] = useState('Bar')
   const [year, setYear] = useState(new Date().getFullYear().toString())
   const [type, setType] = useState(1)
@@ -140,7 +144,10 @@ const AdminOverview = () => {
   }
 
   return (
-    <Row className='admin-overview-page-container '>
+    <Row
+      className='admin-overview-page-container '
+      style={{ borderTop: auth.role === 1 ? 'none' : '1px solid rgb(215, 214, 214)' }}
+    >
       <Col md={24} sm={24} xs={24} className='overview-wapper'>
         <h2>TỔNG QUAN</h2>
         <Row className='list-item'>

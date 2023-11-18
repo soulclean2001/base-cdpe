@@ -1,7 +1,7 @@
 .admin-overview-page-container {
   min-height: 92vh;
-  //   background-color: whitesmoke;
-  background: linear-gradient(270deg, #005aff, #001744);
+  // background-color: whitesmoke;
+  // background: linear-gradient(270deg, #005aff, #001744);
   padding: 20px;
   display: flex;
   gap: 40px;
@@ -9,6 +9,7 @@
   //   max-width: 83%;
 
   .overview-wapper {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     padding: 30px;
     background-color: white;
     border-radius: 10px;
@@ -48,6 +49,7 @@
     }
   }
   .chart-wapper {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     border-radius: 10px;
     padding: 30px;
     width: 50%;
@@ -67,6 +69,7 @@
     // }
   }
   .table-top-wapper {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     background-color: white;
     padding: 30px;
     // width: 70%;
