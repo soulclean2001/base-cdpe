@@ -78,6 +78,10 @@ const Login: React.FC = () => {
         dispatchAsync(setToken(token))
         dispatchAsync(setAccountStatus(dataDecode))
         dispatchAsync(setStateLogin(action))
+        if (dataDecode.verify.toString() === '0') {
+          navigate('/active-page')
+          return
+        }
         navigate('/')
       } else {
         toast.error('Tài khoản không tồn tại')

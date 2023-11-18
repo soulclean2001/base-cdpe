@@ -50,6 +50,10 @@ const LoginEmployer = (props: any) => {
           dispatchAsync(setToken(token))
           dispatchAsync(setAccountStatus(dataDecode))
           dispatchAsync(setStateLogin(action))
+          if (dataDecode.verify.toString() === '0') {
+            navigate('/employer/active-page')
+            return
+          }
           navigate('/employer')
           return
         } else {
