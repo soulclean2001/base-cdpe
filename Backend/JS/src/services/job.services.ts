@@ -606,13 +606,6 @@ export default class JobService {
         status: 404
       })
 
-    if (company.number_of_posts < 1) {
-      throw new ErrorWithStatus({
-        message: 'You are not enough number of posts',
-        status: 405
-      })
-    }
-
     const result = await databaseServices.job.findOneAndUpdate(
       {
         _id: new ObjectId(jobId)
@@ -652,18 +645,6 @@ export default class JobService {
           { job_id: job._id }
         )
 
-      // cập nhật số lượng
-      await databaseServices.company.updateOne(
-        {
-          _id: company._id
-        },
-        {
-          $set: {
-            number_of_posts: company.number_of_posts - 1
-          }
-        }
-      )
-
       const user_company_followings = await databaseServices.companyFollowers
         .find({
           company_id: company._id
@@ -702,9 +683,9 @@ export default class JobService {
         status: 404
       })
 
-    if (job.status !== JobStatus.Pending) {
+    if (job.status !== JobStatus.Pending && job.status !== JobStatus.Approved) {
       return {
-        message: 'job status is not pending to approve'
+        message: 'job status is not pending/approve to reject'
       }
     }
 
@@ -778,6 +759,13 @@ export default class JobService {
       })
     }
 
+    if (company.number_of_posts < 1) {
+      throw new ErrorWithStatus({
+        message: 'You are not enough number of posts',
+        status: 405
+      })
+    }
+
     const oldJob = await databaseServices.job.findOne({
       _id: new ObjectId(jobId),
       company_id: company._id
@@ -820,6 +808,17 @@ export default class JobService {
         status: 401
       })
     }
+
+    await databaseServices.company.updateOne(
+      {
+        _id: company._id
+      },
+      {
+        $set: {
+          number_of_posts: company.number_of_posts - 1
+        }
+      }
+    )
 
     if (result && result.value && result.value.status === JobStatus.Pending) {
       const admins = await databaseServices.users

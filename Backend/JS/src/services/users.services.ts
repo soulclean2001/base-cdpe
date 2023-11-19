@@ -155,7 +155,7 @@ class UsersService {
     // 4. Server verify email_verify_token
     // 5. Client receive access_token and refresh_token
     // console.log('gửi token verification email:', email_verify_token)
-    // await sendVerifyRegisterEmail(payload.email, email_verify_token)
+    await sendVerifyRegisterEmail(payload.email, email_verify_token)
 
     return {
       access_token,
