@@ -248,6 +248,11 @@ transactionRouter.get(
         const company = await databaseServices.company.findOne({
           _id: order.value?.company_id
         })
+        const working_location =
+          company?.working_locations[0].address ||
+          '' + company?.working_locations[0].district ||
+          '' + company?.working_locations[0].city_name ||
+          ''
 
         // gui mail
         if (company && order.value) {
@@ -300,16 +305,20 @@ transactionRouter.get(
           if (user) {
             await sendEmailOrderSuccess(user.email, {
               year: order.value.created_at.getFullYear().toString(),
-              month: order.value.created_at.getMonth().toString(),
-              day: order.value.created_at.getDay().toString(),
+              month: (order.value.created_at.getMonth() + 1).toString(),
+              day: order.value.created_at.getDate().toString(),
               company_name: company.company_name,
               data_services: dataServices.join(''),
               order_code: order.value._id.toString().slice(-5).toUpperCase(),
               order_date: order.value.created_at.toLocaleString().slice(0, 10),
-              order_status: order.value.status === StatusOrder.Success ? 'Đã thanh toán' : 'Thất bại',
+              order_status:
+                order.value.status === StatusOrder.Success || order.value.status === StatusOrder.Paid
+                  ? 'Đã thanh toán'
+                  : 'Thất bại',
               to_money: order.value.total.toLocaleString('vi', { currency: 'VND' }),
               total: total.toLocaleString('vi', { currency: 'VND' }),
-              total_has_vat: order.value.total.toLocaleString('vi', { currency: 'VND' })
+              total_has_vat: order.value.total.toLocaleString('vi', { currency: 'VND' }),
+              working_location: working_location
             })
           }
         }

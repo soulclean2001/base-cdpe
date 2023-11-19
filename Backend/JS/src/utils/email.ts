@@ -113,6 +113,7 @@ export const sendEmailOrderSuccess = (
     total: string
     total_has_vat: string
     to_money: string
+    working_location: string
   },
   template: string = emailOrderSuccess
 ) => {
@@ -131,6 +132,7 @@ export const sendEmailOrderSuccess = (
       .replace(/{{total}}/g, data.total)
       .replace(/{{total_has_vat}}/g, data.total_has_vat)
       .replace(/{{to_money}}/g, data.to_money)
+      .replace(/{{working_location}}/g, data.working_location)
   )
 }
 
