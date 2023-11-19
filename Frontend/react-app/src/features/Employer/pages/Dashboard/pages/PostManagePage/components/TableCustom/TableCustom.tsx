@@ -156,12 +156,20 @@ const TableCustom = (props: any) => {
       toast.error('Vui lòng chọn ngày hết hạn trước khi công khai bài đăng')
       return
     }
-    await apiPost.publishPost(idPost, expiresDate).then(async () => {
-      await fetchData()
-      if (dataRowSelected.status === '0') toast.success(`#POST_${idPost.slice(-5).toUpperCase()} đã được công khai`)
-      else toast.success(`Yêu cầu công khai #POST_${idPost.slice(-5).toUpperCase()} đã được gửi thành công`)
-      setIsOpenModalPublish(false)
-    })
+    await apiPost
+      .publishPost(idPost, expiresDate)
+      .then(async () => {
+        await fetchData()
+        if (dataRowSelected.status === '0') toast.success(`#POST_${idPost.slice(-5).toUpperCase()} đã được công khai`)
+        else toast.success(`Yêu cầu công khai #POST_${idPost.slice(-5).toUpperCase()} đã được gửi thành công`)
+        setIsOpenModalPublish(false)
+      })
+      .catch((error) => {
+        if (error.message.includes('Request failed with status code 405'))
+          toast.warning(
+            'Số lượt đăng bài của bạn đã hết!! Vui lòng mua gói dịch vụ mới để tiếp tục thực hiện đăng bài trong tương lai.'
+          )
+      })
   }
   const handleHidePost = async (id: string) => {
     if (!id) return

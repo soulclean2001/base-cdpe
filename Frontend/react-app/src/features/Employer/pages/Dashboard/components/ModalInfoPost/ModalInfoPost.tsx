@@ -479,6 +479,9 @@ const ModalInfoPost = (props: any) => {
         handleAfterSubmit()
         // handleClose()
       })
+      .catch(() => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại!!')
+      })
   }
   const postData = async (job: JobType) => {
     await apiPost
@@ -495,6 +498,15 @@ const ModalInfoPost = (props: any) => {
         form.resetFields()
 
         handleAfterSubmit()
+      })
+      .catch((error) => {
+        if (error.message.includes('Request failed with status code 405')) {
+          toast.warning(
+            'Số lượt đăng bài của bạn đã hết!! Vui lòng mua gói dịch vụ mới để tiếp tục thực hiện đăng bài trong tương lai.'
+          )
+          return
+        }
+        toast.error('Có lỗi xảy ra, vui lòng thử lại !')
       })
   }
 

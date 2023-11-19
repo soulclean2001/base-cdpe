@@ -152,8 +152,8 @@ const ModalDetailOrder = (props: any) => {
           <p>Địa chỉ: 12 Nguyễn Văn Bảo, Phường 4, Gò Vấp, Thành phố Hồ Chí Minh, Việt Nam</p>
           <p>Điện thoại: 0365887759</p>
           <p>Số tài khoản: 1030701534 - Vietcombank - Ngân hàng thương mại cổ phần Ngoại thương Việt Nam</p>
-        </div> */}
-        {/* <div>
+        </div>
+        <div>
           <h1 style={{ fontWeight: 700, textAlign: 'center', marginBottom: '0' }}>HÓA ĐƠN GIÁ TRỊ GIA TĂNG</h1>
           <p style={{ textAlign: 'center', marginBottom: '0', color: 'red' }}>(Bản thể hiện của hóa đơn điện tử)</p>
           <p style={{ textAlign: 'center', marginBottom: '0' }}>Ngày ... tháng ... năm ...</p>
