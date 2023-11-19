@@ -679,9 +679,10 @@ class OrderService {
     }
   }
 
-  static async activeServiceOrder(id: string) {
+  static async activeServiceOrder(orderId: ObjectId, id: string) {
     const service = await databaseServices.serviceOrder.findOne({
-      _id: new ObjectId(id)
+      package_id: new ObjectId(id),
+      order_id: orderId
     })
 
     if (service && service.status === ServicePackageStatus.UnActive) {
@@ -723,10 +724,10 @@ class OrderService {
       _id: new ObjectId(orderId)
     })
 
-    if (order && order.status === StatusOrder.Paid) {
+    if (order && (order.status === StatusOrder.Paid || order.status === StatusOrder.Success)) {
       const services = order.services
       for (let i = 0; i < services.length; i++) {
-        await this.activeServiceOrder(services[i].toString())
+        await this.activeServiceOrder(order._id, services[i].toString())
       }
 
       await databaseServices.order.updateOne(

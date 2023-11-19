@@ -260,7 +260,7 @@ transactionRouter.get(
           const user = await databaseServices.users.findOne({
             _id: userObj?.user_id
           })
-          const total = order.value.total - order.value.total * 0.1
+          const total = order.value.total / 1.1
           const serviceIds = order.value.services
 
           const packages = await databaseServices.package

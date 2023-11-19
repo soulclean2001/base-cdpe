@@ -119,7 +119,7 @@ export const sendEmailOrderSuccess = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Thông báo ứng tuyển',
+    'Hóa đơn dịch vụ',
     template
       .replace(/{{day}}/g, data.day)
       .replace(/{{month}}/g, data.month)
