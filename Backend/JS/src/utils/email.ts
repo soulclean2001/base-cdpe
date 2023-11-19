@@ -114,7 +114,7 @@ export const sendEmailOrderSuccess = (
     total_has_vat: string
     to_money: string
   },
-  template: string = emailJobApplyTemplate
+  template: string = emailOrderSuccess
 ) => {
   return sendVerifyEmail(
     toAddress,
