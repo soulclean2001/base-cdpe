@@ -105,6 +105,26 @@ export default class JobService {
         : { ...payload, status: JobStatus.Unapproved }
     ) as JobType
 
+    if (_payload.visibility === true) {
+      if (company.number_of_posts < 1) {
+        throw new ErrorWithStatus({
+          message: 'Company number of posts must be greater than zero',
+          status: 405
+        })
+      } else {
+        await databaseServices.company.updateOne(
+          {
+            _id: company._id
+          },
+          {
+            $set: {
+              number_of_posts: company.number_of_posts - 1
+            }
+          }
+        )
+      }
+    }
+
     const result = await databaseServices.job.insertOne(
       new Job({
         ..._payload,
