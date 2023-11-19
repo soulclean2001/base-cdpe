@@ -175,7 +175,8 @@ const ModalCreatePackage = (props: any) => {
       type: typePackage,
       code: typePackage,
       preview: listUrlPicture,
-      value: typePackage === 'POST' ? totalPostAccept : 1
+      value: typePackage === 'POST' ? totalPostAccept : 1,
+      discount_price: price
     }
     if (!idPackage) {
       await apiPackage.createPackage(request).then((rs) => {
@@ -314,7 +315,16 @@ const ModalCreatePackage = (props: any) => {
             rules={[
               { required: true, message: 'Vui lòng nhập mức giá' },
               { type: 'number', min: 10000, message: 'Mức giá tối thiểu là 10000 VND' },
-              { type: 'number', max: 10000000000, message: 'Mức giá tối đa là 10.000.000.000 VND' }
+              { type: 'number', max: 10000000000, message: 'Mức giá tối đa là 10.000.000.000 VND' },
+              {
+                validator: (_, value) => {
+                  // Hàm validation kiểm tra số chia hết cho 10000
+                  if (value % 500 === 0) {
+                    return Promise.resolve()
+                  }
+                  return Promise.reject('Số phải chia hết cho 500!')
+                }
+              }
             ]}
             initialValue={1000}
             label={<span style={{ fontWeight: '500' }}>Đơn giá (VNĐ)</span>}
