@@ -688,7 +688,7 @@ class OrderService {
     if (service && service.status === ServicePackageStatus.UnActive) {
       const serviceOrder = await databaseServices.serviceOrder.findOneAndUpdate(
         {
-          _id: new ObjectId(id)
+          _id: service._id
         },
         {
           $set: {
@@ -724,7 +724,7 @@ class OrderService {
       _id: new ObjectId(orderId)
     })
 
-    if (order && (order.status === StatusOrder.Paid || order.status === StatusOrder.Success)) {
+    if (order && order.status === StatusOrder.Paid) {
       const services = order.services
       for (let i = 0; i < services.length; i++) {
         await this.activeServiceOrder(order._id, services[i].toString())
