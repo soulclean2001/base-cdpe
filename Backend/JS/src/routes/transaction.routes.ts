@@ -18,6 +18,8 @@ import { NotificationObject } from '~/models/schemas/Notification.schema'
 import { UserRole } from '~/constants/enums'
 import wrapAsync from '~/utils/handlers'
 import { redis } from '~/app/redis'
+import { sendEmailOrderSuccess } from '~/utils/email'
+import { PositionType } from '~/models/requests/Company.request'
 
 const transactionRouter = express.Router()
 
@@ -243,7 +245,76 @@ transactionRouter.get(
               order_id: order.value?._id
             }
           )
+        const company = await databaseServices.company.findOne({
+          _id: order.value?.company_id
+        })
+
+        // gui mail
+        if (company && order.value) {
+          const userObj = company.users.find((user) => user.position === PositionType.Admin)
+          const user = await databaseServices.users.findOne({
+            _id: userObj?.user_id
+          })
+          const total = order.value.total - order.value.total * 0.1
+          const serviceIds = order.value.services
+
+          const packages = await databaseServices.package
+            .find({
+              _id: {
+                $in: serviceIds
+              }
+            })
+            .toArray()
+
+          const data: {
+            title: string
+            discount_price: number
+            quantity: number
+            price: number
+          }[] = []
+
+          for (let i = 0; i < packages.length; i++) {
+            const service = await databaseServices.serviceOrder.findOne({
+              order_id: order.value._id,
+              package_id: packages[i]._id
+            })
+            if (service)
+              data.push({
+                title: packages[i].title,
+                discount_price: service.unit_price,
+                price: service.unit_price * service.quantity,
+                quantity: service.quantity
+              })
+          }
+
+          const dataServices = data.map((data) => {
+            return `<tr>
+            <td>${data.title}</td>
+            <td>${data.discount_price}</td>
+            <td>x ${data.quantity}</td>
+            <td>${data.price}</td>
+            </tr>
+            `
+          })
+
+          if (user) {
+            await sendEmailOrderSuccess(user.email, {
+              year: order.value.created_at.getFullYear().toString(),
+              month: order.value.created_at.getMonth().toString(),
+              day: order.value.created_at.getDay().toString(),
+              company_name: company.company_name,
+              data_services: dataServices.join(''),
+              order_code: order.value._id.toString().slice(-5).toUpperCase(),
+              order_date: order.value.created_at.toLocaleString().slice(0, 10),
+              order_status: order.value.status === StatusOrder.Success ? 'Đã thanh toán' : 'Thất bại',
+              to_money: order.value.total.toLocaleString('vi', { currency: 'VND' }),
+              total: total.toLocaleString('vi', { currency: 'VND' }),
+              total_has_vat: order.value.total.toLocaleString('vi', { currency: 'VND' })
+            })
+          }
+        }
       }
+
       redis.del(transaction.value.order_id.toString())
     }
 
