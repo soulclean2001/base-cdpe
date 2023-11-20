@@ -17,7 +17,8 @@ interface AuthResponse {
 
 const instance: AxiosInstance = axios.create({
   // baseURL: import.meta.env.VITE_SERVER_URL + '/api/v1' || 'http://localhost:4000/api/v1',
-  baseURL: 'http://localhost:4000/api/v1',
+  // baseURL: 'http://localhost:4000/api/v1',
+  baseURL: import.meta.env.VITE_SERVER_URL + '/api/v1',
   timeout: 1000,
   headers: {
     'content-type': 'application/json'
