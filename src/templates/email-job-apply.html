@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: 'Roboto', Arial, sans-serif;
+        font-size: 18px;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .header {
+        background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 19%, rgba(0, 89, 254, 1) 100%);
+        height: 70px;
+        color: white;
+      }
+      .header p {
+        margin: 0;
+        font-size: 25px;
+      }
+      .user-img {
+        background-color: #fff;
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        background: url({{logo_user}}) no-repeat center/cover;
+        /* {{logo_user}} */
+        border: 2px solid;
+        margin: 0 auto;
+      }
+      .email-content {
+        padding: 0 25px;
+      }
+      .email-title {
+        margin-bottom: 5px;
+        font-size: 25px;
+        font-weight: 600;
+      }
+      .email-greeting {
+        margin-top: 5px;
+        padding-bottom: 10px;
+      }
+      .email-text {
+        font-size: 16px;
+      }
+      .email-text b {
+        font-weight: 600;
+      }
+      .email-text-company {
+        color: #8b8888;
+      }
+      .email-text-company_title {
+        color: #313030;
+      }
+      .email-text-salary {
+        color: #f45d2f;
+        font-weight: 600;
+      }
+      .company-logo {
+        width: 80px;
+        height: 80px;
+        background: url({{company_logo}}) no-repeat center/cover;
+        background-size: contain;
+        /* {{company_logo}} */
+        border-radius: 3px;
+        margin-left: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td class="header" colspan="2">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <p style="padding-left: 30px">HFWORK</p>
+              </td>
+              <td>
+                <div class="user-img"></div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td class="email-content" colspan="2">
+          <p class="email-title">{{title}}</p>
+          <p class="email-greeting">Xin chào {{name}},</p>
+          <p>Hồ sơ của bạn đã được gửi đến <b>{{company_name}}</b></p>
+          <table width="550px" style="background-color: #eff5ff; border-radius: 5px" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="100px">
+                <div class="company-logo"></div>
+              </td>
+              <td>
+                <p class="email-text email-text-company_title"><b>{{job_title}}</b></p>
+                <p class="email-text email-text-company">{{company_name}}</p>
+                <p class="email-text">
+                  <span class="email-text-salary">{{salary}}</span> | <b>{{working_location}}</b>
+                </p>
+                <p class="email-text email-text-company">Loại hồ sơ ứng tuyển: {{type_apply}}</p>
+              </td>
+            </tr>
+          </table>
+          <p>{{message}}</p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

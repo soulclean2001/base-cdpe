@@ -26,7 +26,8 @@ export enum TokenType {
 export enum MediaType {
   Image,
   Video,
-  HLS
+  HLS,
+  PDF
 }
 
 export enum MediaTypeQuery {
@@ -39,4 +40,9 @@ export enum EncodingStatus {
   Processing, // Đang encode
   Success, // Encode thành công
   Failed // Encode thất bại
+}
+
+export enum PackageType {
+  'POST' = 'POST',
+  'BANNER' = 'BANNER'
 }

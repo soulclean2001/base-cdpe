@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { JobStatus } from '../requests/Job.request'
+import { CompanyType } from './Company.schema'
 
 export interface WorkingLocation {
   lat: number
@@ -24,14 +25,16 @@ export interface JobType {
   _id?: ObjectId
   job_title: string
   company_id: ObjectId
+  company: Omit<CompanyType, '_id' | 'users'>
   alias: string //link tren url
   is_salary_visible: boolean // hiện mức lương
   pretty_salary: string
   expired_date?: Date
   user_id: ObjectId
   working_locations: WorkingLocation[]
-  industries: [string] // linh vuc cong ty
-  skills: [string] // ky nang
+  industries: string[] // linh vuc cong ty
+  careers?: string[] // nganh nghe
+  skills: string[] // ky nang
   job_level: string // cap bac
   posted_date?: Date // ngay dang
   salary_range: SalararyRange
@@ -57,9 +60,10 @@ export default class Job {
   expired_date: Date
   user_id: ObjectId
   working_locations: WorkingLocation[]
-  industries: [string] // linh vuc cong ty
-  skills: [string] // ky nang
+  industries: string[] // linh vuc cong ty
+  skills: string[] // ky nang
   job_level: string // cap bac
+  careers?: string[] // nganh nghe
   posted_date: Date // ngay dang
   salary_range: SalararyRange
   job_description: string
@@ -71,6 +75,8 @@ export default class Job {
   created_at: Date
   updated_at: Date
   status: JobStatus
+  job_type: string
+  company: Omit<CompanyType, '_id' | 'users'>
 
   constructor(data: JobType) {
     const date = new Date()
@@ -91,12 +97,15 @@ export default class Job {
     this.salary_range = data.salary_range
     this.job_description = data.job_description
     this.job_requirement = data.job_requirement
-    this.visibility = data.visibility
+    this.visibility = data.visibility || false
     this.benefits = data.benefits
     this.created_at = data.created_at || date
     this.expired_date = data.expired_date || date
     this.updated_at = data.updated_at || date
     this.number_of_employees_needed = data.number_of_employees_needed || 10
     this.application_email = data.application_email
+    this.job_type = data.job_type
+    this.company = data.company
+    this.careers = data.careers
   }
 }

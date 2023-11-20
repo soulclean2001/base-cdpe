@@ -11,6 +11,10 @@ export interface CompanyType {
   background?: string
   company_size?: string
   working_locations: WorkingLocation[]
+  fields: string[]
+  number_of_posts?: number
+  videos?: string[]
+  pictures?: string[]
 }
 
 export default class Company {
@@ -22,6 +26,10 @@ export default class Company {
   background: string
   company_size: string // quy mô
   working_locations: WorkingLocation[]
+  fields: string[]
+  number_of_posts: number
+  videos: string[]
+  pictures: string[]
 
   constructor(company: CompanyType) {
     this._id = company._id
@@ -32,5 +40,9 @@ export default class Company {
     this.company_info = company.company_info || ''
     this.company_size = company.company_size || ''
     this.working_locations = company.working_locations || []
+    this.fields = company.fields || []
+    this.number_of_posts = company.number_of_posts || 3
+    this.videos = company.videos || []
+    this.pictures = company.pictures || []
   }
 }

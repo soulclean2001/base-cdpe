@@ -1,6 +1,11 @@
 import { ObjectId } from 'mongodb'
 import { Gender, UserRole, UserVerifyStatus } from '~/constants/enums'
 
+enum UserStatus {
+  Available,
+  Blocked
+}
+
 interface UserType {
   _id?: ObjectId
   name: string
@@ -18,6 +23,7 @@ interface UserType {
   gender?: Gender
   created_at?: Date
   updated_at?: Date
+  status?: UserStatus
 }
 
 export default class User {
@@ -37,6 +43,7 @@ export default class User {
   gender: Gender
   created_at: Date
   updated_at: Date
+  status: UserStatus
 
   constructor(user: UserType) {
     const date = new Date()
@@ -56,6 +63,7 @@ export default class User {
 
     this.role = this.isIn(UserRole, user.role) ? (user.role as number) : UserRole.Candidate
     this.phone_number = user.phone_number || ''
+    this.status = user.status || UserStatus.Available
   }
 
   private isIn<T, V>(object: T, value: V): boolean {

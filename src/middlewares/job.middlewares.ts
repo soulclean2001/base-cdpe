@@ -198,8 +198,7 @@ export const createJobValidator = validate(
         optional: true
       },
       visibility: {
-        isBoolean: true,
-        optional: true
+        isBoolean: true
       },
       benefits: {
         optional: true,
@@ -240,6 +239,27 @@ export const createJobValidator = validate(
             strictSeparator: true
           },
           errorMessage: 'expired_date must be a valid ISO8601'
+        }
+      },
+      careers: {
+        optional: true,
+        custom: {
+          options: (value, { req }) => {
+            if (!Array.isArray(value)) {
+              throw new Error('careers must be an array')
+            }
+
+            // Kiểm tra từng phần tử trong mảng
+            for (const industry of value) {
+              if (typeof industry !== 'string') {
+                throw new Error('Each careers must be a string')
+              }
+            }
+
+            // Tiếp tục kiểm tra các điều kiện khác nếu cần
+
+            return true
+          }
         }
       }
     },
@@ -344,7 +364,7 @@ export const updateJobValidator = validate(
                 if (!expectedFields.includes(key)) {
                   errors.push(`${key} not contained in benefits[${i}]`)
                 }
-                if (expectedFields.includes(key) && values[i][key] !== 'string') {
+                if (expectedFields.includes(key) && typeof values[i][key] !== 'string') {
                   errors.push(`${key} contained in benefits[${i}] must be a string`)
                 }
               }
@@ -365,8 +385,81 @@ export const updateJobValidator = validate(
           },
           errorMessage: 'expired_date must be a valid ISO8601'
         }
+      },
+      careers: {
+        optional: true,
+        custom: {
+          options: (value, { req }) => {
+            if (!Array.isArray(value)) {
+              throw new Error('careers must be an array')
+            }
+
+            // Kiểm tra từng phần tử trong mảng
+            for (const industry of value) {
+              if (typeof industry !== 'string') {
+                throw new Error('Each careers must be a string')
+              }
+            }
+
+            // Tiếp tục kiểm tra các điều kiện khác nếu cần
+
+            return true
+          }
+        }
       }
     },
     ['body']
+  )
+)
+
+export const jobQueryMiddleware = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: true,
+        optional: true
+      },
+      page: {
+        isNumeric: true,
+        optional: true
+      },
+      expired_before_nday: {
+        isNumeric: true,
+        optional: true
+      },
+      is_expired: {
+        isBoolean: true,
+        optional: true
+      },
+      visibility: {
+        isBoolean: true,
+        optional: true
+      },
+      content: {
+        isString: true,
+        optional: true
+      },
+      from_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'from_day must be a valid ISO8601'
+        },
+        optional: true
+      },
+      to_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'to_day must be a valid ISO8601'
+        },
+        optional: true
+      }
+    },
+    ['query']
   )
 )

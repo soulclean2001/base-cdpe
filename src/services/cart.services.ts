@@ -86,11 +86,38 @@ class CartService {
 
   static async getAllItem(user_id: string) {
     const cart = await CartService.getCart(user_id)
-
-    const cartItem = await databaseServices.cartItem
-      .find({
-        cart_id: cart?._id
+    if (!cart)
+      throw new ErrorWithStatus({
+        message: 'Cart not found',
+        status: 404
       })
+    const cartItem = await databaseServices.cartItem
+      .aggregate([
+        {
+          $match: {
+            cart_id: cart._id
+          }
+        },
+        {
+          $lookup: {
+            from: 'packages',
+            localField: 'item.item_id',
+            foreignField: '_id',
+            as: 'package'
+          }
+        },
+        {
+          $unwind: {
+            path: '$package',
+            preserveNullAndEmptyArrays: true
+          }
+        }
+        // {
+        //   $project: {
+        //     'package.status': 0
+        //   }
+        // }
+      ])
       .toArray()
 
     return cartItem

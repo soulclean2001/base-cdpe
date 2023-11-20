@@ -26,6 +26,15 @@ class MediaController {
     })
   }
 
+  async uploadPDF(req: Request, res: Response, next: NextFunction) {
+    const url = await mediasServices.uploadPDF(req)
+
+    return res.json({
+      message: USERS_MESSAGES.UPLOAD_SUCCESS,
+      result: url
+    })
+  }
+
   async uploadVideoHLS(req: Request, res: Response, next: NextFunction) {
     const url = await mediasServices.uploadVideoHLS(req)
 

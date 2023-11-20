@@ -30,9 +30,12 @@ app.use(
 app.use(compression())
 
 databaseServices.connect().then(() => {
-  // databaseServices.indexUsers()
-  // databaseServices.indexRefreshTokens()
-  // databaseServices.indexVideoStatus()
+  databaseServices.indexUsers()
+  databaseServices.indexRefreshTokens()
+  //databaseServices.indexVideoStatus()
+  databaseServices.indexCompany()
+  databaseServices.indexJobs()
+  databaseServices.indexJobApplications()
 })
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -44,9 +47,10 @@ const limiter = rateLimit({
 app.use(limiter)
 
 // const httpServer = createServer(app)
+// isProduction ? envConfig.clientUrl :
 app.use(helmet())
 const corsOptions: CorsOptions = {
-  origin: isProduction ? envConfig.clientUrl : '*'
+  origin: '*'
 }
 app.use(cors(corsOptions))
 
@@ -62,9 +66,16 @@ socket(io)
 redis.client.connect()
 
 app.use('/api/v1', router)
+app.get('/now', (req, res) => {
+  return res.json({
+    now: new Date()
+  })
+})
+
 
 app.use(defaultErrorHandler)
 
 httpServer.listen(port, () => {
   console.log(`server is started on port http://localhost:${port}`)
+  console.log(new Date().toLocaleString())
 })

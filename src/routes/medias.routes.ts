@@ -12,6 +12,8 @@ mediasRouter.post(
   wrapAsync(mediasControllers.uploadImage)
 )
 
+mediasRouter.post('/upload-pdf', accessTokenValidator, verifiedUserValidator, wrapAsync(mediasControllers.uploadPDF))
+
 mediasRouter.post(
   '/upload-video',
   accessTokenValidator,

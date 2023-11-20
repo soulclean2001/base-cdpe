@@ -3,7 +3,7 @@ module.exports = {
   apps: [
     {
       name: 'tuyendung',
-      script: 'node dist/index.js',
+      script: 'dist/index.js',
       env: {
         NODE_ENV: 'development'
       },

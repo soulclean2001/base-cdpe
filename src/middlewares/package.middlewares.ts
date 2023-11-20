@@ -1,4 +1,6 @@
 import { ParamSchema, checkSchema } from 'express-validator'
+import { PackageType } from '~/constants/enums'
+import { ErrorWithStatus } from '~/models/Errors'
 import { PackageStatus } from '~/models/schemas/Package.schema'
 import { validate } from '~/utils/validation'
 
@@ -33,7 +35,17 @@ const isStringNotEmpty = (fieldName: string): ParamSchema => {
 export const createPackageValidator = validate(
   checkSchema(
     {
-      type: isStringNotEmpty('type'),
+      type: {
+        custom: {
+          options: (value: any) => {
+            if (!Object.keys(PackageType).includes(value)) {
+              const types = Object.keys(PackageType).join(',')
+              throw new Error(`type must be in [${types}]`)
+            }
+            return true
+          }
+        }
+      },
       title: isStringNotEmpty('type'),
       price: priceSchema('price'),
       description: isStringNotEmpty('type'),
@@ -45,6 +57,16 @@ export const createPackageValidator = validate(
       discount_price: {
         ...priceSchema('price'),
         optional: true
+      },
+      number_of_days_to_expire: {
+        isNumeric: {
+          errorMessage: 'Number of days to expire must be a number'
+        }
+      },
+      value: {
+        isNumeric: {
+          errorMessage: 'value must be a number'
+        }
       }
     },
     ['body']
@@ -54,10 +76,6 @@ export const createPackageValidator = validate(
 export const updatePackageValidator = validate(
   checkSchema(
     {
-      type: {
-        ...isStringNotEmpty('type'),
-        optional: true
-      },
       title: {
         ...isStringNotEmpty('type'),
         optional: true
@@ -81,8 +99,42 @@ export const updatePackageValidator = validate(
       discount_price: {
         ...priceSchema('price'),
         optional: true
+      },
+      number_of_days_to_expire: {
+        isNumeric: {
+          errorMessage: 'Number of days to expire must be a number'
+        },
+        optional: true
+      },
+      value: {
+        isNumeric: {
+          errorMessage: 'Value must be a number'
+        },
+        optional: true
       }
     },
     ['body']
+  )
+)
+
+export const packageQueryMiddleware = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: {
+          errorMessage: 'limit must be a number'
+        },
+        optional: true
+      },
+      page: {
+        isNumeric: true,
+        optional: true
+      },
+      title: {
+        isString: true,
+        optional: true
+      }
+    },
+    ['query']
   )
 )

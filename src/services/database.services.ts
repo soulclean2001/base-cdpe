@@ -18,6 +18,12 @@ import PotentialCandidate from '~/models/schemas/PotentialCandidate.schema'
 import TrackedCandidate from '~/models/schemas/TrackedCandidate.schema'
 import JobApplication from '~/models/schemas/JobApplication.schema'
 import PurchasedPackage from '~/models/schemas/PurchasedPackage.schema'
+import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
+import { text } from 'body-parser'
+import Order from '~/models/schemas/Order.schema'
+import ServiceOrder from '~/models/schemas/ServiceOrder.schema'
+import TransactionHistory from '~/models/schemas/TransactionHistory.schema'
+import Notification from '~/models/schemas/Notification.schema'
 
 const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
 class DatabaseService {
@@ -40,12 +46,13 @@ class DatabaseService {
   }
 
   async indexUsers() {
-    const exists = await this.users.indexExists(['email_1_password_1', 'email_1', 'username_1'])
+    const exists = await this.users.indexExists(['email_1_password_1', 'email_1', 'username_1', 'email_text_name_text'])
 
     if (!exists) {
       this.users.createIndex({ email: 1, password: 1 })
       this.users.createIndex({ email: 1 }, { unique: true })
       this.users.createIndex({ username: 1 }, { unique: true })
+      this.users.createIndex({ email: 'text', name: 'text' })
     }
   }
   async indexRefreshTokens() {
@@ -68,6 +75,42 @@ class DatabaseService {
     if (!exists) {
       this.candidate.createIndex({ cv_id: 1 })
     }
+  }
+
+  async indexJobs() {
+    const exists = await this.job.indexExists([
+      'company_id_1',
+      'job_title_text_company.company_name_text_job_level_text'
+    ])
+
+    if (!exists) {
+      this.job.createIndex({ company_id: 1 })
+      this.job.createIndex({
+        job_title: 'text',
+        'company.company_name': 'text',
+        job_level: 'text'
+      })
+    }
+  }
+
+  async indexJobApplications() {
+    const exists = await this.jobApplication.indexExists(['full_name_text_email_text_phone_number_text'])
+    if (!exists) {
+      this.jobApplication.createIndex({
+        full_name: 'text',
+        phone_number: 'text',
+        email: 'text'
+      })
+    }
+  }
+
+  async indexCompany() {
+    // const exists = await this.job.indexExists(['company_name_text'])
+    // if (!exists) {
+    //   this.job.createIndex({
+    //     company_name: 'text'
+    //   })
+    // }
   }
 
   // async indexVideoStatus() {
@@ -125,6 +168,10 @@ class DatabaseService {
     return this.db.collection(envConfig.dbConversationCollection)
   }
 
+  get conversationRooms(): Collection<ConversationRoom> {
+    return this.db.collection(envConfig.dbConversationRoomsCollection)
+  }
+
   get candidate(): Collection<Candidate> {
     return this.db.collection(envConfig.dbCandidate)
   }
@@ -139,6 +186,22 @@ class DatabaseService {
 
   get purchasedPackage(): Collection<PurchasedPackage> {
     return this.db.collection(envConfig.dbPurchasedPackage)
+  }
+
+  get order(): Collection<Order> {
+    return this.db.collection(envConfig.dbOrder)
+  }
+
+  get serviceOrder(): Collection<ServiceOrder> {
+    return this.db.collection(envConfig.dbServiceOrder)
+  }
+
+  get transaction(): Collection<TransactionHistory> {
+    return this.db.collection(envConfig.dbTransactionHistory)
+  }
+
+  get notification(): Collection<Notification> {
+    return this.db.collection(envConfig.dbNotificationCollection)
   }
 }
 

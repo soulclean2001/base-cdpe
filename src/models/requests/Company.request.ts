@@ -22,4 +22,7 @@ export interface UpdateCompanyReqBody {
   logo_image_file?: File
   background_image_file?: File
   working_locations?: WorkingLocation[]
+  fields?: string[]
+  pictures?: string[]
+  videos?: string[]
 }

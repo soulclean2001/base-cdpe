@@ -42,6 +42,10 @@ export const createCandidateValidator = validate(
         optional: true
       },
       education_level: {
+        ...isStringNotEmpty('education_level'),
+        optional: true
+      },
+      level: {
         ...isStringNotEmpty('level'),
         optional: true
       },
@@ -104,6 +108,10 @@ export const updateCandidateValidator = validate(
         optional: true
       },
       education_level: {
+        ...isStringNotEmpty('education_level'),
+        optional: true
+      },
+      level: {
         ...isStringNotEmpty('level'),
         optional: true
       },
@@ -126,5 +134,24 @@ export const updateCandidateValidator = validate(
       // }
     },
     ['body']
+  )
+)
+
+export const getCandidateValidator = validate(
+  checkSchema(
+    {
+      candidate_id: {
+        custom: {
+          options: (value: any) => {
+            if (!ObjectId.isValid(value)) {
+              throw new Error('Invalid candidate identifier')
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['params']
   )
 )

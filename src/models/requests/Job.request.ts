@@ -6,8 +6,8 @@ export interface CreateJobBody {
   is_salary_visible: boolean
   pretty_salary: string
   working_locations: WorkingLocation[]
-  industries: [string]
-  skills: [string]
+  industries: string[]
+  skills: string[]
   expired_date?: string
   job_level: string
   salary_range: SalararyRange
@@ -15,6 +15,7 @@ export interface CreateJobBody {
   job_requirement: string
   visibility: boolean
   benefits: Benefit[]
+  career?: string[]
   job_type: string
   number_of_employees_needed: number
   application_email: string
@@ -37,15 +38,15 @@ export interface UpdateJobReqBody {
   is_salary_visible?: boolean
   pretty_salary?: string
   working_locations?: WorkingLocation[]
-  industries?: [string]
-  skills?: [string]
+  industries?: string[]
+  skills?: string[]
   job_level?: string
   salary_range?: SalararyRange
   job_description?: string
   job_requirement?: string
   visibility?: boolean
   expired_date?: string
-
+  careers?: string[]
   benefits?: Benefit[]
   job_type?: string
   number_of_employees_needed?: number

@@ -22,6 +22,7 @@ import { UserVerifyStatus } from '~/constants/enums'
 import databaseServices from '~/services/database.services'
 import HTTP_STATUS from '~/constants/httpStatus'
 import { envConfig } from '~/constants/config'
+import { ErrorWithStatus } from '~/models/Errors'
 
 class AuthController {
   public async login(req: Request<ParamsDictionary, any, LoginReqBody>, res: Response) {
@@ -61,8 +62,8 @@ class AuthController {
     next: NextFunction
   ) {
     const { refresh_token } = req.body
-    const { user_id, verify, exp, role } = req.decoded_refresh_token as TokenPayload
-    const result = await usersService.refreshToken({ user_id, verify, refresh_token, exp, role })
+    const { user_id, verify, exp } = req.decoded_refresh_token as TokenPayload
+    const result = await usersService.refreshToken({ user_id, verify, refresh_token, exp })
     return res.json({
       message: USERS_MESSAGES.REFRESH_TOKEN_SUCCESS,
       result
@@ -105,7 +106,10 @@ class AuthController {
 
     if (user.verify === UserVerifyStatus.Verified) {
       return res.json({
-        message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE
+        message: USERS_MESSAGES.EMAIL_ALREADY_VERIFIED_BEFORE,
+        result: {
+          verified: true
+        }
       })
     }
 
@@ -185,7 +189,25 @@ class AuthController {
     const { user_id } = req.decoded_authorization as TokenPayload
     const { password } = req.body
     const result = await usersService.changePassword(user_id, password)
-    return res.json(result)
+    return res.json({
+      result
+    })
+  }
+
+  public async lockOrUnlockUser(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+    const { user_id: uId } = req.body
+    if (!ObjectId.isValid(uId)) {
+      throw new ErrorWithStatus({
+        message: 'Invalid user ID',
+        status: 422
+      })
+    }
+
+    const result = await usersService.lockOrUnlockUser(uId)
+    return res.json({
+      result
+    })
   }
 }
 

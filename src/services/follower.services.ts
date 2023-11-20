@@ -208,9 +208,32 @@ export default class FollowerService {
 
   static async getCompaniesFollowedUser(user_id: string) {
     const listCompany = await databaseServices.companyFollowers
-      .find({
-        user_id: new ObjectId(user_id)
-      })
+      .aggregate([
+        {
+          $match: {
+            user_id: new ObjectId(user_id)
+          }
+        },
+        {
+          $lookup: {
+            from: 'company',
+            localField: 'company_id',
+            foreignField: '_id',
+            as: 'company'
+          }
+        },
+        {
+          $unwind: {
+            path: '$company'
+          }
+        },
+        {
+          $project: {
+            'company.users': 0
+          }
+        }
+      ])
+
       .toArray()
     return listCompany
   }

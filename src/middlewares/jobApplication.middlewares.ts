@@ -2,7 +2,7 @@ import { ParamSchema, checkSchema } from 'express-validator'
 import { isISO8601, isStringNotEmpty } from './common.middlewares'
 import { validate } from '~/utils/validation'
 import { ObjectId } from 'mongodb'
-import { ApplyType, JobApplicationStatus } from '~/models/schemas/JobApplication.schema'
+import { ApplyType, JobApplicationStatus, ProfileStatus } from '~/models/schemas/JobApplication.schema'
 import { USERS_MESSAGES } from '~/constants/messages'
 
 // job_post_id: string
@@ -28,7 +28,8 @@ export const applyJobValidator = validate(
         }
       },
       application_date: {
-        ...isISO8601('application_date')
+        ...isISO8601('application_date'),
+        optional: true
       },
       cv_link: {
         custom: {
@@ -131,5 +132,89 @@ export const updateStatusValidator = validate(
       }
     },
     ['body']
+  )
+)
+
+export const updateProfileStatusValidator = validate(
+  checkSchema(
+    {
+      profile_status: {
+        isString: true,
+        custom: {
+          options: (value: any) => {
+            if (!Object.values(ProfileStatus).includes(value)) {
+              throw new Error(
+                'Invalid profile status: ' +
+                  value +
+                  '. Must be is ' +
+                  Object.keys(ProfileStatus).join(', ').toLowerCase()
+              )
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const jobApplicationQueryMiddleware = validate(
+  checkSchema(
+    {
+      limit: {
+        isNumeric: true,
+        optional: true
+      },
+      page: {
+        isNumeric: true,
+        optional: true
+      },
+      status: {
+        isNumeric: true,
+        optional: true
+      },
+      profile_status: {
+        isString: true,
+        optional: true
+      },
+
+      content: {
+        isString: true,
+        optional: true
+      },
+      from_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'from_day must be a valid ISO8601'
+        },
+        optional: true
+      },
+      to_day: {
+        isISO8601: {
+          options: {
+            strict: true,
+            strictSeparator: true
+          },
+          errorMessage: 'to_day must be a valid ISO8601'
+        },
+        optional: true
+      },
+      post_id: {
+        optional: true,
+        custom: {
+          options: (value: any) => {
+            if (!ObjectId.isValid(value)) {
+              throw new Error('Invalid post_id: ' + value)
+            }
+            return true
+          }
+        }
+      }
+    },
+    ['query']
   )
 )

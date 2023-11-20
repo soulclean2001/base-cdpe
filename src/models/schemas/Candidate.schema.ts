@@ -9,6 +9,7 @@ export interface CandidateType {
   cv_id: ObjectId
   education_level: string
   user_id: ObjectId
+  level: string
 }
 
 export default class Candidate {
@@ -20,6 +21,8 @@ export default class Candidate {
   cv_id: ObjectId
   education_level: string
   user_id: ObjectId
+  level: string
+
   constructor(data: CandidateType) {
     this._id = data._id
     this.industry = data.industry
@@ -29,5 +32,6 @@ export default class Candidate {
     this.user_id = data.user_id
     this.experience = data.experience
     this.education_level = data.education_level
+    this.level = data.level
   }
 }

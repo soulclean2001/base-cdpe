@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      .modal-detail-order {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      .modal-detail-order .order-id {
+        font-size: 14px;
+        font-weight: 700;
+        text-align: right;
+      }
+
+      .modal-detail-order .content-modal-detail-container {
+        margin: 20px;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-company-wapper .title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-company-wapper .name {
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .title-service {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .list-services table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .list-services th,
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .list-services td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .list-services th {
+        background-color: #d2d2d2;
+
+        font-weight: 600;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .order-detail-info {
+        padding: 0 15px;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .order-detail-info .left-content,
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .order-detail-info .right-content {
+        margin-top: 15px;
+        margin-bottom: 5px;
+      }
+
+      .modal-detail-order .content-modal-detail-container .info-order-wapper .order-detail-info .right-content .item {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        font-weight: 700;
+      }
+
+      .modal-detail-order .content-modal-detail-container .footer-modal-container {
+        border-radius: 7px;
+        padding: 30px 15px;
+        width: 100%;
+        background-color: #4d4dfc;
+        text-align: right;
+        margin-top: 20px;
+      }
+
+      .modal-detail-order .content-modal-detail-container .footer-modal-container span {
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="modal-detail-order">
+      <div class="content-modal-detail-container">
+        <div style="font-weight: 500; font-size: 12px; border-bottom: 1px solid black">
+          <h2 style="text-align: start; font-weight: 700">HFWORKS</h2>
+          <p>Mã số thuế: 0000000000-000</p>
+          <p>Địa chỉ: 12 Nguyễn Văn Bảo, Phường 4, Gò Vấp, Thành phố Hồ Chí Minh, Việt Nam</p>
+          <p>Điện thoại: 0365887759</p>
+          <p>Số tài khoản: 1030701534 - Vietcombank - Ngân hàng thương mại cổ phần Ngoại thương Việt Nam</p>
+        </div>
+        <div>
+          <h1 style="font-weight: 700; text-align: center; margin-bottom: 0">HÓA ĐƠN GIÁ TRỊ GIA TĂNG</h1>
+          <p style="text-align: center; margin-bottom: 0; color: red">(Bản thể hiện của hóa đơn điện tử)</p>
+          <p style="text-align: center; margin-bottom: 0">Ngày {{day}} tháng {{month}} năm {{year}}</p>
+          <div style="text-align: right; margin-top: 15px; font-weight: 700">Mã đơn hàng: #OD_{{order_code}}</div>
+        </div>
+        <div class="info-company-wapper">
+          <div class="title">Thông tin khách hàng</div>
+          <div class="name">Tên khách hàng: {{company_name}}</div>
+          <div class="name">Địa chỉ: {{working_location}}</div>
+        </div>
+        <div class="info-order-wapper">
+          <div class="title-service">Danh sách dịch vụ</div>
+          <div class="list-services">
+            <table>
+              <tr>
+                <th>Dịch vụ</th>
+                <th>Giá</th>
+                <th>Sô lượng</th>
+                <th>Thành tiền</th>
+              </tr>
+              {{data_services}}
+            </table>
+          </div>
+          <div class="order-detail-info">
+            <div class="left-content">
+              <div class="title">Chi tiết đơn hàng:</div>
+              <div class="order-date">Ngày đặt hàng: {{order_date}}</div>
+              <!-- <div class="update-date">Cập nhật gần đây: {detailData.order.updated_at.slice(0, 10)}</div> -->
+              <div class="update-date">Trạng thái đơn hàng: {{order_status}}</div>
+            </div>
+            <div class="right-content">
+              <div class="item">
+                <div class="label">Tổng tiền(Chưa VAT)</div>
+                <div class="value">{{total}} VND</div>
+              </div>
+              <div class="item">
+                <div class="label">Tổng tiền(Đã bao gồm VAT)</div>
+                <div class="value">{{total_has_vat}} VNĐ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-modal-container">
+          <span>Thành tiền: {{to_money}} VNĐ</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
