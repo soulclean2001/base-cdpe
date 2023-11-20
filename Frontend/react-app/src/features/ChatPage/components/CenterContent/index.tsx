@@ -128,6 +128,7 @@ const CenterContent = () => {
           cleanOnEnter
           onEnter={handleOnEnter}
           placeholder='Nhập nội dung tin nhắn'
+          maxLength={2000}
         />
         {/* <input type='text' value={text} onChange={(e) => setText(e.target.value)} /> */}
         <span className='btn-send' onClick={handleSendMessage}>

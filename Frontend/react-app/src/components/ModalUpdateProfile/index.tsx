@@ -92,6 +92,10 @@ const ModalUpdateProfile = (props: PropsType) => {
   }
   const handleSubmitUpdate = async () => {
     if (!myInfo) return
+    if (!name || name.trim() === '') {
+      toast.error('Vui lòng không bỏ trống tên người dùng')
+      return
+    }
     const phoneRegex = new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)
 
     if (phone && !phoneRegex.test(phone)) {
