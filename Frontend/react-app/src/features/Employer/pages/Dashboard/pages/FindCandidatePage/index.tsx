@@ -68,7 +68,7 @@ const FindCandidatePage = () => {
   //page
   const [listCandidate, setListCandidate] = useState<AnyTypeCandidate[]>([])
   const [pageClick, setPageClick] = useState(1)
-  const limitOnPage = 2
+  const limitOnPage = 5
   const [totalItems, setTotalItems] = useState(2)
   //
   /*/ 

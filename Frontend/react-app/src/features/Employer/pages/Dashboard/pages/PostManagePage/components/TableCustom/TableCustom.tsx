@@ -128,7 +128,7 @@ const TableCustom = (props: any) => {
   const fetchData = async (page?: string) => {
     const initReq = { limit: limit.toString(), page: page ? page : '1' }
     let request: PostFilterRequestType = initReq
-    if (tabKey === 'tab-publish') request = { ...initReq, visibility: true }
+    if (tabKey === 'tab-publish') request = { ...initReq, visibility: true, status: acceptStatus as string }
     if (tabKey === 'tab-hide') request = { ...initReq, visibility: false, status: acceptStatus as string }
     if (tabKey === 'tab-over-time-7-day')
       request = {

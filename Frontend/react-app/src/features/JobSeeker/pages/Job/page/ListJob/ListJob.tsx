@@ -65,7 +65,7 @@ interface TopCompanyDataType {
 const ListJob = () => {
   const location = useLocation()
   const [listTopCompany, setListTopCompany] = useState<TopCompanyDataType[]>([])
-  const limitOnPage = 2
+  const limitOnPage = 7
   const [totalItems, setTotalItems] = useState(1)
   const [activeSort, setActiveSort] = useState('last-post-date')
   const [listJobs, setListJobs] = useState<Array<JobItemType>>([])
@@ -319,10 +319,12 @@ const ListJob = () => {
                 style={{
                   width: '100%',
                   // height: '100%',
-                  height: listTopCompany && listTopCompany.length > 5 ? '190vh' : `${listTopCompany.length * 250}px`,
-                  maxHeight: listTopCompany && listTopCompany.length > 5 ? '190vh' : `${listTopCompany.length * 250}px`
+                  height:
+                    listTopCompany && listTopCompany.length > 3 ? `${3 * 250}px` : `${listTopCompany.length * 250}px`,
+                  maxHeight:
+                    listTopCompany && listTopCompany.length > 3 ? `${3 * 250}px` : `${listTopCompany.length * 250}px`
                 }}
-                slidesPerView={listTopCompany && listTopCompany.length > 5 ? 5 : listTopCompany.length}
+                slidesPerView={listTopCompany && listTopCompany.length > 3 ? 3 : listTopCompany.length}
                 direction={'vertical'}
                 // spaceBetween={'180px'}
                 pagination={{

@@ -223,18 +223,20 @@ const UsersManage = () => {
             />
           </Col>
           <Col md={4} sm={7} xs={24}>
-            <Select
-              onChange={(value) => handleChangeStatus(value)}
-              size='large'
-              style={{ width: '100%' }}
-              defaultValue='Tất cả'
-              options={[
-                { value: 'all', label: 'Tất cả' },
-                { value: '2', label: 'Đã khóa' },
-                { value: '1', label: 'Đã kích hoạt' },
-                { value: '0', label: 'Chưa kích hoạt' }
-              ]}
-            />
+            <Tooltip title='Trạng thái'>
+              <Select
+                onChange={(value) => handleChangeStatus(value)}
+                size='large'
+                style={{ width: '100%' }}
+                defaultValue='Tất cả'
+                options={[
+                  { value: 'all', label: 'Tất cả' },
+                  { value: '2', label: 'Đã khóa' },
+                  { value: '1', label: 'Đã kích hoạt' },
+                  { value: '0', label: 'Chưa kích hoạt' }
+                ]}
+              />
+            </Tooltip>
           </Col>
         </Row>
 

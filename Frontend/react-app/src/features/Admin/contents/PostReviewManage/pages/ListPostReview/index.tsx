@@ -244,14 +244,16 @@ const ListPostReview = () => {
             />
           </Col>
           <Col md={6} sm={16} xs={12}>
-            <RangePicker
-              onChange={(_, dataStr) => setDateFormTo(dataStr)}
-              style={{ width: '100%' }}
-              size='large'
-              placeholder={['Từ ngày', 'Đến ngày']}
-              format='YYYY-MM-DD'
-              // locale={viVN}
-            />
+            <Tooltip title='Ngày yêu cầu'>
+              <RangePicker
+                onChange={(_, dataStr) => setDateFormTo(dataStr)}
+                style={{ width: '100%' }}
+                size='large'
+                placeholder={['Từ ngày', 'Đến ngày']}
+                format='YYYY-MM-DD'
+                // locale={viVN}
+              />
+            </Tooltip>
           </Col>
           <Col md={4} sm={7} xs={11}>
             <Select
