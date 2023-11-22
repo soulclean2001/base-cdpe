@@ -30,9 +30,10 @@ export default function OauthGoogleLogin() {
       }
       if (dataDecode.role && dataDecode.role === 2) {
         const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(oauth({ accessToken, refreshToken, newUser, verify }))
         dispatchAsync(setAccountStatus(dataDecode))
         dispatchAsync(setStateLogin(action))
-        dispatch(oauth({ accessToken, refreshToken, newUser, verify }))
+
         if (dataDecode.verify.toString() === '0') {
           navigate('/active-page')
           return
