@@ -34,7 +34,8 @@ jobs:
           port: ${{secrets.HOST_PORT}}
           script: |
             docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
-            docker pull hiroskai217/be-tuyendung:v0
             docker stop be-tuyendung
             docker rm be-tuyendung
+            docker rmi hiroskai217/be-tuyendung:v0
+            docker pull hiroskai217/be-tuyendung:v0
             docker run -dp 4000:4000 --name be-tuyendung hiroskai217/be-tuyendung:v0
