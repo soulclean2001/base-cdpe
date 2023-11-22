@@ -9,7 +9,7 @@ import { decodeToken } from '~/utils/jwt'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
 import { toast } from 'react-toastify'
 import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
-const SignUp = () => {
+const SignUpJobSeeker = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
   //form data
@@ -66,7 +66,7 @@ const SignUp = () => {
       <div className='sign-up-container'>
         <div className='title-container'>
           <h1 className='title' onClick={handleBackHome}>
-            HFWork
+            HFWorks
           </h1>
           <h3 style={{ fontSize: '22px', color: 'rgb(255, 125, 85)' }}>Chào mừng bạn đến với HFWork</h3>
           <span style={{ fontSize: '14px', color: '#999' }}>
@@ -224,4 +224,4 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+export default SignUpJobSeeker

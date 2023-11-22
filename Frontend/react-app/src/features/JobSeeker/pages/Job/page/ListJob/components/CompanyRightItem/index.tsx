@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import './style.scss'
-import logoTemp from '~/assets/logo_temp.jpg'
-import bannerTemp from '~/assets/HF_logo.jpg'
+import bannerTemp from '~/assets/banner_temp.jpg'
+import logoTemp from '~/assets/HF_logo.jpg'
 interface DataType {
   id: string
   name: string

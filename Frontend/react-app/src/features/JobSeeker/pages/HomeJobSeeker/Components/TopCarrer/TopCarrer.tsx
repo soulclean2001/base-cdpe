@@ -6,6 +6,14 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import './topCarrer.scss'
+import carrer1 from '~/assets/carerr_kinh_doanh_ban_hang.webp'
+import carrer2 from '~/assets/carerr_it_pm.webp'
+import carrer3 from '~/assets/carerr_hanh_chinh_vp.webp'
+import carrer4 from '~/assets/carerr_gaio_duc.webp'
+import carrer5 from '~/assets/carerr_tu_van.webp'
+import carrer6 from '~/assets/carerr_mkt.webp'
+import carrer7 from '~/assets/carerr_van_tai.webp'
+import carrer8 from '~/assets/carerr_kiem_toan.webp'
 import apiHome from '~/api/home.api'
 const TopCarrer = () => {
   const [dataCarrer, setDataCarrer] = useState<{ id: string; img: string; name: string; totalJob: number }[]>([])
@@ -17,45 +25,51 @@ const TopCarrer = () => {
     let dataCarrer = [
       {
         id: '1',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-        name: 'BẢO HIỂM',
-        totalJob: 19999
+        img: carrer1,
+        name: 'KINH DOANH/ BÁN HÀNG',
+        totalJob: 0
       },
       {
         id: '2',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-        name: 'BÁN LẺ/ BÁN SỈ',
-        totalJob: 19999
+        img: carrer2,
+        name: 'IT PHẦN MỀM',
+        totalJob: 0
       },
       {
         id: '3',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-        name: 'XUẤT NHẬP KHẨU',
-        totalJob: 19999
+        img: carrer3,
+        name: 'HÀNH CHÍNH/ VĂN PHÒNG',
+        totalJob: 0
       },
       {
         id: '4',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-        name: 'BÁO CHÍ/ TRUYỀN HÌNH',
-        totalJob: 19999
+        img: carrer4,
+        name: 'GIÁO DỤC/ ĐÀO TẠO',
+        totalJob: 0
       },
       {
         id: '5',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-        name: 'ĐIỆN TỬ VIỄN THÔNG',
-        totalJob: 19999
+        img: carrer5,
+        name: 'TƯ VẤN',
+        totalJob: 0
       },
-      {
-        id: '6',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-        name: 'BẤT ĐỘNG SẢN',
-        totalJob: 19999
-      },
+      // {
+      //   id: '6',
+      //   img: carrer6,
+      //   name: 'MARKETING/ TRUYỀN THÔNG/ QUẢNG CÁO',
+      //   totalJob: 19999
+      // },
       {
         id: '7',
-        img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
+        img: carrer7,
         name: 'VẬN TẢI/ KHO VẬN',
-        totalJob: 19999
+        totalJob: 0
+      },
+      {
+        id: '8',
+        img: carrer8,
+        name: 'KẾ TOÁN/ KIỂM TOÁN',
+        totalJob: 0
       }
     ]
 
@@ -68,10 +82,12 @@ const TopCarrer = () => {
           if (item._id.toString().toUpperCase() === data.name) {
             data.totalJob = item.jobs
             listTemp.push(data)
+            let index = dataCarrer.indexOf(data)
+            if (index > -1) dataCarrer.splice(index, 1)
           }
         })
       })
-      setDataCarrer(listTemp)
+      setDataCarrer([...listTemp, ...dataCarrer])
     })
   }
   // set size

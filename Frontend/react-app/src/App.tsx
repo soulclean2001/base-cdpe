@@ -3,7 +3,7 @@ import { Routes, Route, Outlet } from 'react-router-dom'
 
 import 'antd/dist/reset.css'
 
-import SignUp from './features/JobSeeker/pages/SignUpJobSeeker'
+import SignUpJobSeeker from './features/JobSeeker/pages/SignUpJobSeeker'
 import Job from './features/JobSeeker/pages/Job/Job'
 import SignUpEmployer from './features/Employer/pages/SignUpEmployer'
 import LoginEmployer from './features/Employer/pages/LoginEmployer'
@@ -242,7 +242,7 @@ function App() {
           <Route path='chat' element={<ChatPage roleType={'CANDIDATE_TYPE'} />} />
         </Route>
         <Route path='/candidate-login' element={<Login />} />
-        <Route path='/candidate-sign-up' element={<SignUp />} />
+        <Route path='/candidate-sign-up' element={<SignUpJobSeeker />} />
         <Route path='/login/oauth' element={<OauthGoogleLogin />} />
         <Route path='/email-verifications' element={<VerifyEmail />} />
         {/* <Route path='/reset-password' element={<ResetPassword />} />

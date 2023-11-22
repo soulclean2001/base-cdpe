@@ -116,7 +116,7 @@ const Login: React.FC = () => {
       <div className='login-container'>
         <div className='title-container'>
           <h1 className='title' onClick={handleBackHome}>
-            HFWork
+            HFWorks
           </h1>
           <h3 style={{ fontSize: '22px', color: 'rgb(255, 125, 85)' }}>Chào mừng bạn đã quay trở lại</h3>
           <span style={{ fontSize: '14px', color: '#999' }}>

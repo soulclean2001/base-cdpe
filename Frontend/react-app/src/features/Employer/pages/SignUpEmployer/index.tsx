@@ -260,7 +260,7 @@ const SignUpEmployer = () => {
         <div className='sign-up-employer-content'>
           <div className='title-container'>
             <div className='title' onClick={() => navigate('/employer')}>
-              HFWork
+              HFWorks
             </div>
             <p>Đăng ký tài khoản Nhà tuyển dụng</p>
             <span>Cùng tạo dựng lợi thế cho doanh nghiệp bằng trải nghiệm dịch vụ Website của chúng tôi.</span>

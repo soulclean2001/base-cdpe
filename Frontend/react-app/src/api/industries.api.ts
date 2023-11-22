@@ -27,7 +27,7 @@ export const getAllIndustries = [
   { value: 'Hàng hải' },
   { value: 'Hàng không' },
   { value: 'Hàng tiêu dùng' },
-  { value: 'Hàng chính/ Văn phòng' },
+  { value: 'Hành chính/ Văn phòng' },
   { value: 'Hóa học/ Sinh học' },
   { value: 'Hoạch định/ Dự án' },
   { value: 'In ấn/ Xuất bản' },

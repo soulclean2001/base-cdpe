@@ -504,52 +504,58 @@ const TableCustom = (props: any) => {
             onChange={(e) => setContent(e.target.value)}
             style={{ width: '95%' }}
             size='large'
-            placeholder='Tìm theo tên, id bài đăng'
+            placeholder='Tìm theo tên bài'
             prefix={<BsSearch />}
           />
         </Col>
         <Col md={6} sm={11} xs={24}>
-          <RangePicker
-            style={{ width: '95%' }}
-            size='large'
-            placeholder={['Từ ngày', 'Đến ngày']}
-            format='YYYY-MM-DD'
-            // locale={viVN}
-            onChange={(_, dateStrings) => {
-              setRangeDate(dateStrings)
-            }}
-          />
+          <Tooltip title='Ngày hết hạn'>
+            <RangePicker
+              style={{ width: '95%' }}
+              size='large'
+              placeholder={['Từ ngày', 'Đến ngày']}
+              format='YYYY-MM-DD'
+              // locale={viVN}
+              onChange={(_, dateStrings) => {
+                setRangeDate(dateStrings)
+              }}
+            />
+          </Tooltip>
         </Col>
-        {tabKey !== 'tab-publish' && (
-          <Col md={5} sm={11} xs={24}>
+
+        <Col md={5} sm={11} xs={24}>
+          <Tooltip title='Trạng thái kiểm duyệt'>
             <Select
               onChange={(value) => setAcceptStatus(value === 'all' ? '' : value)}
               style={{ width: '95%' }}
               size='large'
               defaultValue='all'
               options={[
-                { value: 'all', label: 'Tất cả trạng thái kiểm duyệt' },
+                { value: 'all', label: 'Tất cả' },
                 { value: 1, label: 'Chờ duyệt' },
                 { value: 0, label: 'Chấp nhận' },
                 { value: 2, label: 'Từ chối' },
                 { value: 3, label: 'Chưa kiểm duyệt' }
               ]}
             />
-          </Col>
-        )}
+          </Tooltip>
+        </Col>
+
         {(tabKey === 'tab-over-time-7-day' || tabKey === 'tab-over-time') && (
           <Col md={5} sm={11} xs={24}>
-            <Select
-              onChange={(value) => setPublishStatus(value === 'all' ? '' : value)}
-              style={{ width: '95%' }}
-              size='large'
-              defaultValue='all'
-              options={[
-                { value: 'all', label: 'Tất cả trạng thái hiển thị' },
-                { value: true, label: 'Công khai' },
-                { value: false, label: 'Riêng tư' }
-              ]}
-            />
+            <Tooltip title='Trạng thái hiển thị'>
+              <Select
+                onChange={(value) => setPublishStatus(value === 'all' ? '' : value)}
+                style={{ width: '95%' }}
+                size='large'
+                defaultValue='all'
+                options={[
+                  { value: 'all', label: 'Tất cả' },
+                  { value: true, label: 'Công khai' },
+                  { value: false, label: 'Riêng tư' }
+                ]}
+              />
+            </Tooltip>
           </Col>
         )}
       </Row>
