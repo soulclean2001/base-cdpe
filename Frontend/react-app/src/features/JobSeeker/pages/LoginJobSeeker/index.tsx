@@ -166,18 +166,12 @@ const Login: React.FC = () => {
             <p className='or-login-title'>Hoặc đăng nhập bằng</p>
             <Form.Item>
               <div className='or-login-container'>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  className='btn login-google-button'
-                  icon={<GooglePlusOutlined />}
-                >
+                <Button type='primary' className='btn login-google-button' icon={<GooglePlusOutlined />}>
                   <Link to={googleOAuthUrl}>Google</Link>
                 </Button>
                 <Button
                   disabled={true}
                   type='primary'
-                  htmlType='submit'
                   className='btn login-facebook-button'
                   icon={<FacebookOutlined />}
                 >
@@ -186,7 +180,6 @@ const Login: React.FC = () => {
                 <Button
                   disabled={true}
                   type='primary'
-                  htmlType='submit'
                   className='btn login-linkedin-button'
                   icon={<LinkedinOutlined />}
                 >

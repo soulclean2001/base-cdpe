@@ -9,6 +9,7 @@ import { NotifyState, getAllByMe, setMoreWhenScroll, setTotalUnRead } from './no
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { AuthState } from '~/features/Auth/authSlice'
 // import InfiniteScroll from 'react-infinite-scroll-component'
 interface DataType {
   id: string
@@ -27,6 +28,7 @@ interface PropsType {
 }
 
 const NotifyDrawer = (props: any) => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const { open, onClose, roleType }: PropsType = props
   const [isLoading, setIsLoading] = useState(false)
   const scrollRef = useRef<HTMLDivElement | null>(null)
@@ -50,8 +52,8 @@ const NotifyDrawer = (props: any) => {
   }
 
   useEffect(() => {
-    fetchGetDataNoti()
-  }, [])
+    if (auth.isLogin && auth.verify !== 2 && auth.accessToken && auth.user_id) fetchGetDataNoti()
+  }, [auth])
 
   const fetchGetDataNoti = async (page?: string) => {
     let request: RequestNotify = { filter: { page: page ? page : '1', limit: '10' } }
