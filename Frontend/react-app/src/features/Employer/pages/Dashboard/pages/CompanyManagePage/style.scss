@@ -15,64 +15,82 @@
     border-radius: 10px;
     .form-company-general {
       .form-item-banner {
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload.ant-upload-select,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload.ant-upload-select {
+        .upload-banner-container {
+          // background-color: red;
           width: 100%;
-          height: 310px;
-        }
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload-list.ant-upload-list-picture-card
-          .ant-upload-list-item-container,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload-list.ant-upload-list-picture-card
-          .ant-upload-list-item-container,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload-list.ant-upload-list-picture-circle
-          .ant-upload-list-item-container,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload-list.ant-upload-list-picture-circle
+          .ant-upload {
+            width: 100%;
+            height: 310px;
+          }
           .ant-upload-list-item-container {
-          width: 100%;
-          height: 310px;
+            width: 100%;
+            height: 310px;
+            .ant-upload-list-item-thumbnail {
+              width: 100%;
+              height: 100%;
+              .ant-upload-list-item-image {
+                object-fit: cover;
+              }
+            }
+          }
         }
-        .ant-upload-list-item-thumbnail {
-          width: 100%;
-          //   height: 210px;
-          height: 100%;
-          //   object-fit: contain;
-        }
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload-list.ant-upload-list-picture-card
-          .ant-upload-list-item-thumbnail,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload-list.ant-upload-list-picture-card
-          .ant-upload-list-item-thumbnail,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload-list.ant-upload-list-picture-circle
-          .ant-upload-list-item-thumbnail,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload-list.ant-upload-list-picture-circle
-          .ant-upload-list-item-thumbnail,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload-list.ant-upload-list-picture-card
-          .ant-upload-list-item-thumbnail
-          img,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload-list.ant-upload-list-picture-card
-          .ant-upload-list-item-thumbnail
-          img,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
-          .ant-upload-list.ant-upload-list-picture-circle
-          .ant-upload-list-item-thumbnail
-          img,
-        :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
-          .ant-upload-list.ant-upload-list-picture-circle
-          .ant-upload-list-item-thumbnail
-          img {
-          object-fit: cover;
-        }
+
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload.ant-upload-select,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload.ant-upload-select {
+        //   width: 100%;
+        //   height: 310px;
+        // }
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-card
+        //   .ant-upload-list-item-container,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-card
+        //   .ant-upload-list-item-container,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-circle
+        //   .ant-upload-list-item-container,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-circle
+        //   .ant-upload-list-item-container {
+        //   width: 100%;
+        //   height: 310px;
+        // }
+        // .ant-upload-list-item-thumbnail {
+        //   width: 100%;
+        //   height: 100%;
+        // }
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-card
+        //   .ant-upload-list-item-thumbnail,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-card
+        //   .ant-upload-list-item-thumbnail,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-circle
+        //   .ant-upload-list-item-thumbnail,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-circle
+        //   .ant-upload-list-item-thumbnail,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-card
+        //   .ant-upload-list-item-thumbnail
+        //   img,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-card
+        //   .ant-upload-list-item-thumbnail
+        //   img,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-card-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-circle
+        //   .ant-upload-list-item-thumbnail
+        //   img,
+        // :where(.css-dev-only-do-not-override-fpg3f5).ant-upload-wrapper.ant-upload-picture-circle-wrapper
+        //   .ant-upload-list.ant-upload-list-picture-circle
+        //   .ant-upload-list-item-thumbnail
+        // img {
+        //   object-fit: cover;
+        // }
       }
     }
   }

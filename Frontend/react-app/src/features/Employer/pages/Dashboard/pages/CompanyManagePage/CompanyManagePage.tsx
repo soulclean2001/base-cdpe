@@ -78,86 +78,92 @@ const CompanyManagePage = () => {
       return file.originFileObj ? file.originFileObj : file
     })
 
-    console.log(logoImage)
-    console.log(myCompany)
-    if (myCompany && myCompany._id) {
-      let urlLogo = ''
-      let urlBanner = ''
-      let checkListPicture = ''
-      let listUrlPicture: string[] = []
-      if (myCompany.logo && fileListLogo[0] && myCompany._id === fileListLogo[0].uid) urlLogo = 'default'
-      if (myCompany.background && fileListBanner[0] && myCompany._id === fileListBanner[0].uid) urlBanner = 'default'
-      // if (JSON.stringify(myCompany.pictures) === JSON.stringify(listUrlBefore)) checkListPicture = 'default'
-      if (logoImage) {
-        const logoForm = new FormData()
-        logoForm.append('image', logoImage)
-        urlLogo = await apiUpload.uploadImage(logoForm).then(async (rs) => {
+    if (!myCompany || !myCompany._id) {
+      return
+    }
+    let errorUpload = false
+    let urlLogo = ''
+    let urlBanner = ''
+    let checkListPicture = ''
+    let listUrlPicture: string[] = []
+    if (myCompany.logo && fileListLogo[0] && myCompany._id === fileListLogo[0].uid) urlLogo = 'default'
+    if (myCompany.background && fileListBanner[0] && myCompany._id === fileListBanner[0].uid) urlBanner = 'default'
+    // if (JSON.stringify(myCompany.pictures) === JSON.stringify(listUrlBefore)) checkListPicture = 'default'
+    if (logoImage) {
+      const logoForm = new FormData()
+      logoForm.append('image', logoImage)
+      urlLogo = await apiUpload
+        .uploadImage(logoForm)
+        .then(async (rs) => {
           return rs.result[0].url
         })
-      }
-      if (bannerImage) {
-        const bannerForm = new FormData()
-        bannerForm.append('image', bannerImage)
-        urlBanner = await apiUpload
-          .uploadImage(bannerForm)
-          .then(async (rs) => {
-            if (rs.result) return rs.result[0].url
-          })
-          .catch(() => {
-            toast.error('Lỗi')
-            setBtnDisabled(false)
-            return
-          })
-      }
-      if (listPictureOrigin && listPictureOrigin.length > 0) {
-        const pictureForm = new FormData()
-        listPictureOrigin.map((file) => {
-          console.log('file', file)
-          if (file.lastModified) pictureForm.append('image', file as RcFile)
-          else listUrlPicture.push(file.uid)
-        })
-        console.log('pictureForm', pictureForm.getAll('image'))
-        if (pictureForm.getAll('image').length > 0) {
-          await apiUpload
-            .uploadImage(pictureForm)
-            .then(async (rs) => {
-              if (rs.result) {
-                rs.result.map((item: { type: number; url: string }) => {
-                  listUrlPicture.push(item.url)
-                })
-              }
-            })
-            .catch(() => {
-              toast.error('Lỗi')
-              setBtnDisabled(false)
-              return
-            })
-        }
-      }
-
-      console.log('listUrlPictureAfter', listUrlPicture)
-      console.log('urlLogo', urlLogo)
-      console.log('urlbanner', urlBanner)
-      const request: UpdateCompanyType = {
-        company_name: myCompany.company_name !== nameCompany ? nameCompany : '',
-        company_info: description,
-        company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : '',
-        fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : '',
-        videos: linkYoutube ? [linkYoutube] : ''
-      }
-      console.log('checkListPicture', checkListPicture)
-      await apiCompany
-        .updateCompanyById(myCompany._id, urlLogo, urlBanner, request, checkListPicture, listUrlPicture)
-        .then(() => {
-          setBtnDisabled(false)
-          toast.success('Cập nhật thông tin công ty thành công')
-        })
         .catch(() => {
+          toast.error('Lỗi upload')
           setBtnDisabled(false)
-          toast.error('Lỗi')
+          errorUpload = true
           return
         })
     }
+    if (bannerImage) {
+      const bannerForm = new FormData()
+      bannerForm.append('image', bannerImage)
+      urlBanner = await apiUpload
+        .uploadImage(bannerForm)
+        .then(async (rs) => {
+          if (rs.result) return rs.result[0].url
+        })
+        .catch(() => {
+          toast.error('Lỗi upload')
+          setBtnDisabled(false)
+          errorUpload = true
+          return
+        })
+    }
+    if (listPictureOrigin && listPictureOrigin.length > 0) {
+      const pictureForm = new FormData()
+      listPictureOrigin.map((file) => {
+        if (file.lastModified) pictureForm.append('image', file as RcFile)
+        else listUrlPicture.push(file.uid)
+      })
+
+      if (pictureForm.getAll('image').length > 0) {
+        await apiUpload
+          .uploadImage(pictureForm)
+          .then(async (rs) => {
+            if (rs.result) {
+              rs.result.map((item: { type: number; url: string }) => {
+                listUrlPicture.push(item.url)
+              })
+            }
+          })
+          .catch(() => {
+            toast.error('Lỗi upload')
+            setBtnDisabled(false)
+            errorUpload = true
+            return
+          })
+      }
+    }
+    if (errorUpload) return
+    const request: UpdateCompanyType = {
+      company_name: myCompany.company_name !== nameCompany ? nameCompany : '',
+      company_info: description,
+      company_size: myCompany.company_size !== quantityEmployee ? quantityEmployee : '',
+      fields: JSON.stringify(myCompany.fields) !== JSON.stringify(fieldCompany) ? fieldCompany : '',
+      videos: linkYoutube ? [linkYoutube] : ''
+    }
+
+    await apiCompany
+      .updateCompanyById(myCompany._id, urlLogo, urlBanner, request, checkListPicture, listUrlPicture)
+      .then(() => {
+        setBtnDisabled(false)
+        toast.success('Cập nhật thông tin công ty thành công')
+      })
+      .catch(() => {
+        setBtnDisabled(false)
+        toast.error('Lỗi cập nhật')
+        return
+      })
   }
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
@@ -205,7 +211,7 @@ const CompanyManagePage = () => {
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
       return
     }
-    if (e.size > 3072000) {
+    if (e.size > 307200) {
       toast.error('Kích thước hình ảnh tối đa: 3070 kb')
       setFileListBanner(listErro)
       return
@@ -224,7 +230,7 @@ const CompanyManagePage = () => {
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
       return
     }
-    if (e.size > 3072000) {
+    if (e.size > 307200) {
       toast.error('Kích thước hình ảnh tối đa: 3070 kb')
       setFileListPicture(listTemp)
       return
@@ -239,7 +245,7 @@ const CompanyManagePage = () => {
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
       return
     }
-    if (e.size > 3072000) {
+    if (e.size > 307200) {
       toast.error('Kích thước hình ảnh tối đa: 3070 kb')
       setFileListBanner(listErro)
       return
@@ -349,7 +355,7 @@ const CompanyManagePage = () => {
             >
               <Upload
                 // name='logo'
-                style={{ width: 'auto' }}
+                // style={{ width: 'auto' }}
                 customRequest={dummyRequest}
                 listType='picture-card'
                 fileList={fileListLogo}
@@ -382,6 +388,7 @@ const CompanyManagePage = () => {
               aspect={2 / 1}
             >
               <Upload
+                className='upload-banner-container'
                 name='banner'
                 customRequest={dummyRequest}
                 listType='picture-card'
