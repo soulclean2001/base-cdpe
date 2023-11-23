@@ -11,8 +11,8 @@ interface CompanyItemType {
 }
 const ListCompany = () => {
   // const [pageClick, setPageClick] = useState(1)
-  const limitOnPage = 2
-  const [totalPage, setTotalPage] = useState(1)
+  const limitOnPage = 9
+  const [totalPage, setTotalPage] = useState(0)
   const [listCompany, setListCompany] = useState<Array<CompanyItemType>>()
   const [content, setContent] = useState('')
   const [field, setField] = useState('')
@@ -50,7 +50,7 @@ const ListCompany = () => {
       </div>
       <div className='list-company-container'>
         <Row className='title-container'>
-          <Col lg={18} md={18} sm={24} xs={24} className='title-list-company'>{`Danh sách công ty (524)`}</Col>
+          <Col lg={18} md={18} sm={24} xs={24} className='title-list-company'>{`Danh sách công ty (${totalPage})`}</Col>
           <Col lg={6} md={6} sm={24} xs={24}>
             <Select
               placeholder={'Tất cả lĩnh vực'}
