@@ -11,6 +11,8 @@ import carrer2 from '~/assets/carerr_it_pm.webp'
 import carrer3 from '~/assets/carerr_hanh_chinh_vp.webp'
 import carrer4 from '~/assets/carerr_gaio_duc.webp'
 import carrer5 from '~/assets/carerr_tu_van.webp'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import carrer6 from '~/assets/carerr_mkt.webp'
 import carrer7 from '~/assets/carerr_van_tai.webp'
 import carrer8 from '~/assets/carerr_kiem_toan.webp'

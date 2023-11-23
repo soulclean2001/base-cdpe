@@ -15,7 +15,7 @@ const CreatePayment = (props: any) => {
       .then((res) => {
         window.location.href = res.result
       })
-      .catch((error) => {
+      .catch((_error) => {
         toast.error('Vui lòng chờ cho dến khi hết phiên giao dịch hoặc thử lại sau')
       })
   }

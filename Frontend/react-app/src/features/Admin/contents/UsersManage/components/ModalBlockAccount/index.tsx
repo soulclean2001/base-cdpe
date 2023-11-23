@@ -1,4 +1,4 @@
-import { Button, Form, Modal, Select } from 'antd'
+import { Button, Form, Modal } from 'antd'
 import './style.scss'
 import apiAdmin from '~/api/admin.api'
 

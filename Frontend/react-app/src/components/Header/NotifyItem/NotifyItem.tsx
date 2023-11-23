@@ -82,10 +82,6 @@ const NotifyItem = (props: any) => {
         navigate('/employer/dashboard/cv-manage')
         break
       }
-      case 'post/applied': {
-        navigate('/employer/dashboard/cv-manage')
-        break
-      }
       case 'order/success': {
         navigate('/admin/dashboard/orders-manage')
         break

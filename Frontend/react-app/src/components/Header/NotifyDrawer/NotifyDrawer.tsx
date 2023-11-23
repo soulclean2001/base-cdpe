@@ -3,7 +3,7 @@ import './style.scss'
 import { Drawer } from 'antd'
 import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import { NotifyState, getAllByMe, setMoreWhenScroll, setTotalUnRead } from './notifySlice'
 import { useDispatch, useSelector } from 'react-redux'
@@ -31,7 +31,6 @@ const NotifyDrawer = (props: any) => {
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const { open, onClose, roleType }: PropsType = props
   const [isLoading, setIsLoading] = useState(false)
-  const scrollRef = useRef<HTMLDivElement | null>(null)
 
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPath = useDispatch()

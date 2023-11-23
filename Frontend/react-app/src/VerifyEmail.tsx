@@ -10,10 +10,14 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { AppThunkDispatch, useAppDispatch } from './app/hook'
 import { useDispatch } from 'react-redux'
+
 export const VerifyEmail = () => {
   const [message, setMessage] = useState('')
   // email-verifications?token=
   const { token } = useQueryParams()
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
   const navigate = useNavigate()

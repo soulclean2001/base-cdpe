@@ -10,4 +10,7 @@ export const filterObject = (obj: any) => {
   }
   return result
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const filterFunction = (key: any, value: any) => value !== ''

@@ -213,6 +213,8 @@ export interface ResumeRequestBody {
   status?: string
   is_show?: boolean
 }
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 enum StatusResume {
   Active = 'active',
   Draft = 'draft'

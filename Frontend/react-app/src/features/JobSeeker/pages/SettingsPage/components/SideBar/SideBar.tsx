@@ -7,7 +7,6 @@ const { Sider } = Layout
 import { Avatar } from 'antd'
 import { useEffect, useState } from 'react'
 import './style.scss'
-import { AiFillDashboard } from 'react-icons/ai'
 
 import { BiSolidFactory } from 'react-icons/bi'
 import { MdWork } from 'react-icons/md'
