@@ -143,11 +143,11 @@ export const sendVerifyRegisterEmail = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Verify your email',
+    'Xác thực tài khoản',
     template
-      .replace('{{title}}', 'Please verify your email')
-      .replace('{{content}}', 'Click the button below to verify your email')
-      .replace('{{titleLink}}', 'Verify')
+      .replace('{{title}}', 'Vui lòng xác thực email của bạn')
+      .replace('{{content}}', 'Nhấp vào nút bên dưới để xác thực tài khoản')
+      .replace('{{titleLink}}', 'Xác thực')
       .replace('{{link}}', `${envConfig.clientUrl}/email-verifications?token=${email_verify_token}`)
   )
 }
@@ -159,11 +159,11 @@ export const sendForgotPasswordEmail = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Forgot Password',
+    'Quên mật khẩu',
     template
-      .replace('{{title}}', 'You are receiving this email because you requested to reset your password')
-      .replace('{{content}}', 'Click the button below to reset your password')
-      .replace('{{titleLink}}', 'Reset Password')
+      .replace('{{title}}', 'Bạn nhận được email này vì bạn đã yêu cầu đặt lại mật khẩu của mình')
+      .replace('{{content}}', 'Nhấp vào nút bên dưới để đặt lại mật khẩu của bạn')
+      .replace('{{titleLink}}', 'Đặt lại mật khẩu')
       .replace('{{link}}', `${envConfig.clientUrl}/forgot-password?token=${forgot_password_token}`)
   )
 }
