@@ -279,7 +279,7 @@ const CompanyManagePage = () => {
 
       setDescription(rs.result.company_info)
       setQuantityEmployee(rs.result.company_size)
-      setFieldCompany(rs.result.fields)
+      setFieldCompany(rs.result.fields[0] && rs.result.fields[0] !== '_' ? rs.result.fields : [])
       setLinkYoutube(rs.result.videos && rs.result.videos[0] ? rs.result.videos[0] : '')
       if (rs.result.logo) {
         const fileLogo: UploadFile = {
@@ -318,7 +318,7 @@ const CompanyManagePage = () => {
         description: rs.result.company_info,
         phone: me.phone_number,
         quantityEmployee: rs.result.company_size,
-        fieldCompany: rs.result.fields,
+        fieldCompany: rs.result.fields[0] && rs.result.fields[0] !== '_' ? rs.result.fields : [],
         linkVideo: rs.result.videos && rs.result.videos[0] ? rs.result.videos[0] : ''
       })
     })
@@ -496,7 +496,7 @@ const CompanyManagePage = () => {
             <Select
               showSearch
               mode={'multiple'}
-              placeholder={'Chọn ngành nghề'}
+              placeholder={'Chọn lĩnh vực'}
               size='large'
               options={fieldCompany && fieldCompany.length > 2 ? maxItem : getAllFiles}
               onChange={(value) => setFieldCompany(value)}

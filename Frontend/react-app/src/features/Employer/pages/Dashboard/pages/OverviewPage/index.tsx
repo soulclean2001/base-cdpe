@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import apiOverview, { RequestOverview } from '~/api/statistics.api'
+import apiCompany from '~/api/company.api'
 import 'chart.js/auto'
 import { Bar, Line } from 'react-chartjs-2'
 import { Col, Row, Table, Tooltip as ToolTipAntd } from 'antd'
@@ -46,7 +47,8 @@ const OverviewEmployer = () => {
     totalSales: 0,
     totalPosts: 0,
     totalPostPublish: 0,
-    totalJobApplications: 0
+    totalJobApplications: 0,
+    totalCanPost: 0
   })
   const onChange = (e: RadioChangeEvent) => {
     setType(e.target.value)
@@ -95,8 +97,12 @@ const OverviewEmployer = () => {
       totalSales: 0,
       totalPosts: 0,
       totalPostPublish: 0,
-      totalJobApplications: 0
+      totalJobApplications: 0,
+      totalCanPost: 0
     }
+    await apiCompany.getMyCompany().then((rs) => {
+      temptOverview = { ...temptOverview, ['totalCanPost']: rs.result.number_of_posts }
+    })
     await apiOverview.getSalesByEmployer(param).then((rs) => {
       temptOverview = { ...temptOverview, ['totalSales']: rs.result }
     })
@@ -206,6 +212,12 @@ const OverviewEmployer = () => {
             <div className='content'>
               <div className='title'>Bài đăng công khai</div>
               <div className='value'>{dataOverview.totalPostPublish}</div>
+            </div>
+          </Col>
+          <Col lg={6} md={11} sm={11} xs={24} className='item'>
+            <div className='content'>
+              <div className='title'>Lượt đăng bài</div>
+              <div className='value'>{dataOverview.totalCanPost}</div>
             </div>
           </Col>
           <Col lg={6} md={11} sm={11} xs={24} className='item'>
