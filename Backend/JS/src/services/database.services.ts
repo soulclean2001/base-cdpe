@@ -2,7 +2,6 @@ import { Collection, Db, MongoClient } from 'mongodb'
 import { envConfig } from '~/constants/config'
 import User from '../models/schemas/User.schema'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
-import VideoStatus from '~/models/schemas/VideoStatus.schemas'
 import Company from '~/models/schemas/Company.schema'
 import UserCompanyFollow from '~/models/schemas/RecruiterFollowedResumes.schema'
 import UserResumeFollow from '~/models/schemas/CompanyFollowers.schema'
@@ -113,23 +112,11 @@ class DatabaseService {
     // }
   }
 
-  // async indexVideoStatus() {
-  //   const exists = await this.videoStatus.indexExists(['name_1'])
-
-  //   if (!exists) {
-  //     this.videoStatus.createIndex({ name: 1 })
-  //   }
-  // }
-
   get users(): Collection<User> {
     return this.db.collection(envConfig.dbUsersCollection)
   }
   get refreshTokens(): Collection<RefreshToken> {
     return this.db.collection(envConfig.dbRefreshTokensCollection)
-  }
-
-  get videoStatus(): Collection<VideoStatus> {
-    return this.db.collection(envConfig.dbVideoStatusCollection)
   }
 
   get company(): Collection<Company> {
