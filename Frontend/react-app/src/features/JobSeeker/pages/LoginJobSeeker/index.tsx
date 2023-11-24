@@ -166,8 +166,13 @@ const Login: React.FC = () => {
             <p className='or-login-title'>Hoặc đăng nhập bằng</p>
             <Form.Item>
               <div className='or-login-container'>
-                <Button type='primary' className='btn login-google-button' icon={<GooglePlusOutlined />}>
-                  <Link to={googleOAuthUrl}>Google</Link>
+                <Button
+                  onClick={() => (window.location.href = googleOAuthUrl)}
+                  type='primary'
+                  className='btn login-google-button'
+                  icon={<GooglePlusOutlined />}
+                >
+                  Google
                 </Button>
                 <Button
                   disabled={true}
