@@ -51,7 +51,7 @@ const JobInfo = (props: any) => {
             <SiLevelsdotfyi />
           </div>
           <div className='item-content level-content'>
-            <div className='label'>CẤP BẬT</div>
+            <div className='label'>CẤP BẬC</div>
             <div className='data level'>{data.job_level}</div>
           </div>
         </div>
@@ -120,14 +120,15 @@ const JobInfo = (props: any) => {
               </div>
             ))}
         </div>
-
-        <div className='benefit'>
-          <h2>CÁC PHÚC LỢI DÀNH CHO BẠN</h2>
-          {data.benefits &&
-            data.benefits.map((benefit, index) => (
+        {data.benefits && (
+          <div className='benefit'>
+            <h2>CÁC PHÚC LỢI DÀNH CHO BẠN</h2>
+            {data.benefits.map((benefit, index) => (
               <div key={index} className='info'>{`${benefit.type}: ${benefit.value}`}</div>
             ))}
-        </div>
+          </div>
+        )}
+
         <div className='working-address'>
           <h2>ĐỊA ĐIỂM LÀM VIỆC</h2>
           {data.working_locations &&

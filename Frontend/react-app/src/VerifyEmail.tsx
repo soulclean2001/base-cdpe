@@ -19,7 +19,7 @@ export const VerifyEmail = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   const navigate = useNavigate()
   useEffect(() => {
     if (token) {
@@ -38,10 +38,10 @@ export const VerifyEmail = () => {
 
       if (typeof access_token === 'string' && typeof refresh_token === 'string') {
         const dataDecode = await decodeToken(access_token)
-        dispatch(logout())
-        dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
-        dispatch(setAccountStatus(dataDecode))
-        dispatch(setStateLogin({ isLogin: true, loading: false, error: '' }))
+        dispatchAsync(logout())
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin({ isLogin: true, loading: false, error: '' }))
+        dispatchAsync(setToken({ accessToken: access_token, refreshToken: refresh_token }))
         toast.success('Tài khoản của bạn đã được xác thực thành công')
         if (dataDecode.role === 2) {
           navigate('/')
