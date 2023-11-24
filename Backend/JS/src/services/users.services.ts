@@ -328,8 +328,12 @@ class UsersService {
   }
 
   async verifyEmail(user_id: string) {
+    const user = await databaseServices.users.findOne({
+      _id: new ObjectId(user_id)
+    })
+
     const [token] = await Promise.all([
-      this.signTokenKeyPair({ user_id, verify: UserVerifyStatus.Verified, role: UserRole.Candidate }),
+      this.signTokenKeyPair({ user_id, verify: UserVerifyStatus.Verified, role: user?.role || UserRole.Candidate }),
       databaseServices.users.updateOne({ _id: new ObjectId(user_id) }, [
         {
           $set: {
