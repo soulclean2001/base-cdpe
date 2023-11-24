@@ -4,6 +4,7 @@ import { EnhancedStore } from '@reduxjs/toolkit'
 import Auth from './auth.api'
 import { logout, setToken } from '~/features/Auth/authSlice'
 import { resetProfile } from '~/features/Account/meSlice'
+import axiosRetry from 'axios-retry'
 
 let store: EnhancedStore
 export const cancelTokenSource = axios.CancelToken.source()
@@ -25,6 +26,7 @@ const instance: AxiosInstance = axios.create({
   }
 })
 
+axiosRetry(instance, { retries: 3 })
 export const injectStore = (_store: EnhancedStore) => {
   store = _store
 }
