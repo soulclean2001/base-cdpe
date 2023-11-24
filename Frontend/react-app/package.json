@@ -23,6 +23,7 @@
     "antd": "^5.7.3",
     "antd-img-crop": "^4.12.2",
     "axios": "^0.21.4",
+    "axios-retry": "^3.9.1",
     "chart.js": "^4.4.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
