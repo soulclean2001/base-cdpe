@@ -1032,6 +1032,7 @@ const CV = () => {
                                       type='text'
                                     /> */}
                                     <Select
+                                      allowClear
                                       className='select-level'
                                       value={item.degree}
                                       showSearch
@@ -1302,6 +1303,7 @@ const CV = () => {
                                     <div style={{ width: '95%' }}>
                                       <p className='title-name'>Cấp bậc</p>
                                       <Select
+                                        allowClear
                                         className='select-level'
                                         value={item.level}
                                         showSearch
@@ -1310,7 +1312,7 @@ const CV = () => {
                                             'skills',
                                             index,
                                             'level',
-                                            Object.keys(SkillLevel)[Number(e) - 1]
+                                            Object.values(SkillLevel)[Number(e) - 1]
                                           )
                                         }}
                                         style={{ width: 200 }}
@@ -1325,23 +1327,23 @@ const CV = () => {
                                         options={[
                                           {
                                             value: '1',
-                                            label: 'Novice'
+                                            label: 'Cơ bản'
                                           },
                                           {
                                             value: '2',
-                                            label: 'Beginer'
+                                            label: 'Trung bình'
                                           },
                                           {
                                             value: '3',
-                                            label: 'Skillful'
+                                            label: 'Thành thạo'
                                           },
                                           {
                                             value: '4',
-                                            label: 'Experienced'
+                                            label: 'Có kinh nghiệm'
                                           },
                                           {
                                             value: '5',
-                                            label: 'Expert'
+                                            label: 'Chuyên gia'
                                           }
                                         ]}
                                       />
@@ -1902,6 +1904,8 @@ const CV = () => {
                                         <div style={{ width: '95%' }}>
                                           <p className='title-name'>Trình độ</p>
                                           <Select
+                                            allowClear
+                                            size='large'
                                             className='select-level'
                                             showSearch
                                             value={item.level ? item.level : ''}
@@ -1910,7 +1914,7 @@ const CV = () => {
                                                 'languages',
                                                 index,
                                                 'level',
-                                                Object.keys(LanguageLevel)[Number(e) - 1]
+                                                Object.values(LanguageLevel)[Number(e) - 1]
                                               )
                                             }}
                                             style={{ width: 200 }}
@@ -1925,46 +1929,43 @@ const CV = () => {
                                             options={[
                                               {
                                                 value: '1',
-                                                label: 'Native Speaker'
+                                                label: 'Cơ bản'
                                               },
                                               {
                                                 value: '2',
-                                                label: 'Highly proficient'
+                                                label: 'Người bản xứ'
                                               },
                                               {
                                                 value: '3',
-                                                label: 'Very good command'
+                                                label: 'Thành thạo'
                                               },
                                               {
                                                 value: '4',
-                                                label: 'Good working knowledge'
+                                                label: 'Trình độ cao'
                                               },
+
                                               {
                                                 value: '5',
-                                                label: 'Working knowledge'
-                                              },
-                                              {
-                                                value: '6',
                                                 label: 'C2'
                                               },
                                               {
-                                                value: '7',
+                                                value: '6',
                                                 label: 'C1'
                                               },
                                               {
-                                                value: '8',
+                                                value: '7',
                                                 label: 'B2'
                                               },
                                               {
-                                                value: '9',
+                                                value: '8',
                                                 label: 'B1'
                                               },
                                               {
-                                                value: '10',
+                                                value: '9',
                                                 label: 'A2'
                                               },
                                               {
-                                                value: '11',
+                                                value: '10',
                                                 label: 'A1'
                                               }
                                             ]}

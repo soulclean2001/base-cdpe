@@ -153,10 +153,10 @@ const Right = (props: RightPropsType) => {
               <>
                 <h4 className='preview__title-info'>{skills.property_name}</h4>
                 {skills.data.map((skill, index) => (
-                  <p key={skill.skill_name + index} className='preview__info'>
-                    {' '}
-                    - {skill.skill_name}
-                  </p>
+                  <div key={skill.skill_name + index}>
+                    <p className='preview__info'>- {skill.skill_name}</p>
+                    <p className='preview__info'>{skill.level ? 'Trình độ: ' + skill.level : ''}</p>
+                  </div>
                 ))}
                 <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>

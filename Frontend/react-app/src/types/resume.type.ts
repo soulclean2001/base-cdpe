@@ -72,19 +72,19 @@ export interface SocialOrWebsite {
 }
 
 export enum SkillLevel {
-  Novice = 'Novice',
-  Beginner = 'Beginner',
-  Skillful = 'Skillful',
-  Experienced = 'Experienced',
-  Expert = 'Expert'
+  Basic = 'Cơ bản',
+  Beginner = 'Người mới',
+  Skillful = 'Thành thạo',
+  Experienced = 'Có kinh nghiệm',
+  Expert = 'Chuyên gia'
 }
 export enum EducationLevel {
-  HighSchool = 'HighSchool',
-  Intermediate = 'Intermediate',
-  HigherDiploma = 'HigherDiploma',
-  BachelorDegree = 'BachelorDegree',
-  Master = 'Master',
-  Doctorate = 'Doctorate',
+  HighSchool = 'Trung học',
+  Intermediate = 'Trung cấp',
+  HigherDiploma = 'Cao đẳng',
+  BachelorDegree = 'Cử nhân',
+  Master = 'Thạc sĩ',
+  Doctorate = 'Tiến sĩ',
   Another = 'Another'
 }
 
@@ -109,11 +109,10 @@ export interface Show {
 }
 
 export enum LanguageLevel {
-  NativeSpeaker = 'Native speaker',
-  HighlyProficient = 'Highly Proficient',
-  VeryGoodCommand = 'Very Good command',
-  GoodWorkingKnowledge = 'Good working knowledge',
-  WorkingKnowledge = 'Working knowledge',
+  Basic = 'Cơ bản',
+  NativeSpeaker = 'Người bản xứ',
+  HighlyProficient = 'Thành thạo',
+  VeryGoodCommand = 'Trình độ cao',
   C2 = 'C2',
   C1 = 'C1',
   B2 = 'B2',
