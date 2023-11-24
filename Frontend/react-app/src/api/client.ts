@@ -20,7 +20,7 @@ const instance: AxiosInstance = axios.create({
   // baseURL: import.meta.env.VITE_SERVER_URL + '/api/v1' || 'http://localhost:4000/api/v1',
   // baseURL: 'http://localhost:4000/api/v1',
   baseURL: import.meta.env.VITE_SERVER_URL + '/api/v1',
-  timeout: 1000,
+  timeout: 5000,
   headers: {
     'content-type': 'application/json'
   }
@@ -33,6 +33,11 @@ export const injectStore = (_store: EnhancedStore) => {
 
 instance.interceptors.request.use(async (config) => {
   const accessToken = store.getState().auth.accessToken
+  //fix canceled requests
+  const source = axios.CancelToken.source()
+  config.cancelToken = source.token
+  setTimeout(() => source.cancel('Timed out after 30s'), 30000)
+  //end fix request
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`
   }

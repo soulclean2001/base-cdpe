@@ -22,9 +22,10 @@ const TopCompany = () => {
   }, [])
   const fetchGetData = async () => {
     await apiHome.getCompaniesBanner().then(async (rs) => {
-      if (!rs.result) {
-        await apiCompany.searchCompany({ limit: '10', page: '1' }).then((rs) => {
-          setListData(rs.result.companies)
+      if (!rs || !rs.result) {
+        await apiCompany.searchCompany({ limit: '10', page: '1' }).then((rs2) => {
+          if (!rs2 || !rs2.result) return
+          setListData(rs2.result.companies)
         })
         return
       }

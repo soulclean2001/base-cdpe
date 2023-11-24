@@ -22,7 +22,7 @@ const TopJob = () => {
   }, [])
   const fetchGetData = async () => {
     await apiHome.getTopJobs().then(async (rs) => {
-      setListData(rs.result)
+      if (rs && rs.result) setListData(rs.result)
     })
   }
 

@@ -76,7 +76,7 @@ const TopCarrer = () => {
     ]
 
     await apiHome.getTotalJobsByCareer().then((rs) => {
-      if (!rs.result) return
+      if (!rs || !rs.result) return
       let listTemp: { id: string; img: string; name: string; totalJob: number }[] = []
 
       rs.result.map((item: { _id: string; jobs: number }) => {
