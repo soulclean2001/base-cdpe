@@ -53,7 +53,7 @@ class JobApplicationService {
       _id: _payload.job_post_id
     })
 
-    if (job && job.visibility === false && job.status !== JobStatus.Approved)
+    if (job && job.visibility !== true && job.status !== JobStatus.Approved)
       throw new ErrorWithStatus({
         message: 'job not publish',
         status: 404
