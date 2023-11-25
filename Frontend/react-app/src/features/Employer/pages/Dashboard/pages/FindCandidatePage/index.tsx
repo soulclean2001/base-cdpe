@@ -6,6 +6,7 @@ import CandidateItem from './components/CandidateItem/CandidateItem'
 import { SearchCandidateReqBody } from '~/api/candidate.api'
 import apiSearchCandidate from '~/api/candidate.api'
 import { getAllIndustries } from '~/api/industries.api'
+import { LanguageLevel, listLanguages } from '~/types/resume.type'
 interface RangeExpYear {
   min?: number
   max?: number
@@ -271,7 +272,7 @@ const FindCandidatePage = () => {
                 showSearch
                 placeholder={'Chọn ngoại ngữ'}
                 size='middle'
-                options={listLevel}
+                options={listLanguages}
                 onChange={(value) => setLanguage(value)}
               />
             </Form.Item>
@@ -280,8 +281,50 @@ const FindCandidatePage = () => {
                 showSearch
                 placeholder={'Chọn trình độ ngoại ngữ'}
                 size='middle'
-                options={listLevel}
-                onChange={(value) => setLevelLanguage(value)}
+                options={[
+                  {
+                    value: '1',
+                    label: 'Cơ bản'
+                  },
+                  {
+                    value: '2',
+                    label: 'Người bản xứ'
+                  },
+                  {
+                    value: '3',
+                    label: 'Thành thạo'
+                  },
+                  {
+                    value: '4',
+                    label: 'Trình độ cao'
+                  },
+
+                  {
+                    value: '5',
+                    label: 'C2'
+                  },
+                  {
+                    value: '6',
+                    label: 'C1'
+                  },
+                  {
+                    value: '7',
+                    label: 'B2'
+                  },
+                  {
+                    value: '8',
+                    label: 'B1'
+                  },
+                  {
+                    value: '9',
+                    label: 'A2'
+                  },
+                  {
+                    value: '10',
+                    label: 'A1'
+                  }
+                ]}
+                onChange={(value) => setLevelLanguage(Object.values(LanguageLevel)[Number(value) - 1])}
               />
             </Form.Item>
             <Form.Item label={<span style={{ fontWeight: '500' }}>Trình độ học vấn</span>} name='education'>

@@ -120,7 +120,38 @@ export enum LanguageLevel {
   A2 = 'A2',
   A1 = 'A1'
 }
-
+export const listLanguages = [
+  { value: 'Tiếng Anh' },
+  { value: 'Tiếng Trung Quốc (Quan Thoại)' },
+  { value: 'Tiếng Hindi' },
+  { value: 'Tiếng Tây Ban Nha' },
+  { value: 'Tiếng Pháp' },
+  { value: 'Tiếng Ả Rập (Chuẩn)' },
+  { value: 'Tiếng Bengal' },
+  { value: 'Tiếng Nga' },
+  { value: 'Tiếng Bồ Đào Nha' },
+  { value: 'Tiếng Indonesia' },
+  { value: 'Tiếng Urdu' },
+  { value: 'Tiếng Nhật' },
+  { value: 'Tiếng Đức' },
+  { value: 'Tiếng Swahili' },
+  { value: 'Tiếng Marathi' },
+  { value: 'Tiếng Telugu' },
+  { value: 'Tiếng Thổ Nhĩ Kì' },
+  { value: 'Tiếng Trung Quốc (Quảng Đông)' },
+  { value: 'Tiếng Tamil' },
+  { value: 'Tiếng Punjab (Tây)' },
+  { value: 'Tiếng Trung Quốc (Ngô)' },
+  { value: 'Tiếng Hàn' },
+  { value: 'Tiếng Việt' },
+  { value: 'Tiếng Hausa' },
+  { value: 'Tiếng Java' },
+  { value: 'Tiếng Ả Rập (Ai Cập)' },
+  { value: 'Tiếng Italia' },
+  { value: 'Tiếng Gujarat' },
+  { value: 'Tiếng Thái' },
+  { value: 'Tiếng Amhara' }
+]
 export interface Language {
   language: string
   level: string

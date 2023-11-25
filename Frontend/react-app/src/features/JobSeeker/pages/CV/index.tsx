@@ -12,7 +12,7 @@ import { RcFile } from 'antd/es/upload'
 import { DeleteRowOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import { LanguageLevel, ResumeType, SkillLevel } from '~/types/resume.type'
+import { LanguageLevel, ResumeType, SkillLevel, listLanguages } from '~/types/resume.type'
 import Right from './Right'
 import { AiOutlineUpload } from 'react-icons/ai'
 import { AuthState } from '~/features/Auth/authSlice'
@@ -1891,12 +1891,23 @@ const CV = () => {
                                       <div className='personal-detail-col-left'>
                                         <div style={{ width: '95%' }}>
                                           <p className='title-name'>Ngôn ngữ</p>
-                                          <InputCustom
+                                          {/* <InputCustom
                                             value={item.language}
                                             onChange={(e) =>
                                               handleSetDataArray('languages', index, 'language', e.target.value)
                                             }
                                             type='text'
+                                          /> */}
+                                          <Select
+                                            value={item.language ? item.language : ''}
+                                            showSearch
+                                            placeholder={'Chọn ngoại ngữ'}
+                                            allowClear
+                                            size='large'
+                                            className='select-level'
+                                            style={{ width: 200 }}
+                                            options={listLanguages}
+                                            onChange={(e) => handleSetDataArray('languages', index, 'language', e)}
                                           />
                                         </div>
                                       </div>
