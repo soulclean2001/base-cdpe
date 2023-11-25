@@ -139,8 +139,8 @@ const ModalApplyCV = (props: any) => {
         toast.error(`${file.name} không phải định dạng PDF`)
         return Upload.LIST_IGNORE
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error(`${file.name} vượt quá kích thước 10MB`)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} vượt quá kích thước 5MB`)
         return Upload.LIST_IGNORE
       }
       return isPDF

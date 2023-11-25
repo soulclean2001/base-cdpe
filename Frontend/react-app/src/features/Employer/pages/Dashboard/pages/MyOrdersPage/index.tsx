@@ -57,7 +57,7 @@ const MyOrdersPage = (props: any) => {
   //   const [date, setDate] = useState('')
   useEffect(() => {
     if (notificaions.page > 0) fetchGetMyOrders(currentPage.toString())
-  }, [notificaions.notifications])
+  }, [notificaions.total])
   useEffect(() => {
     setCurrentPage(1)
     fetchGetMyOrders()

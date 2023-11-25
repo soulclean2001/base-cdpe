@@ -16,7 +16,7 @@ const MyJobs = () => {
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   useEffect(() => {
     if (notificaions.page > 0) fetchListJobs()
-  }, [notificaions.notifications])
+  }, [notificaions.total])
 
   const fetchListJobs = async () => {
     await apiJobApplied.getAllJobApplicationsFromCandidate().then((rs) => {

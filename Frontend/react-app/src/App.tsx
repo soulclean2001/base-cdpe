@@ -193,7 +193,7 @@ function App() {
       rooms = listRooms.result
     }
 
-    const roomIds = rooms.map((room) => room._id) // tách ra file thì kh biết tách sao nên để z luôn chứ nó sai nữa
+    const roomIds = rooms.map((room) => room._id)
     socket.emit('join-conversations', roomIds)
   }
 

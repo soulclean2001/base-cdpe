@@ -3,6 +3,8 @@ import './style.scss'
 import { FiMoreHorizontal } from 'react-icons/fi'
 
 import { RoomType } from '~/types'
+import avatarTemp from '~/assets/logo_temp.jpg'
+
 // interface DataType {
 //   id: string
 //   logo: string
@@ -23,7 +25,7 @@ const LeftItem = (props: any) => {
     return (
       <div className={isActive ? 'left-chat-item-container active-chat-item' : 'left-chat-item-container'}>
         <div className='left-wapper'>
-          <Avatar className='logo' size={'large'} src={data.user.avatar ? data.user.avatar : ''} />
+          <Avatar className='logo' size={'large'} src={data.user.avatar ? data.user.avatar : avatarTemp} />
           <div className='info-chat-container'>
             <div className='name'>{data.user.name ? data.user.name : 'Tên'}</div>
             <div className='latest-message'>
@@ -45,7 +47,7 @@ const LeftItem = (props: any) => {
     return (
       <div className={isActive ? 'left-chat-item-container active-chat-item' : 'left-chat-item-container'}>
         <div className='left-wapper'>
-          <Avatar className='logo' size={'large'} src={data.company.logo ? data.company.logo : ''} />
+          <Avatar className='logo' size={'large'} src={data.company.logo ? data.company.logo : avatarTemp} />
           <div className='info-chat-container'>
             <div className='name'>{data.company.company_name ? data.company.company_name : 'Tên'}</div>
             <div className='latest-message'>

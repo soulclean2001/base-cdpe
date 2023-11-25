@@ -40,7 +40,7 @@ const ListPostReview = () => {
   //
   useEffect(() => {
     if (notificaions.page > 0) fetchGetListPostRequest(currentPage.toString())
-  }, [notificaions.notifications])
+  }, [notificaions.total])
   useEffect(() => {
     setCurrentPage(1)
     fetchGetListPostRequest()

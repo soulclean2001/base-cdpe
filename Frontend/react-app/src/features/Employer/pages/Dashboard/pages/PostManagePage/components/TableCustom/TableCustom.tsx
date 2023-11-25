@@ -110,7 +110,7 @@ const TableCustom = (props: any) => {
   // get data
   useEffect(() => {
     if (notificaions.page > 0) fetchData(currentPage.toString())
-  }, [notificaions.notifications])
+  }, [notificaions.total])
   useEffect(() => {
     setCurrentPage(1)
     fetchData()

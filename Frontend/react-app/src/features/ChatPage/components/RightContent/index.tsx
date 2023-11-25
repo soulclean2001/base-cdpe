@@ -2,7 +2,10 @@ import RightItem from '../RightItem'
 import { useState, useEffect } from 'react'
 import './style.scss'
 import apiChat from '~/api/chat.api'
-
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
+import avatarTemp from '~/assets/logo_temp.jpg'
 interface ContactChatType {
   [key: string]: any
 }
@@ -19,11 +22,11 @@ interface DataType {
 
 const RightContent = (props: any) => {
   const { roleType } = props
-
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const [dataContact, setDataContact] = useState<Array<DataType>>([])
   useEffect(() => {
-    getDataByRoleType()
-  }, [])
+    if (notificaions.page > 0) getDataByRoleType()
+  }, [notificaions.total])
 
   // test api chứ chua co rap n bi vong fo moi thang nay bị bi gi bị vong lap có cái này chứ mấy  r do day nãy cũng có gọi nó đâu mà nó tự chạy api vậy t bấm dô cai list do
   const getDataByRoleType = async () => {
@@ -36,7 +39,7 @@ const RightContent = (props: any) => {
             idUser: item.user_id,
             idJob: item.info_job._id,
             idCompany: item.info_company._id,
-            logo: item.info_company.avatar,
+            logo: item.info_company.avatar ? item.info_company.avatar : avatarTemp,
             titleName: item.info_job.job_title,
             nameCompany: item.info_company.company_name,
             titleJob: item.info_job.job_title
@@ -54,7 +57,7 @@ const RightContent = (props: any) => {
             idUser: item.user_id,
             idJob: item.info_job._id,
             idCompany: item.info_company._id,
-            logo: item.info_user.avatar,
+            logo: item.info_user.avatar ? item.info_user.avatar : avatarTemp,
             titleName: item.full_name,
             nameCompany: '',
             titleJob: item.info_job.job_title

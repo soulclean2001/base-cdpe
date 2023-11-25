@@ -28,7 +28,7 @@ const CandidateFollowedPage = () => {
   }
   useEffect(() => {
     if (notificaions.page > 0) fetchGetData(pageClick.toString())
-  }, [notificaions.notifications])
+  }, [notificaions.total])
   useEffect(() => {
     setPageClick(1)
     fetchGetData()

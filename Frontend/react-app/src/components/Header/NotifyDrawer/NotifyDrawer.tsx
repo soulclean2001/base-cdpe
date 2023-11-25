@@ -58,7 +58,7 @@ const NotifyDrawer = (props: any) => {
     let request: RequestNotify = { filter: { page: page ? page : '1', limit: '10' } }
     await dispatchAsync(getAllByMe(request))
     await apiNotify.getTotalUnRead().then((rs) => {
-      disPath(setTotalUnRead(rs.result))
+      if (rs.result) disPath(setTotalUnRead(rs.result))
     })
   }
   const handleScroll = async (e: any) => {

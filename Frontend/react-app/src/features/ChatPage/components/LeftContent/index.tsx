@@ -6,15 +6,20 @@ import LeftItem from '../LeftItem'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { RoomType } from '~/types'
+import { ApiResponse, RoomType, UserRole } from '~/types'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { setCurrentRoom } from '../../chatSlice'
+import { setCurrentRoom, setRooms } from '../../chatSlice'
+import { AuthState } from '~/features/Auth/authSlice'
+import apiClient from '~/api/client'
+import { socket } from '~/App'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
 
 const LeftContent = (props: any) => {
   const chat = useSelector((state: RootState) => state.chat)
   const dispatch = useDispatch()
-
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const { roleType } = props
   const [listRooms, setListRooms] = useState<RoomType[]>([])
   const navigate = useNavigate()
@@ -41,6 +46,26 @@ const LeftContent = (props: any) => {
   useEffect(() => {
     setListRooms(chat.rooms)
   }, [chat.rooms])
+  useEffect(() => {
+    if (notificaions.page > 0) fetchListRooms()
+  }, [notificaions.total])
+  const fetchListRooms = async () => {
+    let rooms: RoomType[] = []
+    if (auth.role === UserRole.Employer) {
+      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/company')
+      dispatch(setRooms(listRooms.result))
+      rooms = listRooms.result
+    }
+
+    if (auth.role === UserRole.Candidate) {
+      const listRooms: ApiResponse = await apiClient.get('/conversations/rooms/user')
+      dispatch(setRooms(listRooms.result))
+      rooms = listRooms.result
+    }
+
+    const roomIds = rooms.map((room) => room._id)
+    socket.emit('join-conversations', roomIds)
+  }
 
   return (
     <div className='left-content-page-chat-container'>

@@ -82,19 +82,21 @@ const CenterContent = () => {
           size={'large'}
           className='logo'
           src={
-            data?.infor_receiver
+            data.infor_receiver
               ? data.infor_receiver.logo
                 ? data.infor_receiver.logo
                 : data.infor_receiver.avatar
-              : logoTemp || logoTemp
+                ? data.infor_receiver.avatar
+                : logoTemp
+              : logoTemp
           }
         />
         <div className='name'>
-          {data?.infor_receiver
+          {data.infor_receiver
             ? data.infor_receiver.name
               ? data.infor_receiver.name
               : data.infor_receiver.company_name
-            : '' || ''}
+            : 'tên'}
         </div>
       </div>
       <div

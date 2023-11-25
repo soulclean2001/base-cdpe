@@ -91,7 +91,7 @@ const ContentCVManage = (props: any) => {
     if (notificaions.page > 0) {
       fetchGetJobsApplication(pageClick.toString())
     }
-  }, [notificaions.notifications])
+  }, [notificaions.total])
   useEffect(() => {
     fetchGetJobsApplication()
   }, [tabKey, content, idJob, dateFormTo, statusApplied])
