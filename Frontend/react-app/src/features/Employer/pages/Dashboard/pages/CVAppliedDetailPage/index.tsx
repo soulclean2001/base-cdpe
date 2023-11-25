@@ -20,6 +20,7 @@ import apiJobsApplication from '~/api/jobsApplication.api'
 import { toast } from 'react-toastify'
 import { CgUnblock } from 'react-icons/cg'
 import { RiUserStarFill } from 'react-icons/ri'
+import apiJob from '~/api/post.api'
 interface DetailType {
   [key: string]: any
 }
@@ -42,6 +43,7 @@ const CVAppliedDetailPage = () => {
   //       fileName: 'demo.pdf'
   //     }
   //   ]
+  const [jobName, setJobName] = useState('')
   const [docs, setDocs] = useState<{ uri: string; fileType: string; fileName: string }[]>([])
   useEffect(() => {
     fetchData()
@@ -60,7 +62,9 @@ const CVAppliedDetailPage = () => {
             { uid: rs.result.cv._id, name: 'image.png', status: 'done', url: rs.result.cv.user_info.avatar }
           ])
       }
-
+      await apiJob.getPostById(rs.result.job_post_id).then((rs) => {
+        if (rs && rs.result) setJobName(rs.result.job_title)
+      })
       if (rs.result.type === 1 && rs.result.cv_link) {
         const response = await axios.get(
           // 'https://tuyen-dung-bucket.s3.ap-southeast-1.amazonaws.com/images/2f402330a2346629137c1f500.pdf',
@@ -161,7 +165,7 @@ const CVAppliedDetailPage = () => {
               />
               <div className='header-info-wapper'>
                 <div className='name'>{myDetail.full_name}</div>
-                <div className='wanted-job'>{`Chief Accountant`}</div>
+                <div className='wanted-job'>{jobName}</div>
                 {/* <div className='wanted-level small-text-header-candidate-detail'>{`Trưởng phòng`}</div> */}
                 <div className='wanted-area small-text-header-candidate-detail'>Email: {myDetail.email}</div>
                 <div className='birth-date small-text-header-candidate-detail'>

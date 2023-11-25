@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 
-import { Avatar, Button, Tooltip, UploadFile } from 'antd'
+import { Avatar, Button, Tag, Tooltip, UploadFile } from 'antd'
 import './style.scss'
 import { AiFillFlag, AiOutlineFlag } from 'react-icons/ai'
 // import { MdDownload } from 'react-icons/md'
@@ -102,14 +102,24 @@ const CandidateDetailPage = (props: any) => {
               {` `}
               {dataCV.user_info?.last_name.toUpperCase() || ' '}
             </div>
-            <div className='wanted-job'>{dataCV.user_info.wanted_job_title}</div>
+            <div className='wanted-job'>
+              {dataCV.user_info.wanted_job_title}{' '}
+              {dataCandidate.cv_public ? (
+                <Tag color='green'>Đang tìm việc</Tag>
+              ) : (
+                <Tag color='grey'>Đã tắt tìm việc</Tag>
+              )}
+            </div>
             <div className='wanted-level small-text-header-candidate-detail'>
               {dataCandidate?.level || 'Cấp bậc mong muốn'}
             </div>
             <div className='wanted-area small-text-header-candidate-detail'>
               Khu vực làm việc: {dataCandidate?.work_location.join(', ')}
             </div>
-            <div className='birth-date small-text-header-candidate-detail'>{`Ngày sinh:  ${dataCV.user_info.date_of_birth}`}</div>
+            <div className='birth-date small-text-header-candidate-detail'>
+              {dataCV.user_info.date_of_birth ? `Ngày sinh:  ${dataCV.user_info.date_of_birth}` : ''}
+            </div>
+
             <div className='lasted-update-date small-text-header-candidate-detail'>{`Lần cập nhật gần đây: ${
               dataCV.updated_at && dataCV.updated_at.slice(0, 10)
             }`}</div>
