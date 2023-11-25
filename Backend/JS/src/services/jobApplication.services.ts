@@ -14,6 +14,7 @@ import ConversationRoom from '~/models/schemas/ConversationRoom.schema'
 import NotificationService from './notification.services'
 import { NotificationObject } from '~/models/schemas/Notification.schema'
 import { sendEmailJobApply } from '~/utils/email'
+import { JobStatus } from '~/models/requests/Job.request'
 
 export interface searchJobApplication {
   content?: string
@@ -52,11 +53,12 @@ class JobApplicationService {
       _id: _payload.job_post_id
     })
 
-    if (job && job.visibility === false)
+    if (job && job.visibility === false && job.status !== JobStatus.Approved)
       throw new ErrorWithStatus({
-        message: 'job not publish',
+        message: 'this job is not publish',
         status: 404
       })
+
     if (_payload.type === ApplyType.CVOnline) {
       delete _payload.cv_link
     }
