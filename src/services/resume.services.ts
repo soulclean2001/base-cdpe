@@ -172,9 +172,11 @@ class ResumeService {
       .toArray()
 
     const userIds: string[] = []
-    for (let i = 0; i < followers.length; i++) {
-      for (let j = 0; j < followers[i].users.length; j++) {
-        userIds.push(followers[i].users[j].user_id.toString())
+    if(followers && followers.length > 0) {
+      for (let i = 0; i < followers.length; i++) {
+        for (let j = 0; j < followers[i].users.length; j++) {
+          userIds.push(followers[i].users[j].user_id.toString())
+        }
       }
     }
 
