@@ -47,6 +47,16 @@ class JobApplicationService {
       temp = { ...temp, job_post_id: new ObjectId(payload.job_post_id) }
     }
     const _payload = { ...omit(payload, ['cv_id', 'application_date', 'job_post_id']), ...temp } as JobApplicationType
+
+    const job = await databaseServices.job.findOne({
+      _id: _payload.job_post_id
+    })
+
+    if (job && job.visibility === false)
+      throw new ErrorWithStatus({
+        message: 'job not publish',
+        status: 404
+      })
     if (_payload.type === ApplyType.CVOnline) {
       delete _payload.cv_link
     }
@@ -59,9 +69,6 @@ class JobApplicationService {
       })
     )
 
-    const job = await databaseServices.job.findOne({
-      _id: _payload.job_post_id
-    })
     if (job && result) {
       const company = await databaseServices.company.findOne({
         _id: job.company_id
