@@ -16,7 +16,7 @@ const ChatPage = (props: any) => {
   const navigate = useNavigate()
   useEffect(() => {
     if (auth && auth.isLogin && auth.accessToken && auth.verify !== 2) {
-      if (auth.role === 2) {
+      if (auth.role === 2 && roleType === 'CANDIDATE_TYPE') {
         if (auth.verify.toString() === '0') {
           navigate('/active-page')
           return
@@ -25,7 +25,7 @@ const ChatPage = (props: any) => {
         navigate('/chat')
         return
       }
-      if (auth.role === 1) {
+      if (auth.role === 1 && roleType === 'EMPLOYER_TYPE') {
         if (auth.verify.toString() === '0') {
           navigate('/employer/active-page')
           return
@@ -34,19 +34,18 @@ const ChatPage = (props: any) => {
         navigate('/employer/chat')
         return
       }
-      if (auth.role === 0) {
+      if (auth.role === 0 && roleType === 'ADMIN_TYPE') {
         if (auth.verify.toString() === '0') {
           navigate('/admin/active-page')
           return
         }
-
         navigate('/admin/chat')
         return
       }
     } else {
-      if (auth.role === 2) navigate('/candidate-login')
-      if (auth.role === 1) navigate('/employer-login')
-      if (auth.role === 0) navigate('/admin-login')
+      if (roleType === 'CANDIDATE_TYPE') navigate('/candidate-login')
+      if (roleType === 'EMPLOYER_TYPE') navigate('/employer-login')
+      if (roleType === 'ADMIN_TYPE') navigate('/admin-login')
     }
   }, [auth])
   return (
