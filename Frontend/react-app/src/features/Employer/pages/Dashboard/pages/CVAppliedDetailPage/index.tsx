@@ -152,8 +152,11 @@ const CVAppliedDetailPage = () => {
     return (
       <div className='doc-view-container'>
         <div style={{ padding: '0 20px', fontSize: '14px', fontWeight: 500 }}>
-          Bảng điều khiển / <Link to={'/employer/dashboard/cv-manage'}>Hồ sơ ứng tuyển</Link> {'>'}{' '}
-          {infoUrlAppliedCV?.match(/id-(\w+)/)?.[1]}
+          Bảng điều khiển / <Link to={'/employer/dashboard/cv-manage'}>Hồ sơ ứng tuyển</Link> {'>'} #CV_
+          {infoUrlAppliedCV
+            ?.match(/id-(\w+)/)?.[1]
+            .slice(-5)
+            .toUpperCase()}
         </div>
         <div className='info-candidate'>
           <div className='header-container'>

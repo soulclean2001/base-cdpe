@@ -87,7 +87,11 @@ const CandidateDetailPage = (props: any) => {
         ) : (
           <Link to={'/employer/dashboard/find-candidate'}>Tìm kiếm ứng viên</Link>
         )}{' '}
-        {'>'} {infoUrlCandidate?.match(/id-(\w+)/)?.[1]}
+        {'>'} #FIND_
+        {infoUrlCandidate
+          ?.match(/id-(\w+)/)?.[1]
+          .slice(-5)
+          .toUpperCase()}
       </div>
       <div className='header-container'>
         <div className='left-container'>
