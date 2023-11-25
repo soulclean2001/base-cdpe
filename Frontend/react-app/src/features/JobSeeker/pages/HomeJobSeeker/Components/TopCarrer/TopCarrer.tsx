@@ -17,9 +17,10 @@ import carrer6 from '~/assets/carerr_mkt.webp'
 import carrer7 from '~/assets/carerr_van_tai.webp'
 import carrer8 from '~/assets/carerr_kiem_toan.webp'
 import apiHome from '~/api/home.api'
+import { useNavigate } from 'react-router-dom'
 const TopCarrer = () => {
   const [dataCarrer, setDataCarrer] = useState<{ id: string; img: string; name: string; totalJob: number }[]>([])
-
+  const navigate = useNavigate()
   useEffect(() => {
     fetchData()
   }, [])
@@ -28,31 +29,31 @@ const TopCarrer = () => {
       {
         id: '1',
         img: carrer1,
-        name: 'KINH DOANH/ BÁN HÀNG',
+        name: 'Kinh doanh/ Bán hàng',
         totalJob: 0
       },
       {
         id: '2',
         img: carrer2,
-        name: 'IT PHẦN MỀM',
+        name: 'IT Phần mềm',
         totalJob: 0
       },
       {
         id: '3',
         img: carrer3,
-        name: 'HÀNH CHÍNH/ VĂN PHÒNG',
+        name: 'Hành chính/ Văn phòng',
         totalJob: 0
       },
       {
         id: '4',
         img: carrer4,
-        name: 'GIÁO DỤC/ ĐÀO TẠO',
+        name: 'Giáo dục/ Đào tạo',
         totalJob: 0
       },
       {
         id: '5',
         img: carrer5,
-        name: 'TƯ VẤN',
+        name: 'Tư vấn',
         totalJob: 0
       },
       // {
@@ -64,13 +65,13 @@ const TopCarrer = () => {
       {
         id: '7',
         img: carrer7,
-        name: 'VẬN TẢI/ KHO VẬN',
+        name: 'Vận tải/ Kho vận',
         totalJob: 0
       },
       {
         id: '8',
         img: carrer8,
-        name: 'KẾ TOÁN/ KIỂM TOÁN',
+        name: 'Kế toán/ Kiểm toán',
         totalJob: 0
       }
     ]
@@ -81,7 +82,7 @@ const TopCarrer = () => {
 
       rs.result.map((item: { _id: string; jobs: number }) => {
         dataCarrer.map((data: { id: string; img: string; name: string; totalJob: number }) => {
-          if (item._id.toString().toUpperCase() === data.name) {
+          if (item._id === data.name) {
             data.totalJob = item.jobs
             listTemp.push(data)
             let index = dataCarrer.indexOf(data)
@@ -123,6 +124,11 @@ const TopCarrer = () => {
     }
   }, [windowSize])
   //
+  const handleSubmitSearch = (carrer: string) => {
+    navigate('/jobs', { state: { carrer: carrer } })
+    // window.location.reload()
+  }
+  //
   return (
     <div className='top-carrer-container'>
       <div className='title'>Ngành Nghề Trọng Điểm</div>
@@ -141,7 +147,13 @@ const TopCarrer = () => {
             dataCarrer.map((item) => (
               <SwiperSlide className='carrer-item' key={item.id}>
                 <img className='img-carrer' src={item.img} alt='' />
-                <div className='name-carrer'>{item.name}</div>
+                <div
+                  className='name-carrer'
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleSubmitSearch(item.name)}
+                >
+                  {item.name.toUpperCase()}
+                </div>
                 <div className='total-job'>{`${item.totalJob} Việc làm`}</div>
               </SwiperSlide>
             ))}

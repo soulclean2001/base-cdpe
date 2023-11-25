@@ -36,6 +36,7 @@ const JobDetailPage = () => {
   const [checkApplied, setCheckApplied] = useState(false)
   const [checkExpires, setCheckExpires] = useState(false)
   const [checkBacklist, setCheckBacklist] = useState(false)
+  const [checkStatus, setCheckStatus] = useState(false)
 
   const getPostById = async () => {
     if (infoUrlJobDetail) {
@@ -46,6 +47,10 @@ const JobDetailPage = () => {
       await apiPost.getPostById(idJobDetail[1] as string, userId).then((rs) => {
         if (new Date(rs.result.expired_date) < new Date()) setCheckExpires(true)
         if (rs.result.is_not_apply) setCheckBacklist(true)
+
+        if (rs.result.status.toString() !== '0' || !rs.result.visibility) {
+          setCheckStatus(true)
+        }
         setJobDetail(rs.result)
         setJobInfo({
           description: rs.result.job_description,
@@ -217,11 +222,14 @@ const JobDetailPage = () => {
                 <Col lg={6} md={8} sm={24} xs={24} className='btn-container'>
                   <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
                   <Button
-                    disabled={checkApplied || checkBacklist || checkExpires ? true : false}
+                    disabled={checkStatus || checkApplied || checkBacklist || checkExpires ? true : false}
                     onClick={showModalApplyCV}
                     size='large'
                     className='btn-apply'
-                    style={{ backgroundColor: checkApplied || checkBacklist || checkExpires ? '#f58968' : '#ff7d55' }}
+                    style={{
+                      backgroundColor:
+                        checkStatus || checkApplied || checkBacklist || checkExpires ? '#f58968' : '#ff7d55'
+                    }}
                   >
                     {checkApplied ? 'Đã nộp đơn' : checkExpires ? 'Hết hạn' : 'Nộp đơn'}
                   </Button>
@@ -256,8 +264,10 @@ const JobDetailPage = () => {
           <Col lg={4} md={4} sm={23} xs={23} className='btn-container'>
             <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />
             <Button
-              style={{ backgroundColor: checkApplied || checkBacklist || checkExpires ? '#f58968' : '#ff7d55' }}
-              disabled={checkApplied || checkBacklist || checkExpires ? true : false}
+              style={{
+                backgroundColor: checkStatus || checkApplied || checkBacklist || checkExpires ? '#f58968' : '#ff7d55'
+              }}
+              disabled={checkStatus || checkApplied || checkBacklist || checkExpires ? true : false}
               onClick={showModalApplyCV}
               size='large'
               className='btn-apply'

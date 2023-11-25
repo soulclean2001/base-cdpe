@@ -84,6 +84,7 @@ const ModalApplyCV = (props: any) => {
       toast.error('Hồ sơ của bạn chưa được tải lên')
       return
     }
+    let checkFile = true
     if (data.fileCV) {
       let cvForm = new FormData()
       // cvForm.append('title', 'filepdf')
@@ -96,9 +97,10 @@ const ModalApplyCV = (props: any) => {
         })
         .catch(() => {
           toast.error('Có lỗi xảy ra, vui lòng thử lại')
+          checkFile = false
         })
     }
-
+    if (!checkFile) return
     let request: ApplyReqBody = {
       application_date: data.applicationDate,
       email: data.email,
@@ -118,7 +120,8 @@ const ModalApplyCV = (props: any) => {
         form.resetFields()
       })
       .catch((error) => {
-        toast.error(error.message)
+        toast.error('Có lỗi xảy ra, vui lòng thử lại')
+        handleSubmit()
         console.error('API error:', error)
       })
   }

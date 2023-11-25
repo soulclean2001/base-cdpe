@@ -75,7 +75,8 @@ const ListJob = () => {
     page: '1',
     limit: limitOnPage.toString(),
     content: location.state ? location.state.content : '',
-    working_location: location.state ? location.state.cityName : ''
+    working_location: location.state ? location.state.cityName : '',
+    career: location.state ? location.state.carrer : ''
   }
   const [requestSearch, setRequestSearch] = useState<PostRequestSearchType>(initRequestFilter)
 
@@ -169,7 +170,7 @@ const ListJob = () => {
           <Col lg={5} md={0} sm={0} xs={0} className='select-menu select-carrer'>
             <Select
               // mode='tags'
-              defaultValue='Tất cả ngành nghề'
+              defaultValue={location.state && location.state.carrer ? location.state.carrer : 'Tất cả ngành nghề'}
               showSearch
               //   optionLabelProp='children'
               style={{ width: '100%' }}

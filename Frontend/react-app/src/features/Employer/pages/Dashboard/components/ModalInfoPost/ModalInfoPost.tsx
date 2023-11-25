@@ -1270,16 +1270,16 @@ const ModalInfoPost = (props: any) => {
               </Button>
               {idPost && roleType === 'ADMIN_ROLE' && Number(status) === 1 && (
                 <>
-                  <Button className='btn-reject' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
+                  <Button className='btn-reject' size='large' onClick={() => handleActionRequest('REJECT', idPost)}>
                     Từ chối
                   </Button>
-                  <Button className='btn-approved' size='large' onClick={() => handleActionRequest('REJECT', idPost)}>
+                  <Button className='btn-approved' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
                     Chấp nhận
                   </Button>
                 </>
               )}
               {idPost && roleType === 'ADMIN_ROLE' && Number(status).toString() === '0' && (
-                <Button className='btn-reject' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
+                <Button className='btn-reject' size='large' onClick={() => handleActionRequest('REJECT', idPost)}>
                   Từ chối
                 </Button>
               )}
