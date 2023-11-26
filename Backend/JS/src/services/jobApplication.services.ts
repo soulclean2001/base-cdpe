@@ -96,7 +96,7 @@ class JobApplicationService {
           {
             sender: new ObjectId(userId),
             object_sent: NotificationObject.Candidate,
-            content: `1 ứng viên đã gửi cv vào bài tuyển dụng ${job?.job_title}`,
+            content: `${job?.job_title}`,
             object_recieve: NotificationObject.Employer,
             recievers,
             type: 'post/applied'
