@@ -427,7 +427,8 @@ const CompanyManagePage = () => {
                       value && value.trim() !== ''
                         ? Promise.resolve()
                         : Promise.reject(new Error('Nội dung không được bỏ trống'))
-                  }
+                  },
+                  { max: 50, message: 'Đã vượt quá độ dài tối đa 50 ký tự' }
                 ]}
               >
                 <Input
@@ -584,7 +585,8 @@ const CompanyManagePage = () => {
                   /^(https?:\/\/)?(www\.)?(youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
                 ),
                 message: 'Vui lòng nhập đúng định dạng link youtube'
-              }
+              },
+              { max: 150, message: 'Đã vượt quá độ dài tối đa 150 ký tự' }
             ]}
           >
             <Input

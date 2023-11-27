@@ -96,6 +96,10 @@ const ModalUpdateProfile = (props: PropsType) => {
       toast.error('Vui lòng không bỏ trống tên người dùng')
       return
     }
+    if (name.length > 30) {
+      toast.error('Tên người dùng vượt quá độ dài cho phép 30 ký tự')
+      return
+    }
     const phoneRegex = new RegExp(/(84|0[3|5|7|8|9])+([0-9]{8})\b/)
 
     if (phone && !phoneRegex.test(phone)) {

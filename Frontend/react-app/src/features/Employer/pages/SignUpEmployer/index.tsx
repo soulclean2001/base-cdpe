@@ -310,7 +310,8 @@ const SignUpEmployer = () => {
                     pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
                     message:
                       'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
-                  }
+                  },
+                  { max: 150, message: 'Đã vượt quá độ dài tối đa' }
                 ]}
               >
                 <Input.Password
@@ -334,7 +335,8 @@ const SignUpEmployer = () => {
                       }
                       return Promise.reject(new Error('Nhập lại mật khẩu không chính xác'))
                     }
-                  })
+                  }),
+                  { max: 150, message: 'Đã vượt quá độ dài tối đa' }
                 ]}
                 style={{ paddingTop: '10px' }}
               >
@@ -351,7 +353,15 @@ const SignUpEmployer = () => {
                 <Col md={14} sm={24} xs={24}>
                   <Form.Item
                     name={'name'}
-                    rules={[{ required: true, message: 'Vui lòng không để trống họ tên' }]}
+                    rules={[
+                      { max: 30, message: 'Đã vượt quá độ dài tối đa 30 ký tự' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
                     label='Họ và tên'
                   >
                     <Input
@@ -406,7 +416,15 @@ const SignUpEmployer = () => {
                   <Form.Item
                     label='Tên công ty'
                     name='nameCompany'
-                    rules={[{ required: true, message: 'Vui lòng nhập tên công ty' }]}
+                    rules={[
+                      { max: 50, message: 'Đã vượt quá độ dài tối đa 50 ký tự' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
                   >
                     <Input
                       size='large'
@@ -550,7 +568,15 @@ const SignUpEmployer = () => {
                   <Form.Item
                     name='branchName'
                     label={<span style={{ fontWeight: '500' }}>Tên Trụ Sở</span>}
-                    rules={[{ required: true, message: 'Vui lòng không để trống tên trụ sở' }]}
+                    rules={[
+                      { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
                   >
                     <Input
                       size='large'
@@ -603,7 +629,15 @@ const SignUpEmployer = () => {
                   <Form.Item
                     name='address'
                     label={<span style={{ fontWeight: '500' }}>Địa chỉ</span>}
-                    rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
+                    rules={[
+                      { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
                   >
                     <Input
                       size='large'

@@ -82,7 +82,18 @@ const SignUpJobSeeker = () => {
             className='sign-up-form'
             initialValues={{ remember: true }}
           >
-            <Form.Item name='name' rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}>
+            <Form.Item
+              name='name'
+              rules={[
+                { max: 30, message: 'Đã vượt quá độ dài tối đa 30 ký tự' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
+              ]}
+            >
               <Input
                 size='large'
                 className='name-input'
@@ -111,7 +122,13 @@ const SignUpJobSeeker = () => {
             <Form.Item
               name='password'
               rules={[
-                { required: true, message: 'Vui lòng nhập mật khẩu' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
                 {
                   pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
                   message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
@@ -130,7 +147,13 @@ const SignUpJobSeeker = () => {
             <Form.Item
               name='repassword'
               rules={[
-                { required: true, message: 'Vui lòng nhập lại mật khẩu' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue('password') === value) {
