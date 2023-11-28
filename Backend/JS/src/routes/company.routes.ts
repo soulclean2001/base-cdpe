@@ -68,11 +68,14 @@ companyRouter.get(
 */
 companyRouter.get('/:company_id', idValidator('company_id'), wrapAsync(companyControllers.getCompanyById))
 
-/* 
-  query:{
-    user_id?:string
-  }
-*/
+/**
+ * body: {
+ * from_address:string,
+ * to_address:string,
+ * data: string,
+ * subject: string
+ * }
+ */
 companyRouter.post('/send-email', sendEmailValidator, accessTokenValidator, wrapAsync(companyControllers.sendEmail))
 
 export default companyRouter
