@@ -114,7 +114,7 @@ export const sendEmailValidator = validate(
         },
         custom: {
           options: (value: string) => {
-            if (value.length < 25 || value.length > 50) {
+            if (value.length < 10 || value.length > 50) {
               throw new Error(
                 'Please enter a valid [subject] must be at least 25 characters long and  <= 50 characters long'
               )
