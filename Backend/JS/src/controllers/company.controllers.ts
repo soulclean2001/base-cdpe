@@ -8,6 +8,7 @@ import { Media } from '~/models/Other'
 import { UpdateCompanyReqBody } from '~/models/requests/Company.request'
 import { TokenPayload } from '~/models/requests/User.request'
 import CompanyService from '~/services/company.services'
+import { sendEmail } from '~/utils/email'
 
 class CompanyController {
   async updateCompany(req: Request<ParamsDictionary, any, UpdateCompanyReqBody>, res: Response, next: NextFunction) {
@@ -99,6 +100,17 @@ class CompanyController {
 
     return res.json({
       message: 'top 10 has the most job applications',
+      result
+    })
+  }
+
+  async sendEmail(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { role, user_id } = req.decoded_authorization as TokenPayload
+    const { from_address, to_address, subject, data } = req.body
+    const result = await sendEmail(from_address, to_address, subject, data)
+
+    return res.json({
+      message: 'send email',
       result
     })
   }
