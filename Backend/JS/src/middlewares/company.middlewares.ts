@@ -98,6 +98,7 @@ export const sendEmailValidator = validate(
   checkSchema(
     {
       from_address: {
+        optional: true,
         isEmail: {
           errorMessage: 'Please enter a valid email [from address]'
         }
