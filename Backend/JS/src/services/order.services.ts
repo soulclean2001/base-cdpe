@@ -755,7 +755,7 @@ class OrderService {
             object_recieve: NotificationObject.Employer,
             object_sent: NotificationObject.Admin,
             recievers: userids,
-            type: 'order/success'
+            type: 'order/completed'
           })
         }
       }
