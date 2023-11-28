@@ -73,7 +73,7 @@ export interface SocialOrWebsite {
 
 export enum SkillLevel {
   Basic = 'Cơ bản',
-  Beginner = 'Người mới',
+  Beginner = 'Trung bình',
   Skillful = 'Thành thạo',
   Experienced = 'Có kinh nghiệm',
   Expert = 'Chuyên gia'
