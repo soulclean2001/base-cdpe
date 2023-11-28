@@ -11,7 +11,7 @@ import { BiWorld } from 'react-icons/bi'
 import { AiFillLock } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-
+import { subDays } from 'date-fns'
 import { setPosts } from '~/features/Employer/employerSlice'
 // import viVN from 'antd/es/locale/vi_VN'
 import apiPost, { PostFilterRequestType } from '~/api/post.api'
@@ -156,6 +156,12 @@ const TableCustom = (props: any) => {
       toast.error('Vui lòng chọn ngày hết hạn trước khi công khai bài đăng')
       return
     }
+
+    if (new Date(expiresDate) < new Date() || new Date(expiresDate) > subDays(new Date(), 60)) {
+      toast.error('Ngày hết hạn phải bắt đầu từ ngày hiện tại và tối đa 60 ngày kể từ ngày hiện tại')
+      return
+    }
+
     await apiPost
       .publishPost(idPost, expiresDate)
       .then(async () => {

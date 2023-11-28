@@ -8,7 +8,7 @@ import { CgUnblock } from 'react-icons/cg'
 
 import { FiSearch } from 'react-icons/fi'
 // import { FaHistory } from 'react-icons/fa'
-import ModalBlockAccount from './components/ModalBlockAccount'
+import ModalConfirm from './components/ModalConfirm'
 import { useState, useEffect } from 'react'
 import apiAdmin, { SearchUserFilter } from '~/api/admin.api'
 import { UserVerifyStatus } from '~/types/user.type'
@@ -248,11 +248,12 @@ const UsersManage = () => {
           dataSource={listUsers}
           pagination={{ current: currentPage, total: total, pageSize: limit, onChange: handleChangePage }}
         />
-        <ModalBlockAccount
+        <ModalConfirm
           handleAfterSubmit={handleAfterSubmit}
           selectedAccountId={selectedAccountId}
           open={openModalBlockAccount}
           isBanned={isBanned}
+          type='BANNED_ACCOUNT'
           handleCancel={() => setOpenModalBlockAccount(false)}
         />
       </div>

@@ -21,6 +21,9 @@ import { toast } from 'react-toastify'
 import { CgUnblock } from 'react-icons/cg'
 import { RiUserStarFill } from 'react-icons/ri'
 import apiJob from '~/api/post.api'
+import ModalConfirm from '~/features/Admin/contents/UsersManage/components/ModalConfirm'
+import { IoIosMail } from 'react-icons/io'
+import ModalSendMail from '../../components/ModalSendMail'
 interface DetailType {
   [key: string]: any
 }
@@ -45,6 +48,31 @@ const CVAppliedDetailPage = () => {
   //   ]
   const [jobName, setJobName] = useState('')
   const [docs, setDocs] = useState<{ uri: string; fileType: string; fileName: string }[]>([])
+  //confirm change status profile
+  const [idConfirm, setIdConfirm] = useState('')
+  const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false)
+  const [isBanned, setIsBanned] = useState(false)
+  const [typeConfirm, setTypeConfirm] = useState('')
+  const [isOpenModalSendMail, setIsOpenModalSendMail] = useState(false)
+  const [emailWannaSend, setEmailWannaSend] = useState('')
+  const handleOpenModalSendMail = (email: string) => {
+    setEmailWannaSend(email)
+    setIsOpenModalSendMail(true)
+  }
+  const handleAfterSubmitConfirm = (profileStatus?: string) => {
+    if (profileStatus) {
+      setMyDetail({ ...myDetail, profile_status: profileStatus })
+    }
+    setIsOpenModalConfirm(false)
+  }
+  const handleOpenModalConfirm = (id: string, type: string, isBanned: boolean) => {
+    setIdConfirm(id)
+    setTypeConfirm(type)
+    setIsBanned(isBanned)
+    setIsOpenModalConfirm(true)
+  }
+
+  //
   useEffect(() => {
     fetchData()
   }, [infoUrlAppliedCV])
@@ -112,18 +140,29 @@ const CVAppliedDetailPage = () => {
       })
     }
   }
-  const handleActionChangeProfileStatus = async (id: string, profileStatus: string, statusLabel: string) => {
-    await apiJobsApplication.updateProfileStatus(id, profileStatus).then(async () => {
-      toast.success(`#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${statusLabel}`)
-      setMyDetail({ ...myDetail, profile_status: profileStatus })
-    })
-  }
+  // const handleActionChangeProfileStatus = async (id: string, profileStatus: string, statusLabel: string) => {
+  //   await apiJobsApplication.updateProfileStatus(id, profileStatus).then(async () => {
+  //     toast.success(`#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${statusLabel}`)
+  //     setMyDetail({ ...myDetail, profile_status: profileStatus })
+  //   })
+  // }
   const items: MenuProps['items'] = [
+    {
+      label: (
+        <Tooltip title='Gửi Mail'>
+          <a onClick={() => handleOpenModalSendMail(myDetail && myDetail.email)} style={{ color: '#1677ff' }}>
+            <IoIosMail />
+          </a>
+        </Tooltip>
+      ),
+      key: '1'
+    },
     {
       label: (
         <Tooltip title='Hủy bỏ'>
           <a
-            onClick={() => handleActionChangeProfileStatus(myDetail && myDetail._id, 'deleted', 'Đã hủy')}
+            // onClick={() => handleActionChangeProfileStatus(myDetail && myDetail._id, 'deleted', 'Đã hủy')}
+            onClick={() => handleOpenModalConfirm(myDetail && myDetail._id, 'DELETED_CV', false)}
             style={{ color: '#1677ff' }}
           >
             <MdDelete />
@@ -136,7 +175,8 @@ const CVAppliedDetailPage = () => {
       label: (
         <Tooltip title='Thêm vào sổ đen'>
           <a
-            onClick={() => handleActionChangeProfileStatus(myDetail && myDetail._id, 'blacklist', 'Đã hủy')}
+            // onClick={() => handleActionChangeProfileStatus(myDetail && myDetail._id, 'blacklist', 'Đã hủy')}
+            onClick={() => handleOpenModalConfirm(myDetail && myDetail._id, 'BLOCKED_CV', false)}
             style={{ color: '#1677ff' }}
           >
             <BiBlock />
@@ -147,10 +187,24 @@ const CVAppliedDetailPage = () => {
     }
   ]
 
-  if (!myDetail) return <>...</>
+  if (!myDetail)
+    return <div style={{ height: '82vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>...</div>
   else
     return (
       <div className='doc-view-container'>
+        <ModalSendMail
+          open={isOpenModalSendMail}
+          email={emailWannaSend}
+          handleCancel={() => setIsOpenModalSendMail(false)}
+        />
+        <ModalConfirm
+          handleAfterSubmit={handleAfterSubmitConfirm}
+          selectedAccountId={idConfirm}
+          open={isOpenModalConfirm}
+          isBanned={isBanned}
+          type={typeConfirm}
+          handleCancel={() => setIsOpenModalConfirm(false)}
+        />
         <div style={{ padding: '0 20px', fontSize: '14px', fontWeight: 500 }}>
           Bảng điều khiển / <Link to={'/employer/dashboard/cv-manage'}>Hồ sơ ứng tuyển</Link> {'>'} #CV_
           {infoUrlAppliedCV
@@ -303,9 +357,15 @@ const CVAppliedDetailPage = () => {
                     </Dropdown>
                   ) : (
                     <>
+                      <Tooltip title='Gửi Mail'>
+                        <Button onClick={() => handleOpenModalSendMail(myDetail.email)} style={{ color: '#1677ff' }}>
+                          <IoIosMail />
+                        </Button>
+                      </Tooltip>
                       <Tooltip title='Hủy bỏ'>
                         <Button
-                          onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                          // onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                          onClick={() => handleOpenModalConfirm(myDetail._id, 'DELETED_CV', false)}
                           style={{ fontSize: '18px' }}
                           className='btn-candidate-detail btn-save-cv'
                           icon={<MdDelete />}
@@ -314,7 +374,8 @@ const CVAppliedDetailPage = () => {
 
                       <Tooltip title='Thêm vào sổ đen'>
                         <Button
-                          onClick={() => handleActionChangeProfileStatus(myDetail._id, 'blacklist', 'Đã chặn')}
+                          // onClick={() => handleActionChangeProfileStatus(myDetail._id, 'blacklist', 'Đã chặn')}
+                          onClick={() => handleOpenModalConfirm(myDetail._id, 'BLOCKED_CV', false)}
                           style={{ fontSize: '18px' }}
                           className='btn-candidate-detail btn-save-cv'
                           icon={<BiBlock />}
@@ -328,7 +389,8 @@ const CVAppliedDetailPage = () => {
                 <div className='btn-top-container'>
                   <Tooltip title='Hủy bỏ'>
                     <Button
-                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                      // onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                      onClick={() => handleOpenModalConfirm(myDetail._id, 'DELETED_CV', false)}
                       style={{ fontSize: '18px' }}
                       className='btn-candidate-detail btn-save-cv'
                       icon={<MdDelete />}
@@ -336,7 +398,8 @@ const CVAppliedDetailPage = () => {
                   </Tooltip>
                   <Tooltip title='Bỏ chặn'>
                     <Button
-                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'available', 'Hiệu lực')}
+                      // onClick={() => handleActionChangeProfileStatus(myDetail._id, 'available', 'Hiệu lực')}
+                      onClick={() => handleOpenModalConfirm(myDetail._id, 'BLOCKED_CV', true)}
                       style={{ fontSize: '18px' }}
                       className='btn-candidate-detail btn-save-cv'
                       icon={<CgUnblock />}
@@ -346,9 +409,10 @@ const CVAppliedDetailPage = () => {
               )}
               {myDetail.profile_status === 'deleted' && (
                 <div className='btn-top-container'>
-                  <Tooltip title='Hoàn tát'>
+                  <Tooltip title='Khôi phục'>
                     <Button
-                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                      // onClick={() => handleActionChangeProfileStatus(myDetail._id, 'deleted', 'Đã hủy')}
+                      onClick={() => handleOpenModalConfirm(myDetail._id, 'DELETED_CV', true)}
                       style={{ fontSize: '18px' }}
                       className='btn-candidate-detail btn-save-cv'
                       icon={<FaTrashRestoreAlt />}
@@ -356,7 +420,8 @@ const CVAppliedDetailPage = () => {
                   </Tooltip>
                   <Tooltip title='Thêm vào sổ đen'>
                     <Button
-                      onClick={() => handleActionChangeProfileStatus(myDetail._id, 'available', 'Hiệu lực')}
+                      // onClick={() => handleActionChangeProfileStatus(myDetail._id, 'available', 'Hiệu lực')}
+                      onClick={() => handleOpenModalConfirm(myDetail._id, 'BLOCKED_CV', false)}
                       style={{ fontSize: '18px' }}
                       className='btn-candidate-detail btn-save-cv'
                       icon={<BiBlock />}

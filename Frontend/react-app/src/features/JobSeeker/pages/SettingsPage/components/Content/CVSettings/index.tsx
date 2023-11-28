@@ -185,7 +185,7 @@ const CVSettings = (props: any) => {
                 style={{ marginBottom: '15px' }}
                 label={<span style={{ fontWeight: '500' }}>Chọn cấp bậc công việc</span>}
                 name='levelDesire'
-                rules={[{ required: true, message: 'Vui lòng chọn cấp bật' }]}
+                rules={[{ required: true, message: 'Vui lòng chọn cấp bậc' }]}
               >
                 <Select
                   className='select-custom'

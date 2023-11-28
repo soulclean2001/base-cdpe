@@ -514,7 +514,14 @@ const CompanyManagePage = () => {
           <Form.Item
             name='description'
             label={<span style={{ fontWeight: '500' }}>Sơ lượt về công ty</span>}
-            // rules={[{ required: true, message: 'Vui lòng không để trống sơ lượt về công ty' }]}
+            rules={[
+              {
+                validator: () =>
+                  description.length <= 3000
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('Nội dung tối đa 3000 ký tự'))
+              }
+            ]}
           >
             {/* <TextArea
               style={{ height: 210, maxHeight: 210 }}

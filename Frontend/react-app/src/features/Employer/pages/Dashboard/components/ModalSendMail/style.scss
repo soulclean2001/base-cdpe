@@ -1,0 +1,21 @@
+.modal-send-mail {
+  .header-container {
+    border-bottom: 1px solid rgb(189, 189, 189);
+    padding-bottom: 15px;
+  }
+  .modal-content-wapper {
+    padding-top: 10px;
+    .form-send-mail {
+      .ck-editor__editable {
+        min-height: 200px !important;
+      }
+      .btn-container {
+        .btn-submit-send-mail {
+          width: 70px;
+          background-color: rgb(48, 114, 247);
+          color: white;
+        }
+      }
+    }
+  }
+}

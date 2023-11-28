@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import avatarTemp from '~/assets/HF_logo.jpg'
+import paid from '~/assets/paid.png'
 export interface NotificationType {
   _id?: string
   content: string
@@ -102,6 +103,14 @@ const notifySlice = createSlice({
           notify.jobTitle = notify.content
           notify.content = `Ứng viên <b>${notify.sender_info?.name}</b> vừa nộp đơn ứng tuyển vào <b>${notify.content}</b>`
         }
+        if (notify.type === 'order/success') {
+          notify.sender_info = { ...notify.sender_info, avatar: paid }
+          notify.content = `Đơn hàng <b>#ORDER_${notify.content}</b> đã được thanh toán`
+        }
+        if (notify.type === 'order/completed') {
+          notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+          notify.content = `<b>Hệ thống</b> đã kích hoạt đơn hàng <b>#ORDER_${notify.content}</b> của bạn`
+        }
 
         return notify
       })
@@ -165,7 +174,14 @@ const notifySlice = createSlice({
           notify.jobTitle = notify.content
           notify.content = `Ứng viên <b>${notify.sender_info?.name}</b> vừa nộp đơn ứng tuyển vào <b>${notify.content}</b>`
         }
-
+        if (notify.type === 'order/success') {
+          notify.sender_info = { ...notify.sender_info, avatar: paid }
+          notify.content = `Đơn hàng <b>#ORDER_${notify.content}</b> đã được thanh toán`
+        }
+        if (notify.type === 'order/completed') {
+          notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+          notify.content = `<b>Hệ thống</b> đã kích hoạt đơn hàng <b>#ORDER_${notify.content}</b> của bạn`
+        }
         return notify
       })
       state.notifications = [...state.notifications, ...notifications]
@@ -213,6 +229,14 @@ const notifySlice = createSlice({
       if (notify.type === 'post/applied') {
         notify.jobTitle = notify.content
         notify.content = `Ứng viên <b>${notify.sender_info?.name}</b> vừa nộp đơn ứng tuyển vào <b>${notify.content}</b>`
+      }
+      if (notify.type === 'order/success') {
+        notify.sender_info = { ...notify.sender_info, avatar: paid }
+        notify.content = `Đơn hàng <b>#ORDER_${notify.content}</b> đã được thanh toán`
+      }
+      if (notify.type === 'order/completed') {
+        notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
+        notify.content = `<b>Hệ thống</b> đã kích hoạt đơn hàng <b>#ORDER_${notify.content}</b> của bạn`
       }
       state.notifications = [notify, ...state.notifications]
       state.totalNotRead++

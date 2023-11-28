@@ -21,7 +21,7 @@ import apiHome from '~/api/home.api'
 //   { value: 'Phần mềm CNTT' }
 // ]
 const listLevel = [
-  { value: 'Tất cả cấp bật' },
+  { value: 'Tất cả cấp bậc' },
   { value: 'Thực tập sinh/Sinh viên' },
   { value: 'Mới tối nghiệp' },
   { value: 'Nhân viên' },
@@ -196,7 +196,7 @@ const ListJob = () => {
           </Col> */}
           <Col lg={4} md={0} sm={0} xs={0} className='select-menu select-level'>
             <Select
-              defaultValue={'Tất cả cấp bật'}
+              defaultValue={'Tất cả cấp bậc'}
               showSearch
               style={{ width: '100%' }}
               maxTagCount={1}
@@ -204,7 +204,7 @@ const ListJob = () => {
               size='large'
               options={listLevel}
               onChange={(value) =>
-                setRequestSearch({ ...requestSearch, job_level: value === 'Tất cả cấp bật' ? '' : value })
+                setRequestSearch({ ...requestSearch, job_level: value === 'Tất cả cấp bậc' ? '' : value })
               }
             />
           </Col>

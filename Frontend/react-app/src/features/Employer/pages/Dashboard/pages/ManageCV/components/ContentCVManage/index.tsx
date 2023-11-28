@@ -24,6 +24,9 @@ import { JobApplicationStatus } from '~/types/jobAppliacation.type'
 import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
 import { useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
+import ModalConfirm from '~/features/Admin/contents/UsersManage/components/ModalConfirm'
+import { IoIosMail } from 'react-icons/io'
+import ModalSendMail from '../../../../components/ModalSendMail'
 interface DataType {
   id: string
   key: string
@@ -72,6 +75,36 @@ const ContentCVManage = (props: any) => {
   const [listJobs, setListJobs] = useState<{ value: string; label: any }[]>([
     { value: 'allJobs', label: 'Tất cả công việc' }
   ])
+  //confirm change status profile
+  const [idConfirm, setIdConfirm] = useState('')
+  const [isOpenModalConfirm, setIsOpenModalConfirm] = useState(false)
+  const [isBanned, setIsBanned] = useState(false)
+  const [typeConfirm, setTypeConfirm] = useState('')
+  const [isSubmitConfirm, setIsSubmitConfirm] = useState(false)
+  const [isOpenModalSendMail, setIsOpenModalSendMail] = useState(false)
+  const [emailWannaSend, setEmailWannaSend] = useState('')
+  const [emailClicked, setEmailClicked] = useState('')
+  const handleOpenModalSendMail = (email: string) => {
+    setEmailWannaSend(email)
+    setIsOpenModalSendMail(true)
+  }
+  const handleAfterSubmitConfirm = () => {
+    setIsSubmitConfirm(true)
+    setIsOpenModalConfirm(false)
+  }
+  const handleOpenModalConfirm = (id: string, type: string, isBanned: boolean) => {
+    setIdConfirm(id)
+    setTypeConfirm(type)
+    setIsBanned(isBanned)
+    setIsOpenModalConfirm(true)
+  }
+  useEffect(() => {
+    if (isSubmitConfirm) {
+      setPageClick(1)
+      fetchGetJobsApplication()
+      setIsSubmitConfirm(false)
+    }
+  }, [isSubmitConfirm])
   //
   useEffect(() => {
     fetchGetMyCompany()
@@ -168,19 +201,30 @@ const ContentCVManage = (props: any) => {
     }
     await fetchGetJobsApplication(pageClick.toString())
   }
-  const handleActionChangeProfileStatus = async (id: string, profileStatus: string, statusLabel: string) => {
-    await apiJobsApplication.updateProfileStatus(id, profileStatus).then(async () => {
-      toast.success(`#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${statusLabel}`)
-      setPageClick(1)
-      await fetchGetJobsApplication()
-    })
-  }
+  // const handleActionChangeProfileStatus = async (id: string, profileStatus: string, statusLabel: string) => {
+  //   await apiJobsApplication.updateProfileStatus(id, profileStatus).then(async () => {
+  //     toast.success(`#CV_${id.slice(-5).toUpperCase()} đã thay đổi trạng thái sang ${statusLabel}`)
+  //     setPageClick(1)
+  //     await fetchGetJobsApplication()
+  //   })
+  // }
   const items: MenuProps['items'] = [
+    {
+      label: (
+        <Tooltip title='Gửi Mail'>
+          <a onClick={() => handleOpenModalSendMail(emailClicked)} style={{ color: '#1677ff' }}>
+            <IoIosMail />
+          </a>
+        </Tooltip>
+      ),
+      key: '1'
+    },
     {
       label: (
         <Tooltip title='Hủy bỏ'>
           <a
-            onClick={() => handleActionChangeProfileStatus(idJobAppli as string, 'deleted', 'Đã xóa')}
+            // onClick={() => handleActionChangeProfileStatus(idJobAppli as string, 'deleted', 'Đã xóa')}
+            onClick={() => handleOpenModalConfirm(idJobAppli as string, 'DELETED_CV', false)}
             style={{ color: '#1677ff' }}
           >
             <MdDelete />
@@ -193,7 +237,8 @@ const ContentCVManage = (props: any) => {
       label: (
         <Tooltip title='Thêm vào sổ đen'>
           <a
-            onClick={() => handleActionChangeProfileStatus(idJobAppli as string, 'blacklist', 'Đã chặn')}
+            // onClick={() => handleActionChangeProfileStatus(idJobAppli as string, 'blacklist', 'Đã chặn')}
+            onClick={() => handleOpenModalConfirm(idJobAppli as string, 'BLOCKED_CV', false)}
             style={{ color: '#1677ff' }}
           >
             <BiBlock />
@@ -250,15 +295,6 @@ const ContentCVManage = (props: any) => {
       ellipsis: true,
       showSorterTooltip: false
     },
-    // {
-    //   title: 'Thời gian xem xét',
-    //   dataIndex: 'reviewTime',
-    //   key: 'reviewTime',
-    //   //   sorter: (a, b) => a.reviewTime - b.reviewTime,
-    //   sortOrder: sortedInfo.columnKey === 'reviewTime' ? sortedInfo.order : null,
-    //   ellipsis: true,
-    //   showSorterTooltip: false
-    // },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
@@ -378,20 +414,25 @@ const ContentCVManage = (props: any) => {
                 </Dropdown>
               ) : (
                 <>
-                  {/* <Tooltip title='In CV'>
-                <a>
-                  <AiFillPrinter />
-                </a>
-              </Tooltip> */}
-
+                  <Tooltip title='Gửi Mail'>
+                    <a onClick={() => handleOpenModalSendMail(record.email)} style={{ color: '#1677ff' }}>
+                      <IoIosMail />
+                    </a>
+                  </Tooltip>
                   <Tooltip title='Hủy bỏ'>
-                    <a onClick={() => handleActionChangeProfileStatus(record.id, 'deleted', 'Hủy bỏ')}>
+                    <a
+                      // onClick={() => handleActionChangeProfileStatus(record.id, 'deleted', 'Hủy bỏ')}
+                      onClick={() => handleOpenModalConfirm(record.id, 'DELETED_CV', false)}
+                    >
                       <MdDelete />
                     </a>
                   </Tooltip>
 
                   <Tooltip title='Thêm vào sổ đen'>
-                    <a onClick={() => handleActionChangeProfileStatus(record.id, 'blacklist', 'Đã chặn')}>
+                    <a
+                      // onClick={() => handleActionChangeProfileStatus(record.id, 'blacklist', 'Đã chặn')}
+                      onClick={() => handleOpenModalConfirm(record.id, 'BLOCKED_CV', false)}
+                    >
                       <BiBlock />
                     </a>
                   </Tooltip>
@@ -402,7 +443,10 @@ const ContentCVManage = (props: any) => {
           {tabKey === 'tab-back-list' && (
             <>
               <Tooltip title='Bỏ chặn'>
-                <a onClick={() => handleActionChangeProfileStatus(record.id, 'available', 'Hiệu lực')}>
+                <a
+                  // onClick={() => handleActionChangeProfileStatus(record.id, 'available', 'Hiệu lực')}
+                  onClick={() => handleOpenModalConfirm(record.id, 'BLOCKED_CV', true)}
+                >
                   <CgUnblock />
                 </a>
               </Tooltip>
@@ -412,7 +456,8 @@ const ContentCVManage = (props: any) => {
             <>
               <Tooltip title='Hoàn tác'>
                 <a
-                  onClick={() => handleActionChangeProfileStatus(record.id, 'available', 'Hiệu lực')}
+                  // onClick={() => handleActionChangeProfileStatus(record.id, 'available', 'Hiệu lực')}
+                  onClick={() => handleOpenModalConfirm(record.id, 'DELETED_CV', true)}
                   style={{ fontSize: '12px' }}
                 >
                   <FaTrashRestoreAlt />
@@ -427,6 +472,19 @@ const ContentCVManage = (props: any) => {
   ]
   return (
     <div>
+      <ModalSendMail
+        open={isOpenModalSendMail}
+        email={emailWannaSend}
+        handleCancel={() => setIsOpenModalSendMail(false)}
+      />
+      <ModalConfirm
+        handleAfterSubmit={handleAfterSubmitConfirm}
+        selectedAccountId={idConfirm}
+        open={isOpenModalConfirm}
+        isBanned={isBanned}
+        type={typeConfirm}
+        handleCancel={() => setIsOpenModalConfirm(false)}
+      />
       <Row className='filter-container'>
         <Col md={8} sm={24} xs={24} style={{ padding: '5px' }}>
           <Input
@@ -482,6 +540,7 @@ const ContentCVManage = (props: any) => {
               onClick: () => {
                 setIdJobAppli(record.id)
                 // setDataRowSelected(record)
+                setEmailClicked(record.email)
               }
             })}
             columns={columns}

@@ -69,6 +69,15 @@ export class Company {
     const rs: ApiResponse = await client.get(`company/${id}/is_following`)
     return rs
   }
+  public static sendMail = async (data: {
+    from_address?: string
+    to_address: string
+    data: string
+    subject: string
+  }) => {
+    const rs: ApiResponse = await client.post(`company/send-email`, data)
+    return rs
+  }
 }
 
 export default Company

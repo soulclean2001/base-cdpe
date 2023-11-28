@@ -961,6 +961,12 @@ const ModalInfoPost = (props: any) => {
                     jobDescription && jobDescription.trim() !== ''
                       ? Promise.resolve()
                       : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
+                {
+                  validator: () =>
+                    jobDescription.length >= 1 && jobDescription.length <= 2000
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung tối thiểu 1 ký tự và tối đa 2000 ký tự'))
                 }
               ]}
             >
@@ -1006,6 +1012,12 @@ const ModalInfoPost = (props: any) => {
                     jobRequirement && jobRequirement.trim() !== ''
                       ? Promise.resolve()
                       : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
+                {
+                  validator: () =>
+                    jobRequirement.length >= 1 && jobRequirement.length <= 2000
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung tối thiểu 1 ký tự và tối đa 2000 ký tự'))
                 }
               ]}
             >

@@ -11,6 +11,7 @@ import './style.scss'
 import { AuthState } from '~/features/Auth/authSlice'
 import { RootState } from '~/app/store'
 import { useSelector } from 'react-redux'
+import dayjs from 'dayjs'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 export const options = {
@@ -22,6 +23,11 @@ export const options = {
     title: {
       display: true,
       text: 'Biểu đồ doanh thu bán hàng'
+    }
+  },
+  scales: {
+    y: {
+      min: 0
     }
   }
 }
@@ -271,12 +277,12 @@ const AdminOverview = () => {
           <div className='select-wapper' style={{ display: 'flex', gap: '10px' }}>
             <div hidden={!isShowSeletect}>
               <DatePicker
-                allowClear={false}
+                allowClear={true}
                 // defaultValue={dayjs(`${new Date().getFullYear()}-01-01`, 'YYYY-MM-DD')}
-                // value={dayjs(`${year}-01-01`, 'YYYY-MM-DD')}
+                value={dayjs(`${year}-01-01`, 'YYYY-MM-DD')}
                 // defaultPickerValue={dayjs(`${new Date().getFullYear()}-01-01`, 'YYYY-MM-DD')}
                 size='large'
-                onChange={(_, string) => setYear(string)}
+                onChange={(_, string) => setYear(string ? string : new Date().getFullYear().toString())}
                 picker='year'
                 placeholder='Chọn năm'
               />

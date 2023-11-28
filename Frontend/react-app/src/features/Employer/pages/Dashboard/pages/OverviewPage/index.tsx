@@ -9,6 +9,7 @@ import { DatePicker, Radio, Select } from 'antd'
 import { RadioChangeEvent } from 'antd/lib'
 import { labelsOneYear, labelsTenYearBeforeToNow, getTenYearBeforeToNow } from '~/features/Admin/contents/Overview'
 import { ColumnsType } from 'antd/es/table'
+import dayjs from 'dayjs'
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 export const options = {
   responsive: true,
@@ -19,6 +20,11 @@ export const options = {
     title: {
       display: true,
       text: 'Biểu đồ chi tiêu'
+    }
+  },
+  scales: {
+    y: {
+      min: 0
     }
   }
 }
@@ -259,9 +265,10 @@ const OverviewEmployer = () => {
                 allowClear={false}
                 // defaultValue={dayjs(`${new Date().getFullYear()}-01-01`, 'YYYY-MM-DD')}
                 // value={dayjs(`${year}-01-01`, 'YYYY-MM-DD')}
+                value={dayjs(`${year}-01-01`, 'YYYY-MM-DD')}
                 // defaultPickerValue={dayjs(`${new Date().getFullYear()}-01-01`, 'YYYY-MM-DD')}
                 size='large'
-                onChange={(_, string) => setYear(string)}
+                onChange={(_, string) => setYear(string ? string : new Date().getFullYear().toString())}
                 picker='year'
                 placeholder='Chọn năm'
               />
