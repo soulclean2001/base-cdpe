@@ -67,9 +67,15 @@ const sendVerifyEmail = (toAddress: string, subject: string, body: string) => {
   return sesClient.send(sendEmailCommand)
 }
 
-export const sendEmail = (fromAddress: string, toAddress: string, subject: string, body: string) => {
-  const template = emailEmptyTemplate
-  template.replace(/{{data}}/g, body)
+export const sendEmail = (
+  fromAddress: string = envConfig.sesFromAddress,
+  toAddress: string,
+  subject: string,
+  body: string
+) => {
+  fromAddress = fromAddress ? fromAddress : envConfig.sesFromAddress
+  let template = emailEmptyTemplate
+  template = template.replace(/{{data}}/g, body)
 
   const sendEmailCommand = createSendEmailCommand({
     fromAddress: fromAddress,
