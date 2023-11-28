@@ -58,6 +58,7 @@ class JobApplicationService {
         message: 'job not publish',
         status: 404
       })
+
     if (_payload.type === ApplyType.CVOnline) {
       delete _payload.cv_link
     }

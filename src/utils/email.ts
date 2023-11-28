@@ -13,6 +13,7 @@ const sesClient = new SESClient({
 })
 
 const verifyEmailTemplate = fs.readFileSync(path.resolve('src/templates/verify-email.html'), 'utf8')
+const emailEmptyTemplate = fs.readFileSync(path.resolve('src/templates/email-empty.html'), 'utf8')
 const emailJobApplyTemplate = fs.readFileSync(path.resolve('src/templates/email-job-apply.html'), 'utf8')
 const emailOrderSuccess = fs.readFileSync(path.resolve('src/templates/email-order-success.html'), 'utf8')
 
@@ -66,6 +67,25 @@ const sendVerifyEmail = (toAddress: string, subject: string, body: string) => {
   return sesClient.send(sendEmailCommand)
 }
 
+export const sendEmail = (
+  fromAddress: string = envConfig.sesFromAddress,
+  toAddress: string,
+  subject: string,
+  body: string
+) => {
+  fromAddress = fromAddress ? fromAddress : envConfig.sesFromAddress
+  let template = emailEmptyTemplate
+  template = template.replace(/{{data}}/g, body)
+
+  const sendEmailCommand = createSendEmailCommand({
+    fromAddress: fromAddress,
+    toAddresses: toAddress,
+    body: template,
+    subject: '[HFWorks]' + subject
+  })
+  return sesClient.send(sendEmailCommand)
+}
+
 export const sendEmailJobApply = (
   toAddress: string,
   data: {
@@ -84,7 +104,7 @@ export const sendEmailJobApply = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Thông báo ứng tuyển',
+    '[HFWorks]Thông báo ứng tuyển',
     template
       .replace(/{{logo_user}}/g, data.logo_user)
       .replace(/{{title}}/g, data.title)
@@ -119,7 +139,7 @@ export const sendEmailOrderSuccess = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Hóa đơn dịch vụ',
+    '[HFWorks]Hóa đơn dịch vụ',
     template
       .replace(/{{day}}/g, data.day)
       .replace(/{{month}}/g, data.month)
@@ -143,7 +163,7 @@ export const sendVerifyRegisterEmail = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Xác thực tài khoản',
+    '[HFWorks]Xác thực tài khoản',
     template
       .replace('{{title}}', 'Vui lòng xác thực email của bạn')
       .replace('{{content}}', 'Nhấp vào nút bên dưới để xác thực tài khoản')
@@ -159,7 +179,7 @@ export const sendForgotPasswordEmail = (
 ) => {
   return sendVerifyEmail(
     toAddress,
-    'Quên mật khẩu',
+    '[HFWorks]Quên mật khẩu',
     template
       .replace('{{title}}', 'Bạn nhận được email này vì bạn đã yêu cầu đặt lại mật khẩu của mình')
       .replace('{{content}}', 'Nhấp vào nút bên dưới để đặt lại mật khẩu của bạn')

@@ -1,7 +1,7 @@
 import express from 'express'
 import companyControllers from '~/controllers/company.controllers'
 import { filterMiddleware } from '~/middlewares/common.middlewares'
-import { updateCompanyValidator } from '~/middlewares/company.middlewares'
+import { sendEmailValidator, updateCompanyValidator } from '~/middlewares/company.middlewares'
 import { idValidator } from '~/middlewares/jobApplication.middlewares'
 import { accessTokenValidator, isEmployer } from '~/middlewares/users.middlewares'
 import { UpdateCompanyReqBody } from '~/models/requests/Company.request'
@@ -67,5 +67,15 @@ companyRouter.get(
   }
 */
 companyRouter.get('/:company_id', idValidator('company_id'), wrapAsync(companyControllers.getCompanyById))
+
+/**
+ * body: {
+ * from_address:string,
+ * to_address:string,
+ * data: string,
+ * subject: string
+ * }
+ */
+companyRouter.post('/send-email', sendEmailValidator, accessTokenValidator, wrapAsync(companyControllers.sendEmail))
 
 export default companyRouter

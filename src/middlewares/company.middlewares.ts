@@ -93,3 +93,52 @@ export const updateCompanyValidator = validate(
     ['body']
   )
 )
+
+export const sendEmailValidator = validate(
+  checkSchema(
+    {
+      from_address: {
+        optional: true,
+        isEmail: {
+          errorMessage: 'Please enter a valid email [from address]'
+        }
+      },
+      to_address: {
+        isEmail: {
+          errorMessage: 'Please enter a valid email [to address]'
+        }
+      },
+      subject: {
+        isString: {
+          errorMessage: 'Please enter a valid subject [subject] is string'
+        },
+        custom: {
+          options: (value: string) => {
+            if (value.length < 10 || value.length > 50) {
+              throw new Error(
+                'Please enter a valid [subject] must be at least 25 characters long and  <= 50 characters long'
+              )
+            }
+
+            return true
+          }
+        }
+      },
+      data: {
+        notEmpty: {
+          errorMessage: 'Please not empty the data field'
+        },
+        custom: {
+          options: (value: string) => {
+            if (value.length < 100) {
+              throw new Error('Please enter a valid data must be at least 100 characters long ')
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)

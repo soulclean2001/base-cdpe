@@ -6,6 +6,8 @@ import ServiceOrder, { ServicePackageStatus } from '~/models/schemas/ServiceOrde
 import { fi } from '@faker-js/faker'
 import { PackageType } from '~/constants/enums'
 import { redis } from '~/app/redis'
+import NotificationService from './notification.services'
+import { NotificationObject } from '~/models/schemas/Notification.schema'
 
 interface QueryOrder {
   status?: string
@@ -740,6 +742,23 @@ class OrderService {
           }
         }
       )
+
+      const company = await databaseServices.company.findOne({
+        _id: order.company_id
+      })
+
+      if (company) {
+        const userids = company.users.map((user) => user.user_id.toString())
+        if (userids.length > 0) {
+          await NotificationService.notify({
+            content: order._id.toString().slice(-5).toUpperCase(),
+            object_recieve: NotificationObject.Employer,
+            object_sent: NotificationObject.Admin,
+            recievers: userids,
+            type: 'order/completed'
+          })
+        }
+      }
     }
   }
 

@@ -236,7 +236,7 @@ transactionRouter.get(
           await NotificationService.notify(
             {
               object_sent: NotificationObject.Admin,
-              content: 'Đã có 1 đơn hàng mới giao dịch thành công',
+              content: transaction.value.order_id.toString().slice(-5).toUpperCase(),
               object_recieve: NotificationObject.Admin,
               recievers: [...adminIds],
               type: 'order/success'
