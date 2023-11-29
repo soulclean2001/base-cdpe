@@ -205,13 +205,13 @@ const ModalInfoPost = (props: any) => {
   }
   useEffect(() => {
     if (!open) {
-      if (roleType !== 'ADMIN_ROLE') getDataWorkLocation()
+      getDataWorkLocation()
     }
     if (open) {
       handleClearDataForm()
     }
   }, [open])
-  const handleClearDataForm = async () => {
+  const handleClearDataForm = () => {
     // if (roleType !== 'ADMIN_ROLE') await getDataWorkLocation()
     form.resetFields()
     setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
@@ -222,6 +222,7 @@ const ModalInfoPost = (props: any) => {
     setJobRequirement('-')
   }
   const getDataWorkLocation = async () => {
+    if (roleType === 'ADMIN_ROLE') return
     const dataTemp: SelectionLocationData[] = []
     const listTemp: WorkingLocation[] = await apiCompany.getMyCompany().then((rs) => {
       setIdCompany(rs.result._id)
