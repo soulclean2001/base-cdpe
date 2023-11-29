@@ -1,4 +1,4 @@
-import { escapeRegExp, isNumber, isUndefined } from 'lodash'
+import { escapeRegExp, isBoolean, isNumber, isUndefined } from 'lodash'
 import { SearchCandidateReqParam, SearchCompanyParam, SearchJobReqParam } from '~/models/requests/Search.request'
 import { removeUndefinedObject } from '~/utils/commons'
 import databaseServices from './database.services'
@@ -475,6 +475,20 @@ class SearchService {
 
     if (filter.job_type) {
       $match['job_type'] = filter.job_type
+    }
+
+    if (filter.is_expried) {
+      const isTrueSet = /^true$/i.test(filter.is_expried)
+      const now = new Date()
+      if (isTrueSet) {
+        $match['expired_date'] = {
+          $lte: new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        }
+      } else if (!isTrueSet) {
+        $match['expired_date'] = {
+          $gt: new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        }
+      }
     }
 
     if (filter.salary) {

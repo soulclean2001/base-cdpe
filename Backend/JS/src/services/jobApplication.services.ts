@@ -52,6 +52,23 @@ class JobApplicationService {
     const job = await databaseServices.job.findOne({
       _id: _payload.job_post_id
     })
+    if (job && job.expired_date < new Date()) {
+      throw new ErrorWithStatus({
+        message: 'Job is expired',
+        status: 403
+      })
+    }
+
+    // const jaExist = await databaseServices.jobApplication.findOne({
+    //   job_post_id: _payload.job_post_id,
+    //   user_id: _payload.user_id
+    // })
+    // if (jaExist) {
+    //   throw new ErrorWithStatus({
+    //     message: 'Job application is already applied',
+    //     status: 403
+    //   })
+    // }
 
     if (job && (job.visibility === false || (job.visibility === true && job.status !== JobStatus.Approved)))
       throw new ErrorWithStatus({

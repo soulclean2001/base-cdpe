@@ -29,6 +29,7 @@ export interface SearchJobReqParam extends Pagination {
   career?: string
   sort_by_salary?: string
   sort_by_post_date?: string
+  is_expried?: string
 }
 
 export interface SearchCompanyParam extends Pagination {
