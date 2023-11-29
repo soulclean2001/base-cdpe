@@ -482,11 +482,11 @@ class SearchService {
       const now = new Date()
       if (isTrueSet) {
         $match['expired_date'] = {
-          $lte: new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          $lte: now
         }
       } else if (!isTrueSet) {
         $match['expired_date'] = {
-          $gt: new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          $gt: now
         }
       }
     }
