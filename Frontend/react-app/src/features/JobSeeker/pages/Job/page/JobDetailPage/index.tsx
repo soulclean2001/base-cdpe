@@ -2,7 +2,7 @@ import { Button, Col, Row } from 'antd'
 import './style.scss'
 import { AiOutlineHeart } from 'react-icons/ai'
 import banner from '~/assets/alena-aenami-cold-1k.jpg'
-import { subDays } from 'date-fns'
+// import { subDays } from 'date-fns'
 import { Tabs } from 'antd'
 import type { TabsProps } from 'antd'
 import { useEffect, useState } from 'react'
@@ -66,7 +66,8 @@ const JobDetailPage = () => {
         setCompanyInfo({
           info: rs.result.company.company_info,
           working_locations: rs.result.company.working_locations,
-          company_size: rs.result.company.company_size
+          company_size: rs.result.company.company_size,
+          fields: rs.result.company.fields
         })
       })
       if (auth && auth.isLogin) {
@@ -158,11 +159,7 @@ const JobDetailPage = () => {
     }
   ]
   if (!jobDetail)
-    return (
-      <div style={{ height: '86vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        Việc làm không tồn tại
-      </div>
-    )
+    return <div style={{ height: '86vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>...</div>
   return (
     <div className='job-detail-page-container'>
       <div
@@ -210,12 +207,8 @@ const JobDetailPage = () => {
                   } người`}</div>
                   <div className='expiration-date'>{`- Hạn cuối nhận hồ sơ: ${
                     jobDetail && jobDetail.expired_date
-                      ? subDays(new Date(jobDetail.expired_date), 1)
-                          .toISOString()
-                          .slice(0, 10)
-                          .split('-')
-                          .reverse()
-                          .join('-')
+                      ? 'Hết ngày ' +
+                        new Date(jobDetail.expired_date).toISOString().slice(0, 10).split('-').reverse().join('-')
                       : 'dd/MM/YYYY'
                   }`}</div>
                 </Col>

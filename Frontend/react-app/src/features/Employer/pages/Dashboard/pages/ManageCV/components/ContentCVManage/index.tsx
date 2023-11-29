@@ -172,13 +172,15 @@ const ContentCVManage = (props: any) => {
   }
 
   const handleClickShowDetail = (name: string, id: string) => {
-    const convertNameEng = name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    console.log(name)
+    // const convertNameEng = name
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
-    navigate(`/employer/dashboard/cv-manage/${convertName}-id-${id}`)
+    // navigate(`/employer/dashboard/cv-manage/${convertName}-id-${id}`)
+    navigate(`/employer/dashboard/cv-manage/id-${id}`)
   }
   const fetchActionApplication = async (id: string, type?: string, status?: number) => {
     if (!id) return

@@ -23,13 +23,13 @@ const CandidateItem = (props: any) => {
   const navigate = useNavigate()
   const { data, hideFollow }: PropsType = props
   const handleClickShowDetail = () => {
-    const convertNameEng = data.nameCandidate
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
-    if (!hideFollow) navigate(`/employer/dashboard/find-candidate/${convertName}-id-${data.id}`)
-    else navigate(`/employer/dashboard/cv-manage/tracked-candidate/${convertName}-id-${data.id}`)
+    // const convertNameEng = data.nameCandidate
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    if (!hideFollow) navigate(`/employer/dashboard/find-candidate/id-${data.id}`)
+    else navigate(`/employer/dashboard/cv-manage/tracked-candidate/id-${data.id}`)
   }
   if (!data) return <div>Không có dữ liệu ứng viên</div>
   return (

@@ -158,12 +158,12 @@ const TableCustom = (props: any) => {
     }
 
     if (new Date(expiresDate) <= new Date() || new Date(expiresDate) > add(new Date(), { days: 60 })) {
-      toast.error('Ngày hết hạn phải bắt đầu từ ngày hiện tại +1 và tối đa 60 ngày kể từ ngày hiện tại')
+      toast.error('Ngày hết hạn phải bắt sau ngày hiện tại 1 ngày và tối đa 60 ngày kể từ ngày hiện tại')
       return
     }
 
     await apiPost
-      .publishPost(idPost, expiresDate)
+      .publishPost(idPost, expiresDate + 'T23:59:59')
       .then(async () => {
         await fetchData()
         if (dataRowSelected.status === '0') toast.success(`#POST_${idPost.slice(-5).toUpperCase()} đã được công khai`)
@@ -400,11 +400,13 @@ const TableCustom = (props: any) => {
   const handleAfterSubmit = () => {
     setOpenModalInfo(false)
     setIsUpDate(true)
+    setIdPost('')
   }
 
   const handleCloseModalInfo = () => {
     setIsUpDate(false)
     setOpenModalInfo(false)
+    setIdPost('')
   }
   const handleOpenModalDelete = () => {
     setIsOpenModalDelete(true)

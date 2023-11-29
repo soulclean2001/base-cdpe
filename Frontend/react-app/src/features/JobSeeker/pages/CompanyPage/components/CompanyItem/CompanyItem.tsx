@@ -8,13 +8,14 @@ import { useNavigate } from 'react-router-dom'
 const CompanyItem = (props: any) => {
   const navigate = useNavigate()
   const handleClickShowDetail = () => {
-    const convertNameEng = props.nameCompany
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    // const convertNameEng = props.nameCompany
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
-    navigate(`/companies/${convertName}-id-${props.idCompany}`)
+    // navigate(`/companies/${convertName}-id-${props.idCompany}`)
+    navigate(`/companies/id-${props.idCompany}`)
   }
   return (
     <Row className='company-item-container'>

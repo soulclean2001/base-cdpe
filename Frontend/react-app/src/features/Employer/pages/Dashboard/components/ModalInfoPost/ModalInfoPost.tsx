@@ -205,15 +205,21 @@ const ModalInfoPost = (props: any) => {
   }
   useEffect(() => {
     if (!open) {
+      if (roleType !== 'ADMIN_ROLE') getDataWorkLocation()
+    }
+    if (open) {
       handleClearDataForm()
     }
   }, [open])
   const handleClearDataForm = async () => {
+    // if (roleType !== 'ADMIN_ROLE') await getDataWorkLocation()
+    form.resetFields()
     setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
     setArrSkills([{ key: 0, value: '' }])
     setArrLocations(initLocation)
     setIndustries([])
-    if (roleType !== 'ADMIN_ROLE') await getDataWorkLocation()
+    setJobDescription('-')
+    setJobRequirement('-')
   }
   const getDataWorkLocation = async () => {
     const dataTemp: SelectionLocationData[] = []
@@ -450,7 +456,7 @@ const ModalInfoPost = (props: any) => {
       is_salary_visible: showSalaryRange
     }
     // expired_date: expireDate ? expireDate : format(addDays(new Date(), 7), 'yyyy-MM-dd'),
-    if (publish) job = { ...job, expired_date: expireDate }
+    if (publish) job = { ...job, expired_date: expireDate + 'T23:59:59' }
 
     // call api
     if (idPost) {
@@ -474,7 +480,7 @@ const ModalInfoPost = (props: any) => {
         dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
       })
       .then(() => {
-        form.resetFields()
+        handleClearDataForm()
 
         handleAfterSubmit()
         // handleClose()
@@ -495,7 +501,7 @@ const ModalInfoPost = (props: any) => {
         dispatch(addPost(newJob))
       })
       .then(() => {
-        form.resetFields()
+        handleClearDataForm()
 
         handleAfterSubmit()
       })

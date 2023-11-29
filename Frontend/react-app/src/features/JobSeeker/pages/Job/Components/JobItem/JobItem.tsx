@@ -1,10 +1,13 @@
 import { Button, Col, Row } from 'antd'
 import './style.scss'
-import { AiOutlineHeart } from 'react-icons/ai'
 import { FiMoreHorizontal } from 'react-icons/fi'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import logoTemp from '~/assets/HF_logo.jpg'
+import { AiOutlineHeart } from 'react-icons/ai'
+// import { MdOutlineFindInPage } from 'react-icons/md'
+// import { FaUserPlus } from 'react-icons/fa'
+// import { FcOvertime } from 'react-icons/fc'
 const JobItem = (props: any) => {
   const navigate = useNavigate()
   const idJob: string = props.idJob
@@ -14,6 +17,8 @@ const JobItem = (props: any) => {
   const salary: string = props.salary
   const area: string[] = props.area
   const timePost: string = props.timePost
+  const isExpried: boolean = props.isExpried
+  // const isApplied: boolean = props.isApplied
   const style: {
     backgroundColorBeforeHover: string
     backgroundColorAfterHover: string
@@ -40,13 +45,14 @@ const JobItem = (props: any) => {
     border: customHover ? (!isHovered ? style?.borderBefore : style?.borderAfter) : '1px solid rgb(160, 193, 255)'
   }
   const handleClickShowDetail = () => {
-    const convertNameEng = nameJob
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    // const convertNameEng = nameJob
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
-    navigate(`/jobs/${convertName}-id-${idJob}`)
+    // navigate(`/jobs/${convertName}-id-${idJob}`)
+    navigate(`/jobs/id-${idJob}`)
   }
   return (
     <Row
@@ -83,8 +89,11 @@ const JobItem = (props: any) => {
           </span>
         </div>
         <div className='time-post'>
-          {`Ngày đăng: `}
-          {timePost ? timePost : 'Hôm nay'}
+          {timePost && !isExpried ? (
+            `Ngày đăng: ${timePost}`
+          ) : (
+            <span style={{ color: 'rgb(241, 66, 63)' }}>Hết hạn</span>
+          )}
         </div>
       </Col>
       <Col className='job-item-action' md={2} sm={3} xs={3}>
@@ -96,11 +105,13 @@ const JobItem = (props: any) => {
             border: 'none',
             background: 'none',
             color: 'rgb(7, 92, 251)'
+            // color: 'rgb(69, 159, 89)'
           }}
           shape='circle'
           size='middle'
           icon={<AiOutlineHeart />}
         />
+
         <Button
           style={{
             display: 'flex',

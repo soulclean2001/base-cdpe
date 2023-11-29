@@ -35,13 +35,15 @@ const NotifyItem = (props: any) => {
   const navigate = useNavigate()
   const handleShowDetail = (id: string, name: string, to: string) => {
     if (!id || !to) return
-    const convertNameEng = name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    console.log(name)
+    // const convertNameEng = name
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
     //companies || jobs ||
-    navigate(`/${to}/${convertName}-id-${id}`)
+    // navigate(`/${to}/${convertName}-id-${id}`)
+    navigate(`/${to}/id-${id}`)
   }
   const handleReadingNotify = async (id: string) => {
     if (!data) {

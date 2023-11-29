@@ -55,6 +55,7 @@ interface JobItemType {
   working_locations: WorkingLocation[]
   created_at: string
   is_salary_visible: boolean
+  isExpried: boolean
 }
 interface TopCompanyDataType {
   id: string
@@ -101,7 +102,8 @@ const ListJob = () => {
           is_salary_visible: job.salary_visible,
           jobTitle: job.job_title,
           salary_range: job.salary_range,
-          working_locations: job.working_locations
+          working_locations: job.working_locations,
+          isExpried: new Date(job.expired_date) < new Date() ? true : false
         })
       })
       setListJobs(jobs)
@@ -185,13 +187,20 @@ const ListJob = () => {
           </Col>
           {/* <Col lg={6} md={0} sm={0} xs={0} className=' select-menu select-carrer-field'>
             <Select
-              placeholder={'Tất cả lĩnh vực'}
+              placeholder={'Tất cả trạng thái'}
               showSearch
               style={{ width: '100%' }}
-              maxTagCount={1}
-              maxTagTextLength={8}
+              defaultValue={'all'}
               size='large'
-              options={listField}
+              options={[
+                {
+                  value: 'all',
+                  label: 'Tất cả trạng thái'
+                },
+                { value: false, label: 'Đang tuyển' },
+                { value: true, label: 'Hết hạn' }
+              ]}
+              onChange={(value) => setRequestSearch({ ...requestSearch, is_expried: value === 'all' ? '' : value })}
             />
           </Col> */}
           <Col lg={4} md={0} sm={0} xs={0} className='select-menu select-level'>
@@ -232,6 +241,23 @@ const ListJob = () => {
               size='large'
               options={listSalary}
               onChange={(value) => handleSetSalary(value)}
+            />
+          </Col>
+          <Col lg={4} md={0} sm={0} xs={0} className=' select-menu select-salary'>
+            <Select
+              showSearch
+              style={{ width: '100%' }}
+              defaultValue={'all'}
+              size='large'
+              options={[
+                {
+                  value: 'all',
+                  label: 'Tất cả trạng thái'
+                },
+                { value: false, label: 'Đang tuyển' },
+                { value: true, label: 'Hết hạn' }
+              ]}
+              onChange={(value) => setRequestSearch({ ...requestSearch, is_expried: value === 'all' ? '' : value })}
             />
           </Col>
           <Col lg={0} md={24} sm={24} xs={24}>
@@ -293,6 +319,14 @@ const ListJob = () => {
                         return self.indexOf(value) === index
                       })}
                     timePost={item.created_at}
+                    isExpried={item.isExpried}
+                    customHover={item.isExpried}
+                    style={{
+                      backgroundColorBeforeHover: 'rgb(239 241 245)',
+                      backgroundColorAfterHover: 'rgb(247, 250, 252)',
+                      borderBefore: '1px solid rgb(188, 191, 196)',
+                      borderAfter: '1px solid rgb(160, 193, 255)'
+                    }}
                   />
                 ))}
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '15px 0' }}>

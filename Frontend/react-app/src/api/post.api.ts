@@ -16,6 +16,7 @@ export interface PostRequestSearchType {
   page?: string
   'salary[min]'?: string
   'salary[max]'?: string
+  is_expried?: boolean | string
 }
 export interface PostFilterRequestType {
   limit?: string
