@@ -177,6 +177,45 @@ export default class JobService {
       })
     }
 
+    const result = await databaseServices.job.findOneAndUpdate(
+      {
+        _id: new ObjectId(jobId),
+        company_id: company._id
+      },
+      {
+        $set: {
+          status: JobStatus.Deleted
+        },
+        $currentDate: {
+          updated_at: true,
+          deleted_at: true
+        }
+      }
+    )
+
+    if (!result) {
+      throw new ErrorWithStatus({
+        message: 'User are not owner of this job',
+        status: 401
+      })
+    }
+
+    return {
+      message: 'Deleted job successfully'
+    }
+  }
+
+  static async removeJob({ userId, jobId }: { userId: string; jobId: string }) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+    if (!company) {
+      throw new ErrorWithStatus({
+        message: 'User are not recruiter',
+        status: 403
+      })
+    }
+
     const result = await databaseServices.job.findOneAndDelete({
       _id: new ObjectId(jobId),
       company_id: company._id

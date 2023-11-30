@@ -37,6 +37,7 @@ jobRouter.post('/:job_id/approve', accessTokenValidator, isAdmin, wrapAsync(jobC
 jobRouter.post('/:job_id/reject', accessTokenValidator, isAdmin, wrapAsync(jobControllers.rejectJob))
 jobRouter.post('/:job_id/hide', accessTokenValidator, wrapAsync(jobControllers.hideJob))
 jobRouter.delete('/:job_id', accessTokenValidator, wrapAsync(jobControllers.deleteJob))
+jobRouter.delete('/remove/:job_id', accessTokenValidator, wrapAsync(jobControllers.removeJob))
 jobRouter.patch(
   '/:job_id',
   accessTokenValidator,
