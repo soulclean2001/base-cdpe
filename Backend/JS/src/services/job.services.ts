@@ -664,6 +664,12 @@ export default class JobService {
         status: 404
       })
 
+    if (job.status === JobStatus.Deleted)
+      throw new ErrorWithStatus({
+        message: 'Job not found',
+        status: 404
+      })
+
     if (job.status !== JobStatus.Pending) {
       return {
         message: 'job status is not pending to approve'
@@ -752,6 +758,12 @@ export default class JobService {
     })
 
     if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job not found',
+        status: 404
+      })
+
+    if (job.status === JobStatus.Deleted)
       throw new ErrorWithStatus({
         message: 'Job not found',
         status: 404
@@ -1017,7 +1029,7 @@ export default class JobService {
       opts['status'] = Number(filter.status)
     } else {
       opts['status'] = {
-        $ne: 3
+        $nin: [JobStatus.Deleted, JobStatus.Unapproved]
       }
     }
 
