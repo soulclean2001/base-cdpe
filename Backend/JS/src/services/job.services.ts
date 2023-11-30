@@ -49,11 +49,6 @@ export default class JobService {
     if (options.visibility) {
       const isTrue = String(options.visibility).toLowerCase() === 'true'
       opts['visibility'] = isTrue
-      if (!options.status && isTrue) {
-        opts['status'] = {
-          $nin: [JobStatus.Deleted]
-        }
-      }
     }
 
     if (options.is_expired && String(options.is_expired).toLowerCase() === 'true') {
@@ -551,6 +546,13 @@ export default class JobService {
         .aggregate([
           {
             $match: {
+              status: {
+                $nin: [JobStatus.Deleted]
+              }
+            }
+          },
+          {
+            $match: {
               company_id: company._id,
               ...opts
             }
@@ -615,6 +617,13 @@ export default class JobService {
 
       databaseServices.job
         .aggregate([
+          {
+            $match: {
+              status: {
+                $nin: [JobStatus.Deleted]
+              }
+            }
+          },
           {
             $match: {
               company_id: company._id,
