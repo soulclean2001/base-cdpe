@@ -125,6 +125,10 @@ const NotifyItem = (props: any) => {
         navigate('/employer/dashboard/cv-manage')
         break
       }
+      case 'order/completed': {
+        navigate('/employer/dashboard/my-orders')
+        break
+      }
       default:
         break
     }

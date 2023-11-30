@@ -105,7 +105,7 @@ const TableCart = (props: any) => {
       })
       setItems(listItemsAfter)
       setListItems(listAfter)
-      disPath(minusTotalItemCart())
+      disPath(minusTotalItemCart(1))
       toast.success('Xóa dịch vụ khỏi giỏ hàng thành công')
     })
   }

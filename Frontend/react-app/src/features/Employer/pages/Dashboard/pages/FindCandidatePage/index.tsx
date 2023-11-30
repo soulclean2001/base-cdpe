@@ -7,6 +7,7 @@ import { SearchCandidateReqBody } from '~/api/candidate.api'
 import apiSearchCandidate from '~/api/candidate.api'
 import { getAllIndustries } from '~/api/industries.api'
 import { LanguageLevel, listLanguages } from '~/types/resume.type'
+import { getAllProviencesApi } from '~/api/provinces.api'
 interface RangeExpYear {
   min?: number
   max?: number
@@ -15,7 +16,7 @@ interface AnyTypeCandidate {
   [key: string]: any
 }
 
-const listProvince = [{ value: 'TP. Hồ Chí Minh' }, { value: 'Hà Nội' }, { value: 'Đà Nẳng' }, { value: 'kasd' }]
+// const listProvince = [{ value: 'TP. Hồ Chí Minh' }, { value: 'Hà Nội' }, { value: 'Đà Nẳng' }, { value: 'kasd' }]
 const maxItem = [{ value: 'Bạn đã chọn tối đa 3 mục', label: 'Bạn đã chọn tối đa 3 mục', disabled: true }]
 const listLevel = [
   { value: 'Thực tập sinh' },
@@ -50,7 +51,10 @@ const listLevel = [
 //     updateDate: '22/8/2023'
 //   }
 // ]
-
+export interface DataOptionType {
+  value: string
+  [key: string]: any
+}
 const FindCandidatePage = () => {
   const [form] = Form.useForm()
   //drawer search
@@ -72,6 +76,16 @@ const FindCandidatePage = () => {
   const limitOnPage = 5
   const [totalItems, setTotalItems] = useState(2)
   //
+  const [provincesData, setProvincesData] = useState<Array<DataOptionType>>([])
+  useEffect(() => {
+    fetchProvinces()
+  }, [])
+  const fetchProvinces = async () => {
+    await getAllProviencesApi().then((rs) => {
+      setProvincesData([...provincesData, ...rs])
+    })
+    // setProvincesData(res)
+  }
   /*/ 
   name?: string
   job?: string
@@ -223,10 +237,10 @@ const FindCandidatePage = () => {
                 mode={'multiple'}
                 placeholder={'Chọn khu vực'}
                 size='middle'
-                options={province.length === 3 ? maxItem : listProvince}
+                options={province.length === 3 ? maxItem : provincesData}
                 onChange={(value) => setProvince(value)}
                 maxTagCount={3}
-                maxTagTextLength={10}
+                // maxTagTextLength={10}
               />
             </Form.Item>
             <h4 style={{ fontWeight: '500' }}>Năm kinh nghiệm</h4>

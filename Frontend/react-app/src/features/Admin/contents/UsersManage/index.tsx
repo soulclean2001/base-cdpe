@@ -37,7 +37,7 @@ const UsersManage = () => {
   const [verify, setVerify] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [total, setTotal] = useState(1)
-  const limit = 5
+  const limit = 6
   useEffect(() => {
     setCurrentPage(1)
     fetchGetUsers()

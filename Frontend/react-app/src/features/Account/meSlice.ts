@@ -68,10 +68,14 @@ const meSlice = createSlice({
     resetProfile: (state) => {
       state = initialState
       return state
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload
+      return state
     }
   }
 })
 
-export const { setMyProfile, resetProfile } = meSlice.actions
+export const { setMyProfile, resetProfile, setLoading } = meSlice.actions
 
 export default meSlice.reducer

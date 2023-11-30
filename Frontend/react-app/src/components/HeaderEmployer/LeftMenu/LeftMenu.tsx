@@ -31,12 +31,24 @@ const items: MenuProps['items'] = [
     key: 'services'
   },
   {
-    label: <NavLink to={'/employer/about'}>Giới thiệu</NavLink>,
-    key: 'about'
+    label: (
+      <NavLink to={'/employer/about'} style={{ pointerEvents: 'none' }}>
+        Giới thiệu
+      </NavLink>
+    ),
+    key: 'about',
+    style: { pointerEvents: 'none' }
+    // disabled: true
   },
   {
-    label: <NavLink to={'/employer/contact'}>Liên hệ</NavLink>,
-    key: 'contact'
+    label: (
+      <NavLink to={'/employer/contact'} style={{ pointerEvents: 'none' }}>
+        Liên hệ
+      </NavLink>
+    ),
+    key: 'contact',
+    style: { pointerEvents: 'none' }
+    // disabled: true
   }
 ]
 const LeftMenu = (props: any) => {

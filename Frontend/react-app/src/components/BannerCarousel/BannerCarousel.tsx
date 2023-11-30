@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Carousel, Col, Row } from 'antd'
+import { Carousel, Col, Row, Tooltip } from 'antd'
 import './bannerCarousel.scss'
 import apiHome from '~/api/home.api'
 import logoTemp from '~/assets/HF_logo.jpg'
@@ -28,13 +28,15 @@ const BannerCarousel = () => {
     })
   }
   const handleClickShowDetail = (idCompany: string, nameCompany: string) => {
-    const convertNameEng = nameCompany
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    console.log(nameCompany)
+    // const convertNameEng = nameCompany
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
-    navigate(`/companies/${convertName}-id-${idCompany}`)
+    // navigate(`/companies/${convertName}-id-${idCompany}`)
+    navigate(`/companies/id-${idCompany}`)
   }
   return (
     <>
@@ -49,8 +51,11 @@ const BannerCarousel = () => {
                     <Col md={3} sm={6} xs={6} className='logo-company'>
                       <img alt='' src={item.logo ? item.logo : logoTemp} className='img-logo' />
                     </Col>
+
                     <Col md={21} sm={18} xs={18} className='name-company'>
-                      {item.company_name ? item.company_name.slice(0, 16) : 'Tên công ty'}
+                      <Tooltip title={item.company_name ? item.company_name : 'Tên công ty'}>
+                        {item.company_name ? item.company_name : 'Tên công ty'}
+                      </Tooltip>
                     </Col>
                   </Row>
                 </Col>

@@ -74,7 +74,8 @@ const MyJobs = () => {
                         return self.indexOf(value) === index
                       })
                       ?.join(', ') || '',
-                  updateDate: job.updated_at
+                  updateDate: job.updated_at,
+                  statusJob: job.job.status
                 }}
                 type='ITEM_APPLIED_JOB'
               />

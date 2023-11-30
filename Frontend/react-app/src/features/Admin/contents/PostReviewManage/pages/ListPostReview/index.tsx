@@ -30,7 +30,7 @@ const ListPostReview = () => {
   const [openModalDetailPost, setOpenModalDetailPost] = useState(false)
   const [listPostRequest, setListPostRequest] = useState<DataType[]>([])
   const [total, setTotal] = useState(1)
-  const limit = 5
+  const limit = 6
   const [currentPage, setCurrentPage] = useState(1)
   //request search
   const [content, setContent] = useState('')
@@ -266,6 +266,7 @@ const ListPostReview = () => {
                 { value: '1', label: 'Đang chờ' },
                 { value: '0', label: 'Chấp nhận' },
                 { value: '2', label: 'Từ chối' }
+                // { value: '4', label: 'Đã xóa' }
               ]}
             />
           </Col>

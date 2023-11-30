@@ -3,13 +3,13 @@ import './style.scss'
 import { Drawer } from 'antd'
 import { NavLink } from 'react-router-dom'
 import NotifyItem from '../NotifyItem/NotifyItem'
-import { useEffect, useState } from 'react'
-import apiNotify, { RequestNotify } from '~/api/notify.api'
-import { NotifyState, getAllByMe, setMoreWhenScroll, setTotalUnRead } from './notifySlice'
+import { useState } from 'react'
+import apiNotify from '~/api/notify.api'
+import { NotifyState, setMoreWhenScroll } from './notifySlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
-import { AuthState } from '~/features/Auth/authSlice'
+// import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+// import { AuthState } from '~/features/Auth/authSlice'
 // import InfiniteScroll from 'react-infinite-scroll-component'
 interface DataType {
   id: string
@@ -28,13 +28,11 @@ interface PropsType {
 }
 
 const NotifyDrawer = (props: any) => {
-  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const { open, onClose, roleType }: PropsType = props
   const [isLoading, setIsLoading] = useState(false)
 
   const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPath = useDispatch()
-  const dispatchAsync: AppThunkDispatch = useAppDispatch()
 
   const fetchMoreNotifications = async () => {
     console.log('FETCH MORE NOTIFICATIONS')
@@ -50,17 +48,6 @@ const NotifyDrawer = (props: any) => {
     disPath(setMoreWhenScroll(res.result))
   }
 
-  useEffect(() => {
-    if (auth.isLogin && auth.verify !== 2 && auth.accessToken && auth.user_id) fetchGetDataNoti()
-  }, [auth])
-
-  const fetchGetDataNoti = async (page?: string) => {
-    let request: RequestNotify = { filter: { page: page ? page : '1', limit: '10' } }
-    await dispatchAsync(getAllByMe(request))
-    await apiNotify.getTotalUnRead().then((rs) => {
-      if (rs.result) disPath(setTotalUnRead(rs.result))
-    })
-  }
   const handleScroll = async (e: any) => {
     const target = e.target
     // console.log(

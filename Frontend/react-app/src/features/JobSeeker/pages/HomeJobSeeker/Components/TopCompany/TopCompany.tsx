@@ -33,13 +33,15 @@ const TopCompany = () => {
     })
   }
   const handleClickShowDetail = (idCompany: string, nameCompany: string) => {
-    const convertNameEng = nameCompany
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    console.log(nameCompany)
+    // const convertNameEng = nameCompany
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
 
-    navigate(`/companies/${convertName}-id-${idCompany}`)
+    // navigate(`/companies/${convertName}-id-${idCompany}`)
+    navigate(`/companies/id-${idCompany}`)
   }
   //set css
   const getWindowSize = () => {
@@ -91,10 +93,8 @@ const TopCompany = () => {
               <SwiperSlide key={item._id}>
                 <div className='top-company-item'>
                   <img src={item.logo ? item.logo : logoTemp} alt='' className='logo-company' />
-                  <Tooltip title={item.name}>
-                    <span className='name-company'>
-                      {item.company_name ? item.company_name.slice(0, 16) : 'Tên công ty'}
-                    </span>
+                  <Tooltip title={item.company_name && item.company_name}>
+                    <span className='name-company'>{item.company_name ? item.company_name : 'Tên công ty'}</span>
                   </Tooltip>
 
                   <button onClick={() => handleClickShowDetail(item._id, item.company_name)} className='btn-detail'>

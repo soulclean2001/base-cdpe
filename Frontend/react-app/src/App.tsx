@@ -52,7 +52,7 @@ import { RootState } from './app/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { getTimeExpired, isExpired } from './utils/jwt'
-import { getMe, resetProfile } from './features/Account/meSlice'
+import { InfoMeState, getMe, resetProfile } from './features/Account/meSlice'
 import WorkLocationPage from './features/Employer/pages/Dashboard/pages/WorkLocationPage'
 import { Socket, io } from 'socket.io-client'
 import { setSocket } from './features/User/userSlice'
@@ -62,7 +62,7 @@ import ForgotPasswordPage from './features/ForgotPasswordPage'
 import ResetPasswordPage from './features/ResetPasswordPage'
 import MyServicesPage from './features/Employer/pages/Dashboard/pages/MyServicesPage'
 import { ToastContainer, toast } from 'react-toastify'
-
+import LoadingOverlay from 'react-loading-overlay-ts'
 import apiClient from './api/client'
 import CVAppliedDetailPage from './features/Employer/pages/Dashboard/pages/CVAppliedDetailPage'
 import CandidateFollowedPage from './features/Employer/pages/Dashboard/pages/CandidateFollowedPage'
@@ -70,8 +70,9 @@ import MyOrdersPage from './features/Employer/pages/Dashboard/pages/MyOrdersPage
 import VNPayReturn from './features/Employer/pages/CartPage/components/VNPAY/VNPayReturn'
 import RoadMapPage from './features/RoadMapPage'
 
-import { NotificationType, addNotify } from './components/Header/NotifyDrawer/notifySlice'
+import { NotificationType, addNotify, getAllByMe, setTotalUnRead } from './components/Header/NotifyDrawer/notifySlice'
 import { decodeToken } from '~/utils/jwt'
+import apiNotify, { RequestNotify } from '~/api/notify.api'
 const titleLoginAdmin = {
   title: 'Chào mừng người quản trị',
   description: 'Cùng nhau xây dựng và tạo giá trị cho HFWork'
@@ -81,9 +82,9 @@ export let socket: Socket
 function App() {
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
   const dispatch = useDispatch()
-
   const auth: AuthState = useSelector((state: RootState) => state.auth)
-
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
+  console.log('me loading', me.loading)
   const connectSocket = async () => {
     return new Promise(() => {
       socket = io(import.meta.env.VITE_API_URL, {
@@ -169,7 +170,10 @@ function App() {
   }, [auth.isLogin])
 
   useEffect(() => {
-    if (auth.isLogin && !isExpired(auth.accessToken)) getProfile()
+    if (auth.isLogin && !isExpired(auth.accessToken)) {
+      getProfile()
+      fetchGetDataNoti()
+    }
 
     setTimeout(
       async () => {
@@ -179,6 +183,14 @@ function App() {
       // getTimeExpired(auth.accessToken) * 1000 - 86390000
     )
   }, [auth.refreshToken, auth.verify])
+
+  const fetchGetDataNoti = async (page?: string) => {
+    let request: RequestNotify = { filter: { page: page ? page : '1', limit: '10' } }
+    await dispatchAsync(getAllByMe(request))
+    await apiNotify.getTotalUnRead().then((rs) => {
+      if (rs.result) dispatch(setTotalUnRead(rs.result))
+    })
+  }
   const fetchListRooms = async () => {
     let rooms: RoomType[] = []
     if (auth.role === UserRole.Employer) {
@@ -211,149 +223,151 @@ function App() {
         pauseOnHover
         theme='light'
       />
-      <Routes>
-        <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
-          <Route index element={<Home />} />
-          <Route path='active-page' element={<ActivePage />} />
-          <Route path='road-map' element={<RoadMapPage />} />
-          <Route path='jobs' element={<Job />}>
-            <Route index element={<ListJob />} />
-            <Route path=':infoUrlJobDetail' element={<JobDetailPage />} />
-          </Route>
+      <LoadingOverlay active={me.loading} spinner>
+        <Routes>
+          <Route path='/' element={<Layout forRole='CADIDATE_ROLE' />}>
+            <Route index element={<Home />} />
+            <Route path='active-page' element={<ActivePage />} />
+            <Route path='road-map' element={<RoadMapPage />} />
+            <Route path='jobs' element={<Job />}>
+              <Route index element={<ListJob />} />
+              <Route path=':infoUrlJobDetail' element={<JobDetailPage />} />
+            </Route>
 
-          <Route path='companies' element={<CompanyPage />}>
-            <Route index element={<ListCompany />} />
-            <Route path=':infoUrlCompanyDetail' element={<CompanyDetail />} />
-          </Route>
-          <Route path='CV' element={<CV />} />
-          <Route
-            path='settings'
-            element={
-              // <Auth role={UserRole.Cadidate}>
-              <SettingsPage />
-              // </Auth>
-            }
-          >
-            <Route index element={<MyJobs />} />
-
-            <Route path='my-companies' element={<MyCompanies />} />
-            <Route path='my-jobs' element={<MyJobs />} />
-          </Route>
-          <Route path='chat' element={<ChatPage roleType={'CANDIDATE_TYPE'} />} />
-        </Route>
-        <Route path='/candidate-login' element={<Login />} />
-        <Route path='/candidate-sign-up' element={<SignUpJobSeeker />} />
-        <Route path='/login/oauth' element={<OauthGoogleLogin />} />
-        <Route path='/email-verifications' element={<VerifyEmail />} />
-        {/* <Route path='/reset-password' element={<ResetPassword />} />
-        <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} /> */}
-        <Route path='/forgot-password' element={<ForgotPasswordPage />} />
-        <Route path='/reset-password' element={<ResetPasswordPage />} />
-        <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
-          <Route index element={<HomePage />} />
-          <Route path='active-page' element={<ActivePage />} />
-          <Route path='road-map' element={<RoadMapPage />} />
-          <Route path='services' element={<ServicesPage />} />
-          <Route path='chat' element={<ChatPage roleType={'EMPLOYER_TYPE'} />} />
-          <Route
-            path='cart'
-            element={
-              // <Auth role={UserRole.Employer}>
-              <CartPage />
-              // </Auth>
-            }
-          />
-          <Route
-            path='order'
-            element={
-              <>
-                <Outlet />
-              </>
-            }
-          >
-            <Route path=':order' element={<VNPayReturn />} />
-          </Route>
-          <Route
-            path='dashboard'
-            element={
-              // <Auth role={UserRole.Employer}>
-              <DashboardEmployer />
-              // </Auth>
-            }
-          >
-            <Route index element={<OverviewEmployer />} />
+            <Route path='companies' element={<CompanyPage />}>
+              <Route index element={<ListCompany />} />
+              <Route path=':infoUrlCompanyDetail' element={<CompanyDetail />} />
+            </Route>
+            <Route path='CV' element={<CV />} />
             <Route
-              path='cv-manage'
+              path='settings'
+              element={
+                // <Auth role={UserRole.Cadidate}>
+                <SettingsPage />
+                // </Auth>
+              }
+            >
+              <Route index element={<MyJobs />} />
+
+              <Route path='my-companies' element={<MyCompanies />} />
+              <Route path='my-jobs' element={<MyJobs />} />
+            </Route>
+            <Route path='chat' element={<ChatPage roleType={'CANDIDATE_TYPE'} />} />
+          </Route>
+          <Route path='/candidate-login' element={<Login />} />
+          <Route path='/candidate-sign-up' element={<SignUpJobSeeker />} />
+          <Route path='/login/oauth' element={<OauthGoogleLogin />} />
+          <Route path='/email-verifications' element={<VerifyEmail />} />
+          {/* <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path='/forgot-password' element={<VerifyForgotPasswordToken />} /> */}
+          <Route path='/forgot-password' element={<ForgotPasswordPage />} />
+          <Route path='/reset-password' element={<ResetPasswordPage />} />
+          <Route path='/employer' element={<Layout forRole='EMPLOYER_ROLE' />}>
+            <Route index element={<HomePage />} />
+            <Route path='active-page' element={<ActivePage />} />
+            <Route path='road-map' element={<RoadMapPage />} />
+            <Route path='services' element={<ServicesPage />} />
+            <Route path='chat' element={<ChatPage roleType={'EMPLOYER_TYPE'} />} />
+            <Route
+              path='cart'
+              element={
+                // <Auth role={UserRole.Employer}>
+                <CartPage />
+                // </Auth>
+              }
+            />
+            <Route
+              path='order'
               element={
                 <>
                   <Outlet />
                 </>
               }
             >
-              <Route index element={<ManageCV />} />
+              <Route path=':order' element={<VNPayReturn />} />
+            </Route>
+            <Route
+              path='dashboard'
+              element={
+                // <Auth role={UserRole.Employer}>
+                <DashboardEmployer />
+                // </Auth>
+              }
+            >
+              <Route index element={<OverviewEmployer />} />
               <Route
-                path='tracked-candidate'
+                path='cv-manage'
                 element={
                   <>
                     <Outlet />
                   </>
                 }
               >
-                <Route index element={<CandidateFollowedPage />} />
-                <Route path=':infoUrlCandidate' element={<CandidateDetailPage type={'FOLLOW_TYPE'} />} />
+                <Route index element={<ManageCV />} />
+                <Route
+                  path='tracked-candidate'
+                  element={
+                    <>
+                      <Outlet />
+                    </>
+                  }
+                >
+                  <Route index element={<CandidateFollowedPage />} />
+                  <Route path=':infoUrlCandidate' element={<CandidateDetailPage type={'FOLLOW_TYPE'} />} />
+                </Route>
+                <Route path=':infoUrlAppliedCV' element={<CVAppliedDetailPage />} />
               </Route>
-              <Route path=':infoUrlAppliedCV' element={<CVAppliedDetailPage />} />
-            </Route>
-            <Route path='post-manage' element={<PostManagePage />} />
-            <Route path='my-account-info' element={<MyAccountManagePage />} />
-            <Route path='company-general' element={<CompanyManagePage />} />
-            <Route path='company-location' element={<WorkLocationPage />} />
-            <Route
-              path='find-candidate'
-              element={
-                <>
-                  <Outlet />
-                </>
-              }
-            >
-              <Route index element={<FindCandidatePage />} />
-              <Route path=':infoUrlCandidate' element={<CandidateDetailPage />} />
-            </Route>
+              <Route path='post-manage' element={<PostManagePage />} />
+              <Route path='my-account-info' element={<MyAccountManagePage />} />
+              <Route path='company-general' element={<CompanyManagePage />} />
+              <Route path='company-location' element={<WorkLocationPage />} />
+              <Route
+                path='find-candidate'
+                element={
+                  <>
+                    <Outlet />
+                  </>
+                }
+              >
+                <Route index element={<FindCandidatePage />} />
+                <Route path=':infoUrlCandidate' element={<CandidateDetailPage />} />
+              </Route>
 
-            <Route path='my-services' element={<MyServicesPage />} />
-            <Route path='my-orders' element={<MyOrdersPage />} />
+              <Route path='my-services' element={<MyServicesPage />} />
+              <Route path='my-orders' element={<MyOrdersPage />} />
+            </Route>
           </Route>
-        </Route>
-        <Route path='/employer-sign-up' element={<SignUpEmployer />} />
-        <Route path='/employer-login' element={<LoginEmployer />} />
+          <Route path='/employer-sign-up' element={<SignUpEmployer />} />
+          <Route path='/employer-login' element={<LoginEmployer />} />
 
-        <Route
-          path='/admin'
-          element={
-            // <Auth role={UserRole.Administrators}>
-            <Layout forRole='ADMIN_ROLE' />
+          <Route
+            path='/admin'
+            element={
+              // <Auth role={UserRole.Administrators}>
+              <Layout forRole='ADMIN_ROLE' />
 
-            // </Auth>
-          }
-        >
-          <Route path='test' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
-          <Route index element={<AdminPage />} />
-          <Route path='dashboard' element={<AdminPage />}>
-            <Route index element={<AdminOverview />} />
-            <Route path='users-manage' element={<UsersManage />} />
-            <Route path='post-review-manage' element={<PostReviewManage />}>
-              <Route index element={<ListPostReview />} />
+              // </Auth>
+            }
+          >
+            <Route path='test' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
+            <Route index element={<AdminPage />} />
+            <Route path='dashboard' element={<AdminPage />}>
+              <Route index element={<AdminOverview />} />
+              <Route path='users-manage' element={<UsersManage />} />
+              <Route path='post-review-manage' element={<PostReviewManage />}>
+                <Route index element={<ListPostReview />} />
+              </Route>
+
+              <Route path='services-manage' element={<ServicesManage />} />
+              <Route path='orders-manage' element={<MyOrdersPage roleType={'ADMIN_TYPE'} />} />
             </Route>
-
-            <Route path='services-manage' element={<ServicesManage />} />
-            <Route path='orders-manage' element={<MyOrdersPage roleType={'ADMIN_TYPE'} />} />
+            <Route path='chat' element={<ChatPage roleType={'ADMIN_TYPE'} />} />
           </Route>
-          <Route path='chat' element={<ChatPage roleType={'ADMIN_TYPE'} />} />
-        </Route>
 
-        <Route path='/admin-login' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
-        <Route path='*' element={<NotFoundPage />} />
-      </Routes>
+          <Route path='/admin-login' element={<LoginEmployer hiddenTabSignUp={true} titleForm={titleLoginAdmin} />} />
+          <Route path='*' element={<NotFoundPage />} />
+        </Routes>
+      </LoadingOverlay>
     </>
   )
 }

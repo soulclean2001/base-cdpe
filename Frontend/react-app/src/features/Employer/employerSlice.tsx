@@ -123,8 +123,10 @@ export const employerSlice = createSlice({
     plusTotalItemCart: (state) => {
       state.cart.totalItems = state.cart.totalItems + 1
     },
-    minusTotalItemCart: (state) => {
-      state.cart.totalItems = state.cart.totalItems - 1
+    minusTotalItemCart: (state, action) => {
+      const { payload } = action
+
+      state.cart.totalItems = state.cart.totalItems - payload
     }
   }
 })

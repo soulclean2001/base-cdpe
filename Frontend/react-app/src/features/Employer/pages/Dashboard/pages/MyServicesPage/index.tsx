@@ -7,6 +7,9 @@ import { useEffect, useState } from 'react'
 import apiPackage, { RequestFilterPackageOwnByMe } from '~/api/package.api'
 import './style.scss'
 import ModalCreatePackage from '~/features/Admin/components/ModalCreatePackage'
+import { NotifyState } from '~/components/Header/NotifyDrawer/notifySlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '~/app/store'
 interface DataType {
   id: string
   nameService: string
@@ -22,6 +25,7 @@ interface MyServiceType {
   [key: string]: any
 }
 const MyServicesPage = () => {
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const [listMyServices, setListMyServices] = useState<DataType[]>([])
   const limit = 5
   const [currentPage, setCurrentPage] = useState(1)
@@ -43,6 +47,9 @@ const MyServicesPage = () => {
     setCurrentPage(page)
     fetchGetMyServices(page)
   }
+  useEffect(() => {
+    if (notificaions.page > 0) fetchGetMyServices(currentPage.toString())
+  }, [notificaions.notifications])
   useEffect(() => {
     setCurrentPage(1)
     fetchGetMyServices()
@@ -198,8 +205,8 @@ const MyServicesPage = () => {
                 options={[
                   { value: 'all', label: 'Tất cả' },
                   { value: '0', label: 'Đã kích hoạt' },
-                  { value: '1', label: 'Chờ kích hoạt' },
-                  { value: '2', label: 'Đã hủy' }
+                  { value: '1', label: 'Chờ kích hoạt' }
+                  // { value: '2', label: 'Đã hủy' }
                 ]}
               />
             </Col>

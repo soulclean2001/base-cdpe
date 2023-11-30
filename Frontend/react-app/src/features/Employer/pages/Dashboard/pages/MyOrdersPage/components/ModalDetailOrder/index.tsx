@@ -25,7 +25,7 @@ const items: TabsProps['items'] = [
   },
   {
     key: 'transactions',
-    label: <div className='tab-item'>Giao dịch</div>,
+    label: <div className='tab-item'>Lịch sử giao dịch</div>,
     children: <></>
   }
 ]
@@ -163,7 +163,7 @@ const ModalDetailOrder = (props: any) => {
           <div>
             {transactions.length > 0 ? (
               <Table
-                pagination={false}
+                pagination={{ total: transactions.length, pageSize: 5 }}
                 rowKey={'_id'}
                 className='table-custom users-table'
                 scroll={{ x: true }}

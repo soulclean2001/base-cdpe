@@ -353,11 +353,10 @@ const ListJob = () => {
                 // style={{ width: '100%', height: '100%', maxHeight: '190vh' }}
                 style={{
                   width: '100%',
-                  // height: '100%',
                   height:
-                    listTopCompany && listTopCompany.length > 3 ? `${3 * 250}px` : `${listTopCompany.length * 250}px`,
+                    listTopCompany && listTopCompany.length > 3 ? `${3 * 281}px` : `${listTopCompany.length * 281}px`,
                   maxHeight:
-                    listTopCompany && listTopCompany.length > 3 ? `${3 * 250}px` : `${listTopCompany.length * 250}px`
+                    listTopCompany && listTopCompany.length > 3 ? `${3 * 281}px` : `${listTopCompany.length * 281}px`
                 }}
                 slidesPerView={listTopCompany && listTopCompany.length > 3 ? 3 : listTopCompany.length}
                 direction={'vertical'}

@@ -7,7 +7,7 @@ import 'swiper/css/grid'
 import 'swiper/css/pagination'
 import './topJob.scss'
 import { Grid, Pagination } from 'swiper/modules'
-import { Col, Row } from 'antd'
+import { Col, Row, Tooltip } from 'antd'
 import apiHome from '~/api/home.api'
 import logoTemp from '~/assets/HF_logo.jpg'
 
@@ -27,13 +27,15 @@ const TopJob = () => {
   }
 
   const handleClickShowDetail = (idJob: string, nameJob: string) => {
-    const convertNameEng = nameJob
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-    const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    // const convertNameEng = nameJob
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+    console.log(nameJob)
 
-    navigate(`/jobs/${convertName}-id-${idJob}`)
+    // navigate(`/jobs/${convertName}-id-${idJob}`)
+    navigate(`/jobs/id-${idJob}`)
   }
 
   //set total show when change size window
@@ -98,8 +100,12 @@ const TopJob = () => {
                         />
                       </Col>
                       <Col span={16} className='job-content'>
-                        <div className='name-job'>{item.job.job_title}</div>
-                        <div className='name-company'>{item.company_name}</div>
+                        <Tooltip title={item.job.job_title}>
+                          <div className='name-job'>{item.job.job_title}</div>
+                        </Tooltip>
+                        <Tooltip title={item.company_name}>
+                          <div className='name-company'>{item.company_name}</div>
+                        </Tooltip>
                         <div className='price-job'>
                           {item.job.is_salary_visible
                             ? `${item.job.salary_range.min.toLocaleString('vi', {

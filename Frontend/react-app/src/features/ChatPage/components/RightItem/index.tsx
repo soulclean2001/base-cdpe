@@ -1,4 +1,4 @@
-import { Avatar, Button } from 'antd'
+import { Avatar, Button, Tooltip } from 'antd'
 import './style.scss'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
@@ -40,8 +40,12 @@ const RightItem = (props: any) => {
       <div className='left-wapper'>
         <Avatar className='logo' size={'large'} src={data.logo ? data.logo : ''} />
         <div className='info-item-wapper'>
-          <div className='name-job'>{data.titleName ? data.titleName : 'titleName'}</div>
-          <div className='name-company'>{data.nameCompany ? data.nameCompany : data.titleJob}</div>
+          <Tooltip title={data.titleName && data.titleName}>
+            <div className='name-job'>{data.titleName ? data.titleName : 'titleName'}</div>
+          </Tooltip>
+          <Tooltip title={data.nameCompany ? data.nameCompany : data.titleJob}>
+            <div className='name-company'>{data.nameCompany ? data.nameCompany : data.titleJob}</div>
+          </Tooltip>
         </div>
       </div>
       <div className='btn-container'>

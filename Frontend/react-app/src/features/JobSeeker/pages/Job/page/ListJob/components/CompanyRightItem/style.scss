@@ -29,8 +29,11 @@
     margin: -35px auto auto;
     z-index: 10;
     max-width: 108px;
+    border-radius: 10px;
     img {
-      height: 43px;
+      // height: 43px;
+      height: 74px;
+      padding: 5px;
       width: auto;
       max-width: 100%;
       min-width: 88px;

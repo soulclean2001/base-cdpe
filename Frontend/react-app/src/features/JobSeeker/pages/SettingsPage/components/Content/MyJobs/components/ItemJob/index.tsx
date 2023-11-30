@@ -15,6 +15,7 @@ interface DataType {
   salary: string
   status: string
   updateDate: string
+  statusJob: string | number
 }
 interface PropsType {
   data: DataType | undefined
@@ -79,7 +80,20 @@ const ItemJob = (props: any) => {
           <img src={data.logo ? data.logo : avatarTemp} alt='' />
         </div>
         <div className='info-job'>
-          <div className='name-job'>{data.jobTitle ? data.jobTitle : 'job title'}</div>
+          <div className='name-job'>
+            {data.jobTitle ? (
+              data.statusJob !== 4 ? (
+                data.jobTitle
+              ) : (
+                <>
+                  {data.jobTitle}
+                  <span style={{ color: 'red', fontSize: '13px' }}> (Đã xóa)</span>
+                </>
+              )
+            ) : (
+              'job title'
+            )}
+          </div>
           <div className='name-company'>{data.nameCompany ? data.nameCompany : 'name company'}</div>
           <div className='province'>{data.province ? data.province : 'province'}</div>
           <div className='salary'>{data.salary ? data.salary : 'Thương lượng'}</div>

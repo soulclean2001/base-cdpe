@@ -53,7 +53,7 @@ const listStatus = [
   { value: '3', label: 'Tiềm năng' },
   { value: '4', label: 'Phỏng vấn' },
   { value: '5', label: 'Nhận việc' },
-  { value: '6', label: 'Không thể liên lạc' }
+  { value: '7', label: 'Không thể liên lạc' }
 ]
 const ContentCVManage = (props: any) => {
   const { tabKey } = props

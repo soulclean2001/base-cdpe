@@ -51,6 +51,11 @@
       font-weight: 700;
       color: white;
       padding-left: 10px;
+      max-width: 90%;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     @media (max-width: 575px) {
       .name-company {

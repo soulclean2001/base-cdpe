@@ -18,28 +18,29 @@ interface PropsType {
 const PaymentForm = (props: PropsType) => {
   const { totalPay, items }: PropsType = props
   const [methodPayment, setMethodPayment] = useState(1)
-
+  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const distPatch = useDispatch()
   const handleCreateOrder = async () => {
     if (!items) return
+    setIsLoading(true)
     let request: RequestOrderType = { items }
     await apiOrder
       .postOrder(request)
       .then(() => {
-        items.map(() => {
-          distPatch(minusTotalItemCart())
-        })
+        distPatch(minusTotalItemCart(items.length))
+
         toast.success('Bạn đã tạo đơn đặt hàng thành công')
         navigate('/employer/dashboard/my-orders')
       })
       .catch(() => {
         toast.error('Có lỗi xảy ra, vui lòng thử lại')
-
+        setIsLoading(false)
         setTimeout(() => {
           window.location.reload()
         }, 500)
       })
+    setIsLoading(false)
   }
 
   const onChange = (e: RadioChangeEvent) => {
@@ -89,7 +90,7 @@ const PaymentForm = (props: PropsType) => {
       </div>
 
       <Button
-        disabled={!items || items.length < 1 ? true : false}
+        disabled={!items || items.length < 1 || isLoading ? true : false}
         onClick={handleCreateOrder}
         size='large'
         style={{
