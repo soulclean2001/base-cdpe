@@ -53,7 +53,7 @@ class JobApplicationService {
       _id: _payload.job_post_id
     })
 
-    if (!job) {
+    if (job && job.status === JobStatus.Deleted) {
       throw new ErrorWithStatus({
         message: 'Job is not found',
         status: 404
