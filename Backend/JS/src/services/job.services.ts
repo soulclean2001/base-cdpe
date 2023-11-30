@@ -47,7 +47,13 @@ export default class JobService {
     }
 
     if (options.visibility) {
-      opts['visibility'] = String(options.visibility).toLowerCase() === 'true'
+      const isTrue = String(options.visibility).toLowerCase() === 'true'
+      opts['visibility'] = isTrue
+      if (!options.status && isTrue) {
+        opts['status'] = {
+          $nin: [JobStatus.Deleted]
+        }
+      }
     }
 
     if (options.is_expired && String(options.is_expired).toLowerCase() === 'true') {

@@ -52,7 +52,12 @@ class JobApplicationService {
     const job = await databaseServices.job.findOne({
       _id: _payload.job_post_id
     })
-
+    if (!job) {
+      throw new ErrorWithStatus({
+        message: 'Job is not found',
+        status: 404
+      })
+    }
     if (job && job.status === JobStatus.Deleted) {
       throw new ErrorWithStatus({
         message: 'Job is not found',
