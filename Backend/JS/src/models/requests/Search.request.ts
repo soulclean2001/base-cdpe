@@ -3,7 +3,7 @@ export interface SearchCandidateReqParam extends Pagination {
   job?: string
   level?: string
   industry?: string[]
-  working_location?: string[]
+  work_location?: string[]
   exp_year_from?: number
   exp_year_to?: number
   foreign_language?: string

@@ -199,32 +199,32 @@ transactionRouter.get(
     }
 
     if (transaction && transaction.value) {
-      const order = await databaseServices.order.findOneAndUpdate(
-        {
-          _id: transaction.value.order_id
-        },
-        {
-          $set: {
-            status: vnp_TransactionStatus === '00' ? StatusOrder.Paid : StatusOrder.Canceled
-          }
-        },
-        {
-          returnDocument: 'after'
-        }
-      )
-
-      await databaseServices.serviceOrder.updateMany(
-        {
-          order_id: transaction.value.order_id
-        },
-        {
-          $set: {
-            status: vnp_TransactionStatus === '00' ? ServicePackageStatus.UnActive : ServicePackageStatus.Canceled
-          }
-        }
-      )
-
       if (vnp_TransactionStatus === '00') {
+        const order = await databaseServices.order.findOneAndUpdate(
+          {
+            _id: transaction.value.order_id
+          },
+          {
+            $set: {
+              status: StatusOrder.Paid
+            }
+          },
+          {
+            returnDocument: 'after'
+          }
+        )
+
+        await databaseServices.serviceOrder.updateMany(
+          {
+            order_id: transaction.value.order_id
+          },
+          {
+            $set: {
+              status: ServicePackageStatus.UnActive
+            }
+          }
+        )
+
         const admin = await databaseServices.users
           .find({
             role: UserRole.Administrators
