@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb'
 import { ErrorWithStatus } from '~/models/Errors'
 import { deleteFileFromS3 } from '~/utils/s3'
 import { escapeRegExp } from 'lodash'
+import { ServicePackageStatus } from '~/models/schemas/ServiceOrder.schema'
 
 interface getQueryPackageOwn {
   title?: string
@@ -367,7 +368,10 @@ export default class PackageService {
         .aggregate([
           {
             $match: {
-              company_id: company._id
+              company_id: company._id,
+              status: {
+                $nin: [ServicePackageStatus.Canceled]
+              }
             }
           },
           {
@@ -400,7 +404,10 @@ export default class PackageService {
         .aggregate([
           {
             $match: {
-              company_id: company._id
+              company_id: company._id,
+              status: {
+                $nin: [ServicePackageStatus.Canceled]
+              }
             }
           },
           {

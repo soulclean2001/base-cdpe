@@ -47,7 +47,8 @@ export default class JobService {
     }
 
     if (options.visibility) {
-      opts['visibility'] = String(options.visibility).toLowerCase() === 'true'
+      const isTrue = String(options.visibility).toLowerCase() === 'true'
+      opts['visibility'] = isTrue
     }
 
     if (options.is_expired && String(options.is_expired).toLowerCase() === 'true') {
@@ -167,6 +168,45 @@ export default class JobService {
   }
 
   static async deleteJob({ userId, jobId }: { userId: string; jobId: string }) {
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+    if (!company) {
+      throw new ErrorWithStatus({
+        message: 'User are not recruiter',
+        status: 403
+      })
+    }
+
+    const result = await databaseServices.job.findOneAndUpdate(
+      {
+        _id: new ObjectId(jobId),
+        company_id: company._id
+      },
+      {
+        $set: {
+          status: JobStatus.Deleted
+        },
+        $currentDate: {
+          updated_at: true,
+          deleted_at: true
+        }
+      }
+    )
+
+    if (!result) {
+      throw new ErrorWithStatus({
+        message: 'User are not owner of this job',
+        status: 401
+      })
+    }
+
+    return {
+      message: 'Deleted job successfully'
+    }
+  }
+
+  static async removeJob({ userId, jobId }: { userId: string; jobId: string }) {
     const company = await databaseServices.company.findOne({
       'users.user_id': new ObjectId(userId)
     })
@@ -506,6 +546,13 @@ export default class JobService {
         .aggregate([
           {
             $match: {
+              status: {
+                $nin: [JobStatus.Deleted]
+              }
+            }
+          },
+          {
+            $match: {
               company_id: company._id,
               ...opts
             }
@@ -572,6 +619,13 @@ export default class JobService {
         .aggregate([
           {
             $match: {
+              status: {
+                $nin: [JobStatus.Deleted]
+              }
+            }
+          },
+          {
+            $match: {
               company_id: company._id,
               ...opts
             }
@@ -605,6 +659,12 @@ export default class JobService {
     })
 
     if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job not found',
+        status: 404
+      })
+
+    if (job.status === JobStatus.Deleted)
       throw new ErrorWithStatus({
         message: 'Job not found',
         status: 404
@@ -698,6 +758,12 @@ export default class JobService {
     })
 
     if (!job)
+      throw new ErrorWithStatus({
+        message: 'Job not found',
+        status: 404
+      })
+
+    if (job.status === JobStatus.Deleted)
       throw new ErrorWithStatus({
         message: 'Job not found',
         status: 404
@@ -963,7 +1029,7 @@ export default class JobService {
       opts['status'] = Number(filter.status)
     } else {
       opts['status'] = {
-        $ne: 3
+        $nin: [JobStatus.Deleted, JobStatus.Unapproved]
       }
     }
 

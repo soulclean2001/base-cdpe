@@ -48,6 +48,7 @@ export interface JobType {
   application_email: string
   created_at?: Date
   updated_at?: Date
+  deleted_at?: Date
 }
 
 export default class Job {
@@ -74,6 +75,7 @@ export default class Job {
   application_email: string
   created_at: Date
   updated_at: Date
+  deleted_at?: Date
   status: JobStatus
   job_type: string
   company: Omit<CompanyType, '_id' | 'users'>

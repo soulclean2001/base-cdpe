@@ -36,6 +36,13 @@ class JobController {
     return res.json(result)
   }
 
+  async removeJob(req: Request<ParamsDictionary, any, any>, res: Response) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+    const { job_id } = req.params
+    const result = await JobService.removeJob({ userId: user_id, jobId: job_id })
+    return res.json(result)
+  }
+
   async updateJob(req: Request<ParamsDictionary, any, UpdateJobReqBody>, res: Response) {
     const { user_id } = req.decoded_authorization as TokenPayload
     const { job_id } = req.params

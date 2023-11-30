@@ -29,7 +29,8 @@ export enum JobStatus {
   Approved,
   Pending,
   Rejected,
-  Unapproved
+  Unapproved,
+  Deleted
 }
 
 export interface UpdateJobReqBody {
