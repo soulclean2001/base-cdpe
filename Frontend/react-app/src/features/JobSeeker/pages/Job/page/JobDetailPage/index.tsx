@@ -77,6 +77,10 @@ const JobDetailPage = () => {
       }
     }
   }
+  const handleClickShowDetail = (idCompany: string) => {
+    if (!idCompany) return
+    navigate(`/companies/id-${idCompany}`)
+  }
   useEffect(() => {
     getPostById()
   }, [infoUrlJobDetail])
@@ -178,7 +182,7 @@ const JobDetailPage = () => {
             </Col>
             <Col md={20} sm={24} xs={24} className='title-info'>
               <div className='job-name'>{jobDetail && jobDetail.job_title ? jobDetail.job_title : 'Tên việc làm'}</div>
-              <div className='name-company'>
+              <div className='name-company' onClick={() => handleClickShowDetail(jobDetail.company_id)}>
                 {jobDetail && jobDetail.company.company_name ? jobDetail.company.company_name : 'Tên công ty'}
               </div>
               <div className='working-address'>{`Địa điểm làm việc: ${
@@ -205,12 +209,16 @@ const JobDetailPage = () => {
                   <div className='total-accept'>{`- Số lượng tuyển: ${
                     jobDetail && jobDetail.number_of_employees_needed ? jobDetail.number_of_employees_needed : 0
                   } người`}</div>
-                  <div className='expiration-date'>{`- Hạn cuối nhận hồ sơ: ${
-                    jobDetail && jobDetail.expired_date
-                      ? 'Hết ngày ' +
-                        new Date(jobDetail.expired_date).toISOString().slice(0, 10).split('-').reverse().join('-')
-                      : 'dd/MM/YYYY'
-                  }`}</div>
+                  {jobDetail && jobDetail.status.toString() === '0' ? (
+                    <div className='expiration-date'>{`- Hạn cuối nhận hồ sơ: ${
+                      jobDetail.expired_date
+                        ? 'Hết ngày ' +
+                          new Date(jobDetail.expired_date).toISOString().slice(0, 10).split('-').reverse().join('-')
+                        : 'dd/MM/YYYY'
+                    }`}</div>
+                  ) : (
+                    <div style={{ color: 'red', fontWeight: 500, fontSize: '12px' }}>(Ngừng tuyển)</div>
+                  )}
                 </Col>
                 <Col lg={6} md={8} sm={24} xs={24} className='btn-container'>
                   <Button size='large' className='btn-follow' icon={<AiOutlineHeart />} />

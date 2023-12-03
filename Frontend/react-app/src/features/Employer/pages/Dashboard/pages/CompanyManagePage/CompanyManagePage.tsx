@@ -65,7 +65,7 @@ const CompanyManagePage = () => {
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
   const [btnDisabled, setBtnDisabled] = useState(false)
-
+  let checkImg = false
   const handleSubmitForm = async () => {
     setBtnDisabled(true)
     const logoImage =
@@ -178,21 +178,26 @@ const CompanyManagePage = () => {
 
   //img
   const onChangeLogo: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    if (checkImg) {
+      checkImg = false
+      return
+    }
     setFileListLogo(newFileList)
   }
   const onChangePicture: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    if (checkImg) {
+      // setFileListPicture(fileListPicture)
+      checkImg = false
+      return
+    }
     setFileListPicture(newFileList)
-    console.log('newFileList', newFileList)
   }
   const onChangeBanner: UploadProps['onChange'] = async ({ fileList: newFileList, file }) => {
+    if (checkImg) {
+      checkImg = false
+      return
+    }
     let src = file.url as string
-    // if (!src) {
-    //   src = await new Promise((resolve) => {
-    //     const reader = new FileReader()
-    //     reader.readAsDataURL(file.originFileObj as RcFile)
-    //     reader.onload = () => resolve(reader.result as string)
-    //   })
-    // }
     const image = new Image()
     image.src = src
     const list = newFileList.map((file) => {
@@ -202,22 +207,23 @@ const CompanyManagePage = () => {
     })
     setFileListBanner(list)
   }
-  const onClickOkConfirmCropImgLogo = async (e: any) => {
+  const onClickOkConfirmCropImgLogo = (e: any) => {
     const listErro: UploadFile[] = []
-    // const dimension = await imageDimensions(e)
-    console.log('eee', e.type)
+
     if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
       setFileListLogo(listErro)
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      checkImg = true
       return
     }
     if (e.size > 307200) {
-      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
+      toast.error('Kích thước hình ảnh tối đa: 300 kb')
       setFileListBanner(listErro)
+      checkImg = true
       return
     }
   }
-  const onClickOkConfirmCropImgPicture = async (e: any) => {
+  const onClickOkConfirmCropImgPicture = (e: any) => {
     console.log('e', e)
     // const dimension = await imageDimensions(e)
     const listTemp = fileListPicture.filter((file) => {
@@ -225,35 +231,39 @@ const CompanyManagePage = () => {
         return file
       }
     })
+    console.log('listTemp', listTemp)
     if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
+      checkImg = true
       setFileListPicture(listTemp)
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
       return
     }
     if (e.size > 307200) {
-      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
+      checkImg = true
+      toast.error('Kích thước hình ảnh tối đa: 300 kb')
       setFileListPicture(listTemp)
       return
     }
   }
   const onClickOkConfirmCropImgBanner = async (e: any) => {
     const { width, height } = await imageDimensions(e)
-    console.log('w-h', width, height)
     const listErro: UploadFile[] = []
     if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
       setFileListBanner(listErro)
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      checkImg = true
       return
     }
     if (e.size > 307200) {
-      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
+      toast.error('Kích thước hình ảnh tối đa: 300 kb')
       setFileListBanner(listErro)
+      checkImg = true
       return
     }
     if (width < 1920 && height < 510) {
       setFileListBanner(listErro)
-      console.log('img', fileListBanner)
-      toast.error('Kích thước tối thiểu: 1920px x 510px')
+      toast.error('Độ phân giải tối thiểu: 1920px x 510px')
+      checkImg = true
       return
     }
   }
@@ -385,7 +395,7 @@ const CompanyManagePage = () => {
               onModalOk={(e) => onClickOkConfirmCropImgBanner(e)}
               showReset
               showGrid
-              aspect={2 / 1}
+              aspect={4 / 1}
             >
               <Upload
                 className='upload-banner-container'
@@ -397,9 +407,17 @@ const CompanyManagePage = () => {
                 onPreview={onPreview}
               >
                 {fileListBanner.length < 1 && (
-                  <>
-                    <BiUpload /> Tải ảnh lên
-                  </>
+                  <div
+                    style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+                  >
+                    <span>
+                      <BiUpload /> Tải ảnh lên{' '}
+                    </span>
+
+                    <span style={{ fontSize: '12px', color: 'red' }}>
+                      (Độ phân giải tối thiểu: 1920px x 510px, Kích thước tối đa: 300kb)
+                    </span>
+                  </div>
                 )}
               </Upload>
             </ImgCrop>
@@ -557,6 +575,7 @@ const CompanyManagePage = () => {
           <div>
             <div style={{ fontWeight: '500', marginBottom: '10px' }}>Hình ảnh</div>
             <ImgCrop
+              modalWidth={800}
               rotationSlider
               modalTitle={'Cập nhật hình ảnh'}
               modalOk={'Lưu'}
@@ -564,7 +583,7 @@ const CompanyManagePage = () => {
               onModalOk={(e) => onClickOkConfirmCropImgPicture(e)}
               showReset
               showGrid
-              aspect={2 / 1.5}
+              aspect={1 / 1}
             >
               <Upload
                 // name='logo'

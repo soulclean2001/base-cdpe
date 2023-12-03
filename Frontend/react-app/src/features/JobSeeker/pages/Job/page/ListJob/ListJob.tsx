@@ -99,7 +99,7 @@ const ListJob = () => {
           logo: job.company.logo,
           companyName: job.company.company_name,
           created_at: job.posted_date.slice(0, 10),
-          is_salary_visible: job.salary_visible,
+          is_salary_visible: job.is_salary_visible,
           jobTitle: job.job_title,
           salary_range: job.salary_range,
           working_locations: job.working_locations,
@@ -304,7 +304,7 @@ const ListJob = () => {
                     img={item.logo}
                     nameJob={item.jobTitle}
                     salary={
-                      !item.is_salary_visible
+                      item.is_salary_visible
                         ? `${item.salary_range.min.toLocaleString('vi', {
                             currency: 'VND'
                           })} - ${item.salary_range.max.toLocaleString('vi', { style: 'currency', currency: 'VND' })}`

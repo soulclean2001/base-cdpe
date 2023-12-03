@@ -157,17 +157,18 @@ const PostServices = () => {
               ))}
             </div>
           </div>
-          <div className='picture-preview-wapper content-service-wapper'>
-            <div className='title'>Hiển thị trên HFWorks cho Người tìm việc:</div>
-            <div className='image-wapper'>
-              {detailService.preview &&
-                detailService.preview.map((url: string, index: number) => (
+          {detailService.preview && detailService.preview.length > 0 && (
+            <div className='picture-preview-wapper content-service-wapper'>
+              <div className='title'>Hiển thị trên HFWorks cho Người tìm việc:</div>
+              <div className='image-wapper'>
+                {detailService.preview.map((url: string, index: number) => (
                   <div style={{ maxWidth: '25%' }} key={index}>
                     <img src={url} />
                   </div>
                 ))}
+              </div>
             </div>
-          </div>
+          )}
           <div className='btn-add-to-cart-container'>
             <Button onClick={handleAddToCart} className='btn-add-to-cart' size='large'>
               Thêm vào giỏ hàng

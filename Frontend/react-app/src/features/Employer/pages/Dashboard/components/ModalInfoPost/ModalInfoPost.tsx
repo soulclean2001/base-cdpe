@@ -25,6 +25,7 @@ import { RootState } from '~/app/store'
 import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
 import { getAllIndustries } from '~/api/industries.api'
 import apiAdmin from '~/api/admin.api'
+import { add } from 'date-fns'
 //data lo
 
 const listLevel = [
@@ -1274,7 +1275,19 @@ const ModalInfoPost = (props: any) => {
               valuePropName='checked'
               name='expireDate'
               // style={{ marginBottom: 0 }}
-              rules={[{ required: publish ? true : false, message: 'Vui lòng chọn ngày hết hạn' }]}
+              rules={[
+                { required: publish ? true : false, message: 'Vui lòng chọn ngày hết hạn' },
+                {
+                  validator: (_, value) =>
+                    new Date(value) <= new Date() || new Date(value) > add(new Date(), { days: 60 })
+                      ? Promise.reject(
+                          new Error(
+                            'Ngày hết hạn phải bắt sau ngày hiện tại 1 ngày và tối đa 60 ngày kể từ ngày hiện tại'
+                          )
+                        )
+                      : Promise.resolve()
+                }
+              ]}
             >
               <DatePicker
                 size='large'

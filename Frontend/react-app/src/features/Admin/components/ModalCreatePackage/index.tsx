@@ -39,6 +39,7 @@ const ModalCreatePackage = (props: any) => {
   const [urlImgPreview, setUrlImgPreview] = useState('')
   const [openModalReview, setOpenModalReview] = useState(false)
   const [statusDetail, setStatusDetail] = useState('')
+  let checkImg = false
   useEffect(() => {
     if (open) {
       handleClearForm()
@@ -98,12 +99,14 @@ const ModalCreatePackage = (props: any) => {
     }, 0)
   }
   const onChangePicture: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    if (checkImg) {
+      checkImg = false
+      return
+    }
+
     setFileListPicture(newFileList)
-    console.log('newFileList', newFileList)
   }
-  const onClickOkConfirmCropImgPicture = async (e: any) => {
-    console.log('e', e)
-    // const dimension = await imageDimensions(e)
+  const onClickOkConfirmCropImgPicture = (e: any) => {
     const listTemp = fileListPicture.filter((file) => {
       if (file !== e) {
         return file
@@ -112,11 +115,13 @@ const ModalCreatePackage = (props: any) => {
     if (e.type !== 'image/png' && e.type !== 'image/jpg' && e.type !== 'image/jpeg') {
       setFileListPicture(listTemp)
       toast.error('Vui lòng chọn ảnh có định dạng .png, .jpg, .jpeg')
+      checkImg = true
       return
     }
-    if (e.size > 3072000) {
-      toast.error('Kích thước hình ảnh tối đa: 3070 kb')
+    if (e.size > 307200) {
+      toast.error('Kích thước hình ảnh tối đa: 300 kb')
       setFileListPicture(listTemp)
+      checkImg = true
       return
     }
   }
@@ -138,18 +143,18 @@ const ModalCreatePackage = (props: any) => {
     const data = { namePackage, typePackage, timeUse, totalPostAccept, descript, includes, price }
     console.log('data', data)
     let listUrlPicture: string[] = []
-
+    let checkErrorUpload = false
     const listPictureOrigin = fileListPicture.map((file) => {
       return file.originFileObj ? file.originFileObj : file
     })
     if (listPictureOrigin && listPictureOrigin.length > 0) {
       const pictureForm = new FormData()
       listPictureOrigin.map((file) => {
-        console.log('file', file)
         if (file.lastModified) pictureForm.append('image', file as RcFile)
         else listUrlPicture.push(file.uid)
       })
-      console.log('pictureForm', pictureForm.getAll('image'))
+      // console.log('pictureForm', pictureForm.getAll('image'))
+
       if (pictureForm.getAll('image').length > 0) {
         await apiUpload
           .uploadImage(pictureForm)
@@ -161,11 +166,13 @@ const ModalCreatePackage = (props: any) => {
             }
           })
           .catch(() => {
+            checkErrorUpload = true
             toast.error('Lỗi')
             return
           })
       }
     }
+    if (checkErrorUpload) return
     let request: CreatePackageReqBody = {
       title: namePackage,
       description: descript,
@@ -411,6 +418,7 @@ const ModalCreatePackage = (props: any) => {
           <div>
             <div style={{ fontWeight: '500', marginBottom: '10px' }}>Hình ảnh</div>
             <ImgCrop
+              modalWidth={800}
               rotationSlider
               modalTitle={'Cập nhật hình ảnh'}
               modalOk={'Lưu'}
@@ -418,7 +426,7 @@ const ModalCreatePackage = (props: any) => {
               onModalOk={(e) => onClickOkConfirmCropImgPicture(e)}
               showReset
               showGrid
-              aspect={2 / 1.5}
+              aspect={9.5 / 10}
             >
               <Upload
                 disabled={statusDetail === 'DELETED' || roleType === 'EMPLOYER_TYPE' ? true : false}

@@ -84,7 +84,7 @@ function App() {
   const dispatch = useDispatch()
   const auth: AuthState = useSelector((state: RootState) => state.auth)
   const me: InfoMeState = useSelector((state: RootState) => state.me)
-  console.log('me loading', me.loading)
+
   const connectSocket = async () => {
     return new Promise(() => {
       socket = io(import.meta.env.VITE_API_URL, {
