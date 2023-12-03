@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 // Khai báo type cho đối tượng Blob
 type BlobType = Blob | null
@@ -15,8 +15,8 @@ function PDFViewer({ pdfBlob }: { pdfBlob: BlobType }) {
 
     const reader = new FileReader()
     reader.onloadend = function () {
-      const arrayBuffer = reader.result
-      const context = canvas.getContext('2d')
+      // const arrayBuffer = reader.result
+      // const context = canvas.getContext('2d')
       // Now you have the PDF data as an ArrayBuffer
       // You can proceed to rendering it on a canvas
     }

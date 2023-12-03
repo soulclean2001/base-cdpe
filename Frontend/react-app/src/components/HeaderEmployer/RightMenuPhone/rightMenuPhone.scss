@@ -1,12 +1,15 @@
-.right_menu_container_phone{
-    .drop-children{
-        color: red;
-    }
-    .phone-login{
-        color: red
-    }
-    .menu-content{
+.ant-drawer-content-wrapper {
+  .right_menu_container_phone {
+    .drawer-mobi-container {
+      .menu-content {
         display: flex;
         flex-direction: column;
+        .info-user-wapper {
+          background-color: rebeccapurple;
+          display: flex;
+          gap: 15px;
+        }
+      }
     }
+  }
 }

@@ -16,15 +16,13 @@ const Layout = (props: any) => {
       )}
       {forRole && forRole === 'EMPLOYER_ROLE' && (
         <>
-          <HeaderEmployer />
+          <HeaderEmployer roleType={'EMPLOYER_ROLE'} />
           <Outlet />
           <Footer />
         </>
       )}
       {forRole && forRole === 'ADMIN_ROLE' && (
         <>
-          {/* <HeaderEmployer /> */}
-          {/* <SideBarAdmin /> */}
           <Outlet />
         </>
       )}

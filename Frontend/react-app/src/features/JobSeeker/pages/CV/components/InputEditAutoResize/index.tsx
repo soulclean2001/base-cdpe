@@ -1,6 +1,6 @@
 import InputAutoResize from '../InputAutoResize'
 import './InputEditAutoResize.scss'
-import { useState, useRef, useEffect, InputHTMLAttributes, MutableRefObject } from 'react'
+import { useState, useRef, useEffect, InputHTMLAttributes } from 'react'
 import { Button } from 'antd'
 import { DeleteRowOutlined, EditOutlined, ReloadOutlined } from '@ant-design/icons'
 import { omit } from 'lodash'

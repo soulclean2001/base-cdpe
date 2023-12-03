@@ -1,4 +1,3 @@
-import logo from '../../../../../../assets/react.svg'
 import { useState, useEffect } from 'react'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -7,14 +6,44 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import './topCompany.scss'
 import { Pagination } from 'swiper/modules'
+import { Tooltip } from 'antd'
+import apiHome from '~/api/home.api'
+import logoTemp from '~/assets/HF_logo.jpg'
+import { useNavigate } from 'react-router-dom'
+import apiCompany from '~/api/company.api'
+interface DataType {
+  [key: string]: any
+}
 const TopCompany = () => {
-  const dataTopCompany = [
-    { id: '1', img: logo, name: 'KIMBERLY-CLARK 1' },
-    { id: '2', img: 'https://insieutoc.vn/wp-content/uploads/2021/03/mau-logo-dep.jpg', name: 'KIMBERLY-CLARK 2' },
-    { id: '3', img: logo, name: 'KIMBERLY-CLARK 3' },
-    { id: '4', img: logo, name: 'KIMBERLY-CLARK 4' },
-    { id: '5', img: logo, name: 'KIMBERLY-CLARK 5' }
-  ]
+  const navigate = useNavigate()
+  const [listData, setListData] = useState<DataType[]>()
+  useEffect(() => {
+    fetchGetData()
+  }, [])
+  const fetchGetData = async () => {
+    await apiHome.getCompaniesBanner().then(async (rs) => {
+      if (!rs || !rs.result) {
+        await apiCompany.searchCompany({ limit: '10', page: '1' }).then((rs2) => {
+          if (!rs2 || !rs2.result) return
+          setListData(rs2.result.companies)
+        })
+        return
+      }
+      setListData(rs.result)
+    })
+  }
+  const handleClickShowDetail = (idCompany: string, nameCompany: string) => {
+    console.log(nameCompany)
+    // const convertNameEng = nameCompany
+    //   .normalize('NFD')
+    //   .replace(/[\u0300-\u036f]/g, '')
+    //   .toLowerCase()
+    // const convertName = convertNameEng.replace(/\s+/g, '-').trim()
+
+    // navigate(`/companies/${convertName}-id-${idCompany}`)
+    navigate(`/companies/id-${idCompany}`)
+  }
+  //set css
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
     return { innerWidth, innerHeight }
@@ -26,10 +55,13 @@ const TopCompany = () => {
       setWindowSize(getWindowSize())
     }
     window.addEventListener('resize', handleWindowResize)
-    if (windowSize.innerWidth > 786) {
+    if (windowSize.innerWidth > 992) {
+      setSlidesPerView(6)
+    }
+    if (windowSize.innerWidth <= 992) {
       setSlidesPerView(4)
     }
-    if (windowSize.innerWidth <= 786) {
+    if (windowSize.innerWidth <= 768) {
       setSlidesPerView(2)
     }
     if (windowSize.innerWidth <= 576) {
@@ -39,6 +71,7 @@ const TopCompany = () => {
       window.removeEventListener('resize', handleWindowResize)
     }
   }, [windowSize])
+  //
   return (
     <div className='top-company-container'>
       <div className='title-top-company'>Các Công Ty Hàng Đầu</div>
@@ -55,13 +88,18 @@ const TopCompany = () => {
           modules={[Pagination]}
           className='mySwiper'
         >
-          {dataTopCompany &&
-            dataTopCompany.map((item) => (
-              <SwiperSlide key={item.id}>
+          {listData &&
+            listData.map((item) => (
+              <SwiperSlide key={item._id}>
                 <div className='top-company-item'>
-                  <img src={item.img} alt='' className='logo-company' />
-                  <span className='name-company'>{item.name}</span>
-                  <button className='btn-detail'>Chi tiết</button>
+                  <img src={item.logo ? item.logo : logoTemp} alt='' className='logo-company' />
+                  <Tooltip title={item.company_name && item.company_name}>
+                    <span className='name-company'>{item.company_name ? item.company_name : 'Tên công ty'}</span>
+                  </Tooltip>
+
+                  <button onClick={() => handleClickShowDetail(item._id, item.company_name)} className='btn-detail'>
+                    Chi tiết
+                  </button>
                 </div>
               </SwiperSlide>
             ))}

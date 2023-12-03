@@ -1,0 +1,37 @@
+.admin-users-manage-container {
+  border-top: 0.05px solid rgb(216, 216, 216);
+  padding: 20px 20px;
+  .title {
+    font-size: 22px;
+    font-weight: 700;
+    padding: 15px;
+    // box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    color: #333333;
+  }
+  .tabs-users-manage {
+    padding: 0 15px;
+    .ant-tabs-nav-list {
+      .ant-tabs-tab {
+        color: #c2c2c2;
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .ant-tabs-tab-active {
+        color: #005aff;
+      }
+      .ant-tabs-ink-bar {
+        height: 2px;
+        background: #005aff !important;
+      }
+    }
+  }
+  .content-wapper {
+    padding: 0 15px;
+    .users-table {
+      max-width: 100%;
+    }
+  }
+}

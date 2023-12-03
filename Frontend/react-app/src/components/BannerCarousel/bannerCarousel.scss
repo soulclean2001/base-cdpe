@@ -6,6 +6,7 @@
   // background: #364d79;
   border-radius: 15px 15px 0 0;
   width: 100%;
+  object-fit: cover;
 }
 
 .banner-info-company-container {
@@ -15,6 +16,7 @@
   justify-content: space-between;
   align-items: center;
   height: 120px;
+
   .info-company-content {
     padding: 10px;
     width: 100%;
@@ -29,6 +31,7 @@
         width: 80px;
         height: 80px;
         border-radius: 10px;
+        object-fit: cover;
       }
       @media (max-width: 992px) {
         .img-logo {
@@ -48,6 +51,11 @@
       font-weight: 700;
       color: white;
       padding-left: 10px;
+      max-width: 90%;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     @media (max-width: 575px) {
       .name-company {
@@ -81,8 +89,8 @@
       color: rgb(255, 255, 255);
       font-weight: 600;
       &:hover {
-        color: rgb(72, 253, 99);
-        border-color: rgb(170, 252, 219);
+        color: rgb(255, 171, 145);
+        border-color: rgb(255, 174, 150);
       }
     }
   }

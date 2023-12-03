@@ -1,0 +1,47 @@
+.modal-setting-cv {
+  width: 50%;
+  .title {
+    background-color: white;
+    border-bottom: 1px solid rgb(224, 224, 233);
+
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .cv-setting-page-container {
+    padding-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .cv-settings-content-wapper {
+      display: flex;
+      justify-content: space-between;
+      .left-content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        .item-wapper {
+          .select-custom {
+            width: 100%;
+          }
+        }
+      }
+      //   .right-content {
+      //     width: 45%;
+      //     display: flex;
+      //     flex-direction: column;
+      //   }
+    }
+    .btn-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 5px;
+    }
+  }
+}
+@media (max-width: 768px) {
+  .modal-setting-cv {
+    width: 100%;
+  }
+}

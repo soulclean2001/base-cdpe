@@ -7,13 +7,27 @@ import {
   LockOutlined,
   MailOutlined,
   PhoneOutlined,
+  PlusOutlined,
   UserOutlined
 } from '@ant-design/icons'
 import type { CSSProperties } from 'react'
 import type { CollapseProps, RadioChangeEvent } from 'antd'
-import { Button, Checkbox, Col, Collapse, Form, Input, Radio, Row, Select } from 'antd'
+import { Button, Checkbox, Col, Collapse, Divider, Form, Input, Modal, Radio, Row, Select, Space } from 'antd'
 import './signUpEmployer.scss'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  LocationType,
+  SelectionLocationData,
+  WorkingLocation
+} from '../Dashboard/components/ModalInfoPost/ModalInfoPost'
+import { ImLocation } from 'react-icons/im'
+
+import { BsTrashFill } from 'react-icons/bs'
+import apiAuth, { AuthRequestRegistry } from '~/api/auth.api'
+import { decodeToken } from '~/utils/jwt'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { toast } from 'react-toastify'
+import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
 const getItems: (panelStyle: CSSProperties) => CollapseProps['items'] = (panelStyle) => [
   {
     key: '1',
@@ -68,36 +82,16 @@ interface DataOptionType {
   value: string
   [key: string]: string
 }
-
+const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
 const SignUpEmployer = () => {
   const [form] = Form.useForm()
   // set gender data
   const handleOnChangeSex = (e: RadioChangeEvent) => {
     setSex(e.target.value)
   }
-  //provinces data
-  const initValue: DataOptionType[] = []
-  const [province, setProvince] = useState('')
-  const [district, setDistrict] = useState('')
-  const [districtsData, setDistrictsData] = useState(initValue)
-  const [provincesData, setProvincesData] = useState(initValue)
-  useEffect(() => {
-    fetchProvinces()
-    form.setFieldsValue({ district: '' })
-    if (province) fetchDistricts()
-  }, [province])
 
-  const fetchProvinces = async () => {
-    const res = await getAllProviencesApi()
-
-    setProvincesData(res)
-  }
-  const fetchDistricts = async () => {
-    const res = await getOneProvincesApi(province)
-    setDistrictsData(res)
-  }
   //form state data
-
+  const [openModalLocation, setOpenModalLocation] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rePassword, setRePassword] = useState('')
@@ -108,33 +102,166 @@ const SignUpEmployer = () => {
   const [position, setPosition] = useState('')
   const [checkAccept, setCheckAccept] = useState(false)
 
-  const handleSubmitSignup = () => {
-    const data = {
-      email,
-      password,
-      rePassword,
-      name,
-      sex,
-      phone,
-      nameCompany,
-      position,
-      province,
-      district,
-      checkAccept
+  //work location
+  const [formLocation] = Form.useForm()
+  const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([])
+  const [hiddenDeleteLocation, setHiddenDeleteLocation] = useState(true)
+  const [dataLocationBranch, setDataLocationBranch] = useState<WorkingLocation>({
+    lat: 0,
+    lon: 0,
+    branch_name: '',
+    address: '',
+    district: '',
+    city_name: ''
+  })
+  const [arrLocations, setArrLocations] = useState(initLocation)
+  //provinces data
+  const initValue: DataOptionType[] = []
+
+  const [districtsData, setDistrictsData] = useState(initValue)
+  const [provincesData, setProvincesData] = useState(initValue)
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  const navigate = useNavigate()
+  useEffect(() => {
+    fetchProvinces()
+    formLocation.setFieldsValue({ district: '' })
+    if (dataLocationBranch.city_name) fetchDistricts()
+  }, [dataLocationBranch.city_name])
+
+  const fetchProvinces = async () => {
+    const res = await getAllProviencesApi()
+
+    setProvincesData(res)
+  }
+  const fetchDistricts = async () => {
+    const res = await getOneProvincesApi(dataLocationBranch.city_name)
+    setDistrictsData(res)
+  }
+  const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.role && dataDecode.role === 1) {
+        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(setToken(token))
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin(action))
+        navigate('/employer/active-page')
+        toast.success('Đăng ký thành công')
+      }
     }
-    console.log('form data sign up', data)
+  }
+  const handleSubmitSignup = async () => {
+    const locationsFinal: WorkingLocation[] = []
+    listLocation.map((location) => {
+      if (location.disabled && location.value !== undefined) {
+        locationsFinal.push(location.value)
+      }
+    })
+
+    const req: AuthRequestRegistry = {
+      email: email,
+      password: password,
+      confirm_password: rePassword,
+      name: name,
+      company_name: nameCompany,
+      position: position,
+      gender: sex,
+      role: 1,
+      phone_number: phone,
+      fields: ['_'],
+      working_locations: locationsFinal,
+      date_of_birth: '2001-01-01'
+    }
+    await apiAuth
+      .register(req)
+      .then(async (response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+      })
+      .catch(() => {
+        toast.error('Email đã tồn tại, vui lòng chọn Email khác')
+      })
   }
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
+  const handleAddWorkingLocation = () => {
+    if (arrLocations.length <= 2) {
+      setArrLocations([
+        ...arrLocations,
+        { checked: false, key: arrLocations[arrLocations.length - 1].key + 1, selected: '_' }
+      ])
+    }
+  }
+  useEffect(() => {
+    if (arrLocations.length > 1) {
+      setHiddenDeleteLocation(false)
+    } else {
+      setHiddenDeleteLocation(true)
+    }
+  }, [arrLocations])
+  const handleSelectLocation = (value: any, key: number) => {
+    const oldSelectedObj = arrLocations.filter((item) => item.key === key)
+    const oldSelected = oldSelectedObj[0].selected
+    const changeData = listLocation.map((item: SelectionLocationData) => {
+      if (item.value.branch_name === value) {
+        item.disabled = true
+        oldSelectedObj[0].selected = value
+      }
 
+      if (item.value.branch_name === oldSelected) {
+        item.disabled = false
+      }
+
+      return item
+    })
+    setArrLocations(arrLocations)
+    setListLocation(changeData)
+  }
+  const handleDeletedRowLocation = (key: number) => {
+    if (arrLocations.length > 1) {
+      const oldSelectedObj = arrLocations.filter((item) => item.key === key)
+      const oldSelected = oldSelectedObj[0].selected
+      if (oldSelected !== '_') {
+        const changeData = listLocation.map((item: SelectionLocationData) => {
+          if (item.value.branch_name === oldSelected) {
+            item.disabled = false
+          }
+          return item
+        })
+        setListLocation(changeData)
+      }
+      const filterData = arrLocations.filter((item) => item.key !== key)
+      setArrLocations(filterData)
+      form.resetFields([`location_${key}`])
+    }
+  }
+  const handleSubmitLocationForm = async () => {
+    const data = {
+      dataLocationBranch
+    }
+    //check exist location name branch
+    let temp = 0
+    listLocation.forEach((location) => {
+      if (location.value.branch_name === data.dataLocationBranch.branch_name.toString()) temp++
+    })
+    if (temp > 0) {
+      alert('Đã tồn tại tên trụ sở này')
+      return
+    }
+    setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
+    setOpenModalLocation(false)
+  }
   return (
     <Row className='page-sign-up-employer-container'>
       <Col md={16} sm={24} xs={24} className='page-sign-up-employer-wapper'>
         <div className='sign-up-employer-content'>
           <div className='title-container'>
-            <div className='title'>HFWork</div>
+            <div className='title' onClick={() => navigate('/employer')}>
+              HFWorks
+            </div>
             <p>Đăng ký tài khoản Nhà tuyển dụng</p>
             <span>Cùng tạo dựng lợi thế cho doanh nghiệp bằng trải nghiệm dịch vụ Website của chúng tôi.</span>
           </div>
@@ -179,9 +306,12 @@ const SignUpEmployer = () => {
                 rules={[
                   { required: true, message: 'Vui lòng nhập mật khẩu' },
                   {
-                    pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
-                    message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
-                  }
+                    ///^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
+                    pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
+                    message:
+                      'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
+                  },
+                  { max: 150, message: 'Đã vượt quá độ dài tối đa' }
                 ]}
               >
                 <Input.Password
@@ -205,7 +335,8 @@ const SignUpEmployer = () => {
                       }
                       return Promise.reject(new Error('Nhập lại mật khẩu không chính xác'))
                     }
-                  })
+                  }),
+                  { max: 150, message: 'Đã vượt quá độ dài tối đa' }
                 ]}
                 style={{ paddingTop: '10px' }}
               >
@@ -222,7 +353,15 @@ const SignUpEmployer = () => {
                 <Col md={14} sm={24} xs={24}>
                   <Form.Item
                     name={'name'}
-                    rules={[{ required: true, message: 'Vui lòng không để trống họ tên' }]}
+                    rules={[
+                      { max: 30, message: 'Đã vượt quá độ dài tối đa 30 ký tự' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
                     label='Họ và tên'
                   >
                     <Input
@@ -277,7 +416,15 @@ const SignUpEmployer = () => {
                   <Form.Item
                     label='Tên công ty'
                     name='nameCompany'
-                    rules={[{ required: true, message: 'Vui lòng nhập tên công ty' }]}
+                    rules={[
+                      { max: 50, message: 'Đã vượt quá độ dài tối đa 50 ký tự' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
                   >
                     <Input
                       size='large'
@@ -300,18 +447,11 @@ const SignUpEmployer = () => {
                       }
                     ]}
                   >
-                    {/* <SelectSortCustom
-                      listOptions={listPositions}
-                      placeholderValue={'Chọn ví trí công tác'}
-                      pickData={position}
-                      setData={setPosition}
-                    /> */}
-
                     <Select size='large' options={listPositions} onChange={(value) => setPosition(value)} />
                   </Form.Item>
                 </Col>
               </Row>
-              <Row justify={'space-between'}>
+              {/* <Row justify={'space-between'}>
                 <Col md={11} sm={24} xs={24}>
                   <Form.Item
                     label='Địa điểm làm việc'
@@ -325,13 +465,7 @@ const SignUpEmployer = () => {
                       }
                     ]}
                   >
-                    {/* <SelectSortCustom
-                      listOptions={provincesData}
-                      pickData={province}
-                      setData={setProvince}
-                      placeholderValue={'Chọn tỉnh/thành phố'}
-                    /> */}
-
+                 
                     <Select showSearch size='large' options={provincesData} onChange={(value) => setProvince(value)} />
                   </Form.Item>
                 </Col>
@@ -349,17 +483,180 @@ const SignUpEmployer = () => {
                       }
                     ]}
                   >
-                    {/* <SelectSortCustom
-                      pickData={district}
-                      setData={setDistrict}
-                      listOptions={districtsData}
-                      placeholderValue={'Chọn quận/huyện'}
-                    /> */}
-
+                  
                     <Select showSearch size='large' options={districtsData} onChange={(value) => setDistrict(value)} />
                   </Form.Item>
                 </Col>
-              </Row>
+              </Row> */}
+              <h4 style={{ fontWeight: '500' }}>Địa Điểm Làm Việc</h4>
+              {arrLocations.map((lcItem) => {
+                return (
+                  <Row align={'middle'} justify={'space-between'} key={lcItem.key} style={{ marginBottom: '15px' }}>
+                    <Col md={22} sm={21} xs={19}>
+                      <Form.Item
+                        style={{ margin: 0 }}
+                        name={`location_${lcItem.key}`}
+                        // label={<span style={{ fontWeight: '500' }}>{lcItem.key}</span>}
+                        rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ trụ sở' }]}
+                      >
+                        <Select
+                          onChange={(value) => handleSelectLocation(value, lcItem.key)}
+                          size='large'
+                          dropdownRender={(menu) => (
+                            <>
+                              {menu}
+                              <Divider style={{ margin: '8px 0' }} />
+                              <Space style={{ padding: '0 8px 4px' }}>
+                                <Button type='text' icon={<PlusOutlined />} onClick={() => setOpenModalLocation(true)}>
+                                  Tạo địa điểm làm việc
+                                </Button>
+                              </Space>
+                            </>
+                          )}
+                          options={listLocation.map((location) => ({
+                            label: (
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                <ImLocation />
+                                {location.value.branch_name}
+
+                                {/* <AiTwotoneEdit /> */}
+                              </div>
+                            ),
+                            value: location.value.branch_name,
+                            disabled: location.disabled
+                          }))}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col
+                      md={2}
+                      sm={3}
+                      xs={4}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Button
+                        hidden={hiddenDeleteLocation}
+                        onClick={() => handleDeletedRowLocation(lcItem.key)}
+                        size='large'
+                        icon={<BsTrashFill />}
+                      />
+                    </Col>
+                  </Row>
+                )
+              })}
+              <Modal
+                className='modal-create-location'
+                title={<h1>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h1>}
+                centered
+                open={openModalLocation}
+                onCancel={() => setOpenModalLocation(false)}
+                width={'50%'}
+                footer=''
+              >
+                <Form
+                  name='form-branch-location-job'
+                  className='form-branch-location-job'
+                  initialValues={{ remember: true }}
+                  onFinish={handleSubmitLocationForm}
+                  form={formLocation}
+                  onFinishFailed={onFinishFailed}
+                  layout='vertical'
+                >
+                  <Form.Item
+                    name='branchName'
+                    label={<span style={{ fontWeight: '500' }}>Tên Trụ Sở</span>}
+                    rules={[
+                      { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
+                  >
+                    <Input
+                      size='large'
+                      placeholder='Trụ sở chính'
+                      onChange={(e) => {
+                        setDataLocationBranch({ ...dataLocationBranch, branch_name: e.target.value })
+                      }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span style={{ fontWeight: '500' }}>Tỉnh/ Thành phố</span>}
+                    name='province'
+                    // rules={[{ required: true, message: 'Vui lòng chọn tỉnh/ thành phố' }]}
+                    rules={[
+                      {
+                        validator: (_, value) => {
+                          return value ? Promise.resolve() : Promise.reject(new Error('Vui lòng chọn tỉnh/ thành phố'))
+                        }
+                      }
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      size='large'
+                      options={provincesData}
+                      onChange={(value) => setDataLocationBranch({ ...dataLocationBranch, city_name: value })}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    label={<span style={{ fontWeight: '500' }}>Quận/ huyện</span>}
+                    name='district'
+                    // rules={[{ required: true, message: 'Vui lòng chọn quận/ huyện' }]}
+                    rules={[
+                      {
+                        validator: (_, value) => {
+                          return value ? Promise.resolve() : Promise.reject(new Error('Vui lòng chọn quận/ huyện'))
+                        }
+                      }
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      size='large'
+                      options={districtsData}
+                      onChange={(value) => setDataLocationBranch({ ...dataLocationBranch, district: value })}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name='address'
+                    label={<span style={{ fontWeight: '500' }}>Địa chỉ</span>}
+                    rules={[
+                      { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                      {
+                        validator: (_, value) =>
+                          value && value.trim() !== ''
+                            ? Promise.resolve()
+                            : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                      }
+                    ]}
+                  >
+                    <Input
+                      size='large'
+                      placeholder='FF/4B'
+                      onChange={(e) => {
+                        setDataLocationBranch({ ...dataLocationBranch, address: e.target.value })
+                      }}
+                    />
+                  </Form.Item>
+                  <Form.Item name='buttonSubmit'>
+                    <Button style={{ float: 'right' }} htmlType='submit'>
+                      Tạo
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </Modal>
+              <Button style={{ marginBottom: '40px' }} onClick={handleAddWorkingLocation} icon={<PlusOutlined />}>
+                Thêm địa điểm làm việc
+              </Button>
               <br />
               <Form.Item
                 name={'checkAccept'}

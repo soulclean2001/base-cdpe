@@ -1,0 +1,28 @@
+.find-candidate-page-container {
+  padding: 20px;
+  .title {
+    font-size: 26px;
+    font-weight: 700;
+    padding: 20px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 3px 8px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  .btn-filter-container {
+    .btn-filter-collapsed {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      .icon {
+        padding-top: 7px;
+      }
+    }
+  }
+  .content-wapper {
+    margin-top: 20px;
+    .total-search {
+      margin-bottom: 20px;
+    }
+  }
+}

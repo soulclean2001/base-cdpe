@@ -1,0 +1,41 @@
+.left-content-page-chat-container {
+  width: 25%;
+  min-width: 379.8px;
+  min-height: 89vh;
+  height: 100%;
+  background-color: white;
+  border: 1px solid rgb(241, 242, 244);
+  padding: 15px;
+
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 17px;
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      &:hover {
+        color: rgb(255, 125, 85);
+      }
+    }
+    .btn-setting {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+    }
+  }
+  .search-container {
+    .input-search {
+      border-radius: 50px;
+      background-color: rgb(246, 246, 246);
+      input {
+        background-color: rgb(246, 246, 246);
+      }
+    }
+  }
+  .list-chat-container {
+    margin-top: 15px;
+  }
+}

@@ -3,7 +3,10 @@ import { useState, useEffect } from 'react'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import './leftMenu.scss'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
 // const itemsLogin: MenuProps['items'] = [
 //   {
 //     label: <NavLink to={'/employer/services'}>Dịch vụ</NavLink>,
@@ -28,21 +31,37 @@ const items: MenuProps['items'] = [
     key: 'services'
   },
   {
-    label: <NavLink to={'/employer/about'}>Giới thiệu</NavLink>,
-    key: 'about'
+    label: (
+      <NavLink to={'/employer/about'} style={{ pointerEvents: 'none' }}>
+        Giới thiệu
+      </NavLink>
+    ),
+    key: 'about',
+    style: { pointerEvents: 'none' }
+    // disabled: true
   },
   {
-    label: <NavLink to={'/employer/contact'}>Liên hệ</NavLink>,
-    key: 'contact'
+    label: (
+      <NavLink to={'/employer/contact'} style={{ pointerEvents: 'none' }}>
+        Liên hệ
+      </NavLink>
+    ),
+    key: 'contact',
+    style: { pointerEvents: 'none' }
+    // disabled: true
   }
 ]
 const LeftMenu = (props: any) => {
   const { isLogin, clearActiveMenu } = props
-  const navigate = useNavigate()
 
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
   if (isLogin && items[items.length - 1]?.key !== 'dashboard') {
     items.push({
-      label: <NavLink to={'/employer/dashboard'}>Dashboard</NavLink>,
+      label: (
+        <NavLink to={auth.verify === 1 ? '/employer/dashboard' : '/employer/active-page'}>
+          {auth.verify === 1 ? 'Bảng điều khiển' : 'Kích hoạt tài khoản'}
+        </NavLink>
+      ),
       key: 'dashboard'
     })
   }
@@ -55,23 +74,12 @@ const LeftMenu = (props: any) => {
   useEffect(() => {
     setCurrent('none')
   }, [clearActiveMenu])
-  // const handleClickMenu: MenuProps['onClick'] = (e) => {
-  //   if (e.key === 'dashboard') navigate('/employer/dashboard')
-  //   if (e.key === 'services') navigate('/employer/services')
-  //   if (e.key === 'about') navigate('/employer/about')
-  //   if (e.key === 'contact') navigate('/employer/contact')
-  //   console.log('click ', e)
-  //   setCurrent(e.key)
-  //   //
-  // }
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e)
+    setCurrent(e.key)
+  }
   return (
-    <Menu
-      className='left_menu_container'
-      // onClick={handleClickMenu}
-      selectedKeys={[current]}
-      mode='horizontal'
-      items={items}
-    />
+    <Menu className='left_menu_container' onClick={onClick} selectedKeys={[current]} mode='horizontal' items={items} />
   )
 }
 

@@ -1,0 +1,275 @@
+.job-detail-page-container {
+  // height: 100vh;
+  margin-top: 20px;
+
+  display: flex;
+  flex-direction: column;
+  .page-background {
+    height: 238px;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+    background-position: top center;
+    background-size: cover;
+    // background-image: url(https://images02.vietnamworks.com/companyprofile/VINHOMES/en/Cover-profile2_1_.jpg);
+    .background-overlay {
+      background-image: -moz-linear-gradient(
+        -90deg,
+        rgba(0, 0, 0, 0.2) 0,
+        rgba(12, 12, 12, 0.5) 21%,
+        rgba(23, 23, 23, 0.7) 48%,
+        #171717 100%
+      );
+      background-image: -webkit-linear-gradient(
+        -90deg,
+        rgba(0, 0, 0, 0.2) 0,
+        rgba(12, 12, 12, 0.5) 21%,
+        rgba(23, 23, 23, 0.7) 48%,
+        #171717 100%
+      );
+      background-image: -ms-linear-gradient(
+        -90deg,
+        rgba(0, 0, 0, 0.2) 0,
+        rgba(12, 12, 12, 0.5) 21%,
+        rgba(23, 23, 23, 0.7) 48%,
+        #171717 100%
+      );
+      height: 100%;
+      width: 100%;
+      opacity: 0.6;
+    }
+  }
+
+  .content {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    // padding-bottom: 20px;
+    // .banner-company {
+    //   // position: absolute;
+    //   height: 410px;
+    //   width: 100%;
+    //   img {
+    //     width: 100%;
+
+    //     height: 70%;
+    //     object-fit: cover;
+    //   }
+    // }
+    .content-header {
+      margin-top: 100px;
+      flex: 1;
+      width: 100%;
+      .job-title-container {
+        margin: 0 auto;
+        margin-bottom: 20px;
+        padding: 40px;
+        background-color: white;
+        border-radius: 6px;
+        width: 80%;
+
+        .logo-company {
+          background-color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img {
+            width: 90%;
+            height: 90%;
+            max-width: 90%;
+
+            max-height: 90%;
+            object-fit: contain;
+          }
+          @media (max-width: 768px) {
+            padding-bottom: 20px;
+            img {
+              width: 110px;
+              // width: 60px;
+              height: 110px;
+              max-width: 110px;
+              // max-width: 60px;
+              max-height: 110px;
+            }
+          }
+        }
+        .title-info {
+          padding: 0 15px;
+          font-size: 16px;
+          .job-name {
+            margin: 0;
+            font-size: 27px;
+            font-weight: 600;
+          }
+          .name-company {
+            color: #005aff;
+            cursor: pointer;
+            font-weight: 500;
+          }
+
+          .salary {
+            font-weight: 500;
+            color: #ff7d55;
+          }
+          .total-accept {
+            color: #999 !important;
+          }
+          .expiration-date {
+            color: #999 !important;
+          }
+          .btn-container {
+            display: flex;
+            align-self: center;
+            justify-content: center;
+            gap: 5px;
+
+            .btn-follow {
+              height: 50px;
+              // width: 65px;
+              // padding: unset;
+              padding: 15px 25px;
+              font-size: 22px;
+              line-height: 22px;
+              text-align: center;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            .btn-apply {
+              // background-color: #ff7d55 !important;
+              border-color: #ff7d55 !important;
+              border: 2px solid #ff7d55 !important;
+              color: white;
+              height: 50px;
+              font-size: 18px;
+              font-weight: 500;
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+
+    .job-info-container {
+      margin-bottom: 40px;
+      background-color: white;
+      border-radius: 6px;
+      padding: 0 20px;
+      padding-bottom: 40px;
+      // flex: 1;
+      width: 80%;
+      .tab-job-detail {
+        color: gray;
+        width: 100%;
+        .ant-tabs-tab {
+          font-weight: 700px;
+        }
+      }
+    }
+    .sticky-div {
+      box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: auto; /* Nếu bạn muốn chiều cao của thẻ div thích ứng với nội dung bên trong */
+      background-color: #ffffff; /* Thay đổi màu nền theo mong muốn */
+      padding: 20px;
+      .sticky-content {
+        display: flex;
+        gap: 10px;
+        .logo {
+          background-color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          img {
+            // width: 100px;
+            border-radius: 7px;
+            width: 60px;
+            max-width: 100%;
+            height: 60px;
+            max-height: 100%;
+            object-fit: contain;
+          }
+        }
+        .sticky-info-container {
+          display: flex;
+          flex-direction: column;
+          .name-job {
+            font-size: 22px;
+            font-weight: 600;
+          }
+          .name-company {
+            color: #005aff;
+
+            font-weight: 500;
+          }
+        }
+      }
+
+      .btn-container {
+        display: flex;
+        align-self: center;
+        justify-content: center;
+        gap: 5px;
+
+        .btn-follow {
+          height: 50px;
+          // width: 65px;
+          // padding: unset;
+          padding: 15px 25px;
+          font-size: 22px;
+          line-height: 22px;
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .btn-apply {
+          // background-color: #ff7d55 !important;
+          border-color: #ff7d55 !important;
+          border: 2px solid #ff7d55 !important;
+          color: white;
+          height: 50px;
+          font-size: 18px;
+          font-weight: 500;
+          width: 100%;
+        }
+      }
+    }
+    .hidden {
+      display: none;
+    }
+    @media (max-width: 992px) {
+      .content-header {
+        .job-title-container {
+          width: 90%;
+          .title-info {
+            font-size: 14px;
+            .job-name {
+              font-size: 22px;
+            }
+          }
+        }
+      }
+      .job-info-container {
+        width: 90%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-header {
+        position: static;
+      }
+    }
+  }
+}

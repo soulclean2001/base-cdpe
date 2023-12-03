@@ -1,19 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import iconStatic from '~/utils/icons'
-import locale from 'antd/locale/vi_VN'
+// import locale from 'antd/locale/vi_VN'
 import dayjs from 'dayjs'
 import './cv.scss'
 import InputCustom from './components/InputCustom'
 import InputAutoResize from './components/InputAutoResize'
 import InputEditAutoResize from './components/InputEditAutoResize'
 import ImgCrop from 'antd-img-crop'
-import { Collapse, DatePicker, Select, Upload, UploadFile, UploadProps } from 'antd'
+import { Button, Collapse, DatePicker, Select, Upload, UploadFile, UploadProps } from 'antd'
 import { RcFile } from 'antd/es/upload'
 import { DeleteRowOutlined, DownOutlined, PlusOutlined, UpOutlined } from '@ant-design/icons'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
-import { LanguageLevel, ResumeType, SkillLevel } from '~/types/resume.type'
+import { LanguageLevel, ResumeType, SkillLevel, listLanguages } from '~/types/resume.type'
 import Right from './Right'
+import { AiOutlineUpload } from 'react-icons/ai'
+import { AuthState } from '~/features/Auth/authSlice'
+import { RootState } from '~/app/store'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import apiResume from '~/api/resume.api'
+import { omit } from 'lodash'
+import apiUpload from '~/api/upload.api'
+import { toast } from 'react-toastify'
+// import { isExpired } from '~/utils/jwt'
 
 const initResume: ResumeType = {
   _id: '',
@@ -165,7 +175,7 @@ const initResume: ResumeType = {
   is_show: true
 }
 
-const defaultResume: ResumeType = {
+export const defaultResume: ResumeType = {
   _id: '',
   user_id: '',
   title: 'Untitled',
@@ -266,30 +276,81 @@ const defaultResume: ResumeType = {
 }
 
 const CV = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (auth && auth.isLogin && auth.accessToken) {
+      if (auth.role !== 2) {
+        navigate('/candidate-login')
+        return
+      }
+      if (auth.verify.toString() === '0') {
+        navigate('/active-page')
+        return
+      }
+      if (auth.verify === 2) {
+        navigate('/candidate-login')
+        return
+      }
+    } else {
+      navigate('/candidate-login')
+      return
+    }
+  }, [auth])
   const [isAddInfo, setIsAddInfo] = useState(false)
   const [openIndex, setOpenIndex] = useState([1, 1, 1, 1, 1, 1, 1])
+  const [data2, setData2] = useState<string[]>([])
+  const [disableBtn, setDisableBtn] = useState(false)
   // const plugin = ClassicEditor.builtinPlugins.map((plugin) => plugin.pluginName)
 
   const [data, setData] = useState<ResumeType>(defaultResume)
 
-  console.log(data)
+  useEffect(() => {
+    fetchGetMyResume()
+  }, [])
+  const fetchGetMyResume = async () => {
+    await apiResume.getAllByMe().then((rs) => {
+      if (rs.result[0]) {
+        setData(rs.result[0])
+        if (rs.result[0].user_info.avatar && rs.result[0].user_info.avatar !== '_')
+          setFileList([
+            { uid: `${rs.result[0]._id}`, name: 'avatar.png', status: 'done', url: rs.result[0].user_info.avatar }
+          ])
+
+        const temp = omit(rs.result[0], [
+          'skills',
+          'hobbies',
+          'languages',
+          'user_info',
+          'status',
+          'updated_at',
+          'user_id',
+          '_id'
+        ])
+        const keys = Object.keys(temp)
+
+        setData2(keys)
+      }
+    })
+  }
+
   const {
-    additional_info,
+    // additional_info,
     courses,
     educations,
     employment_histories,
     extra_curricular_activities,
     hobbies,
     internships,
-    is_show,
+    // is_show,
     languages,
     professional_summary,
     references,
     skills,
     social_or_website,
-    status,
-    title,
-    user_id,
+    // status,
+    // title,
+    // user_id,
     user_info
   } = data
   const [fileList, setFileList] = useState<UploadFile[]>([
@@ -301,7 +362,7 @@ const CV = () => {
     // }
   ])
 
-  const onFocusInput = () => {}
+  // const onFocusInput = () => {}
   const preventRequest = () => false
   const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     setFileList(newFileList)
@@ -322,7 +383,7 @@ const CV = () => {
     imgWindow?.document.write(image.outerHTML)
   }
 
-  const handleAddMoreUserInfoDetails = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+  const handleAddMoreUserInfoDetails = () => {
     setIsAddInfo(!isAddInfo)
   }
 
@@ -363,6 +424,10 @@ const CV = () => {
         ...prvData
       }
     })
+
+    if (!data2.includes(key)) {
+      setData2((prv) => [...prv, key])
+    } // sao chạy qua đây rồi :v thì cho n đủ từ đăng bài tới ứng tuyen đó mà
     setOpenIndex((prv) => {
       prv[index] = 0
       return [...prv]
@@ -415,8 +480,6 @@ const CV = () => {
   }
 
   const handleSetSubDataArray = (parentIndex: number, parentKey: string, index: number, key: string, value: string) => {
-    console.log(parentIndex, parentKey)
-
     setData((prevData) => {
       let arrObj = prevData[parentKey]
       let arrData = arrObj[parentIndex].data || []
@@ -500,6 +563,35 @@ const CV = () => {
       }
     })
   }
+  const handleSubmitUpdate = async () => {
+    setDisableBtn(true)
+    let urlAvatar = ''
+    if (!fileList || !fileList[0]) urlAvatar = '_'
+    else {
+      if (fileList[0].uid !== data._id) {
+        let avatarForm = new FormData()
+        if (fileList[0].originFileObj) {
+          avatarForm.append('image', fileList[0].originFileObj)
+          urlAvatar = await apiUpload.uploadImage(avatarForm).then((rs) => {
+            return rs.result[0].url
+          })
+        }
+      } else urlAvatar = data.user_info.avatar
+    }
+    let request = { ...data, updated_at: '', user_id: '', _id: '', user_info: { ...data.user_info, avatar: urlAvatar } }
+    // request = { ...data, 'user_info.avatar': urlAvatar }
+
+    await apiResume
+      .createOrUpdateResume(request)
+      .then(() => {
+        toast.success('Hồ sơ của bạn đã được cập nhật thành công')
+        setDisableBtn(false)
+      })
+      .catch(() => {
+        toast.error('Bạn đã cập nhật thất bại, vui lòng kiểm tra lại')
+        setDisableBtn(false)
+      })
+  }
 
   return (
     <>
@@ -507,14 +599,17 @@ const CV = () => {
         <div className='left'>
           <div className='title'>
             <InputAutoResize
+              width='100%'
               style={{
-                fontSize: '19px',
+                fontSize: '24px',
                 fontWeight: 500
               }}
               onChange={(e) => {
                 setData({ ...data, title: e.target.value })
               }}
-              value={data.title}
+              // value={data.title}
+              value={'Hồ sơ của tôi'}
+              disabled
               id='1'
             />
           </div>
@@ -537,7 +632,7 @@ const CV = () => {
                   <div style={{ width: '90%' }}>
                     <p className='title-name'>Tên công việc mong muốn</p>
                     <InputCustom
-                      // value={user_info.wanted_job_title || ''}
+                      value={user_info.wanted_job_title || ''}
                       onChange={(e) => handleSetData('user_info', 'wanted_job_title', e.target.value)}
                       type='text'
                     />
@@ -555,10 +650,10 @@ const CV = () => {
                         onPreview={onPreview}
                         className='custom-upload'
                       >
-                        {fileList.length < 1 && '+ Upload'}
+                        {fileList.length < 1 && <AiOutlineUpload />}
                       </Upload>
                     </ImgCrop>
-                    <span style={{ marginLeft: '10px' }}>Upload photo</span>
+                    {/* <span style={{ marginLeft: '10px' }}>Upload photo</span> */}
                   </div>
                 </div>
               </div>
@@ -567,7 +662,7 @@ const CV = () => {
                   <div style={{ width: '90%' }}>
                     <p className='title-name'>Họ</p>
                     <InputCustom
-                      // value={user_info.first_name || ''}
+                      value={user_info.first_name || ''}
                       onChange={(e) => handleSetData('user_info', 'first_name', e.target.value)}
                       type='text'
                     />
@@ -577,7 +672,7 @@ const CV = () => {
                   <div style={{ width: '90%' }}>
                     <p className='title-name'>Tên</p>
                     <InputCustom
-                      // value={user_info.last_name || ''}
+                      value={user_info.last_name || ''}
                       onChange={(e) => handleSetData('user_info', 'last_name', e.target.value)}
                       type='text'
                     />
@@ -590,7 +685,7 @@ const CV = () => {
                     <p className='title-name'>Email</p>
                     <InputCustom
                       type='text'
-                      // value={user_info.email || ''}
+                      value={user_info.email || ''}
                       onChange={(e) => handleSetData('user_info', 'email', e.target.value)}
                     />
                   </div>
@@ -600,7 +695,7 @@ const CV = () => {
                     <p className='title-name'>Số điện thoại</p>
                     <InputCustom
                       type='text'
-                      // value={user_info.phone || ''}
+                      value={user_info.phone || ''}
                       onChange={(e) => handleSetData('user_info', 'phone', e.target.value)}
                     />
                   </div>
@@ -609,10 +704,10 @@ const CV = () => {
               <div className='personal-detail-row'>
                 <div className='personal-detail-col-left'>
                   <div style={{ width: '90%' }}>
-                    <p className='title-name'>Thành phố</p>
+                    <p className='title-name'>Thành phố sinh sống</p>
                     <InputCustom
                       type='text'
-                      // value={user_info.city || ''}
+                      value={user_info.city || ''}
                       onChange={(e) => handleSetData('user_info', 'city', e.target.value)}
                     />
                   </div>
@@ -627,17 +722,17 @@ const CV = () => {
               {isAddInfo && (
                 <>
                   <div className='personal-detail-row'>
-                    <div className='personal-detail-col-left'>
-                      <div style={{ width: '90%' }}>
-                        <p className='title-name'>Địa chỉ</p>
-                        <InputCustom
-                          type='text'
-                          // value={user_info.address || ''}
-                          onChange={(e) => handleSetData('user_info', 'address', e.target.value)}
-                        />
-                      </div>
+                    {/* <div className='personal-detail-col-left'> */}
+                    <div style={{ width: '100%' }}>
+                      <p className='title-name'>Địa chỉ</p>
+                      <InputCustom
+                        type='text'
+                        value={user_info.address || ''}
+                        onChange={(e) => handleSetData('user_info', 'address', e.target.value)}
+                      />
                     </div>
-                    <div className='personal-detail-col-right'>
+                    {/* </div> */}
+                    {/* <div className='personal-detail-col-right'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Mã bưu điện</p>
                         <InputCustom
@@ -646,10 +741,10 @@ const CV = () => {
                           onChange={(e) => handleSetData('user_info', 'postal_code', e.target.value)}
                         />
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                   <div className='personal-detail-row'>
-                    <div className='personal-detail-col-left'>
+                    {/* <div className='personal-detail-col-left'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Bằng lái xe</p>
                         <InputCustom
@@ -658,19 +753,38 @@ const CV = () => {
                           onChange={(e) => handleSetData('user_info', 'driving_license', e.target.value)}
                         />
                       </div>
+                    </div> */}
+                    <div className='personal-detail-col-left'>
+                      <div style={{ width: '90%' }}>
+                        <p className='title-name'>Ngày sinh</p>
+                        {/* <InputCustom
+                          type='text'
+                          // value={user_info.date_of_birth || ''}
+                          onChange={(e) => handleSetData('user_info', 'date_of_birth', e.target.value)}
+                        /> */}
+                        <DatePicker
+                          value={user_info.date_of_birth ? dayjs(user_info.date_of_birth, 'DD/MM/YYYY') : undefined}
+                          onChange={(e) => {
+                            handleSetData('user_info', 'date_of_birth', e?.format('DD/MM/YYYY') || '')
+                          }}
+                          className='input-date'
+                          placeholder='DD/MM/YYYY'
+                          format='DD/MM/YYYY'
+                        />
+                      </div>
                     </div>
                     <div className='personal-detail-col-right'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Quốc tịch</p>
                         <InputCustom
                           type='text'
-                          // value={user_info.country || ''}
+                          value={user_info.country || ''}
                           onChange={(e) => handleSetData('user_info', 'country', e.target.value)}
                         />
                       </div>
                     </div>
                   </div>
-                  <div className='personal-detail-row'>
+                  {/* <div className='personal-detail-row'>
                     <div className='personal-detail-col-left'>
                       <div style={{ width: '90%' }}>
                         <p className='title-name'>Nơi sinh</p>
@@ -681,17 +795,8 @@ const CV = () => {
                         />
                       </div>
                     </div>
-                    <div className='personal-detail-col-right'>
-                      <div style={{ width: '90%' }}>
-                        <p className='title-name'>Ngày sinh</p>
-                        <InputCustom
-                          type='text'
-                          // value={user_info.date_of_birth || ''}
-                          onChange={(e) => handleSetData('user_info', 'date_of_birth', e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    
+                  </div> */}
                 </>
               )}
 
@@ -759,7 +864,7 @@ const CV = () => {
                               <div className='personal-detail-row'>
                                 <div className='personal-detail-col-left'>
                                   <div style={{ width: '95%' }}>
-                                    <p className='title-name'>Job Title</p>
+                                    <p className='title-name'>Tên công việc</p>
                                     <InputCustom
                                       value={item.job_title}
                                       onChange={(e) =>
@@ -771,7 +876,7 @@ const CV = () => {
                                 </div>
                                 <div className='personal-detail-col-right'>
                                   <div style={{ width: '95%' }}>
-                                    <p className='title-name'>Employer</p>
+                                    <p className='title-name'>Chức vụ</p>
                                     <InputCustom
                                       value={item.employer}
                                       onChange={(e) =>
@@ -784,8 +889,8 @@ const CV = () => {
                               </div>
                               <div className='personal-detail-row'>
                                 <div className='personal-detail-col-left'>
-                                  <div style={{ width: '95%' }}>
-                                    <p className='title-name'>Start & End Date</p>
+                                  <div style={{ width: '48%' }}>
+                                    <p className='title-name'>Khoảng thời gian</p>
                                     <div className='start-end-date'>
                                       <DatePicker
                                         value={item.start_date ? dayjs(item.start_date, 'MM/YY') : undefined}
@@ -819,7 +924,7 @@ const CV = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className='personal-detail-col-right'>
+                                {/* <div className='personal-detail-col-right'>
                                   <div style={{ width: '95%' }}>
                                     <p className='title-name'>City</p>
                                     <InputCustom
@@ -830,11 +935,11 @@ const CV = () => {
                                       }
                                     />
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                               <div className='personal-detail-row'>
                                 <div style={{ width: '100%' }}>
-                                  <p className='title-name'>Description</p>
+                                  <p className='title-name'>Mô tả</p>
                                   {EditorCustom(item.description, (value) =>
                                     handleSetDataArray('employment_histories', index, 'description', value)
                                   )}
@@ -906,7 +1011,7 @@ const CV = () => {
                               <div className='personal-detail-row'>
                                 <div className='personal-detail-col-left'>
                                   <div style={{ width: '95%' }}>
-                                    <p className='title-name'>School</p>
+                                    <p className='title-name'>Tên trường</p>
                                     <InputCustom
                                       value={item.school}
                                       onChange={(e) =>
@@ -918,21 +1023,70 @@ const CV = () => {
                                 </div>
                                 <div className='personal-detail-col-right'>
                                   <div style={{ width: '95%' }}>
-                                    <p className='title-name'>Degree</p>
-                                    <InputCustom
+                                    <p className='title-name'>Trình độ</p>
+                                    {/* <InputCustom
                                       value={item.degree}
                                       onChange={(e) =>
                                         handleSetDataArray('educations', index, 'degree', e.target.value)
                                       }
                                       type='text'
+                                    /> */}
+                                    <Select
+                                      allowClear
+                                      className='select-level'
+                                      value={item.degree}
+                                      showSearch
+                                      onChange={(e) => {
+                                        handleSetDataArray(
+                                          'educations',
+                                          index,
+                                          'degree',
+                                          // Object.keys(EducationLevel)[Number(e) - 1]
+                                          e
+                                        )
+                                      }}
+                                      style={{ width: 200 }}
+                                      placeholder='Search to Select'
+                                      optionFilterProp='children'
+                                      filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                      options={[
+                                        {
+                                          value: 'Trung học',
+                                          label: 'Trung học'
+                                        },
+                                        {
+                                          value: 'Trung cấp',
+                                          label: 'Trung cấp'
+                                        },
+                                        {
+                                          value: 'Cao đẳng',
+                                          label: 'Cao đẳng'
+                                        },
+                                        {
+                                          value: 'Cử nhân',
+                                          label: 'Cử nhân'
+                                        },
+                                        {
+                                          value: 'Thạc sĩ',
+                                          label: 'Thạc sĩ'
+                                        },
+                                        {
+                                          value: 'Tiến sĩ',
+                                          label: 'Tiến sĩ'
+                                        },
+                                        {
+                                          value: 'Khác',
+                                          label: 'Khác'
+                                        }
+                                      ]}
                                     />
                                   </div>
                                 </div>
                               </div>
                               <div className='personal-detail-row'>
                                 <div className='personal-detail-col-left'>
-                                  <div style={{ width: '95%' }}>
-                                    <p className='title-name'>Start & End Date</p>
+                                  <div style={{ width: '48%' }}>
+                                    <p className='title-name'>Khoảng thời gian</p>
                                     <div className='start-end-date'>
                                       <DatePicker
                                         value={item.start_date ? dayjs(item.start_date, 'MM/YY') : undefined}
@@ -961,7 +1115,7 @@ const CV = () => {
                                     </div>
                                   </div>
                                 </div>
-                                <div className='personal-detail-col-right'>
+                                {/* <div className='personal-detail-col-right'>
                                   <div style={{ width: '95%' }}>
                                     <p className='title-name'>City</p>
                                     <InputCustom
@@ -970,11 +1124,11 @@ const CV = () => {
                                       type='text'
                                     />
                                   </div>
-                                </div>
+                                </div> */}
                               </div>
                               <div className='personal-detail-row'>
                                 <div style={{ width: '100%' }}>
-                                  <p className='title-name'>Description</p>
+                                  <p className='title-name'>Mô tả</p>
                                   {EditorCustom(item.description, (value) =>
                                     handleSetDataArray('educations', index, 'description', value)
                                   )}
@@ -1047,7 +1201,7 @@ const CV = () => {
                                 <div className='personal-detail-row'>
                                   <div className='personal-detail-col-left'>
                                     <div style={{ width: '95%' }}>
-                                      <p className='title-name'>Label</p>
+                                      <p className='title-name'>Tên Website</p>
                                       <InputCustom
                                         value={item.label}
                                         onChange={(e) =>
@@ -1135,7 +1289,7 @@ const CV = () => {
                                 <div className='personal-detail-row'>
                                   <div className='personal-detail-col-left'>
                                     <div style={{ width: '95%' }}>
-                                      <p className='title-name'>Skill</p>
+                                      <p className='title-name'>Kỹ năng</p>
                                       <InputCustom
                                         value={item.skill_name}
                                         onChange={(e) =>
@@ -1147,8 +1301,9 @@ const CV = () => {
                                   </div>
                                   <div className='personal-detail-col-right'>
                                     <div style={{ width: '95%' }}>
-                                      <p className='title-name'>Level</p>
+                                      <p className='title-name'>Cấp bậc</p>
                                       <Select
+                                        allowClear
                                         className='select-level'
                                         value={item.level}
                                         showSearch
@@ -1157,7 +1312,7 @@ const CV = () => {
                                             'skills',
                                             index,
                                             'level',
-                                            Object.keys(SkillLevel)[Number(e) - 1]
+                                            Object.values(SkillLevel)[Number(e) - 1]
                                           )
                                         }}
                                         style={{ width: 200 }}
@@ -1172,23 +1327,23 @@ const CV = () => {
                                         options={[
                                           {
                                             value: '1',
-                                            label: 'Novice'
+                                            label: 'Cơ bản'
                                           },
                                           {
                                             value: '2',
-                                            label: 'Beginer'
+                                            label: 'Trung bình'
                                           },
                                           {
                                             value: '3',
-                                            label: 'Skillful'
+                                            label: 'Thành thạo'
                                           },
                                           {
                                             value: '4',
-                                            label: 'Experienced'
+                                            label: 'Có kinh nghiệm'
                                           },
                                           {
                                             value: '5',
-                                            label: 'Expert'
+                                            label: 'Chuyên gia'
                                           }
                                         ]}
                                       />
@@ -1278,8 +1433,8 @@ const CV = () => {
                                   <div className='personal-detail'>
                                     <div className='personal-detail-row'>
                                       <div className='personal-detail-col-left'>
-                                        <div style={{ width: '95%' }}>
-                                          <p className='title-name'>Activity name, job title, book title, etc.</p>
+                                        <div style={{ width: '100%' }}>
+                                          <p className='title-name'>Tên hoạt động, chức danh, v.v</p>
                                           <InputCustom
                                             value={info.title}
                                             type='text'
@@ -1295,7 +1450,7 @@ const CV = () => {
                                           />
                                         </div>
                                       </div>
-                                      <div className='personal-detail-col-right'>
+                                      {/* <div className='personal-detail-col-right'>
                                         <div style={{ width: '95%' }}>
                                           <p className='title-name'>City</p>
                                           <InputCustom
@@ -1312,12 +1467,12 @@ const CV = () => {
                                             }
                                           />
                                         </div>
-                                      </div>
+                                      </div> */}
                                     </div>
                                     <div className='personal-detail-row'>
                                       <div className='personal-detail-col-left'>
                                         <div style={{ width: '95%' }}>
-                                          <p className='title-name'>Start & End Date</p>
+                                          <p className='title-name'>Khoảng thời gian</p>
                                           <div className='start-end-date'>
                                             <DatePicker
                                               value={info.start_date ? dayjs(info.start_date, 'MM/YY') : undefined}
@@ -1362,7 +1517,7 @@ const CV = () => {
                                     </div>
                                     <div className='personal-detail-row'>
                                       <div style={{ width: '100%' }}>
-                                        <p className='title-name'>Description</p>
+                                        <p className='title-name'>Mô tả</p>
                                         {EditorCustom(info.description, (value) =>
                                           handleSetSubDataArray(pIndex, 'additional_info', index, 'description', value)
                                         )}
@@ -1442,7 +1597,7 @@ const CV = () => {
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Course</p>
+                                        <p className='title-name'>Tên khóa học</p>
                                         <InputCustom
                                           value={item.title}
                                           onChange={(e) =>
@@ -1454,7 +1609,7 @@ const CV = () => {
                                     </div>
                                     <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Institution</p>
+                                        <p className='title-name'>Tổ chức</p>
                                         <InputCustom
                                           value={item.institution}
                                           onChange={(e) =>
@@ -1468,7 +1623,7 @@ const CV = () => {
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Start & End Date</p>
+                                        <p className='title-name'>Khoảng thời gian</p>
                                         <div className='start-end-date'>
                                           <DatePicker
                                             value={item.start_date ? dayjs(item.start_date, 'MM/YY') : undefined}
@@ -1578,7 +1733,7 @@ const CV = () => {
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Job Title</p>
+                                        <p className='title-name'>Tên công việc</p>
                                         <InputCustom
                                           value={item.job_title}
                                           onChange={(e) =>
@@ -1590,7 +1745,7 @@ const CV = () => {
                                     </div>
                                     <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Employer</p>
+                                        <p className='title-name'>Chức vụ</p>
                                         <InputCustom
                                           value={item.employer}
                                           onChange={(e) =>
@@ -1603,8 +1758,8 @@ const CV = () => {
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
-                                      <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Start & End Date</p>
+                                      <div style={{ width: '48%' }}>
+                                        <p className='title-name'>Khoảng thời gian</p>
                                         <div className='start-end-date'>
                                           <DatePicker
                                             value={item.start_date ? dayjs(item.start_date, 'MM/YY') : undefined}
@@ -1638,7 +1793,7 @@ const CV = () => {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className='personal-detail-col-right'>
+                                    {/* <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
                                         <p className='title-name'>City</p>
                                         <InputCustom
@@ -1649,11 +1804,11 @@ const CV = () => {
                                           type='text'
                                         />
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div style={{ width: '100%' }}>
-                                      <p className='title-name'>Description</p>
+                                      <p className='title-name'>Mô tả</p>
                                       {EditorCustom(item.description, (value) =>
                                         handleSetDataArray('internships', index, 'description', value)
                                       )}
@@ -1735,20 +1890,33 @@ const CV = () => {
                                     <div className='personal-detail-row'>
                                       <div className='personal-detail-col-left'>
                                         <div style={{ width: '95%' }}>
-                                          <p className='title-name'>Language</p>
-                                          <InputCustom
+                                          <p className='title-name'>Ngôn ngữ</p>
+                                          {/* <InputCustom
                                             value={item.language}
                                             onChange={(e) =>
                                               handleSetDataArray('languages', index, 'language', e.target.value)
                                             }
                                             type='text'
+                                          /> */}
+                                          <Select
+                                            value={item.language ? item.language : ''}
+                                            showSearch
+                                            placeholder={'Chọn ngoại ngữ'}
+                                            allowClear
+                                            size='large'
+                                            className='select-level'
+                                            style={{ width: 200 }}
+                                            options={listLanguages}
+                                            onChange={(e) => handleSetDataArray('languages', index, 'language', e)}
                                           />
                                         </div>
                                       </div>
                                       <div className='personal-detail-col-right'>
                                         <div style={{ width: '95%' }}>
-                                          <p className='title-name'>Level</p>
+                                          <p className='title-name'>Trình độ</p>
                                           <Select
+                                            allowClear
+                                            size='large'
                                             className='select-level'
                                             showSearch
                                             value={item.level ? item.level : ''}
@@ -1757,7 +1925,7 @@ const CV = () => {
                                                 'languages',
                                                 index,
                                                 'level',
-                                                Object.keys(LanguageLevel)[Number(e) - 1]
+                                                Object.values(LanguageLevel)[Number(e) - 1]
                                               )
                                             }}
                                             style={{ width: 200 }}
@@ -1772,46 +1940,43 @@ const CV = () => {
                                             options={[
                                               {
                                                 value: '1',
-                                                label: 'Native Speaker'
+                                                label: 'Cơ bản'
                                               },
                                               {
                                                 value: '2',
-                                                label: 'Highly proficient'
+                                                label: 'Người bản xứ'
                                               },
                                               {
                                                 value: '3',
-                                                label: 'Very good command'
+                                                label: 'Thành thạo'
                                               },
                                               {
                                                 value: '4',
-                                                label: 'Good working knowledge'
+                                                label: 'Trình độ cao'
                                               },
+
                                               {
                                                 value: '5',
-                                                label: 'Working knowledge'
-                                              },
-                                              {
-                                                value: '6',
                                                 label: 'C2'
                                               },
                                               {
-                                                value: '7',
+                                                value: '6',
                                                 label: 'C1'
                                               },
                                               {
-                                                value: '8',
+                                                value: '7',
                                                 label: 'B2'
                                               },
                                               {
-                                                value: '9',
+                                                value: '8',
                                                 label: 'B1'
                                               },
                                               {
-                                                value: '10',
+                                                value: '9',
                                                 label: 'A2'
                                               },
                                               {
-                                                value: '11',
+                                                value: '10',
                                                 label: 'A1'
                                               }
                                             ]}
@@ -1891,7 +2056,7 @@ const CV = () => {
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Function Title</p>
+                                        <p className='title-name'>Tên hoạt động</p>
                                         <InputCustom
                                           value={item.function_title}
                                           onChange={(e) =>
@@ -1908,7 +2073,7 @@ const CV = () => {
                                     </div>
                                     <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Employer</p>
+                                        <p className='title-name'>Chức vụ</p>
                                         <InputCustom
                                           value={item.employer}
                                           onChange={(e) =>
@@ -1926,8 +2091,8 @@ const CV = () => {
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
-                                      <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Start & End Date</p>
+                                      <div style={{ width: '48%' }}>
+                                        <p className='title-name'>Khoảng thời gian</p>
                                         <div className='start-end-date'>
                                           <DatePicker
                                             value={item.start_date ? dayjs(item.start_date, 'MM/YY') : undefined}
@@ -1961,7 +2126,7 @@ const CV = () => {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className='personal-detail-col-right'>
+                                    {/* <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
                                         <p className='title-name'>City</p>
                                         <InputCustom
@@ -1977,11 +2142,11 @@ const CV = () => {
                                           type='text'
                                         />
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </div>
                                   <div className='personal-detail-row'>
                                     <div style={{ width: '100%' }}>
-                                      <p className='title-name'>Description</p>
+                                      <p className='title-name'>Mô tả</p>
                                       {EditorCustom(item.description, (value) =>
                                         handleSetDataArray('extra_curricular_activities', index, 'description', value)
                                       )}
@@ -2046,7 +2211,7 @@ const CV = () => {
                   width='auto'
                 />
                 <div className='employment-history'>
-                  <p style={{ fontSize: '12px' }}>What would you like?</p>
+                  <p style={{ fontSize: '12px' }}>Bạn có những sở thích gì?</p>
                   <div>
                     <InputCustom
                       value={hobbies.description}
@@ -2095,7 +2260,7 @@ const CV = () => {
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Referent's Full Name</p>
+                                        <p className='title-name'>Họ tên</p>
                                         <InputCustom
                                           value={item.name}
                                           onChange={(e) =>
@@ -2107,7 +2272,7 @@ const CV = () => {
                                     </div>
                                     <div className='personal-detail-col-right'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Company</p>
+                                        <p className='title-name'>Công ty</p>
                                         <InputCustom
                                           value={item.company}
                                           onChange={(e) =>
@@ -2121,7 +2286,7 @@ const CV = () => {
                                   <div className='personal-detail-row'>
                                     <div className='personal-detail-col-left'>
                                       <div style={{ width: '95%' }}>
-                                        <p className='title-name'>Phone</p>
+                                        <p className='title-name'>Số điện thoại</p>
                                         <InputCustom
                                           value={item.phone}
                                           onChange={(e) =>
@@ -2175,7 +2340,7 @@ const CV = () => {
                       handleAddDataArray('references', newData)
                     }}
                   >
-                    <PlusOutlined /> Thêm việc làm
+                    <PlusOutlined /> Thêm người giới thiệu
                   </button>
                 </div>
               </>
@@ -2200,6 +2365,10 @@ const CV = () => {
                           additional_info: [...prvData.additional_info, item]
                         }
                       })
+
+                      if (!data2.includes('additional_info')) {
+                        setData2((prv) => [...prv, 'additional_info'])
+                      }
                     }
                   }}
                 >
@@ -2277,10 +2446,18 @@ const CV = () => {
                 </button>
               </div>
             </div>
+            <div
+              className='btn-submit-container'
+              style={{ paddingBottom: '10px', display: 'flex', justifyContent: 'flex-end' }}
+            >
+              <Button disabled={disableBtn} onClick={handleSubmitUpdate} className='btn-update' size='large'>
+                Cập nhật
+              </Button>
+            </div>
           </div>
         </div>
         <div className='right'>
-          <Right data={data} file={fileList[0]} />
+          <Right data={data} file={fileList[0]} hiddenButtonDownload={false} />
         </div>
       </div>
     </>
@@ -2338,19 +2515,9 @@ const EditorCustom = (data: string, handleSetData: (value: string) => void) => {
         ]
       }}
       editor={ClassicEditor}
-      onReady={(editor) => {
-        // You can store the "editor" and use when it is needed.
-        // console.log('Editor is ready to use!', editor)
-      }}
-      onChange={(event, editor) => {
+      onChange={(_, editor) => {
         const data = editor.getData()
         handleSetData(data)
-      }}
-      onBlur={(event, editor) => {
-        // console.log('Blur.', editor)
-      }}
-      onFocus={(event, editor) => {
-        // console.log('Focus.', editor)
       }}
     />
   )

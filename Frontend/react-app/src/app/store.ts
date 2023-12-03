@@ -1,15 +1,29 @@
 import { combineReducers, configureStore, EnhancedStore } from '@reduxjs/toolkit'
-import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
+import {
+  persistReducer,
+  persistStore,
+  // FLUSH,
+  // REHYDRATE,
+  // PAUSE,
+  // PERSIST,
+  // PURGE,
+  // REGISTER,
+  PersistConfig
+} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 import counterReducer from '../features/counter/counterSlice'
 import userReducer from '../features/User/userSlice'
 import authReducer from '../features/Auth/authSlice'
 import employerReducer from '../features/Employer/employerSlice'
-import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
-const persistConfig = {
+// import jobSeekerReducer from '../features/JobSeeker/jobSeekerSlice'
+import chatReducer from '~/features/ChatPage/chatSlice'
+import meReducer from '~/features/Account/meSlice'
+import notifyReducer from '~/components/Header/NotifyDrawer/notifySlice'
+const persistConfig: PersistConfig<any> = {
   key: 'root',
   version: 1,
-  storage
+  storage,
+  whitelist: ['auth']
 }
 
 const rootReducer = combineReducers({
@@ -17,7 +31,10 @@ const rootReducer = combineReducers({
   user: userReducer,
   auth: authReducer,
   employer: employerReducer,
-  jobSeeker: jobSeekerReducer
+  // jobSeeker: jobSeekerReducer,
+  chat: chatReducer,
+  me: meReducer,
+  notify: notifyReducer
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
@@ -26,9 +43,10 @@ export const store: EnhancedStore = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
-      }
+      // serializableCheck: {
+      //   ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER]
+      // }
+      serializableCheck: false
     })
 })
 

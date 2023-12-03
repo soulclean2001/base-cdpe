@@ -22,11 +22,11 @@ const MyAccountManagePage = () => {
     console.log('Failed:', errorInfo)
   }
   return (
-    <div className='my-account-manage-page-container'>
+    <div id='my-account-manage-page-container'>
       <div className='title'>Thông Tin Tài Khoản</div>
-      <div className='info-container'>
+      <div className='info-containerr'>
         {/* <div className='title'>Thông tin chung</div> */}
-        <div className='info-content'>
+        <div className='info-contentt'>
           <Row style={{ paddingBottom: '20px' }}>
             <Col md={4} lg={3} sm={6} xs={24}>
               <span className='label label-email'>Địa chỉ email</span>

@@ -1,16 +1,26 @@
 import { useEffect, useState } from 'react'
 import useQueryParams from './useQueryParams'
 import Auth from './api/auth.api'
-import { useDispatch } from 'react-redux'
-import { setToken } from './features/Auth/authSlice'
+
+import { logout, setAccountStatus, setStateLogin, setToken } from './features/Auth/authSlice'
 import { cancelTokenSource } from './api/client'
+
+import { decodeToken } from './utils/jwt'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { AppThunkDispatch, useAppDispatch } from './app/hook'
+// import { useDispatch } from 'react-redux'
 
 export const VerifyEmail = () => {
   const [message, setMessage] = useState('')
   // email-verifications?token=
   const { token } = useQueryParams()
-  const dispatch = useDispatch()
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  // const dispatch = useDispatch()
+  const navigate = useNavigate()
   useEffect(() => {
     if (token) {
       verify(token)
@@ -25,8 +35,20 @@ export const VerifyEmail = () => {
     const data = await Auth.verifyEmail(token)
     if (data.result) {
       const { refresh_token, access_token } = data.result
+
       if (typeof access_token === 'string' && typeof refresh_token === 'string') {
-        dispatch(setToken({ accessToken: access_token, refreshToken: refresh_token }))
+        const dataDecode = await decodeToken(access_token)
+        dispatchAsync(logout())
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin({ isLogin: true, loading: false, error: '' }))
+        dispatchAsync(setToken({ accessToken: access_token, refreshToken: refresh_token }))
+        toast.success('Tài khoản của bạn đã được xác thực thành công')
+        if (dataDecode.role === 2) {
+          navigate('/')
+        }
+        if (dataDecode.role === 1) {
+          navigate('/employer')
+        }
       }
     }
     if (data.message) {

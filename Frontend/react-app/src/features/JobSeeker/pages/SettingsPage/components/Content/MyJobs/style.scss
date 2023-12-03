@@ -1,0 +1,33 @@
+.my-jobs-container {
+  overflow: auto;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 60px;
+  gap: 10px;
+  // font-family: Inter, Arial, sans-serif !important;
+  background-color: rgb(247, 248, 250);
+  margin: 15px 15px 0 0;
+  .title {
+    background-color: white;
+    border: 1px solid rgb(224, 224, 233);
+    border-radius: 5px;
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .list-jobs-container {
+    background-color: white;
+    border: 1px solid rgb(224, 224, 233);
+    border-radius: 5px;
+    .tab-container {
+      padding: 4px 1rem 0 1rem;
+      color: gray;
+      width: 100%;
+      .ant-tabs-tab {
+        font-weight: 700px;
+        font-size: 16px;
+      }
+    }
+  }
+}

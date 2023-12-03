@@ -1,30 +1,29 @@
 import 'react-pro-sidebar/dist/css/styles.css'
-import { useRef, useEffect, useState } from 'react'
-import logo from '../../../../../../assets/react.svg'
+import { useEffect, useState } from 'react'
+
 import { ProSidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar'
 import { SidebarHeader, SidebarFooter, SidebarContent } from 'react-pro-sidebar'
 
 import { Link } from 'react-router-dom'
 import './sideBar.scss'
-import {
-  BookFilled,
-  FileSearchOutlined,
-  FundFilled,
-  SettingFilled,
-  ShopFilled,
-  ShoppingFilled,
-  SnippetsFilled
-} from '@ant-design/icons'
-import { BsFillCartCheckFill } from 'react-icons/bs'
+import { BookFilled, FileSearchOutlined, FundFilled, ShoppingFilled } from '@ant-design/icons'
+
 import { AiOutlineLogout } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
 import { handleAutoChangeSideBarByWidth } from '../../../../employerSlice'
-import { FaIndustry } from 'react-icons/fa'
+import { FaIndustry, FaUsersCog } from 'react-icons/fa'
+import { InfoMeState } from '~/features/Account/meSlice'
+import avatarTemp from '~/assets/logo_temp.jpg'
+import { logout } from '~/features/Auth/authSlice'
 const SideBarEmployer = (props: any) => {
+  const baseUrl = 'https://hfworks.id.vn' //import.meta.env.VITE_CLIENT_URL
+  const windowHref = window.location.href
   const dispatch = useDispatch()
-  const { image, collapsed, toggled, handleToggleSidebar, hidden } = props
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
+  const { toggled, handleToggleSidebar, hidden, roleType } = props
   const collap = useSelector((state: RootState) => state.employer.collapsed)
+  const [isActive, setIsActive] = useState('')
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
     return { innerWidth, innerHeight }
@@ -45,6 +44,17 @@ const SideBarEmployer = (props: any) => {
     }
   }, [windowSize.innerWidth <= 786])
   //
+  useEffect(() => {
+    if (!windowHref) return
+
+    setIsActive(windowHref)
+  }, [windowHref])
+  // const handleActiveSidebar = (e: any) => {
+  //   const targetElement = e.target as Element
+  //   const urlHref = targetElement.getAttribute('href')
+
+  //   if (urlHref) setIsActive(urlHref)
+  // }
 
   return (
     <ProSidebar
@@ -55,11 +65,12 @@ const SideBarEmployer = (props: any) => {
       toggled={toggled}
       breakPoint='md'
       onToggle={handleToggleSidebar}
+      // onClick={(e) => handleActiveSidebar(e)}
     >
       <SidebarHeader>
         <div
           style={{
-            padding: '24px 0 24px 18px',
+            padding: '25px 0 25px 18px',
             textTransform: 'uppercase',
             //   fontWeight: 'bold',
             fontSize: 13,
@@ -72,131 +83,207 @@ const SideBarEmployer = (props: any) => {
             alignItems: 'center'
           }}
         >
-          <img src={logo} alt='' width={'40px'} height={'40px'} />
-          <span style={{ padding: '0 21px' }}>Thanh Phong</span>
+          <img
+            style={{ borderRadius: '50%' }}
+            src={me.avatar && me.avatar !== '_' ? me.avatar : avatarTemp}
+            alt=''
+            width={'40px'}
+            height={'40px'}
+          />
+          <span style={{ padding: '0 21px', fontWeight: 600, fontSize: '14px' }}>
+            {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
+          </span>
         </div>
       </SidebarHeader>
+      {roleType === 'EMPLOYER_ROLE' && (
+        <SidebarContent>
+          <Menu
+            iconShape='circle'
+            className={isActive === `${baseUrl}/employer/dashboard` ? 'clicked-side-bar' : 'dont-click-side-bar'}
+          >
+            <MenuItem icon={<FundFilled />}>
+              Thống kê
+              <Link to={'/employer/dashboard'} />
+            </MenuItem>
+          </Menu>
+          <Menu iconShape='circle'>
+            <SubMenu
+              // suffix={<span className="features-menu">count num</span>}  thong bao number++
+              title={'Thiết lập công ty'}
+              icon={<FaIndustry />}
+            >
+              <MenuItem
+                className={
+                  isActive === baseUrl + '/employer/dashboard/company-general'
+                    ? 'clicked-menu-item'
+                    : 'dont-click-side-bar'
+                }
+              >
+                Thông tin chung
+                <Link to={'/employer/dashboard/company-general'} />
+              </MenuItem>
+              <MenuItem
+                className={
+                  isActive === baseUrl + '/employer/dashboard/company-location'
+                    ? 'clicked-menu-item'
+                    : 'dont-click-side-bar'
+                }
+              >
+                Địa điểm làm việc
+                <Link to={'/employer/dashboard/company-location'} />
+              </MenuItem>
+              {/* <MenuItem>
+                Mẫu email
+                <Link to={'/employer/dashboard/email-template'} />
+              </MenuItem>
+              <MenuItem>
+                Thông tin pháp nhân
+                <Link to={'/employer/dashboard/legal-info'} />
+              </MenuItem> */}
+            </SubMenu>
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/employer/dashboard/post-manage' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
+          >
+            <MenuItem icon={<BookFilled />}>
+              Quản lý bài đăng
+              <Link to={'/employer/dashboard/post-manage'} />
+            </MenuItem>
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/employer/dashboard/find-candidate' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
+          >
+            <MenuItem icon={<FileSearchOutlined />}>
+              Tìm kiếm ứng viên
+              <Link to={'/employer/dashboard/find-candidate'} />
+            </MenuItem>
+          </Menu>
 
-      <SidebarContent>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<FundFilled />}>
-            Thống kê
-            <Link to={'/employer/dashboard'} />
-          </MenuItem>
-        </Menu>
-        <Menu iconShape='circle'>
-          <SubMenu
-            // suffix={<span className="features-menu">count num</span>}  thong bao number++
-            title={'Thiết lập tài khoản'}
-            icon={<SettingFilled />}
+          <Menu iconShape='circle'>
+            <SubMenu
+              // suffix={<span className="features-menu">count num</span>}  thong bao number++
+              title={'Quản lý hồ sơ - CV'}
+              icon={<FaIndustry />}
+            >
+              <MenuItem
+                className={
+                  isActive === baseUrl + '/employer/dashboard/cv-manage' ? 'clicked-menu-item' : 'dont-click-side-bar'
+                }
+              >
+                Hồ sơ ứng tuyển
+                <Link to={'/employer/dashboard/cv-manage'} />
+              </MenuItem>
+              <MenuItem
+                className={
+                  isActive === baseUrl + '/employer/dashboard/cv-manage/tracked-candidate'
+                    ? 'clicked-menu-item'
+                    : 'dont-click-side-bar'
+                }
+              >
+                Hồ sơ đang theo dõi
+                <Link to={'/employer/dashboard/cv-manage/tracked-candidate'} />
+              </MenuItem>
+            </SubMenu>
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/employer/dashboard/my-services' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
           >
-            <MenuItem>
-              Thông tin tài khoản
-              <Link to={'/employer/dashboard/my-account-info'} />
+            <MenuItem icon={<ShoppingFilled />}>
+              Dịch vụ của tôi
+              <Link to={'/employer/dashboard/my-services'} />
             </MenuItem>
-            <MenuItem>
-              Lịch sử hoạt động
-              <Link to={'/employer/dashboard/history'} />
-            </MenuItem>
-          </SubMenu>
-        </Menu>
-        <Menu iconShape='circle'>
-          <SubMenu
-            // suffix={<span className="features-menu">count num</span>}  thong bao number++
-            title={'Thiết lập công ty'}
-            icon={<FaIndustry />}
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/employer/dashboard/my-orders' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
           >
-            <MenuItem>
-              Thông tin chung
-              <Link to={'/employer/dashboard/company-general'} />
+            <MenuItem icon={<ShoppingFilled />}>
+              Đơn hàng của tôi
+              <Link to={'/employer/dashboard/my-orders'} />
             </MenuItem>
-            <MenuItem>
-              Địa điểm làm việc
-              <Link to={'/employer/dashboard/company-location'} />
-            </MenuItem>
-            <MenuItem>
-              Mẫu email
-              <Link to={'/employer/dashboard/email-template'} />
-            </MenuItem>
-            <MenuItem>
-              Thông tin pháp nhân
-              <Link to={'/employer/dashboard/legal-info'} />
-            </MenuItem>
-          </SubMenu>
-        </Menu>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<BookFilled />}>
-            Quản lý bài đăng
-            <Link to={'/employer/dashboard/post-manage'} />
-          </MenuItem>
-        </Menu>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<FileSearchOutlined />}>
-            Tìm kiếm ứng viên
-            <Link to={'/employer/dashboard/find-candidate'} />
-          </MenuItem>
-        </Menu>
-        <Menu iconShape='circle'>
-          <SubMenu
-            // suffix={<span className="features-menu">count num</span>}  thong bao number++
-            title={'Quản lý CV'}
-            icon={<SnippetsFilled />}
+          </Menu>
+        </SidebarContent>
+      )}
+      {roleType === 'ADMIN_ROLE' && (
+        <SidebarContent>
+          <Menu
+            iconShape='circle'
+            className={isActive === baseUrl + '/admin' ? 'clicked-side-bar' : 'dont-click-side-bar'}
           >
-            <MenuItem>
-              Hồ sơ đã ứng tuyển
-              <Link to={'/employer/dashboard/cv-applied-manage'} />
+            <MenuItem icon={<FundFilled />}>
+              Thống kê
+              <Link to={'/admin'} />
             </MenuItem>
-            <MenuItem>
-              Hồ sơ đã lưu
-              <Link to={'/employer/manage-save-cv'} />
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/admin/dashboard/users-manage' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
+          >
+            <MenuItem icon={<FaUsersCog />}>
+              Quản lý tài khoản
+              <Link to={'/admin/dashboard/users-manage'} />
             </MenuItem>
-            <MenuItem>
-              Hồ sơ trong danh sách đen
-              <Link to={'/employer/manage-back-list-cv'} />
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/admin/dashboard/post-review-manage' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
+          >
+            <MenuItem icon={<FileSearchOutlined />}>
+              Kiểm duyệt bài đăng
+              <Link to={'/admin/dashboard/post-review-manage'} />
             </MenuItem>
-            <MenuItem>
-              Hồ sơ đã xóa
-              <Link to={'/employer/manage-deleted-cv'} />
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/admin/dashboard/services-manage' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
+          >
+            <MenuItem icon={<ShoppingFilled />}>
+              Quản lý gói dịch vụ
+              <Link to={'/admin/dashboard/services-manage'} />
             </MenuItem>
-          </SubMenu>
-        </Menu>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<ShopFilled />}>
-            Mua dịch vụ
-            <Link to={'/employer/services'} />
-          </MenuItem>
-        </Menu>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<ShoppingFilled />}>
-            Dịch vụ của tôi
-            <Link to={'/employer/my-services'} />
-          </MenuItem>
-        </Menu>
-        <Menu iconShape='circle'>
-          <MenuItem icon={<BsFillCartCheckFill />}>
-            Theo dõi đơn hàng
-            <Link to={'/employer/follow-order'} />
-          </MenuItem>
-        </Menu>
-      </SidebarContent>
+          </Menu>
+          <Menu
+            iconShape='circle'
+            className={
+              isActive === baseUrl + '/admin/dashboard/orders-manage' ? 'clicked-side-bar' : 'dont-click-side-bar'
+            }
+          >
+            <MenuItem icon={<ShoppingFilled />}>
+              Quản lý đơn hàng
+              <Link to={'/admin/dashboard/orders-manage'} />
+            </MenuItem>
+          </Menu>
+        </SidebarContent>
+      )}
 
       <SidebarFooter style={{ textAlign: 'center' }}>
-        {/* <div
-          className='sidebar-btn-wrapper'
-          style={{
-            padding: '20px 24px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '5px'
-          }}
-        >
-          <AiOutlineLogout />
-          <span>Đăng xuất</span>
-          <Link to={'/employer/logout'} />
-        </div> */}
         <Menu iconShape='circle'>
-          <MenuItem icon={<AiOutlineLogout />}>Đăng xuất</MenuItem>
+          <MenuItem
+            onClick={() => {
+              dispatch(logout())
+              window.location.reload()
+            }}
+            icon={<AiOutlineLogout />}
+          >
+            Đăng xuất
+          </MenuItem>
         </Menu>
       </SidebarFooter>
     </ProSidebar>

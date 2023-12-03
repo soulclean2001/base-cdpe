@@ -1,21 +1,33 @@
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import './rightMenu.scss'
 import RightMenuPhone from '../RightMenuPhone/RightMenuPhone'
-import { Avatar, Button, Dropdown, MenuProps, Space } from 'antd'
+import { Avatar, Badge, Button, Dropdown, MenuProps, Space } from 'antd'
 import { IoMdNotifications } from 'react-icons/io'
-import { AiFillLock, AiFillMessage } from 'react-icons/ai'
-import { DownOutlined, UserOutlined } from '@ant-design/icons'
+import { AiFillDashboard, AiFillLock, AiFillMessage } from 'react-icons/ai'
+import { DownOutlined } from '@ant-design/icons'
 import { GrUserSettings } from 'react-icons/gr'
 import { MdOutlineLogout } from 'react-icons/md'
-import { InfoMeState } from '~/features/JobSeeker/jobSeekerSlice'
+
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '~/app/store'
-import { logout } from '~/features/Auth/authSlice'
+import { AuthState, logout } from '~/features/Auth/authSlice'
+import { useState } from 'react'
+import NotifyDrawer from '../NotifyDrawer/NotifyDrawer'
+import ModalProfile from '~/components/ModalProfile'
+import ModalChangePassword from '~/components/ModalChangePassword'
+import { InfoMeState } from '~/features/Account/meSlice'
+import { FaUserCheck } from 'react-icons/fa'
+import { NotifyState } from '../NotifyDrawer/notifySlice'
 
-const RightMenu = (props: any) => {
-  const me: InfoMeState = useSelector((state: RootState) => state.jobSeeker)
+const RightMenu = () => {
+  const auth: AuthState = useSelector((state: RootState) => state.auth)
+  const me: InfoMeState = useSelector((state: RootState) => state.me)
+  const notificaions: NotifyState = useSelector((state: RootState) => state.notify)
   const disPatch = useDispatch()
   const navigate = useNavigate()
+  const [openModalProfile, setOpenModalProfile] = useState(false)
+  const [openNotifyDrawer, setOpenNotifyDrawer] = useState(false)
+  const [openModalChangePassword, setOpenModalChangePassword] = useState(false)
   const handleLogin = () => {
     navigate('/candidate-login')
   }
@@ -25,22 +37,75 @@ const RightMenu = (props: any) => {
   const handleTabEmployer = () => {
     navigate('/employer')
   }
+  const handleTabChat = () => {
+    navigate('/chat')
+  }
+
   const items: MenuProps['items'] = [
     {
-      label: 'Cài đặt thông tin cá nhân',
-      key: 'key_settings_info',
-      icon: <GrUserSettings />
+      key: 'header-info',
+      label: (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            borderTop: '1px solid  #ebebeb',
+            borderBottom: '1px solid #ebebeb',
+            padding: '15px 0'
+          }}
+        >
+          <Avatar size={'large'} src={me.avatar ? me.avatar : ''}></Avatar>
+          <div className='info'>
+            <div className='name' style={{ fontWeight: 500, fontSize: '16px' }}>
+              {me.name}
+            </div>
+            <div className='email' style={{ fontWeight: 500, fontSize: '16px' }}>
+              {me.email}
+            </div>
+          </div>
+        </div>
+      )
     },
     {
+      label: (
+        <>
+          {auth.verify.toString() === '0' ? (
+            <NavLink to={'/active-page'}>Kích hoạt tài khoản</NavLink>
+          ) : (
+            <NavLink to={'/settings'}>Bảng điều khiển</NavLink>
+          )}
+        </>
+      ),
+      key: 'key_settings_general',
+      icon: (
+        <div style={{ paddingRight: '3px' }}>
+          {auth.verify.toString() === '0' ? <FaUserCheck /> : <AiFillDashboard />}
+        </div>
+      ),
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
+    },
+    {
+      disabled: auth.isLogin && auth.verify === 1 ? false : true,
+      label: `Thông tin cá nhân`,
+      key: 'key_settings_info',
+      icon: <GrUserSettings />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
+    },
+
+    {
+      disabled: auth.isLogin && auth.verify === 1 ? false : true,
       label: 'Đổi mật khẩu',
       key: 'key_changePassword',
-      icon: <AiFillLock />
+      icon: <AiFillLock />,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     },
     {
       label: 'Đăng xuất',
       key: 'key_logout',
       icon: <MdOutlineLogout />,
-      danger: true
+      danger: true,
+      style: { minWidth: '250px', padding: '10px', fontSize: '16px' }
     }
   ]
 
@@ -49,26 +114,55 @@ const RightMenu = (props: any) => {
       disPatch(logout())
       window.location.reload()
     }
+    if (e.key === 'key_settings_info') setOpenModalProfile(true)
+    if (e.key === 'key_changePassword') setOpenModalChangePassword(true)
     console.log('handle click', e)
   }
   const menuProps = {
     items,
     onClick: handleMenuClick
   }
+
+  const showDrawer = () => {
+    setOpenNotifyDrawer(true)
+  }
+
+  const onCloseDrawer = () => {
+    setOpenNotifyDrawer(false)
+  }
   return (
     <div className='right_menu_container'>
       <div className='right_menu_container_pc'>
         {me && me.id ? (
           <>
-            <Button icon={<IoMdNotifications />} className=' btn-notification' shape='circle' size='large' />
-            <Button icon={<AiFillMessage />} className='btn-message' shape='circle' size='large' />
+            <ModalChangePassword open={openModalChangePassword} handleClose={() => setOpenModalChangePassword(false)} />
+            <ModalProfile openModal={openModalProfile} handleCloseModal={() => setOpenModalProfile(false)} />
+            <Badge count={notificaions.totalNotRead}>
+              <Button
+                icon={<IoMdNotifications />}
+                onClick={showDrawer}
+                className=' btn-notification'
+                shape='circle'
+                size='large'
+              />
+            </Badge>
+
+            <NotifyDrawer roleType='CANDIDATE_ROLE' open={openNotifyDrawer} onClose={onCloseDrawer} />
+            <Button
+              disabled={auth.verify === 1 ? false : true}
+              icon={<AiFillMessage />}
+              onClick={handleTabChat}
+              className='btn-message'
+              shape='circle'
+              size='large'
+            />
             <Dropdown menu={menuProps}>
               <Button size='large' style={{ display: 'flex', alignItems: 'center', padding: 0, border: 'none' }}>
                 <Space>
                   <Avatar style={{ verticalAlign: 'middle' }} src={me?.avatar} size='large'>
                     {me.avatar ? '' : me.name.charAt(0).toUpperCase()}
                   </Avatar>
-                  {me.name}
+                  {me.name && me.name !== '_' ? me.name : me.email.split('@')[0]}
                   <DownOutlined />
                 </Space>
               </Button>

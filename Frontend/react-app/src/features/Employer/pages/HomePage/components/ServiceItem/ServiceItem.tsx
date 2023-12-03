@@ -1,14 +1,15 @@
-import { Button, Col, Image, Row } from 'antd'
+import { Button, Col, Row } from 'antd'
 import './style.scss'
 import { BsFillCheckCircleFill } from 'react-icons/bs'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 const ServiceItem = (props: any) => {
   const descriptions: [{ value: string }] = props.descriptions
   const img: string = props.img
   const title: string = props.title
   const price: string = props.price
   const swap: boolean = props.swap
-
+  const navigate = useNavigate()
   const [style, setStyle] = useState<any>({})
   // useEffect(() => {
   //   if (swap) {
@@ -47,7 +48,7 @@ const ServiceItem = (props: any) => {
                   ))}
               </div>
               <div className='btn-buy-now-container'>
-                <Button size='large' className='btn-buy-now'>
+                <Button onClick={() => navigate('/employer/services')} size='large' className='btn-buy-now'>
                   Mua ngay
                 </Button>
               </div>

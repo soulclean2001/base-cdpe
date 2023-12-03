@@ -13,6 +13,7 @@ export interface AuthState {
   role: number
   verify: number
   newUser: number
+  user_id: string
 }
 
 export interface AuthPayload {
@@ -32,7 +33,8 @@ const initialState: AuthState = {
   error: undefined,
   isLogin: false,
   verify: 0,
-  newUser: 1
+  newUser: 1,
+  user_id: ''
 }
 export const postLogin = createAsyncThunk(
   'login/postLogin',
@@ -60,6 +62,7 @@ const authSlice = createSlice({
     })
     builder.addCase(postLogin.fulfilled, (state, action) => {
       const { result, message } = action.payload
+      console.log(message)
       const { access_token, refresh_token } = result
       state.accessToken = access_token as string
       // const cookies = new Cookies()
@@ -83,9 +86,11 @@ const authSlice = createSlice({
       return state
     },
     setAccountStatus(state, action: PayloadAction<TokenPayload>) {
-      const { role, verify, token_type } = action.payload
+      const { role, verify, token_type, user_id } = action.payload
+      console.log(token_type)
       state.role = role
       state.verify = verify
+      state.user_id = user_id
       return state
     },
     setToken(state, action: PayloadAction<AuthPayload>) {
@@ -94,6 +99,7 @@ const authSlice = createSlice({
       return state
     },
     logout(state) {
+      state.user_id = ''
       state.accessToken = ''
       state.refreshToken = ''
       state.isLogin = false

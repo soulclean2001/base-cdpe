@@ -1,6 +1,7 @@
 .employer-sidebar-container {
-  height: 100vh;
-  max-height: 100vh;
+  min-height: 92vh;
+  // max-height: 100vh;
+  height: auto;
   overflow: auto;
   ::-webkit-scrollbar {
     border-radius: 25px;
@@ -24,6 +25,19 @@
     background: #555;
   }
   //   width: 100%;
+  .clicked-side-bar {
+    background-color: rgb(82, 82, 82);
+    color: white;
+
+    font-weight: 700;
+  }
+  .clicked-menu-item {
+    color: white;
+
+    font-weight: 700;
+  }
+  .dont-click-side-bar {
+  }
 }
 // .pro-sidebar {
 //   .pro-sidebar-inner {

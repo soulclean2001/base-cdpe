@@ -6,21 +6,32 @@ import { RcFile } from 'antd/es/upload'
 import { useState, useEffect } from 'react'
 import { omit } from 'lodash'
 import ReactHtmlParser from 'html-react-parser'
+import { MdDateRange } from 'react-icons/md'
+import { AiFillHome, AiTwotoneMail, AiTwotonePhone } from 'react-icons/ai'
+import { BiSolidCity, BiWorld } from 'react-icons/bi'
 
 interface RightPropsType {
   data: ResumeType
   file: UploadFile
+  hiddenButtonDownload: boolean
 }
 
 const Right = (props: RightPropsType) => {
-  const { data, file } = props
+  const { data, file, hiddenButtonDownload } = props
   const personalInfo = omit(data.user_info, ['first_name', 'last_name', 'avatar', 'wanted_job_title'])
   const skills = data.skills
   const professionalSummary = data.professional_summary
-  const hobbie = data.hobbies
+  const hobbie = data.hobbies // ben day đúng r mà xem gi the
 
   const [avatar, setAvatar] = useState('')
-  const { toPDF, targetRef } = usePDF({ filename: 'page.pdf' })
+  const { toPDF, targetRef } = usePDF({
+    filename: 'page.pdf',
+    page: {
+      // margin is in MM, default is Margin.NONE = 0
+      format: 'a4'
+      // margin: { top: 5, right: 5, bottom: 5, left: 5 }
+    }
+  })
 
   const previewImage = async (file: UploadFile) => {
     let src = file.url as string
@@ -47,9 +58,9 @@ const Right = (props: RightPropsType) => {
 
   return (
     <div className='wrap-preview-cv'>
-      <div className='download-cv'>
-        <Button size='large' type='primary' onClick={() => toPDF()}>
-          Download PDF
+      <div hidden={hiddenButtonDownload} className='download-cv'>
+        <Button className='btn-download' size='large' onClick={() => toPDF()}>
+          Tải xuống CV
         </Button>
       </div>
 
@@ -58,14 +69,14 @@ const Right = (props: RightPropsType) => {
           <div className='preview-left'>
             <h2 className='preview-user-name'>{data.user_info.first_name.concat(' ', data.user_info.last_name)}</h2>
             <h4 className='preview-user-wanted-job'>{data.user_info.wanted_job_title}</h4>
-            {avatar && (
+            {avatar && avatar !== '_' && (
               <div className='preview__cover-avatar'>
                 <Avatar src={avatar} size={{ xs: 44, sm: 52, md: 60, lg: 84, xl: 100, xxl: 120 }} />
               </div>
             )}
 
             {personalInfo &&
-              Object.keys(personalInfo).map((key, index) => {
+              Object.keys(personalInfo).map((key) => {
                 if (key === 'property_name') {
                   return (
                     <h4 key={key} className='preview__title-info'>
@@ -74,10 +85,57 @@ const Right = (props: RightPropsType) => {
                   )
                 }
 
-                if (Object.keys(personalInfo).includes(key)) {
+                if (Object.keys(personalInfo).includes(key) && data.user_info[key]) {
                   return (
-                    <p key={key} className='preview__info'>
-                      {data.user_info[key]}
+                    <p key={key} className='preview__info' style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      {key === 'email' && (
+                        <>
+                          <span>
+                            <AiTwotoneMail />
+                          </span>{' '}
+                          {data.user_info[key]}
+                        </>
+                      )}
+                      {key === 'phone' && (
+                        <>
+                          <span>
+                            <AiTwotonePhone />
+                          </span>{' '}
+                          {data.user_info[key]}
+                        </>
+                      )}
+                      {key === 'city' && (
+                        <>
+                          <span>
+                            <BiSolidCity />
+                          </span>{' '}
+                          {data.user_info[key]}
+                        </>
+                      )}
+                      {key === 'address' && (
+                        <>
+                          <span>
+                            <AiFillHome />
+                          </span>{' '}
+                          {data.user_info[key]}
+                        </>
+                      )}
+                      {key === 'date_of_birth' && (
+                        <>
+                          <span>
+                            <MdDateRange />
+                          </span>{' '}
+                          {data.user_info[key]}
+                        </>
+                      )}
+                      {key === 'country' && (
+                        <>
+                          <span>
+                            <BiWorld />
+                          </span>{' '}
+                          {data.user_info[key]}
+                        </>
+                      )}
                     </p>
                   )
                 }
@@ -89,18 +147,18 @@ const Right = (props: RightPropsType) => {
             <p className='preview__info'>hirosaki217@gmail.com</p>
             <p className='preview__info'>656/40 Quang Trung, p11, Go Vap, HCM</p>
             <p className='preview__info'>github.com/hirosaki217</p> */}
-            <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+            <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
 
             {skills && Array.isArray(data.skills.data) && skills.data.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{skills.property_name}</h4>
                 {skills.data.map((skill, index) => (
-                  <p key={skill.skill_name + index} className='preview__info'>
-                    {' '}
-                    - {skill.skill_name}
-                  </p>
+                  <div key={skill.skill_name + index}>
+                    <p className='preview__info'>- {skill.skill_name}</p>
+                    <p className='preview__info'>{skill.level ? 'Trình độ: ' + skill.level : ''}</p>
+                  </div>
                 ))}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -108,11 +166,12 @@ const Right = (props: RightPropsType) => {
               <>
                 <h4 className='preview__title-info'>{data.languages.property_name}</h4>
                 {data.languages.data.map((e, index) => (
-                  <p key={e.language + index} className='preview__info'>
-                    - {e.language} {e.level ? 'cấp độ: ' + e.level : ''}
-                  </p>
+                  <div key={e.language + index}>
+                    <p className='preview__info'>- {e.language}</p>
+                    <p className='preview__info'>{e.level ? 'Trình độ: ' + e.level : ''}</p>
+                  </div>
                 ))}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -127,8 +186,8 @@ const Right = (props: RightPropsType) => {
             {professionalSummary && professionalSummary.content.length > 0 && (
               <>
                 <h4 className='preview__title-info'>{professionalSummary.property_name}</h4>
-                <h5 className='preview__info'>{ReactHtmlParser(professionalSummary.content)}</h5>
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <div className='preview__info'>{ReactHtmlParser(professionalSummary.content)}</div>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -138,27 +197,30 @@ const Right = (props: RightPropsType) => {
                 <>
                   <h4 className='preview__title-info'>{data.employment_histories.property_name}</h4>
                   {data.employment_histories.data.map((e, index) => {
-                    const temp = [e.job_title, e.employer, e.city].filter((it) => it.length > 0)
+                    // const temp = [e.job_title, e.employer, e.city].filter((it) => it.length > 0)
 
-                    const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                    // const str = temp.length === 1 ? temp[0] : temp.join(', ')
                     const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
                     const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
 
                     return (
                       <div key={e.job_title + index} style={{ paddingBottom: '10px' }}>
-                        <p className='preview__info'>
-                          <b>{str}</b>
-                        </p>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <p className='preview__info' style={{ width: '74%' }}>
+                            <b>{e.job_title}</b>
+                          </p>
+                          <p className='preview__info'>
+                            <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                          </p>
+                        </div>
 
-                        <p className='preview__info'>
-                          <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
-                        </p>
+                        <p className='preview__info'>{`${e.employer}`}</p>
 
-                        <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                        <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                       </div>
                     )
                   })}
-                  <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                  <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
                 </>
               )}
 
@@ -166,27 +228,30 @@ const Right = (props: RightPropsType) => {
               <>
                 <h4 className='preview__title-info'>{data.educations.property_name}</h4>
                 {data.educations.data.map((e, index) => {
-                  const temp = [e.degree, e.school, e.city].filter((it) => it.length > 0)
+                  // const temp = [e.degree, e.school, e.city].filter((it) => it.length > 0)
 
-                  const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                  // const str = temp.length === 1 ? temp[0] : temp.join(', ')
                   const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
                   const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
 
                   return (
                     <div key={e.school + index} style={{ paddingBottom: '10px' }}>
-                      <p className='preview__info'>
-                        <b>{str}</b>
-                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <p className='preview__info' style={{ width: '74%' }}>
+                          <b>{e.school}</b>
+                        </p>
+                        <p className='preview__info'>
+                          <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                        </p>
+                      </div>
 
-                      <p className='preview__info'>
-                        <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
-                      </p>
+                      <p className='preview__info'>{`${e.degree}`}</p>
 
-                      <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                      <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                     </div>
                   )
                 })}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -199,12 +264,15 @@ const Right = (props: RightPropsType) => {
                     return (
                       <div key={e.label + index} style={{ paddingBottom: '10px' }}>
                         <p className='preview__info'>
-                          <b>{e.label}</b> <a href={e.link}>{e.link}</a>
+                          <b>{e.label}</b>
+                        </p>
+                        <p className='preview__info'>
+                          url: <a href={e.link}>{e.link}</a>
                         </p>
                       </div>
                     )
                   })}
-                  <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                  <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
                 </>
               )}
 
@@ -212,25 +280,28 @@ const Right = (props: RightPropsType) => {
               <>
                 <h4 className='preview__title-info'>{data.courses.property_name}</h4>
                 {data.courses.data.map((e, index) => {
-                  const temp = [e.title, e.institution].filter((it) => it.length > 0)
+                  // const temp = [e.title, e.institution].filter((it) => it.length > 0)
 
-                  const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                  // const str = temp.length === 1 ? temp[0] : temp.join(', ')
                   const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
                   const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
 
                   return (
                     <div key={e.title + index} style={{ paddingBottom: '10px' }}>
-                      <p className='preview__info'>
-                        <b>{str}</b>
-                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <p className='preview__info' style={{ width: '74%' }}>
+                          <b>{e.title}</b>
+                        </p>
+                        <p className='preview__info'>
+                          <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                        </p>
+                      </div>
 
-                      <p className='preview__info'>
-                        <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
-                      </p>
+                      <p className='preview__info'>{`${e.institution}`}</p>
                     </div>
                   )
                 })}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -254,7 +325,7 @@ const Right = (props: RightPropsType) => {
                     </div>
                   )
                 })}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -262,27 +333,30 @@ const Right = (props: RightPropsType) => {
               <>
                 <h4 className='preview__title-info'>{data.internships.property_name}</h4>
                 {data.internships.data.map((e, index) => {
-                  const temp = [e.job_title, e.employer, e.city].filter((it) => it.length > 0)
+                  // const temp = [e.job_title, e.employer, e.city].filter((it) => it.length > 0)
 
-                  const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                  // const str = temp.length === 1 ? temp[0] : temp.join(', ')
                   const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
                   const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
 
                   return (
                     <div key={e.job_title + index} style={{ paddingBottom: '10px' }}>
-                      <p className='preview__info'>
-                        <b>{str}</b>
-                      </p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <p className='preview__info' style={{ width: '74%' }}>
+                          <b>{e.job_title}</b>
+                        </p>
+                        <p className='preview__info'>
+                          <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                        </p>
+                      </div>
 
-                      <p className='preview__info'>
-                        <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
-                      </p>
+                      <p className='preview__info'>{`${e.employer}`}</p>
 
-                      <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                      <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                     </div>
                   )
                 })}
-                <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
               </>
             )}
 
@@ -295,27 +369,32 @@ const Right = (props: RightPropsType) => {
                       <>
                         <h4 className='preview__title-info'>{parent.property_name}</h4>
                         {parent.data.map((e, index) => {
-                          const temp = [e.title, e.city].filter((it) => it.length > 0)
+                          // const temp = [e.title, e.city].filter((it) => it.length > 0)
 
-                          const str = temp.length === 1 ? temp[0] : temp.join(', ')
+                          // const str = temp.length === 1 ? temp[0] : temp.join(', ')
                           const temp2 = [e.start_date, e.end_date].filter((it) => it.length > 0)
                           const startEndDate = temp2.length === 1 ? temp2[0] : temp2.join(' - ')
 
                           return (
                             <div key={e.job_title + '' + index + '-' + pindex} style={{ paddingBottom: '10px' }}>
-                              <p className='preview__info'>
-                                <b>{str}</b>
-                              </p>
+                              <div
+                                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+                              >
+                                <p className='preview__info' style={{ width: '74%' }}>
+                                  <b>{e.title}</b>
+                                </p>
+                                <p className='preview__info'>
+                                  <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
+                                </p>
+                              </div>
 
-                              <p className='preview__info'>
-                                <i style={{ color: 'rgb(130, 139, 162)' }}>{startEndDate}</i>
-                              </p>
+                              <p className='preview__info'>{`${e.city}`}</p>
 
-                              <h5 className='preview__info'>{ReactHtmlParser(e.description)}</h5>
+                              <div className='preview__info'>{ReactHtmlParser(e.description)}</div>
                             </div>
                           )
                         })}
-                        <p style={{ borderBottom: '2.5px solid #ffe8c4', margin: 0, padding: '7px 0' }}></p>
+                        <p style={{ borderBottom: '2.5px solid rgb(175, 192, 227)', margin: 0, padding: '7px 0' }}></p>
                       </>
                     )}
                   </div>

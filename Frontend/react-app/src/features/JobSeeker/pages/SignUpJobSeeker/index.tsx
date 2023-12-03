@@ -1,18 +1,15 @@
 import { useNavigate } from 'react-router-dom'
-import {
-  FacebookOutlined,
-  GooglePlusOutlined,
-  LinkedinOutlined,
-  LockOutlined,
-  MailOutlined,
-  UserOutlined
-} from '@ant-design/icons'
+import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Form, Input } from 'antd'
 import './signup.scss'
 import { NavLink } from 'react-router-dom'
 import { useState } from 'react'
-
-const SignUp = () => {
+import apiAuth, { AuthRequestRegistry } from '~/api/auth.api'
+import { decodeToken } from '~/utils/jwt'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { toast } from 'react-toastify'
+import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
+const SignUpJobSeeker = () => {
   const [form] = Form.useForm()
   const navigate = useNavigate()
   //form data
@@ -21,18 +18,44 @@ const SignUp = () => {
   const [password, setPassword] = useState('')
   const [rePassword, setRePassword] = useState('')
   const [checkAccept, setCheckAccept] = useState(false)
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
   //
   const handleBackHome = () => {
     navigate('/')
   }
-  const handleSubmitSignup = () => {
-    const data = {
-      name,
-      email,
-      password,
-      rePassword
+  const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.role && dataDecode.role === 2) {
+        const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+        dispatchAsync(setToken(token))
+        dispatchAsync(setAccountStatus(dataDecode))
+        dispatchAsync(setStateLogin(action))
+        navigate('/active-page')
+        toast.success('Đăng ký thành công')
+      }
     }
-    console.log('form data sign up', data)
+  }
+  const handleSubmitSignup = async () => {
+    const req: AuthRequestRegistry = {
+      email: email,
+      password: password,
+      confirm_password: rePassword,
+      name: name,
+      gender: 0,
+      role: 2,
+      date_of_birth: '2001-01-01'
+    }
+    await apiAuth
+      .register(req)
+      .then(async (response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+      })
+      .catch(() => {
+        toast.error('Email đã tồn tại, vui lòng chọn Email khác')
+      })
   }
 
   const onFinishFailed = (errorInfo: any) => {
@@ -43,7 +66,7 @@ const SignUp = () => {
       <div className='sign-up-container'>
         <div className='title-container'>
           <h1 className='title' onClick={handleBackHome}>
-            HFWork
+            HFWorks
           </h1>
           <h3 style={{ fontSize: '22px', color: 'rgb(255, 125, 85)' }}>Chào mừng bạn đến với HFWork</h3>
           <span style={{ fontSize: '14px', color: '#999' }}>
@@ -59,7 +82,18 @@ const SignUp = () => {
             className='sign-up-form'
             initialValues={{ remember: true }}
           >
-            <Form.Item name='name' rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}>
+            <Form.Item
+              name='name'
+              rules={[
+                { max: 30, message: 'Đã vượt quá độ dài tối đa 30 ký tự' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
+              ]}
+            >
               <Input
                 size='large'
                 className='name-input'
@@ -74,6 +108,7 @@ const SignUp = () => {
                 { required: true, message: 'Vui lòng không để trống Email' },
                 { type: 'email', message: 'Vui lòng nhập đúng định dạng Email. Ví dụ: abc@gmail.com' }
               ]}
+              style={{ paddingTop: '10px' }}
             >
               <Input
                 size='large'
@@ -87,10 +122,16 @@ const SignUp = () => {
             <Form.Item
               name='password'
               rules={[
-                { required: true, message: 'Vui lòng nhập mật khẩu' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' },
                 {
-                  pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
-                  message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
+                {
+                  pattern: new RegExp(/^(?=(.*[a-z]){1})(?=(.*[A-Z]){1})(?=(.*\d){1})(?=(.*\W){1}).{6,}$/),
+                  message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
                 }
               ]}
               style={{ paddingTop: '10px' }}
@@ -106,7 +147,13 @@ const SignUp = () => {
             <Form.Item
               name='repassword'
               rules={[
-                { required: true, message: 'Vui lòng nhập lại mật khẩu' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
                     if (!value || getFieldValue('password') === value) {
@@ -128,7 +175,7 @@ const SignUp = () => {
             </Form.Item>
             <Form.Item
               name={'checkAccept'}
-              noStyle
+              // noStyle
               valuePropName='checked'
               rules={[
                 {
@@ -152,18 +199,18 @@ const SignUp = () => {
               </Checkbox>
             </Form.Item>
 
-            <Form.Item style={{ marginTop: '15px' }}>
+            <Form.Item style={{ marginTop: '40px' }}>
               <Button type='primary' htmlType='submit' className='login-form-button'>
                 Đăng ký
               </Button>
             </Form.Item>
-            <p className='or-login-title'>Hoặc đăng nhập bằng</p>
+            {/* <p className='or-login-title'>Hoặc đăng nhập bằng</p>
 
             <Form.Item>
               <div className='or-login-container'>
                 <Button
                   type='primary'
-                  htmlType='submit'
+                  // htmlType='submit'
                   className='btn login-google-button'
                   icon={<GooglePlusOutlined />}
                 >
@@ -171,7 +218,7 @@ const SignUp = () => {
                 </Button>
                 <Button
                   type='primary'
-                  htmlType='submit'
+                  // htmlType='submit'
                   className='btn login-facebook-button'
                   icon={<FacebookOutlined />}
                 >
@@ -179,14 +226,14 @@ const SignUp = () => {
                 </Button>
                 <Button
                   type='primary'
-                  htmlType='submit'
+                  // htmlType='submit'
                   className='btn login-linkedin-button'
                   icon={<LinkedinOutlined />}
                 >
                   Linkedin
                 </Button>
               </div>
-            </Form.Item>
+            </Form.Item> */}
             <div className='or-tab-login'>
               <p style={{ textAlign: 'center' }}>
                 <span>Bạn đã có tài khoản?</span>
@@ -200,4 +247,4 @@ const SignUp = () => {
   )
 }
 
-export default SignUp
+export default SignUpJobSeeker

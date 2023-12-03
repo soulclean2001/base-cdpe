@@ -1,4 +1,4 @@
-import { LoginData } from '~/features/JobSeeker/pages/LoginJobSeeker'
+import { WorkingLocation } from '~/features/Employer/pages/Dashboard/pages/CompanyManagePage/CompanyManagePage'
 import client, { cancelTokenSource } from './client'
 
 interface AuthResponse {
@@ -8,8 +8,30 @@ interface AuthResponse {
     refresh_token?: string
   }
 }
+
+export interface AuthRequestRegistry {
+  email: string
+  password: string
+  confirm_password: string
+  date_of_birth: string
+  role: number
+  name: string
+  gender: number
+  phone_number?: string
+  company_name?: string
+  position?: string
+  fields?: string[]
+  working_locations?: WorkingLocation[]
+}
 export class Auth {
-  public static loginApi = async (data: LoginData): Promise<AuthResponse> => {
+  public static register = async (data: AuthRequestRegistry): Promise<AuthResponse> => {
+    return client.post('/users/register', data)
+  }
+  public static loginApi = async (data: {
+    username: string
+    password: string
+    role: number
+  }): Promise<AuthResponse> => {
     return client.post('/users/login', {
       ...data,
       email: data.username
@@ -19,7 +41,9 @@ export class Auth {
   public static refreshToken = async (refreshToken: string): Promise<AuthResponse> => {
     return client.post('/users/refresh-token', { refresh_token: refreshToken })
   }
-
+  public static sendVerifyEmail = async (): Promise<AuthResponse> => {
+    return client.post('/users/resend-verify-email')
+  }
   public static verifyEmail = async (token: string): Promise<AuthResponse> => {
     return client.post(
       '/users/verify-email',
@@ -67,6 +91,13 @@ export class Auth {
       forgot_password_token
     })
   }
+  public static changePassword = async (data: {
+    old_password: string
+    password: string
+    confirm_new_password: string
+  }) => {
+    return client.put('/users/change-password', data)
+  }
 }
-//phong_lo
+
 export default Auth

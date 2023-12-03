@@ -1,0 +1,18 @@
+.modal-change-password {
+  .title {
+    font-size: 18px;
+    padding-bottom: 20px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e5e5e5;
+  }
+  .form-change-password-content-wapper {
+    h4 {
+      margin: 0;
+    }
+    .btn-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+  }
+}

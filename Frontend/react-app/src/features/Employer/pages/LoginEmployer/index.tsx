@@ -4,10 +4,18 @@ import { LockOutlined, MailOutlined } from '@ant-design/icons'
 
 import { Button, Col, Form, Input, Row } from 'antd'
 import './loginEmployer.scss'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { UserRole } from '~/types'
+import Auth from '~/api/auth.api'
+import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
+import { AuthLogin, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
+import { decodeToken } from '~/utils/jwt'
+import { toast } from 'react-toastify'
 
 const LoginEmployer = (props: any) => {
+  const navigate = useNavigate()
+  const dispatchAsync: AppThunkDispatch = useAppDispatch()
+  const [loading, setLoading] = useState<boolean>(false)
   const { hiddenTabSignUp, titleForm } = props
   const [form] = Form.useForm()
 
@@ -16,13 +24,64 @@ const LoginEmployer = (props: any) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmitLogin = () => {
+  const decodeUser = async (token: { accessToken: string; refreshToken: string }) => {
+    if (token) {
+      const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.verify === 2) {
+        toast.error('Tài khoản của bạn đã bị khóa, vui lòng đăng ký tài khoản mới để đăng nhập vào hệ thống !!')
+
+        return
+      }
+      if (hiddenTabSignUp) {
+        if (dataDecode.role.toString() === '0') {
+          const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+          dispatchAsync(setToken(token))
+          dispatchAsync(setAccountStatus(dataDecode))
+          dispatchAsync(setStateLogin(action))
+          navigate('/admin')
+          return
+        } else {
+          toast.error('Tài khoản không tồn tại')
+          return
+        }
+      } else {
+        if (dataDecode.role && dataDecode.role === 1) {
+          const action: AuthLogin = { isLogin: true, loading: false, error: '' }
+          dispatchAsync(setToken(token))
+          dispatchAsync(setAccountStatus(dataDecode))
+          dispatchAsync(setStateLogin(action))
+          if (dataDecode.verify.toString() === '0') {
+            navigate('/employer/active-page')
+            return
+          }
+          navigate('/employer')
+          return
+        } else {
+          toast.error('Tài khoản không tồn tại')
+          return
+        }
+      }
+    }
+  }
+
+  const handleSubmitLogin = async () => {
+    setLoading(true)
     const data = {
-      email,
+      username: email,
       password,
       role: UserRole.Candidate
     }
-    console.log('form data login', data)
+    await Auth.loginApi(data)
+      .then(async (response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          await decodeUser({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        toast.error('Tài khoản hoặc mật khẩu không đúng')
+        setLoading(false)
+      })
   }
 
   const onFinishFailed = (errorInfo: any) => {
@@ -34,7 +93,9 @@ const LoginEmployer = (props: any) => {
       <Col md={16} sm={24} xs={24} className='page-login-employer-wapper'>
         <div className='login-employer-content'>
           <div className='title-container'>
-            <div className='title'>HFWork</div>
+            <div className='title' onClick={() => navigate('/employer')}>
+              HFWorks
+            </div>
             <p>{titleForm && titleForm.title ? titleForm.title : 'Chào mừng bạn đã trở lại'}</p>
             <span>
               {titleForm && titleForm.description
@@ -75,8 +136,9 @@ const LoginEmployer = (props: any) => {
                 rules={[
                   { required: true, message: 'Vui lòng nhập mật khẩu' },
                   {
-                    pattern: new RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/),
-                    message: 'Mật khẩu bao gồm chữ in Hoa - chữ in thường và số, độ dài tối thiểu 8 ký tự'
+                    pattern: new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)[a-zA-Z0-9\W]{7,}$/),
+                    message:
+                      'Mật khẩu bao gồm chữ in Hoa - chữ in thường, ký tự đặc biệt và số, độ dài tối thiểu 6 ký tự'
                   }
                 ]}
               >
@@ -91,12 +153,12 @@ const LoginEmployer = (props: any) => {
 
               <br />
               <Form.Item style={{ marginBottom: 0 }}>
-                <Link style={{ float: 'right' }} className='login-form-forgot' to={'/employer-forgot-password'}>
+                <Link style={{ float: 'right' }} className='login-form-forgot' to={'/forgot-password'}>
                   Quên mật khẩu
                 </Link>
               </Form.Item>
               <Form.Item>
-                <Button type='primary' htmlType='submit' className='login-form-button'>
+                <Button disabled={loading} type='primary' htmlType='submit' className='login-form-button'>
                   Đăng nhập
                 </Button>
               </Form.Item>
@@ -104,7 +166,11 @@ const LoginEmployer = (props: any) => {
               <div className='or-tab-sign-up' hidden={hiddenTabSignUp ? hiddenTabSignUp : false}>
                 <p style={{ textAlign: 'center' }}>
                   <span>Bạn chưa có tài khoản?</span>
-                  <Link to={'/employer-sign-up'}>Đăng ký ngay</Link>
+                  <Link to={'/employer-sign-up'}> Đăng ký ngay</Link>
+                </p>
+                <p style={{ textAlign: 'center' }}>
+                  {/* <span>Dành cho quản trị viên</span> */}
+                  <Link to={'/admin'}>Dành cho quản trị viên</Link>
                 </p>
               </div>
             </Form>

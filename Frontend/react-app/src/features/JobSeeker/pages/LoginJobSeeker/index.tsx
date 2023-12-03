@@ -4,23 +4,16 @@ import { FacebookOutlined, GooglePlusOutlined, LinkedinOutlined, LockOutlined, M
 import { Button, Checkbox, Form, Input } from 'antd'
 import './login.scss'
 import { AppThunkDispatch, useAppDispatch } from '~/app/hook'
-import { useSelector } from 'react-redux'
-import {
-  AuthLogin,
-  AuthPayload,
-  AuthState,
-  postLogin,
-  setAccountStatus,
-  setStateLogin,
-  setToken
-} from '~/features/Auth/authSlice'
-import { RootState } from '~/app/store'
+
+import { AuthLogin, AuthPayload, setAccountStatus, setStateLogin, setToken } from '~/features/Auth/authSlice'
+
 import { NavLink } from 'react-router-dom'
-import { decodeToken, isExpired } from '~/utils/jwt'
+import { decodeToken } from '~/utils/jwt'
 import Auth from '~/api/auth.api'
 // import { getMe } from '~/api/users.api'
-import { getMe } from '../../jobSeekerSlice'
-import { ToastContainer, toast } from 'react-toastify'
+// import { getMe } from '../../jobSeekerSlice'
+import { toast } from 'react-toastify'
+
 const getGoogleAuthUrl = () => {
   const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
   const url = `https://accounts.google.com/o/oauth2/v2/auth`
@@ -49,14 +42,12 @@ export interface LoginData {
 const Login: React.FC = () => {
   const navigate = useNavigate()
   const dispatchAsync: AppThunkDispatch = useAppDispatch()
-  const dispatch = useAppDispatch()
   const handleBackHome = () => {
     navigate('/')
   }
 
-  const auth: AuthState = useSelector((state: RootState) => state.auth)
   const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | undefined>(undefined)
+
   const [token, setTokenLogin] = useState<AuthPayload>()
   //old code
   // useEffect(() => {
@@ -77,11 +68,21 @@ const Login: React.FC = () => {
     //
     if (token) {
       const dataDecode = await decodeToken(token.accessToken)
+      if (dataDecode.verify === 2) {
+        toast.error('Tài khoản của bạn đã bị khóa, vui lòng đăng ký tài khoản mới để đăng nhập vào hệ thống !!')
+        setLoading(false)
+        return
+      }
       if (dataDecode.role && dataDecode.role === 2) {
         const action: AuthLogin = { isLogin: true, loading: false, error: '' }
         dispatchAsync(setToken(token))
         dispatchAsync(setAccountStatus(dataDecode))
         dispatchAsync(setStateLogin(action))
+        if (dataDecode.verify.toString() === '0') {
+          navigate('/active-page')
+          return
+        }
+        navigate('/')
       } else {
         toast.error('Tài khoản không tồn tại')
         setLoading(false)
@@ -89,31 +90,21 @@ const Login: React.FC = () => {
     }
   }
 
-  useEffect(() => {
-    if (auth.isLogin && auth.accessToken && !isExpired(auth.accessToken) && auth.role === 2) {
-      getProfile()
-      handleBackHome()
-    }
-  }, [auth])
-  const getProfile = async () => {
-    await dispatchAsync(getMe())
-  }
   const onFinish = async (values: LoginData) => {
     delete values.remember
     setLoading(true)
-    setTimeout(async () => {
-      await Auth.loginApi(values)
-        .then((response) => {
-          if (response.result && response.result.access_token && response.result.refresh_token) {
-            setTokenLogin({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
-          }
-        })
-        .catch((error) => {
-          console.log('error', error)
-          toast.error('Tài khoản hoặc mật khẩu không đúng')
-          setLoading(false)
-        })
-    }, 1000)
+
+    await Auth.loginApi(values)
+      .then((response) => {
+        if (response.result && response.result.access_token && response.result.refresh_token) {
+          setTokenLogin({ accessToken: response.result.access_token, refreshToken: response.result.refresh_token })
+        }
+      })
+      .catch(() => {
+        toast.error('Tài khoản hoặc mật khẩu không đúng')
+        setLoading(false)
+      })
+
     //old code
     // dispatchAsync(postLogin(values))
     //
@@ -125,7 +116,7 @@ const Login: React.FC = () => {
       <div className='login-container'>
         <div className='title-container'>
           <h1 className='title' onClick={handleBackHome}>
-            HFWork
+            HFWorks
           </h1>
           <h3 style={{ fontSize: '22px', color: 'rgb(255, 125, 85)' }}>Chào mừng bạn đã quay trở lại</h3>
           <span style={{ fontSize: '14px', color: '#999' }}>
@@ -161,9 +152,9 @@ const Login: React.FC = () => {
                 </Checkbox>
               </Form.Item>
 
-              <a className='login-form-forgot' href=''>
+              <Link className='login-form-forgot' to='/forgot-password'>
                 Quên mật khẩu
-              </a>
+              </Link>
             </Form.Item>
 
             <Form.Item>
@@ -171,41 +162,29 @@ const Login: React.FC = () => {
                 Đăng nhập
               </Button>
             </Form.Item>
-            <ToastContainer
-              position='top-right'
-              autoClose={1500}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme='light'
-            />
 
             <p className='or-login-title'>Hoặc đăng nhập bằng</p>
             <Form.Item>
               <div className='or-login-container'>
                 <Button
+                  onClick={() => (window.location.href = googleOAuthUrl)}
                   type='primary'
-                  htmlType='submit'
                   className='btn login-google-button'
                   icon={<GooglePlusOutlined />}
                 >
-                  <Link to={googleOAuthUrl}>Google</Link>
+                  Google
                 </Button>
                 <Button
+                  disabled={true}
                   type='primary'
-                  htmlType='submit'
                   className='btn login-facebook-button'
                   icon={<FacebookOutlined />}
                 >
                   Facebook
                 </Button>
                 <Button
+                  disabled={true}
                   type='primary'
-                  htmlType='submit'
                   className='btn login-linkedin-button'
                   icon={<LinkedinOutlined />}
                 >

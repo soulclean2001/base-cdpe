@@ -2,15 +2,32 @@ import { PlusOutlined } from '@ant-design/icons'
 import { GiReceiveMoney } from 'react-icons/gi'
 import { PiStudentFill } from 'react-icons/pi'
 import { TfiCup } from 'react-icons/tfi'
-import { Button, Checkbox, Col, Divider, Form, Input, InputNumber, InputRef, Modal, Row, Select, Space } from 'antd'
-import TextArea from 'antd/es/input/TextArea'
+import { CKEditor } from '@ckeditor/ckeditor5-react'
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
+import { Button, Checkbox, Col, DatePicker, Divider, Form, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
+
 import { ImLocation } from 'react-icons/im'
-import { useState, useRef, useEffect } from 'react'
-import { AiTwotoneEdit } from 'react-icons/ai'
+import { useState, useEffect } from 'react'
+
 import { toast } from 'react-toastify'
 import { BsFillAirplaneFill, BsTrashFill } from 'react-icons/bs'
 import { FaMoneyBillWave } from 'react-icons/fa'
+import { useDispatch, useSelector } from 'react-redux'
+import { addPost, setDataPosts } from '~/features/Employer/employerSlice'
+
+import apiCompany, { UpdateCompanyType } from '~/api/company.api'
+import apiPost from '~/api/post.api'
+import './style.scss'
+
+import { getAllProviencesApi, getOneProvincesApi } from '~/api/provinces.api'
+import { DataOptionType } from '../ModalWorkLocation'
+import { RootState } from '~/app/store'
+import { JobType as JobTypeFull } from '../../pages/PostManagePage/components/TableCustom/TableCustom'
+import { getAllIndustries } from '~/api/industries.api'
+import apiAdmin from '~/api/admin.api'
+import { add } from 'date-fns'
 //data lo
+
 const listLevel = [
   { value: 'Thực tập sinh' },
   { value: 'Thử việc' },
@@ -31,37 +48,9 @@ const listTypeJob = [
   { value: 'Hợp đồng thời vụ' },
   { value: 'Khác' }
 ]
-const listIndustries = [
-  { value: 'Bảo hiểm' },
-  { value: 'Chứng khoán' },
-  { value: 'Kiểm toán' },
-  { value: 'Ngân hàng' },
-  { value: 'Tài chính/ Đầu tư' },
-  { value: 'In ấn/ Xuất bản' },
-  { value: 'Internet/ Online Media' },
-  { value: 'Bán sỉ/ Bán lẻ' },
-  { value: 'Hàng không/ Du lịch' },
-  { value: 'Nhà hàng/ Khách sạn' },
-  { value: 'Bất động sản' },
-  { value: 'IT - Phần mềm' },
-  { value: 'IT - Phần cứng/ Mạng' }
-]
+
 const maxItem = [{ value: 'Bạn đã chọn tối đa 3 ngành nghề', label: 'Bạn đã chọn tối đa 3 ngành nghề', disabled: true }]
-const listFieldCompany = [
-  { value: 'Bảo hiểm' },
-  { value: 'Chứng khoán' },
-  { value: 'Kiểm toán' },
-  { value: 'Ngân hàng' },
-  { value: 'Tài chính/ Đầu tư' },
-  { value: 'In ấn/ Xuất bản' },
-  { value: 'Internet/ Online Media' },
-  { value: 'Bán sỉ/ Bán lẻ' },
-  { value: 'Hàng không/ Du lịch' },
-  { value: 'Nhà hàng/ Khách sạn' },
-  { value: 'Bất động sản' },
-  { value: 'IT - Phần mềm' },
-  { value: 'IT - Phần cứng/ Mạng' }
-]
+
 const listBenefit = [
   { value: 'Thưởng' },
   { value: 'Nghỉ phép có lương' },
@@ -72,7 +61,7 @@ const listBenefit = [
 //
 export const IconLabelSalary = (props: any) => {
   const { value } = props
-  // console.log('value', value)
+
   if (value === 'Thưởng') {
     return <GiReceiveMoney />
   }
@@ -90,150 +79,225 @@ export const IconLabelSalary = (props: any) => {
   }
 }
 
-interface LocationData {
-  branchName: string
-  address: string
-  district: string
-  province: string
-}
-interface SelectionLocationData {
-  value: LocationData
+// interface LocationData {
+//   branchName: string
+//   address: string
+//   district: string
+//   province: string
+// }
+export interface SelectionLocationData {
+  value: WorkingLocation
   disabled: boolean
 }
 
-interface LocationType {
+export interface LocationType {
   checked: boolean
   key: number
   selected: string
 }
 
-const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
+export interface WorkingLocation {
+  lat: number
+  lon: number
+  branch_name: string
+  address: string
+  district: string
+  city_name: string
+}
 
+interface SalararyRange {
+  min: number
+  max: number
+}
+
+interface Benefit {
+  type: string
+  value: string
+}
+
+export interface JobType {
+  id?: string
+  job_title: string
+  alias?: string
+  is_salary_visible: boolean
+  pretty_salary?: string
+  working_locations: WorkingLocation[]
+  careers: string[]
+  skills: string[]
+  expired_date?: string
+  job_level: string
+  salary_range: SalararyRange
+  job_description: string
+  job_requirement: string
+  visibility: boolean
+  benefits: Benefit[]
+  job_type: string
+  number_of_employees_needed: number
+  application_email: string
+  created_at?: Date
+}
+
+const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
+const initValue: DataOptionType[] = []
 const ModalInfoPost = (props: any) => {
-  const { idPost, open, handleClose, title } = props
   const [form] = Form.useForm()
+  const dispatch = useDispatch()
+  const employer = useSelector((state: RootState) => state.employer)
+  const { idPost, open, handleClose, title, roleType, handleAfterSubmit } = props
+
+  const [idCompany, setIdCompany] = useState('')
+  const [listWorkLocation, setListWorkLocation] = useState<Array<WorkingLocation>>([])
+
   //state data form modal
-  const [nameJob, setNameJob] = useState('')
+  const [jobTitle, setJobTitle] = useState('')
   const [level, setLevel] = useState('')
   const [typeJob, setTypeJob] = useState('')
-  const [industries, setIndustries] = useState([])
-  const [field, setField] = useState('')
+  const [industries, setIndustries] = useState<Array<string>>([])
+  const [publish, setPublish] = useState(false)
+  const [expireDate, setExpireDate] = useState('')
   const [jobDescription, setJobDescription] = useState('')
   const [jobRequirement, setJobRequirement] = useState('')
-  const [salaryRange, setSalaryRange] = useState({ min: '', max: '' })
+  const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 })
   const [showSalaryRange, setShowSalaryRange] = useState(true)
-  // const [benefits, setBenefits] = useState([{ type: '', value: '' }])
   const [quantityAccept, setQuantityAccept] = useState(1)
   const [emailAcceptCV, setEmailAcceptCV] = useState('')
-  // const [locations, setLocations] = useState<Array<LocationData>>([])
-  const handleSubmitForm = () => {
-    const locations = listLocation
-      .map((location) => {
-        if (location.disabled) {
-          return typeof location.value !== undefined ? location.value : ''
-        }
-      })
-      .filter((location) => !!location)
-    const skills = arrSkills
-      .map((skill) => {
-        if (skill.value !== '') return skill.value
-      })
-      .filter((skill) => !!skill)
-    const benefits = arrBenefits
-      .map((benefit) => {
-        if (benefit.data.value !== '' && benefit.data.type !== '') return benefit.data
-      })
-      .filter((benefit) => !!benefit)
-    const data = {
-      nameJob,
-      level,
-      typeJob,
-      industries,
-      field,
-      locations,
-      jobDescription,
-      jobRequirement,
-      skills,
-      salaryRange,
-      showSalaryRange,
-      benefits,
-      quantityAccept,
-      emailAcceptCV
-    }
+  const [districtsData, setDistrictsData] = useState(initValue)
+  const [provincesData, setProvincesData] = useState(initValue)
+  const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([])
+  const [arrLocations, setArrLocations] = useState(initLocation)
+  const [arrSkills, setArrSkills] = useState([{ key: 0, value: '' }])
+  const [arrBenefits, setArrBenefits] = useState([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
+  const [status, setStatus] = useState<string>('')
+  //
 
-    console.log('form data post', data)
-    handleClose()
-  }
+  const [formLocation] = Form.useForm()
+  const [openModalLocation, setOpenModalLocation] = useState(false)
+
+  const [dataLocationBranch, setDataLocationBranch] = useState<WorkingLocation>({
+    lat: 0,
+    lon: 0,
+    branch_name: '',
+    address: '',
+    district: '',
+    city_name: ''
+  })
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo)
   }
-  //
 
-  const [listLocation, setListLocation] = useState<Array<SelectionLocationData>>([
-    {
-      value: {
-        branchName: 'Trụ sở chính',
-        address: 'FF',
-        district: 'Gò Vấp',
-        province: 'TP. Hồ Chí Minh'
-      },
-      disabled: false
+  useEffect(() => {
+    if (!dataLocationBranch.city_name) return
+    formLocation.setFieldsValue({ district: '' })
+    fetchDistricts()
+  }, [dataLocationBranch.city_name])
+  useEffect(() => {
+    if (openModalLocation) {
+      fetchProvinces()
     }
-  ])
+  }, [openModalLocation])
+  const fetchProvinces = async () => {
+    const res = await getAllProviencesApi()
 
-  const [arrLocations, setArrLocations] = useState(initLocation)
+    setProvincesData(res)
+  }
+  const fetchDistricts = async () => {
+    const res = await getOneProvincesApi(dataLocationBranch.city_name)
+    setDistrictsData(res)
+  }
+  useEffect(() => {
+    if (!open) {
+      getDataWorkLocation()
+    }
+    if (open) {
+      handleClearDataForm()
+    }
+  }, [open])
+  const handleClearDataForm = () => {
+    // if (roleType !== 'ADMIN_ROLE') await getDataWorkLocation()
+    form.resetFields()
+    setArrBenefits([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
+    setArrSkills([{ key: 0, value: '' }])
+    setArrLocations(initLocation)
+    setIndustries([])
+    setJobDescription('-')
+    setJobRequirement('-')
+  }
+  const getDataWorkLocation = async () => {
+    if (roleType === 'ADMIN_ROLE') return
+    const dataTemp: SelectionLocationData[] = []
+    const listTemp: WorkingLocation[] = await apiCompany.getMyCompany().then((rs) => {
+      setIdCompany(rs.result._id)
+      return rs.result.working_locations
+    })
+    setListWorkLocation(listTemp)
+    listTemp.map((workLocation: WorkingLocation) => dataTemp.push({ value: workLocation, disabled: false }))
+    setListLocation(dataTemp)
+  }
 
-  const [dataLocationBranch, setDataLocationBranch] = useState<LocationData>({
-    branchName: '',
-    address: '',
-    district: '',
-    province: ''
-  })
-  const [hiddenPenEditLocation, setHiddenPenEditLocation] = useState(false)
-
-  //modal location
-  const [formLocation] = Form.useForm()
-  const [openModalLocation, setOpenModalLocation] = useState(false)
   const handleCloseModalLocation = () => {
     setOpenModalLocation(false)
   }
-  //submit modal location
-  const handleSubmitLocationForm = () => {
-    const data = {
-      dataLocationBranch
-    }
-    //check exist location name branch
-    let temp = 0
-    listLocation.forEach((location) => {
-      if (location.value.branchName === data.dataLocationBranch.branchName.toString()) temp++
-    })
-    if (temp > 0) {
-      alert('Đã tồn tại tên trụ sở này')
-      return
-    }
-    setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
-  }
-
-  //
   const handleAddWorkingLocation = () => {
-    if (arrLocations.length <= 2) {
+    if (arrLocations.length <= 5) {
       setArrLocations([
         ...arrLocations,
         { checked: false, key: arrLocations[arrLocations.length - 1].key + 1, selected: '_' }
       ])
     }
   }
+  const validateMinMax = () => {
+    if (salaryRange && salaryRange.min && salaryRange.max) {
+      if (salaryRange.min && salaryRange.max && salaryRange.min > salaryRange.max) {
+        return Promise.reject('Vui lòng nhập từ thấp đến cao')
+      }
+    }
+
+    return Promise.resolve()
+  }
+  //submit modal location
+  const handleSubmitLocationForm = async () => {
+    const data = {
+      dataLocationBranch
+    }
+    //check exist location name branch
+    let temp = 0
+    listLocation.forEach((location) => {
+      if (location.value.branch_name === data.dataLocationBranch.branch_name.toString()) temp++
+    })
+    if (temp > 0) {
+      alert('Đã tồn tại tên trụ sở này')
+      return
+    }
+    const request: UpdateCompanyType = { working_locations: [...listWorkLocation, dataLocationBranch] }
+    await apiCompany
+      .updateCompanyById(idCompany, 'default', 'default', request)
+      .then(() => {
+        toast.success('Cập nhật địa điểm làm việc thành công')
+      })
+      .then(() => {
+        formLocation.resetFields()
+      })
+      .then(() => {
+        setListLocation([...listLocation, { value: dataLocationBranch, disabled: false }])
+        setOpenModalLocation(false)
+      })
+  }
 
   const handleSelectLocation = (value: any, key: number) => {
     const oldSelectedObj = arrLocations.filter((item) => item.key === key)
     const oldSelected = oldSelectedObj[0].selected
     const changeData = listLocation.map((item: SelectionLocationData) => {
-      if (item.value.branchName === value) {
+      if (
+        `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}` === value
+      ) {
         item.disabled = true
-        oldSelectedObj[0].selected = value
+        oldSelectedObj[0].selected = `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}`
       }
 
-      if (item.value.branchName === oldSelected) {
+      if (
+        `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}` ===
+        oldSelected
+      ) {
         item.disabled = false
       }
 
@@ -245,23 +309,28 @@ const ModalInfoPost = (props: any) => {
   const handleDeletedRowLocation = (key: number) => {
     if (arrLocations.length > 1) {
       const oldSelectedObj = arrLocations.filter((item) => item.key === key)
+
       const oldSelected = oldSelectedObj[0].selected
       if (oldSelected !== '_') {
         const changeData = listLocation.map((item: SelectionLocationData) => {
-          if (item.value.branchName === oldSelected) {
+          if (
+            `${item.value.branch_name}, ${item.value.address}, ${item.value.district}, ${item.value.city_name}` ===
+            oldSelected
+          ) {
             item.disabled = false
           }
           return item
         })
+
         setListLocation(changeData)
       }
       const filterData = arrLocations.filter((item) => item.key !== key)
+
       setArrLocations(filterData)
       form.resetFields([`location_${key}`])
     }
   }
 
-  const [arrSkills, setArrSkills] = useState([{ key: 0, value: '' }])
   const handleAddRowSkill = () => {
     const newArr = [...arrSkills, { key: arrSkills[arrSkills.length - 1].key + 1, value: '' }]
     setArrSkills(newArr)
@@ -283,7 +352,6 @@ const ModalInfoPost = (props: any) => {
     })
     setArrSkills(mapData)
   }
-  const [arrBenefits, setArrBenefits] = useState([{ key: 0, data: { type: listBenefit[0].value, value: '' } }])
   const handleAddRowBenefit = () => {
     setArrBenefits([
       ...arrBenefits,
@@ -291,7 +359,6 @@ const ModalInfoPost = (props: any) => {
     ])
   }
   const handleDeletedRowBenefit = (key: number) => {
-    console.log(key)
     if (arrBenefits.length > 1) {
       const arrFilter = arrBenefits.filter((benefit) => benefit.key !== key)
       setArrBenefits(arrFilter)
@@ -311,6 +378,7 @@ const ModalInfoPost = (props: any) => {
     })
     setArrBenefits(dataBenefit)
   }
+
   const [hiddenDeleteLocation, setHiddenDeleteLocation] = useState(true)
   const [hiddenDeleteSkill, setHiddenDeleteSkill] = useState(true)
   const [hiddenDeleteBenefit, setHiddenDeleteBenefit] = useState(true)
@@ -336,23 +404,276 @@ const ModalInfoPost = (props: any) => {
       setHiddenDeleteBenefit(true)
     }
   }, [arrBenefits])
+
+  const handleSubmitForm = async () => {
+    const locationsFinal: WorkingLocation[] = []
+    listLocation.map((location) => {
+      if (location.disabled && location.value !== undefined) {
+        locationsFinal.push(location.value)
+      }
+    })
+    const skills = arrSkills
+      .map((skill) => {
+        if (skill.value && skill.value.trim() !== '') return skill.value
+      })
+      .filter((skill) => !!skill)
+    const benefits = arrBenefits
+      .map((benefit) => {
+        if (benefit.data.value && benefit.data.value.trim() !== '' && benefit.data.type !== '') return benefit.data
+      })
+      .filter((benefit) => !!benefit)
+    // const data = {
+    //   jobTitle,
+    //   level,
+    //   typeJob,
+    //   industries,
+    //   field,
+    //   locations,
+    //   jobDescription,
+    //   jobRequirement,
+    //   skills,
+    //   salaryRange,
+    //   showSalaryRange,
+    //   benefits,
+    //   quantityAccept,
+    //   emailAcceptCV
+    // }
+    let job: JobType = {
+      job_title: jobTitle,
+      job_level: level,
+      job_type: typeJob,
+      careers: industries,
+      working_locations: locationsFinal,
+      skills: skills as string[],
+      salary_range: {
+        min: !isNaN(Number(salaryRange.min)) ? Number(salaryRange.min) : 0,
+        max: !isNaN(Number(salaryRange.max)) ? Number(salaryRange.max) : 0
+      },
+      job_description: jobDescription,
+      job_requirement: jobRequirement,
+      visibility: publish,
+      benefits: benefits as Benefit[],
+      number_of_employees_needed: quantityAccept,
+      application_email: emailAcceptCV,
+      is_salary_visible: showSalaryRange
+    }
+    // expired_date: expireDate ? expireDate : format(addDays(new Date(), 7), 'yyyy-MM-dd'),
+    if (publish) job = { ...job, expired_date: expireDate + 'T23:59:59' }
+
+    // call api
+    if (idPost) {
+      await updatePost(job).then(() => toast.success(`Cập nhật #POST_${idPost.slice(-5).toUpperCase()} thành công`))
+    } else await postData(job)
+  }
+
+  const updatePost = async (job: JobType) => {
+    await apiPost
+      .updatePost(idPost, job)
+      .then(() => {
+        const postUpdate: JobTypeFull = employer.posts.data.filter((post: any) => {
+          return post.id === idPost
+        })[0]
+
+        const listFilter = employer.posts.data.filter((post: any) => {
+          return post.id !== idPost
+        })
+
+        let jobFullUpdate = { ...postUpdate, ...job }
+        dispatch(setDataPosts([jobFullUpdate, ...listFilter]))
+      })
+      .then(() => {
+        handleClearDataForm()
+
+        handleAfterSubmit()
+        // handleClose()
+      })
+      .catch(() => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại!!')
+      })
+  }
+  const postData = async (job: JobType) => {
+    await apiPost
+      .addPost(job)
+      .then((response) => {
+        const newJob = { ...job, id: response.result.insertedId } as JobType & { [key: string]: any }
+        newJob.salary = job.salary_range.min + ' - ' + job.salary_range.max
+
+        // custome before add to list posts
+        toast.success(`#POST_${response.result.insertedId.slice(-5).toUpperCase()} đã được tạo thành công`)
+        dispatch(addPost(newJob))
+      })
+      .then(() => {
+        handleClearDataForm()
+
+        handleAfterSubmit()
+      })
+      .catch((error) => {
+        if (error.message.includes('Request failed with status code 405')) {
+          toast.warning(
+            'Số lượt đăng bài của bạn đã hết!! Vui lòng mua gói dịch vụ mới để tiếp tục thực hiện đăng bài trong tương lai.'
+          )
+          return
+        }
+        toast.error('Có lỗi xảy ra, vui lòng thử lại !')
+      })
+  }
+
+  useEffect(() => {
+    if (open && idPost) getPostById()
+  }, [open, idPost])
+
+  const getPostById = async () => {
+    if (!idPost) {
+      return
+    }
+    form.resetFields()
+    await apiPost.getPostById(idPost).then((response) => {
+      const rs: JobTypeFull = response.result as JobTypeFull
+      setJobTitle(rs.job_title)
+      setLevel(rs.job_level)
+      setTypeJob(rs.job_type)
+      setIndustries(rs.careers)
+      setJobDescription(rs.job_description)
+      setJobRequirement(rs.job_requirement)
+      //set work location
+
+      const tempLoc = rs.working_locations.map((locationJob, index) => {
+        return {
+          checked: false,
+          key: index,
+          selected: `${locationJob.branch_name}, ${locationJob.address}, ${locationJob.district}, ${locationJob.city_name}`
+        }
+      })
+      setArrLocations(tempLoc)
+
+      for (let i = 0; i < rs.working_locations.length; i++) {
+        form.setFieldsValue({
+          [`location_${i}`]: `${rs.working_locations[i].branch_name}, ${rs.working_locations[i].address}, ${rs.working_locations[i].district}, ${rs.working_locations[i].city_name}`
+        })
+      }
+      // rs.working_locations.map((locationJob, index) => {
+      //   // hay do cai set state n k update xong khi goi ham
+      //   if (index > 0) {
+      //     handleAddWorkingLocation()
+      //     console.log('count', index)
+      //   }
+      //   form.setFieldsValue({
+      //     [`location_${index}`]: locationJob.branch_name
+      //   })
+      // })
+
+      const mapLocations: SelectionLocationData[] = listLocation.map((locationCompany) => {
+        for (let i = 0; i < rs.working_locations.length; ++i) {
+          if (locationCompany.value.branch_name === rs.working_locations[i].branch_name) {
+            locationCompany.disabled = true
+          }
+        }
+        // rs.working_locations.map((locationJob) => {
+
+        // })
+        return locationCompany
+      })
+
+      setListLocation(mapLocations)
+
+      //
+      //set skills
+      const mapSkills = rs.skills.map((skill, index) => {
+        if (index > 0) handleAddRowSkill()
+        form.setFieldsValue({
+          [`skill_${index}`]: skill
+        })
+        return { key: index, value: skill }
+      })
+      setArrSkills(mapSkills)
+      //
+      //set benifit
+      const mapBenefits = rs.benefits.map((benefit, index) => {
+        if (index > 0) handleAddRowBenefit()
+        form.setFieldsValue({
+          [`benefit_${index}`]: benefit.value
+        })
+        return { key: index, data: benefit }
+      })
+      setArrBenefits(mapBenefits)
+      setStatus(rs.status)
+      //
+      setSalaryRange(rs.salary_range)
+      setQuantityAccept(rs.number_of_employees_needed)
+      setEmailAcceptCV(rs.application_email)
+      form.setFieldsValue({
+        jobTitle: rs.job_title,
+        level: rs.job_level,
+        typeJob: rs.job_type,
+        industry: rs.careers,
+        descriptions: rs.job_description,
+        requirements: rs.job_requirement,
+        minSalary: rs.salary_range.min,
+        maxSalary: rs.salary_range.max,
+        showSalary: rs.is_salary_visible,
+        emailApplyCV: rs.application_email,
+        quantityAccept: rs.number_of_employees_needed
+      })
+    })
+  }
+  //
+  const handleActionRequest = async (type: string, id: string) => {
+    if (type === 'APPROVE') {
+      await apiAdmin
+        .postApprovePostRequest(id)
+        .then(async (rs) => {
+          if (rs.message === 'job status is not pending to approve') {
+            toast.error(
+              `#POST_${id
+                .slice(-5)
+                .toUpperCase()} không thuộc trạng thái đang chờ hoặc đã duyệt, vui lòng tải lại trang để thử lại`
+            )
+            return
+          }
+
+          toast.success(`Đã thành công duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+          handleAfterSubmit()
+        })
+        .catch(() => {
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại')
+        })
+    }
+    if (type === 'REJECT') {
+      await apiAdmin
+        .postRejectPostRequest(id)
+        .then(async (rs) => {
+          if (rs.message === 'job status is not pending to approve') {
+            toast.error(
+              `#POST_${id.slice(-5).toUpperCase()} không thuộc trạng thái đang chờ, vui lòng tải lại trang để thử lại`
+            )
+            return
+          }
+
+          handleAfterSubmit()
+          toast.success(`Đã thành công từ chối duyệt bài đăng #POST_${id.slice(-5).toUpperCase()}`)
+        })
+        .catch(() => {
+          toast.error('Đã có lỗi xảy ra, vui lòng thử lại')
+        })
+    }
+  }
   //
   return (
     <>
       <Modal
-        className='modal-container'
-        title={<h1>{idPost ? `THÔNG TIN BÀI ĐĂNG ${idPost}` : title}</h1>}
+        className='modal-post-detail-container'
+        title={<h2>{idPost ? `THÔNG TIN BÀI ĐĂNG #POST_${idPost.slice(-5).toUpperCase()}` : title}</h2>}
         centered
         open={open}
         onOk={handleClose}
         onCancel={handleClose}
-        width={'70%'}
+        width={800}
         footer={''}
       >
         <div>
           <hr />
           <Form
-            name='form-info-job'
+            name='form-info-jobb'
             className='form-info-job'
             initialValues={{ remember: true }}
             onFinish={handleSubmitForm}
@@ -360,29 +681,42 @@ const ModalInfoPost = (props: any) => {
             onFinishFailed={onFinishFailed}
             layout='vertical'
           >
-            <h2>Mô tả công việc</h2>
+            <h2>Mô tả công việc </h2>
+
             <Form.Item
-              name='nameJob'
+              name='jobTitle'
               label={<span style={{ fontWeight: '500' }}>Chức Danh</span>}
-              rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
+              rules={[
+                // { required: true, message: 'Vui lòng không để trống tên công việc' },
+                { max: 150, message: 'Đã vượt quá độ dài tối đa' },
+                {
+                  validator: (_, value) =>
+                    value && value.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                }
+              ]}
             >
               <Input
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 size='large'
                 className='name-job-input'
                 placeholder='Eg. Senior UX Designer'
-                onChange={(e) => setNameJob(e.target.value)}
+                onChange={(e) => setJobTitle(e.target.value)}
               />
             </Form.Item>
+
             <Row justify={'space-between'}>
               <Col md={11} sm={24} xs={24}>
                 <Form.Item
-                  label={<span style={{ fontWeight: '500' }}>Cấp Bật</span>}
+                  label={<span style={{ fontWeight: '500' }}>Cấp Bậc</span>}
                   name='level'
-                  rules={[{ required: true, message: 'Vui lòng nhập tên công ty' }]}
+                  rules={[{ required: true, message: 'Vui lòng chọn cấp bậc' }]}
                 >
                   <Select
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     showSearch
-                    placeholder={'Chọn cấp bật'}
+                    placeholder={'Chọn cấp bậc'}
                     size='large'
                     options={listLevel}
                     onChange={(value) => setLevel(value)}
@@ -403,6 +737,7 @@ const ModalInfoPost = (props: any) => {
                   ]}
                 >
                   <Select
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     showSearch
                     placeholder={'Chọn loại công việc'}
                     size='large'
@@ -413,45 +748,22 @@ const ModalInfoPost = (props: any) => {
               </Col>
             </Row>
             <Row justify={'space-between'}>
-              <Col md={11} sm={24} xs={24}>
+              <Col md={24} sm={24} xs={24}>
                 <Form.Item
                   label={<span style={{ fontWeight: '500' }}>Ngành Nghề (Tối đa 3 ngành nghề)</span>}
                   name='industry'
                   rules={[{ required: true, message: 'Vui lòng chọn ngành nghề' }]}
                 >
                   <Select
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     showSearch
                     mode={'multiple'}
                     placeholder={'Chọn ngành nghề'}
                     size='large'
-                    options={industries.length === 3 ? maxItem : listIndustries}
+                    options={industries && industries.length === 3 ? maxItem : getAllIndustries}
                     onChange={(value) => setIndustries(value)}
                     maxTagCount={3}
-                    maxTagTextLength={10}
-                  />
-                </Form.Item>
-              </Col>
-              <Col md={11} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
-                <Form.Item
-                  label={<span style={{ fontWeight: '500' }}>Lĩnh Vực Công Ty</span>}
-                  name='field'
-                  style={{ marginBottom: 0 }}
-                  rules={[
-                    {
-                      validator: (_, value) => {
-                        return value
-                          ? Promise.resolve()
-                          : Promise.reject(new Error('Vui lòng chọn lĩnh vực của Công ty'))
-                      }
-                    }
-                  ]}
-                >
-                  <Select
-                    showSearch
-                    placeholder={'Chọn lĩnh vực của công ty'}
-                    size='large'
-                    options={listFieldCompany}
-                    onChange={(value) => setField(value)}
+                    // maxTagTextLength={10}
                   />
                 </Form.Item>
               </Col>
@@ -464,20 +776,11 @@ const ModalInfoPost = (props: any) => {
                     <Form.Item
                       style={{ margin: 0 }}
                       name={`location_${lcItem.key}`}
-                      // label={<span style={{ fontWeight: '500' }}>Địa Điểm Làm Việc</span>}
                       rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ trụ sở' }]}
                     >
                       <Select
+                        disabled={roleType === 'ADMIN_ROLE' ? true : false}
                         onChange={(value) => handleSelectLocation(value, lcItem.key)}
-                        onBlur={() => {
-                          setHiddenPenEditLocation(true)
-                        }}
-                        onSelect={() => {
-                          setHiddenPenEditLocation(true)
-                        }}
-                        onMouseDown={() => {
-                          setHiddenPenEditLocation(false)
-                        }}
                         size='large'
                         dropdownRender={(menu) => (
                           <>
@@ -494,13 +797,11 @@ const ModalInfoPost = (props: any) => {
                           label: (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                               <ImLocation />
-                              {location.value.branchName}
-                              <div hidden={hiddenPenEditLocation}>
-                                <AiTwotoneEdit />
-                              </div>
+                              {location.value.branch_name}, {location.value.address}, {location.value.district},{' '}
+                              {location.value.city_name}
                             </div>
                           ),
-                          value: location.value.branchName,
+                          value: `${location.value.branch_name}, ${location.value.address}, ${location.value.district}, ${location.value.city_name}`,
                           disabled: location.disabled
                         }))}
                       />
@@ -516,7 +817,7 @@ const ModalInfoPost = (props: any) => {
                     }}
                   >
                     <Button
-                      hidden={hiddenDeleteLocation}
+                      hidden={roleType === 'ADMIN_ROLE' ? true : hiddenDeleteLocation}
                       onClick={() => handleDeletedRowLocation(lcItem.key)}
                       size='large'
                       icon={<BsTrashFill />}
@@ -528,12 +829,12 @@ const ModalInfoPost = (props: any) => {
 
             <Modal
               className='modal-create-location'
-              title={<h1>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h1>}
+              title={<h2>{`TẠO ĐỊA ĐIỂM LÀM VIỆC`}</h2>}
               centered
               open={openModalLocation}
-              // onOk={() => console.log('xxxx')}
               onCancel={handleCloseModalLocation}
               width={'50%'}
+              footer=''
             >
               <Form
                 name='form-branch-location-job'
@@ -547,46 +848,78 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   name='branchName'
                   label={<span style={{ fontWeight: '500' }}>Tên Trụ Sở</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống tên trụ sở' }]}
+                  rules={[
+                    // { required: true, message: 'Vui lòng không để trống tên trụ sở' },
+
+                    {
+                      validator: (_, value) =>
+                        value && value.trim() !== ''
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                    }
+                  ]}
                 >
                   <Input
                     size='large'
                     placeholder='Trụ sở chính'
                     onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, branchName: e.target.value })
+                      setDataLocationBranch({ ...dataLocationBranch, branch_name: e.target.value })
                     }}
                   />
                 </Form.Item>
+
                 <Form.Item
-                  name='province'
                   label={<span style={{ fontWeight: '500' }}>Tỉnh/ Thành phố</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống tỉnh thành phố' }]}
+                  name='province'
+                  // rules={[{ required: true, message: 'Vui lòng chọn tỉnh/ thành phố' }]}
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        return value ? Promise.resolve() : Promise.reject(new Error('Vui lòng chọn tỉnh/ thành phố'))
+                      }
+                    }
+                  ]}
                 >
-                  <Input
+                  <Select
+                    showSearch
                     size='large'
-                    placeholder='TP. Hồ Chí Minh'
-                    onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, province: e.target.value })
-                    }}
+                    options={provincesData}
+                    onChange={(value) => setDataLocationBranch({ ...dataLocationBranch, city_name: value })}
                   />
                 </Form.Item>
+
                 <Form.Item
-                  name='district'
                   label={<span style={{ fontWeight: '500' }}>Quận/ huyện</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống quận/ huyện' }]}
+                  name='district'
+                  // rules={[{ required: true, message: 'Vui lòng chọn quận/ huyện' }]}
+                  rules={[
+                    {
+                      validator: (_, value) => {
+                        return value ? Promise.resolve() : Promise.reject(new Error('Vui lòng chọn quận/ huyện'))
+                      }
+                    }
+                  ]}
                 >
-                  <Input
+                  <Select
+                    showSearch
                     size='large'
-                    placeholder='Gò Vấp'
-                    onChange={(e) => {
-                      setDataLocationBranch({ ...dataLocationBranch, district: e.target.value })
-                    }}
+                    options={districtsData}
+                    onChange={(value) => setDataLocationBranch({ ...dataLocationBranch, district: value })}
                   />
                 </Form.Item>
                 <Form.Item
                   name='address'
                   label={<span style={{ fontWeight: '500' }}>Địa chỉ</span>}
-                  rules={[{ required: true, message: 'Vui lòng không để trống tên công việc' }]}
+                  rules={[
+                    // { required: true, message: 'Vui lòng không để trống tên công việc' },
+
+                    {
+                      validator: (_, value) =>
+                        value && value.trim() !== ''
+                          ? Promise.resolve()
+                          : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                    }
+                  ]}
                 >
                   <Input
                     size='large'
@@ -596,30 +929,137 @@ const ModalInfoPost = (props: any) => {
                     }}
                   />
                 </Form.Item>
-                <Form.Item name='buttonSubmit'>
+                <div className='btn-container'>
+                  <Button
+                    onClick={() => setOpenModalLocation(false)}
+                    size='large'
+                    className='btn-cancel'
+                    htmlType='submit'
+                  >
+                    Thoát
+                  </Button>
+                  <Button size='large' className='btn-submit' htmlType='submit'>
+                    Tạo
+                  </Button>
+                </div>
+                {/* <Form.Item name='buttonSubmit'>
                   <Button style={{ float: 'right' }} htmlType='submit'>
                     Tạo
                   </Button>
-                </Form.Item>
+                </Form.Item> */}
               </Form>
             </Modal>
 
-            <Button style={{ marginBottom: '20px' }} onClick={handleAddWorkingLocation} icon={<PlusOutlined />}>
+            <Button
+              hidden={roleType === 'ADMIN_ROLE' ? true : false}
+              style={{ marginBottom: '20px' }}
+              onClick={handleAddWorkingLocation}
+              icon={<PlusOutlined />}
+            >
               Thêm địa điểm làm việc
             </Button>
             <Form.Item
               name='descriptions'
               label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}
-              rules={[{ required: true, message: 'Vui lòng không để trống mô tả công việc' }]}
+              rules={[
+                // { required: true, message: 'Vui lòng không để trống mô tả công việc' },
+
+                {
+                  validator: () =>
+                    jobDescription && jobDescription.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
+                {
+                  validator: () =>
+                    jobDescription.length >= 1 && jobDescription.length <= 2000
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung tối thiểu 1 ký tự và tối đa 2000 ký tự'))
+                }
+              ]}
             >
-              <TextArea size='large' onChange={(e) => setJobDescription(e.target.value)} />
+              {/* <TextArea
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                size='large'
+                onChange={(e) => setJobDescription(e.target.value)}
+              /> */}
+              <CKEditor
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                data={jobDescription}
+                config={{
+                  toolbar: [
+                    'undo',
+                    'redo',
+                    '|',
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    'blockQuote',
+                    'outdent',
+                    'indent'
+                  ]
+                }}
+                editor={ClassicEditor}
+                onChange={(_, editor) => {
+                  const data = editor.getData()
+                  setJobDescription(data)
+                }}
+              />
             </Form.Item>
             <Form.Item
               name='requirements'
               label={<span style={{ fontWeight: '500' }}>Yêu Cầu Công Việc</span>}
-              rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu công việc' }]}
+              rules={[
+                // { required: true, message: 'Vui lòng không để trống yêu cầu công việc' },
+                {
+                  validator: () =>
+                    jobRequirement && jobRequirement.trim() !== ''
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                },
+                {
+                  validator: () =>
+                    jobRequirement.length >= 1 && jobRequirement.length <= 2000
+                      ? Promise.resolve()
+                      : Promise.reject(new Error('Nội dung tối thiểu 1 ký tự và tối đa 2000 ký tự'))
+                }
+              ]}
             >
-              <TextArea size='large' onChange={(e) => setJobRequirement(e.target.value)} />
+              {/* <TextArea
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                size='large'
+                onChange={(e) => setJobRequirement(e.target.value)}
+              /> */}
+              <CKEditor
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                data={jobRequirement}
+                config={{
+                  toolbar: [
+                    'undo',
+                    'redo',
+                    '|',
+                    'heading',
+                    '|',
+                    'bold',
+                    'italic',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    'blockQuote',
+                    'outdent',
+                    'indent'
+                  ]
+                }}
+                editor={ClassicEditor}
+                onChange={(_, editor) => {
+                  const data = editor.getData()
+                  setJobRequirement(data)
+                }}
+              />
             </Form.Item>
             <h4 style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</h4>
             {arrSkills.map((sk) => {
@@ -630,15 +1070,27 @@ const ModalInfoPost = (props: any) => {
                       style={{ margin: 0 }}
                       key={sk.key}
                       name={`skill_${sk.key}`}
-                      // label={<span style={{ fontWeight: '500' }}>Yêu Cầu Kỹ Năng</span>}
-                      rules={[{ required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' }]}
+                      rules={[
+                        // { required: true, message: 'Vui lòng không để trống yêu cầu kỹ năng công việc' },
+                        {
+                          validator: (_, value) =>
+                            value && value.trim() !== ''
+                              ? Promise.resolve()
+                              : Promise.reject(new Error('Nội dung không được bỏ trống'))
+                        }
+                      ]}
                     >
-                      <Input value={sk.value} size='large' onChange={(e) => handleSetSkill(e.target.value, sk.key)} />
+                      <Input
+                        disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                        value={sk.value}
+                        size='large'
+                        onChange={(e) => handleSetSkill(e.target.value, sk.key)}
+                      />
                     </Form.Item>
                   </Col>
                   <Col md={2} sm={4} xs={6} style={{ display: 'flex', justifyContent: 'center' }}>
                     <Button
-                      hidden={hiddenDeleteSkill}
+                      hidden={roleType === 'ADMIN_ROLE' ? true : hiddenDeleteSkill}
                       size='large'
                       icon={<BsTrashFill />}
                       onClick={() => handleDeletedRowSkill(sk.key)}
@@ -648,7 +1100,12 @@ const ModalInfoPost = (props: any) => {
               )
             })}
 
-            <Button onClick={handleAddRowSkill} style={{ marginBottom: '20px' }} icon={<PlusOutlined />}>
+            <Button
+              hidden={roleType === 'ADMIN_ROLE' ? true : false}
+              onClick={handleAddRowSkill}
+              style={{ marginBottom: '20px' }}
+              icon={<PlusOutlined />}
+            >
               Thêm kỹ năng
             </Button>
             <h4 style={{ fontWeight: '500' }}>Mức Lương</h4>
@@ -657,12 +1114,26 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   // label={<span style={{ fontWeight: '500' }}>Mức Lương</span>}
                   name='minSalary'
-                  rules={[{ required: true, message: 'Vui lòng nhập mức lương tối thiểu' }]}
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập mức lương tối thiểu' },
+                    { validator: validateMinMax },
+                    { type: 'number', min: 1, message: 'Mức lương tối thiểu là 1' },
+                    { type: 'number', max: 9999999999, message: 'Mức lương tối đa là 9.999.999.999' }
+                  ]}
                 >
-                  <Input
+                  <InputNumber
+                    style={{ width: '100%' }}
+                    min={1}
+                    // max={9999999999}
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                        event.preventDefault()
+                      }
+                    }}
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối thiểu'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, min: e.target.value })}
+                    onChange={(e) => setSalaryRange({ ...salaryRange, min: Number(e) })}
                   />
                 </Form.Item>
               </Col>
@@ -670,39 +1141,60 @@ const ModalInfoPost = (props: any) => {
                 <Form.Item
                   name='maxSalary'
                   style={{ marginBottom: 0 }}
-                  rules={[{ required: true, message: 'Vui lòng nhập mức lương tối đa' }]}
+                  rules={[
+                    { required: true, message: 'Vui lòng nhập mức lương tối đa' },
+                    { validator: validateMinMax },
+                    { type: 'number', min: 1, message: 'Mức lương tối thiểu là 1' },
+                    { type: 'number', max: 9999999999, message: 'Mức lương tối đa là 9.999.999.999' }
+                  ]}
                 >
-                  <Input
+                  <InputNumber
+                    style={{ width: '100%' }}
+                    min={1}
+                    // max={9999999999}
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                        event.preventDefault()
+                      }
+                    }}
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối đa'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, max: e.target.value })}
+                    onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e) })}
                   />
                 </Form.Item>
               </Col>
               <Col md={6} sm={24} xs={24}>
                 <Form.Item valuePropName='checked' name='showSalary' style={{ marginBottom: 0 }}>
-                  <Checkbox defaultChecked={showSalaryRange} onClick={() => setShowSalaryRange(!showSalaryRange)}>
+                  <Checkbox
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                    defaultChecked={showSalaryRange}
+                    onClick={() => setShowSalaryRange(!showSalaryRange)}
+                  >
                     Hiển Thị Mức Lương
                   </Checkbox>
                 </Form.Item>
               </Col>
             </Row>
-
+            <h4 style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</h4>
             {arrBenefits.map((row) => (
-              <Row key={row.key} align={'middle'} justify={'space-between'}>
+              <Row key={row.key} align={'middle'} justify={'space-between'} style={{ marginBottom: '15px' }}>
                 <Col md={22} sm={20} xs={18}>
                   <Form.Item
+                    style={{ margin: 0 }}
                     name={`benefit_${row.key}`}
-                    label={<span style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</span>}
+                    // label={<span style={{ fontWeight: '500' }}>Phúc Lợi Từ Công Ty</span>}
                   >
                     <Input
+                      disabled={roleType === 'ADMIN_ROLE' ? true : false}
                       onChange={(e) => handleSetDataBenefit(e.target.value, row.key)}
                       addonBefore={
                         <Select
+                          disabled={roleType === 'ADMIN_ROLE' ? true : false}
                           onChange={(value) => handleSetTypeBenefit(value, row.key)}
                           popupMatchSelectWidth={200}
                           size='large'
-                          defaultValue={listBenefit[0].value}
+                          defaultValue={row.data ? row.data.type : listBenefit[0].value}
                           options={listBenefit.map((benefit) => ({
                             label: (
                               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -722,7 +1214,7 @@ const ModalInfoPost = (props: any) => {
                 </Col>
                 <Col md={2} sm={4} xs={6} style={{ paddingTop: '5px', display: 'flex', justifyContent: 'center' }}>
                   <Button
-                    hidden={hiddenDeleteBenefit}
+                    hidden={roleType === 'ADMIN_ROLE' ? true : hiddenDeleteBenefit}
                     size='large'
                     icon={<BsTrashFill />}
                     onClick={() => handleDeletedRowBenefit(row.key)}
@@ -731,17 +1223,22 @@ const ModalInfoPost = (props: any) => {
               </Row>
             ))}
 
-            <Button onClick={handleAddRowBenefit} style={{ marginBottom: '20px' }} icon={<PlusOutlined />}>
+            <Button
+              hidden={roleType === 'ADMIN_ROLE' ? true : false}
+              onClick={handleAddRowBenefit}
+              style={{ marginBottom: '20px' }}
+              icon={<PlusOutlined />}
+            >
               Thêm phúc lợi
             </Button>
             <Form.Item
-              // name='quantityAccept'
+              name='quantityAccept'
+              initialValue={1}
               label={<span style={{ fontWeight: '500' }}>Số lượng tuyển</span>}
-              // rules={[{ required: true, message: 'Vui lòng không để trống email nhận CV' }]}
             >
               <InputNumber
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
                 min={1}
-                defaultValue={1}
                 size='large'
                 onKeyDown={(event) => {
                   if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
@@ -756,14 +1253,71 @@ const ModalInfoPost = (props: any) => {
               label={<span style={{ fontWeight: '500' }}>Địa Chỉ Email Nhận Hồ Sơ</span>}
               rules={[{ required: true, message: 'Vui lòng không để trống email nhận CV' }]}
             >
-              <Input size='large' placeholder='mail@gmail.com' onChange={(e) => setEmailAcceptCV(e.target.value)} />
+              <Input
+                disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                size='large'
+                placeholder='mail@gmail.com'
+                onChange={(e) => setEmailAcceptCV(e.target.value)}
+              />
             </Form.Item>
-            <div style={{ display: 'flex', justifyContent: 'end', gap: '8px' }}>
+            <Form.Item
+              hidden={idPost ? true : false}
+              valuePropName='checked'
+              name='publish'
+              style={{ marginBottom: 0 }}
+            >
+              <Checkbox defaultChecked={publish} onClick={() => setPublish(!publish)}>
+                Công khai bài đăng
+              </Checkbox>
+            </Form.Item>
+            <Form.Item
+              hidden={idPost || !publish ? true : false}
+              valuePropName='checked'
+              name='expireDate'
+              // style={{ marginBottom: 0 }}
+              rules={[
+                { required: publish ? true : false, message: 'Vui lòng chọn ngày hết hạn' },
+                {
+                  validator: (_, value) =>
+                    new Date(value) <= new Date() || new Date(value) > add(new Date(), { days: 60 })
+                      ? Promise.reject(
+                          new Error(
+                            'Ngày hết hạn phải bắt sau ngày hiện tại 1 ngày và tối đa 60 ngày kể từ ngày hiện tại'
+                          )
+                        )
+                      : Promise.resolve()
+                }
+              ]}
+            >
+              <DatePicker
+                size='large'
+                placeholder='Ngày hết hạn'
+                onChange={(_, strings) => setExpireDate(strings)}
+                format={'YYYY-MM-DD'}
+              />
+            </Form.Item>
+            <div className='btn-container' style={{ display: 'flex', justifyContent: 'end', gap: '8px' }}>
               <Button size='large' style={{ width: '100px' }} onClick={handleClose}>
                 Thoát
               </Button>
+              {idPost && roleType === 'ADMIN_ROLE' && Number(status) === 1 && (
+                <>
+                  <Button className='btn-reject' size='large' onClick={() => handleActionRequest('REJECT', idPost)}>
+                    Từ chối
+                  </Button>
+                  <Button className='btn-approved' size='large' onClick={() => handleActionRequest('APPROVE', idPost)}>
+                    Chấp nhận
+                  </Button>
+                </>
+              )}
+              {idPost && roleType === 'ADMIN_ROLE' && Number(status).toString() === '0' && (
+                <Button className='btn-reject' size='large' onClick={() => handleActionRequest('REJECT', idPost)}>
+                  Từ chối
+                </Button>
+              )}
               {idPost ? (
                 <Button
+                  hidden={roleType === 'ADMIN_ROLE' ? true : false}
                   size='large'
                   htmlType='submit'
                   style={{ background: 'rgb(255, 125, 85)', color: 'white', width: '100px' }}
@@ -772,6 +1326,7 @@ const ModalInfoPost = (props: any) => {
                 </Button>
               ) : (
                 <Button
+                  disabled={roleType === 'ADMIN_ROLE' ? true : false}
                   size='large'
                   htmlType='submit'
                   style={{ background: 'rgb(255, 125, 85)', color: 'white', width: '100px' }}

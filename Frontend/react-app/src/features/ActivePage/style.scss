@@ -1,0 +1,82 @@
+.active-page-container {
+  // background: linear-gradient(270deg, #005aff, #001744);
+  // background-image: url();
+  object-fit: cover;
+  min-height: 89vh;
+  height: 89vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .active-page-content-wapper {
+    background-color: white;
+    border-radius: 10px;
+    margin: 0 auto;
+    width: auto;
+    min-width: 30%;
+    height: auto;
+    min-height: 60%;
+    margin: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .content-wapper {
+      height: 100%;
+      .first-step-container {
+        height: 100%;
+        padding: 0 40px 20px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+        .logo-web {
+          padding-top: 10px 0;
+          margin: 0;
+          font-weight: 700;
+        }
+        .first-step-content {
+          padding: 40px;
+          box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+          border-radius: 10px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 40px;
+          .header-wapper {
+            h3 {
+              font-weight: 700;
+            }
+            p {
+              color: rgb(101, 101, 101);
+              font-size: 13px;
+              margin-bottom: 7px;
+            }
+            .your-email {
+              font-weight: 500;
+            }
+          }
+          .btn-send-mail-active-account {
+            width: 100%;
+            background: rgb(255, 125, 85);
+            color: white;
+            font-weight: 500;
+            &:hover {
+              border-color: rgb(255, 125, 85);
+            }
+          }
+          .btn-diabled {
+            background: rgb(227, 112, 77);
+            color: rgb(226, 226, 226);
+          }
+          span {
+            // color: rgb(101, 101, 101);
+            font-size: 13px;
+            margin-bottom: 7px;
+          }
+        }
+      }
+    }
+  }
+}

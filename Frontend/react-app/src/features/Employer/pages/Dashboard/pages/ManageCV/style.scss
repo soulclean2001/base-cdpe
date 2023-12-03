@@ -9,16 +9,33 @@
     margin-bottom: 15px;
   }
   .filter-container {
-    // display: flex;
+    padding-bottom: 10px;
   }
   .cv-applied-manage-content {
     .header-content {
-      .total-cv {
-      }
-      .filter-table {
-      }
+      padding-bottom: 10px;
     }
-    .table-container {
+  }
+  .tabs-post-manage-container {
+    .tabs-post-manage {
+      .ant-tabs-nav-list {
+        .ant-tabs-tab {
+          color: #c2c2c2;
+        }
+        .ant-tabs-tab-active {
+          color: #005aff;
+        }
+        .ant-tabs-ink-bar {
+          height: 2px;
+          background: #005aff !important;
+        }
+      }
+
+      .tab-item {
+        // color: #c2c2c2;
+        font-weight: 600;
+        font-size: 16px;
+      }
     }
   }
 }

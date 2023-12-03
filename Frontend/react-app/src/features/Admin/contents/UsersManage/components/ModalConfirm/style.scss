@@ -1,0 +1,17 @@
+.modal-block-account {
+  max-width: 300px;
+  .header-container {
+    border-bottom: 1px solid rgb(221, 221, 221);
+    padding-bottom: 15px;
+  }
+  .modal-content-wapper {
+    .form-block-account {
+      .btn-container {
+        .btn-submit-block-account {
+          background-color: rgb(222, 55, 55);
+          color: white;
+        }
+      }
+    }
+  }
+}

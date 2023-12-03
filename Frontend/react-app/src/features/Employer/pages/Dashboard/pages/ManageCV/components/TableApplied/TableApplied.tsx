@@ -1,12 +1,17 @@
-import { Button, Space, Table } from 'antd'
-import { ColumnsType, TablePaginationConfig, TableProps } from 'antd/es/table'
-import { FilterValue, SorterResult } from 'antd/es/table/interface'
-import { useEffect, useState } from 'react'
-import { AiFillEdit, AiFillPrinter } from 'react-icons/ai'
-import { BiBlock } from 'react-icons/bi'
+import { Dropdown, MenuProps, Table, Tooltip } from 'antd'
+import { ColumnsType, TableProps } from 'antd/es/table'
+import { SorterResult } from 'antd/es/table/interface'
+import { useState } from 'react'
+import { AiFillPrinter } from 'react-icons/ai'
+import { BiBlock, BiCommentError, BiSolidUserX } from 'react-icons/bi'
 // import './style.scss'
-import { BsFillCheckCircleFill, BsFillEyeFill, BsPencilSquare } from 'react-icons/bs'
-import { MdDelete } from 'react-icons/md'
+import { BsFillEyeFill } from 'react-icons/bs'
+import { FaUserCheck } from 'react-icons/fa'
+
+import { FiMoreVertical } from 'react-icons/fi'
+import { ImUserCheck } from 'react-icons/im'
+import { IoMdMail } from 'react-icons/io'
+import { MdConnectWithoutContact, MdDelete } from 'react-icons/md'
 
 interface DataType {
   id: string
@@ -32,7 +37,7 @@ const data: DataType[] = [
     addressOffice: 'F4/2A Gò Vấp TP. Hồ Chí Minh',
     createdTime: '27/08/2023 20:51:23',
     reviewTime: '28/08/2023 12:55:23',
-    status: 'Đang xem xét'
+    status: 'pending'
   },
   {
     id: 'id2',
@@ -44,7 +49,7 @@ const data: DataType[] = [
     addressOffice: 'F4/2A Gò Vấp TP. Hồ Chí Minh',
     createdTime: '27/08/2023 20:51:23',
     reviewTime: '',
-    status: 'Chưa xem'
+    status: 'approved'
   },
   {
     id: 'id3',
@@ -56,7 +61,7 @@ const data: DataType[] = [
     addressOffice: 'F4/2A Gò Vấp TP. Hồ Chí Minh',
     createdTime: '27/08/2023 20:51:23',
     reviewTime: '28/08/2023 20:51:23',
-    status: 'Không đạt'
+    status: 'reject'
   },
   {
     id: 'id4',
@@ -68,19 +73,43 @@ const data: DataType[] = [
     addressOffice: 'F4/2A Gò Vấp TP. Hồ Chí Minh',
     createdTime: '27/08/2023 20:51:23',
     reviewTime: '29/08/2023 20:51:23',
-    status: 'Đạt'
+    status: 'potential'
   },
   {
     id: 'id5',
     key: '5',
-    nameJobSeeker: 'Phong Thanh',
-    email: 'bbb@gmail.com',
+    nameJobSeeker: 'Phong Thanhbb',
+    email: 'bbbvv@gmail.com',
     phoneNumber: '0955555555',
     jobPosition: '#JOB03 - Senior HTML',
     addressOffice: 'F4/2A Bình Chánh TP. Hồ Chí Minh',
     createdTime: '27/08/2023 20:51:23',
     reviewTime: '30/08/2023 20:51:23',
-    status: 'Tiềm năng'
+    status: 'interview'
+  },
+  {
+    id: 'id6',
+    key: '6',
+    nameJobSeeker: 'Phong Thanhxx',
+    email: 'bbbzx@gmail.com',
+    phoneNumber: '0955555555',
+    jobPosition: '#JOB03 - Senior HTML',
+    addressOffice: 'F4/2A Bình Chánh TP. Hồ Chí Minh',
+    createdTime: '27/08/2023 20:51:23',
+    reviewTime: '30/08/2023 20:51:23',
+    status: 'hired'
+  },
+  {
+    id: 'id7',
+    key: '7',
+    nameJobSeeker: 'Phong Thanhzz',
+    email: 'bbbzz@gmail.com',
+    phoneNumber: '0955555555',
+    jobPosition: '#JOB03 - Senior HTML',
+    addressOffice: 'F4/2A Bình Chánh TP. Hồ Chí Minh',
+    createdTime: '27/08/2023 20:51:23',
+    reviewTime: '30/08/2023 20:51:23',
+    status: 'notcontactable'
   }
 ]
 
@@ -92,9 +121,48 @@ const TableApplied = () => {
     setSortedInfo(sorter as SorterResult<DataType>)
   }
 
-  const clearAll = () => {
-    setSortedInfo({})
-  }
+  const items: MenuProps['items'] = [
+    {
+      label: (
+        <Tooltip title='Gửi Mail'>
+          <a style={{ color: '#1677ff' }}>
+            <IoMdMail />
+          </a>
+        </Tooltip>
+      ),
+      key: '0'
+    },
+    {
+      label: (
+        <Tooltip title='In CV'>
+          <a style={{ color: '#1677ff' }}>
+            <AiFillPrinter />
+          </a>
+        </Tooltip>
+      ),
+      key: '1'
+    },
+    {
+      label: (
+        <Tooltip title='Hủy bỏ'>
+          <a style={{ color: '#1677ff' }}>
+            <MdDelete />
+          </a>
+        </Tooltip>
+      ),
+      key: '2'
+    },
+    {
+      label: (
+        <Tooltip title='Thêm vào sổ đen'>
+          <a style={{ color: '#1677ff' }}>
+            <BiBlock />
+          </a>
+        </Tooltip>
+      ),
+      key: '3'
+    }
+  ]
 
   const columns: ColumnsType<DataType> = [
     {
@@ -167,59 +235,139 @@ const TableApplied = () => {
       sorter: (a, b) => a.status.localeCompare(b.status),
       sortOrder: sortedInfo.columnKey === 'status' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (text, _) => (
+        <div style={{ textAlign: 'center' }}>
+          {text === 'pending' && <span className='status-apply-job pending'>{text}</span>}
+          {text === 'approved' && <span className='status-apply-job approved'>{text}</span>}
+          {text === 'reject' && <span className='status-apply-job rejected'>{text}</span>}
+          {text === 'potential' && <span className='status-apply-job potential'>{text}</span>}
+          {text === 'interview' && <span className='status-apply-job interview'>{text}</span>}
+          {text === 'hired' && <span className='status-apply-job hired'>{text}</span>}
+          {text === 'notcontactable' && <span className='status-apply-job not-contactable'>{text}</span>}
+        </div>
+      )
     },
     {
       title: 'Xử lý',
       dataIndex: 'action',
       key: 'action',
       fixed: 'right',
-      render: () => (
-        <div style={{ display: 'flex', gap: '5px' }}>
-          <a onClick={() => setOpenModalInfo(true)}>
-            <BsFillEyeFill />
-          </a>
-          <a>
-            <AiFillEdit />
-          </a>
-          <a>
-            <AiFillPrinter />
-          </a>
-          <a>
-            <MdDelete />
-          </a>
-          <a>
-            <BiBlock />
-          </a>
+      render: (_, record) => (
+        <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+          <Tooltip title='Xem CV'>
+            <a>
+              <BsFillEyeFill />
+            </a>
+          </Tooltip>
+
+          {record.status === 'pending' && (
+            <>
+              <Tooltip title='Chấp nhận CV'>
+                <a>
+                  <ImUserCheck />
+                </a>
+              </Tooltip>
+              <Tooltip title='Từ chối CV'>
+                <a style={{ fontSize: '19px' }}>
+                  <BiSolidUserX />
+                </a>
+              </Tooltip>
+            </>
+          )}
+          {record.status === 'approved' && (
+            <>
+              <Tooltip title='Interview'>
+                <a style={{ fontSize: '19px' }}>
+                  <MdConnectWithoutContact />
+                </a>
+              </Tooltip>
+              <a>
+                <Tooltip title='Không thể liên hệ'>
+                  <BiCommentError />
+                </Tooltip>
+              </a>
+            </>
+          )}
+          {record.status === 'potential' && (
+            <>
+              <Tooltip title='Chấp nhận CV'>
+                <a>
+                  <ImUserCheck />
+                </a>
+              </Tooltip>
+              <Tooltip title='Từ chối CV'>
+                <a style={{ fontSize: '19px' }}>
+                  <BiSolidUserX />
+                </a>
+              </Tooltip>
+            </>
+          )}
+          {record.status === 'interview' && (
+            <>
+              <a>
+                <Tooltip title='Nhận việc'>
+                  <FaUserCheck />
+                </Tooltip>
+              </a>
+              <Tooltip title='Từ chối'>
+                <a style={{ fontSize: '19px' }}>
+                  <BiSolidUserX />
+                </a>
+              </Tooltip>
+            </>
+          )}
+          {record.status === 'notcontactable' && (
+            <>
+              <Tooltip title='Interview'>
+                <a style={{ fontSize: '19px' }}>
+                  <MdConnectWithoutContact />
+                </a>
+              </Tooltip>
+            </>
+          )}
+          {record.status !== 'reject' && record.status !== 'hired' ? (
+            <Dropdown menu={{ items }} trigger={['click']}>
+              <a onClick={(e) => e.preventDefault()}>
+                <FiMoreVertical />
+              </a>
+            </Dropdown>
+          ) : (
+            <>
+              <Tooltip title='In CV'>
+                <a>
+                  <AiFillPrinter />
+                </a>
+              </Tooltip>
+
+              <Tooltip title='Hủy bỏ'>
+                <a>
+                  <MdDelete />
+                </a>
+              </Tooltip>
+
+              <Tooltip title='Thêm vào sổ đen'>
+                <a>
+                  <BiBlock />
+                </a>
+              </Tooltip>
+            </>
+          )}
         </div>
       ),
       showSorterTooltip: false
     }
   ]
-  const [openModalInfo, setOpenModalInfo] = useState(false)
-  const [dataRowSelected, setDataRowSelected] = useState<DataType>()
-  const [idPost, setIdPost] = useState<string>()
-  useEffect(() => {
-    console.log('data row selected', dataRowSelected)
-  }, [dataRowSelected])
-  const handleCloseModalInfo = () => {
-    setOpenModalInfo(false)
-  }
+
   return (
     <>
-      <Space style={{ marginBottom: 16 }}>
-        <Button onClick={clearAll}>Clear sorters</Button>
-      </Space>
+      {/* <Space style={{ marginBottom: 16 }}>
+        <Button onClick={clearAll}>Xóa bộ lọc</Button>
+      </Space> */}
       <Table
         className='table-custom'
         // style={{ maxWidth: '70vw', overflow: 'auto' }}
         scroll={{ x: true }}
-        onRow={(record) => ({
-          onClick: () => {
-            setIdPost(record.id)
-            setDataRowSelected(record)
-          }
-        })}
         columns={columns}
         dataSource={data}
         onChange={handleChange}

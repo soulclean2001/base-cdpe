@@ -15,8 +15,6 @@ const Auth = ({ children, role }: AuthProps) => {
   const user = useSelector((state: RootState) => state.auth) as AuthState
   const location = useLocation()
   if (role && (user.role !== role || isExpired(user.accessToken))) {
-    console.log(user.role)
-
     switch (user.role) {
       case UserRole.Candidate: {
         return <Navigate to='/candidate-login' state={{ from: location }} replace />

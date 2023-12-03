@@ -1,0 +1,44 @@
+.road-map-page-container {
+  object-fit: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  height: 86vh;
+
+  h1 {
+    text-align: center;
+    color: white;
+    font-weight: 700;
+  }
+  .content-wapper {
+    padding: 40px 40px;
+    border-radius: 15px;
+    width: 50%;
+    background-color: rgb(241, 241, 241);
+    display: flex;
+    justify-content: center;
+
+    gap: 100px;
+    .item {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      .title {
+        color: #333333;
+        cursor: pointer;
+        &:hover {
+          color: rgb(0, 123, 255);
+        }
+      }
+    }
+    @media (max-width: 992px) {
+      width: 90%;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}

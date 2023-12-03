@@ -6,52 +6,94 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import './topCarrer.scss'
-import { useDispatch } from 'react-redux'
-const TopCarrer = (props: any) => {
-  const dataCarrer = [
-    {
-      id: '1',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'BÁN HÀNG',
-      totalJob: 19999
-    },
-    {
-      id: '2',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'IT - PHÂN MỀM',
-      totalJob: 19999
-    },
-    {
-      id: '3',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'MARKETING',
-      totalJob: 19999
-    },
-    {
-      id: '4',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'ĐIỆN / ĐIỆN TỬ',
-      totalJob: 19999
-    },
-    {
-      id: '5',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'TÀI CHÍNH / ĐẦU TƯ',
-      totalJob: 19999
-    },
-    {
-      id: '6',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'DỊCH VỤ KHÁCH HÀNG',
-      totalJob: 19999
-    },
-    {
-      id: '7',
-      img: 'https://images02.vietnamworks.com/mobile_banner/39fc1e25eac4528661800fe9e28267ca.png',
-      name: 'KẾ TOÁN',
-      totalJob: 19999
-    }
-  ]
+import carrer1 from '~/assets/carerr_kinh_doanh_ban_hang.webp'
+import carrer2 from '~/assets/carerr_it_pm.webp'
+import carrer3 from '~/assets/carerr_hanh_chinh_vp.webp'
+import carrer4 from '~/assets/carerr_gaio_duc.webp'
+import carrer5 from '~/assets/carerr_tu_van.webp'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import carrer6 from '~/assets/carerr_mkt.webp'
+import carrer7 from '~/assets/carerr_van_tai.webp'
+import carrer8 from '~/assets/carerr_kiem_toan.webp'
+import apiHome from '~/api/home.api'
+import { useNavigate } from 'react-router-dom'
+const TopCarrer = () => {
+  const [dataCarrer, setDataCarrer] = useState<{ id: string; img: string; name: string; totalJob: number }[]>([])
+  const navigate = useNavigate()
+  useEffect(() => {
+    fetchData()
+  }, [])
+  const fetchData = async () => {
+    let dataCarrer = [
+      {
+        id: '1',
+        img: carrer1,
+        name: 'Kinh doanh/ Bán hàng',
+        totalJob: 0
+      },
+      {
+        id: '2',
+        img: carrer2,
+        name: 'IT Phần mềm',
+        totalJob: 0
+      },
+      {
+        id: '3',
+        img: carrer3,
+        name: 'Hành chính/ Văn phòng',
+        totalJob: 0
+      },
+      {
+        id: '4',
+        img: carrer4,
+        name: 'Giáo dục/ Đào tạo',
+        totalJob: 0
+      },
+      {
+        id: '5',
+        img: carrer5,
+        name: 'Tư vấn',
+        totalJob: 0
+      },
+      // {
+      //   id: '6',
+      //   img: carrer6,
+      //   name: 'MARKETING/ TRUYỀN THÔNG/ QUẢNG CÁO',
+      //   totalJob: 19999
+      // },
+      {
+        id: '7',
+        img: carrer7,
+        name: 'Vận tải/ Kho vận',
+        totalJob: 0
+      },
+      {
+        id: '8',
+        img: carrer8,
+        name: 'Kế toán/ Kiểm toán',
+        totalJob: 0
+      }
+    ]
+
+    await apiHome.getTotalJobsByCareer().then((rs) => {
+      if (!rs || !rs.result) return
+      let listTemp: { id: string; img: string; name: string; totalJob: number }[] = []
+
+      rs.result.map((item: { _id: string; jobs: number }) => {
+        dataCarrer.map((data: { id: string; img: string; name: string; totalJob: number }) => {
+          if (item._id === data.name) {
+            data.totalJob = item.jobs
+            listTemp.push(data)
+            let index = dataCarrer.indexOf(data)
+            if (index > -1) dataCarrer.splice(index, 1)
+          }
+        })
+      })
+      setDataCarrer([...listTemp, ...dataCarrer])
+    })
+  }
+  // set size
   const getWindowSize = () => {
     const { innerWidth, innerHeight } = window
     return { innerWidth, innerHeight }
@@ -81,6 +123,12 @@ const TopCarrer = (props: any) => {
       window.removeEventListener('resize', handleWindowResize)
     }
   }, [windowSize])
+  //
+  const handleSubmitSearch = (carrer: string) => {
+    navigate('/jobs', { state: { carrer: carrer } })
+    // window.location.reload()
+  }
+  //
   return (
     <div className='top-carrer-container'>
       <div className='title'>Ngành Nghề Trọng Điểm</div>
@@ -99,7 +147,13 @@ const TopCarrer = (props: any) => {
             dataCarrer.map((item) => (
               <SwiperSlide className='carrer-item' key={item.id}>
                 <img className='img-carrer' src={item.img} alt='' />
-                <div className='name-carrer'>{item.name}</div>
+                <div
+                  className='name-carrer'
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => handleSubmitSearch(item.name)}
+                >
+                  {item.name.toUpperCase()}
+                </div>
                 <div className='total-job'>{`${item.totalJob} Việc làm`}</div>
               </SwiperSlide>
             ))}
