@@ -1407,7 +1407,7 @@ const CV = () => {
                         }
                       })
                     }}
-                    value={infos.property_name + pIndex || ''}
+                    value={infos.property_name || ''}
                     defaultstring={'Untitled'}
                     onChange={(e) => handleSetSubData(pIndex, 'additional_info', 'property_name', e.target.value)}
                     setdefaultdata={(value) => {
