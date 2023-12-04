@@ -762,6 +762,87 @@ class OrderService {
     }
   }
 
+  static async activeServiceOrder2(orderId: ObjectId, id: string) {
+    const service = await databaseServices.serviceOrder.findOne({
+      package_id: new ObjectId(id),
+      order_id: orderId
+    })
+
+    if (service) {
+      const serviceOrder = await databaseServices.serviceOrder.findOneAndUpdate(
+        {
+          _id: service._id
+        },
+        {
+          $set: {
+            status: ServicePackageStatus.Active
+          }
+        },
+        {
+          returnDocument: 'after'
+        }
+      )
+
+      const company = await databaseServices.company.findOne({
+        _id: serviceOrder.value?.company_id
+      })
+
+      if (service.code === PackageType.POST && company && serviceOrder) {
+        await databaseServices.company.updateOne(
+          {
+            _id: serviceOrder.value?.company_id
+          },
+          {
+            $set: {
+              number_of_posts: company.number_of_posts + service.value
+            }
+          }
+        )
+      }
+    }
+  }
+
+  static async activeServiceOrderByOrderId2(orderId: string) {
+    const order = await databaseServices.order.findOne({
+      _id: new ObjectId(orderId)
+    })
+
+    if (order) {
+      const services = order.services
+      for (let i = 0; i < services.length; i++) {
+        await this.activeServiceOrder2(order._id, services[i].toString())
+      }
+
+      await databaseServices.order.updateOne(
+        {
+          _id: order._id
+        },
+        {
+          $set: {
+            status: StatusOrder.Success
+          }
+        }
+      )
+
+      const company = await databaseServices.company.findOne({
+        _id: order.company_id
+      })
+
+      if (company) {
+        const userids = company.users.map((user) => user.user_id.toString())
+        if (userids.length > 0) {
+          await NotificationService.notify({
+            content: order._id.toString().slice(-5).toUpperCase(),
+            object_recieve: NotificationObject.Employer,
+            object_sent: NotificationObject.Admin,
+            recievers: userids,
+            type: 'order/completed'
+          })
+        }
+      }
+    }
+  }
+
   static async cancelOrderById(orderId: string) {
     const order = await databaseServices.order.findOne({
       _id: new ObjectId(orderId)
