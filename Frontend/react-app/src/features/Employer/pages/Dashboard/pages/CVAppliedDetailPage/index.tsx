@@ -358,7 +358,11 @@ const CVAppliedDetailPage = () => {
                   ) : (
                     <>
                       <Tooltip title='Gửi Mail'>
-                        <Button onClick={() => handleOpenModalSendMail(myDetail.email)} style={{ color: '#1677ff' }}>
+                        <Button
+                          style={{ fontSize: '18px' }}
+                          className='btn-candidate-detail btn-save-cv'
+                          onClick={() => handleOpenModalSendMail(myDetail.email)}
+                        >
                           <IoIosMail />
                         </Button>
                       </Tooltip>
