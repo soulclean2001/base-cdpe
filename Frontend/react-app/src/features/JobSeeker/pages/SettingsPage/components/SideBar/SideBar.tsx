@@ -42,13 +42,11 @@ const SideBar = () => {
         !rs.result[0] ||
         !rs.result[0] ||
         !rs.result[0].user_info ||
+        !rs.result[0].user_info.wanted_job_title ||
         !rs.result[0].user_info.first_name ||
         !rs.result[0].user_info.last_name ||
         !rs.result[0].user_info.phone ||
-        !rs.result[0].user_info.email ||
-        !rs.result[0].educations.data ||
-        !rs.result[0].skills.data ||
-        !rs.result[0].employment_histories.data
+        !rs.result[0].user_info.email
       ) {
         setDisableTurnOnFindCV(true)
         setCheckboxCV(false)

@@ -60,7 +60,17 @@ const ModalApplyCV = (props: any) => {
   }, [open])
   const getIDCV = async () => {
     await apiResume.getAllByMe().then((rs) => {
-      if (!rs.result[0]) setIsDisabledSelected(true)
+      if (
+        !rs.result[0] ||
+        !rs.result[0] ||
+        !rs.result[0].user_info ||
+        !rs.result[0].user_info.wanted_job_title ||
+        !rs.result[0].user_info.first_name ||
+        !rs.result[0].user_info.last_name ||
+        !rs.result[0].user_info.phone ||
+        !rs.result[0].user_info.email
+      )
+        setIsDisabledSelected(true)
       else {
         setIsDisabledSelected(false)
         setIdCV(rs.result[0]._id)
