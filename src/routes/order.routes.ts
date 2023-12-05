@@ -35,6 +35,19 @@ orderRouter.post(
   }
 */
 
+orderRouter.post(
+  '/active-order2',
+  accessTokenValidator,
+  isAdmin,
+  wrapAsync(orderControllers.activeServiceOrderByOrderId2)
+)
+
+/*
+  body: {
+    order_id: string
+  }
+*/
+
 orderRouter.post('/cancel-order', accessTokenValidator, isAdmin, wrapAsync(orderControllers.cancelOrderById))
 
 orderRouter.get('/:order_id', accessTokenValidator, isEmployer, wrapAsync(orderControllers.getOrdersDetailByCompany))

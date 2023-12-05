@@ -492,22 +492,6 @@ class UsersService {
     }
   }
 
-  async userFollowResume(resumeId: string, recruiterId: string) {
-    const result = await databaseServices.recruiterFollowedResumes.insertOne({
-      resume_id: new ObjectId(resumeId),
-      recruiter_id: new ObjectId(recruiterId)
-    })
-    return result
-  }
-
-  async unfollowResume(resumeId: string, recruiterId: string) {
-    const result = await databaseServices.recruiterFollowedResumes.findOneAndDelete({
-      resume_id: new ObjectId(resumeId),
-      recruiter_id: new ObjectId(recruiterId)
-    })
-    return result
-  }
-
   async userFollowCompany(userId: string, companyId: string) {
     const result = await databaseServices.companyFollowers.insertOne({
       company_id: new ObjectId(companyId),

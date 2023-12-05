@@ -126,6 +126,24 @@ class OrderController {
     })
   }
 
+  async activeServiceOrderByOrderId2(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { user_id } = req.decoded_authorization as TokenPayload
+    const { order_id } = req.body
+
+    if (!ObjectId.isValid(order_id))
+      throw new ErrorWithStatus({
+        message: 'Invalid service identifier',
+        status: 422
+      })
+
+    const result = await OrderService.activeServiceOrderByOrderId2(order_id)
+
+    return res.json({
+      message: 'active services from order',
+      result
+    })
+  }
+
   async cancelOrderById(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
     const { user_id } = req.decoded_authorization as TokenPayload
     const { order_id } = req.body

@@ -14,24 +14,4 @@ mediasRouter.post(
 
 mediasRouter.post('/upload-pdf', accessTokenValidator, verifiedUserValidator, wrapAsync(mediasControllers.uploadPDF))
 
-mediasRouter.post(
-  '/upload-video',
-  accessTokenValidator,
-  verifiedUserValidator,
-  wrapAsync(mediasControllers.uploadVideo)
-)
-
-mediasRouter.post(
-  '/upload-video-hls',
-  accessTokenValidator,
-  verifiedUserValidator,
-  wrapAsync(mediasControllers.uploadVideoHLS)
-)
-
-mediasRouter.get(
-  '/video-status/:id',
-  accessTokenValidator,
-  verifiedUserValidator,
-  wrapAsync(mediasControllers.videoStatus)
-)
 export default mediasRouter

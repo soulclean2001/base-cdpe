@@ -46,52 +46,6 @@ export const handleUploadImage = async (req: Request) => {
   })
 }
 
-export const handleUploadVideo = async (req: Request) => {
-  const formidable = (await import('formidable')).default
-  // Cách để có được định dạng idname/idname.mp4
-  // ✅Cách 1: Tạo unique id cho video ngay từ đầu
-  // ❌Cách 2: Đợi video upload xong rồi tạo folder, move video vào
-  const nanoId = (await import('nanoid')).nanoid
-  const idName = nanoId()
-  const folderPath = path.resolve(UPLOAD_VIDEO_DIR, idName)
-  fs.mkdirSync(folderPath)
-
-  const form = formidable({
-    uploadDir: folderPath,
-    maxFiles: 1,
-    maxFileSize: 1024 * 1024 * 50, // 50MB
-    filter: function ({ name, originalFilename, mimetype }) {
-      const valid = name === 'video' && Boolean(mimetype?.includes('mp4') || mimetype?.includes('quicktime'))
-      if (!valid) {
-        form.emit('error' as any, new Error('File type is not valid') as any)
-      }
-      return valid
-    }
-  })
-
-  return new Promise<File[]>((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        return reject(err)
-      }
-      // eslint-disable-next-line no-extra-boolean-cast
-      if (!Boolean(files.video)) {
-        return reject(new Error('File is empty'))
-      }
-
-      const videos = files.video as File[]
-      videos.forEach((video) => {
-        const ext = getExtension(video.originalFilename as string)
-        fs.renameSync(video.filepath, video.filepath + '.' + ext)
-        video.newFilename = video.newFilename + '.' + ext
-        video.filepath = video.filepath + '.' + ext
-      })
-
-      resolve(files.video as File[])
-    })
-  })
-}
-
 export const handleUploadPDF = async (req: Request) => {
   const formidable = (await import('formidable')).default
 
