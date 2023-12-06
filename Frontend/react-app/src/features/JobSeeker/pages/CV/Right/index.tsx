@@ -41,6 +41,13 @@ const Right = (props: RightPropsType) => {
         reader.readAsDataURL(file.originFileObj as RcFile)
         reader.onload = () => resolve(reader.result as string)
       })
+    } else {
+      await fetch(src)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob)
+          src = url
+        })
     }
     const image = new Image()
     image.src = src
