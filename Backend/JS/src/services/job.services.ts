@@ -745,6 +745,65 @@ export default class JobService {
           { job_id: job._id }
         )
       }
+
+      //notify candidate turn on find job
+      const job2 = result.value
+
+      const workLocations = job2.working_locations.map((workLocation) => workLocation.city_name)
+
+      const optionsNotify: {
+        [key: string]: any
+      } = {}
+      if (job2.careers && job2.careers.length > 0) {
+        optionsNotify['industry'] = {
+          $in: job2.careers
+        }
+      }
+
+      if (workLocations && workLocations.length > 0) {
+        optionsNotify['work_location'] = {
+          $in: workLocations
+        }
+      }
+
+      if (job2.job_level) {
+        optionsNotify['level'] = job2.job_level
+      }
+
+      const candidates = await databaseServices.candidate
+        .aggregate([
+          {
+            $match: {
+              cv_public: true,
+              ...optionsNotify
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              users: {
+                $push: '$user_id'
+              }
+            }
+          }
+        ])
+        .toArray()
+
+      if (candidates.length > 0) {
+        const userIds = candidates[0]?.users || []
+        if (userIds.length > 0) {
+          await NotificationService.notify(
+            {
+              content: result.value.job_title,
+              object_sent: NotificationObject.Admin,
+              type: 'post/candidate_find_job',
+              object_recieve: NotificationObject.Candidate,
+              recievers: userIds
+            },
+            { job_id: job._id }
+          )
+        }
+      }
     }
 
     return {
