@@ -443,9 +443,6 @@ const OverviewEmployer = () => {
                 options={[
                   { value: 'Bar', label: 'Bar' },
                   { value: 'Line', label: 'Line' }
-                  // { value: 'Area', label: 'Area' }
-                  // { value: 'Pie', label: 'Pie' },
-                  // { value: 'Doughnut', label: 'Doughnut' }
                 ]}
               />
             </ToolTipAntd>
