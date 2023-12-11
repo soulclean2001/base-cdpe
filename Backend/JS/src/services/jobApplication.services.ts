@@ -933,9 +933,9 @@ class JobApplicationService {
       .aggregate([
         {
           $match: {
-            ...options,
-            visibility: true,
-            status: 0
+            ...options
+            // visibility: true,
+            // status: 0
           }
         },
         {
