@@ -790,7 +790,7 @@ export default class JobService {
         .toArray()
 
       if (candidates.length > 0) {
-        const userObjectIds: string[] = candidates[0]?.users || []
+        const userObjectIds: ObjectId[] = candidates[0]?.users || []
         const userIds = userObjectIds.map((user) => user.toString())
         if (userIds.length > 0) {
           await NotificationService.notify(
