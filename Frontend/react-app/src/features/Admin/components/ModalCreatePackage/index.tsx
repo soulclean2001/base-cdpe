@@ -12,7 +12,7 @@ import { RcFile } from 'antd/es/upload'
 import apiUpload from '~/api/upload.api'
 import apiPackage from '~/api/package.api'
 import { CreatePackageReqBody } from '~/api/package.api'
-
+import { NumericFormat } from 'react-number-format'
 const listTypeServices = [
   { value: 'POST', label: 'Đăng bài' },
   { value: 'BANNER', label: 'Quảng cáo công ty' }
@@ -318,6 +318,48 @@ const ModalCreatePackage = (props: any) => {
             )}
           </Row>
           <Form.Item
+            label={<span style={{ fontWeight: '500' }}>Đơn giá (VNĐ)</span>}
+            name='price'
+            style={{ marginBottom: 0 }}
+            rules={[
+              { required: true, message: 'Vui lòng nhập giá' },
+
+              {
+                validator: (_, value) =>
+                  value.toString().length > 0 && value.toString().length <= 13
+                    ? !value.toString().includes(',')
+                      ? Number(value) % 100 === 0
+                        ? Promise.resolve()
+                        : Promise.reject(new Error('Số phải chia hết cho 100'))
+                      : parseInt(value.replace(/,/g, ''), 10) % 100 === 0
+                      ? Promise.resolve()
+                      : Promise.reject('Số phải chia hết cho 100!')
+                    : Promise.reject(new Error('Độ dài tối đa 14 ký tự, giá tối thiểu 500 và tối đa 9.999.999.900'))
+              }
+            ]}
+          >
+            <NumericFormat
+              size='large'
+              value={price}
+              thousandSeparator
+              customInput={Input}
+              style={{ width: '100%' }}
+              onKeyDown={(event) => {
+                if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                  event.preventDefault()
+                }
+              }}
+              placeholder='Đơn giá'
+              onChange={(e) => {
+                setPrice(
+                  !e.target.value.includes(',')
+                    ? Number(e.target.value)
+                    : parseInt(e.target.value.replace(/,/g, ''), 10)
+                )
+              }}
+            />
+          </Form.Item>
+          {/* <Form.Item
             name='price'
             rules={[
               { required: true, message: 'Vui lòng nhập mức giá' },
@@ -350,7 +392,7 @@ const ModalCreatePackage = (props: any) => {
               }}
               onChange={(value) => setPrice(Number(value))}
             />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name='description'
             label={<span style={{ fontWeight: '500' }}>Mô Tả</span>}

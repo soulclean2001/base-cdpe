@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import apiNotify, { RequestNotify } from '~/api/notify.api'
 import avatarTemp from '~/assets/HF_logo.jpg'
 import paid from '~/assets/paid.png'
+import jobNotify from '~/assets/jobNotify.png'
 export interface NotificationType {
   _id?: string
   content: string
@@ -111,6 +112,11 @@ const notifySlice = createSlice({
           notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
           notify.content = `<b>Hệ thống</b> đã kích hoạt đơn hàng <b>#ORDER_${notify.content}</b> của bạn`
         }
+        if (notify.type === 'post/candidate_find_job') {
+          notify.jobTitle = notify.content
+          notify.sender_info = { ...notify.sender_info, avatar: jobNotify }
+          notify.content = `Việc làm <b>${notify.content}</b> phù hợp với bạn đang được đăng tuyển`
+        }
 
         return notify
       })
@@ -182,6 +188,11 @@ const notifySlice = createSlice({
           notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
           notify.content = `<b>Hệ thống</b> đã kích hoạt đơn hàng <b>#ORDER_${notify.content}</b> của bạn`
         }
+        if (notify.type === 'post/candidate_find_job') {
+          notify.jobTitle = notify.content
+          notify.sender_info = { ...notify.sender_info, avatar: jobNotify }
+          notify.content = `Việc làm <b>${notify.content}</b> phù hợp với bạn đang được đăng tuyển`
+        }
         return notify
       })
       state.notifications = [...state.notifications, ...notifications]
@@ -237,6 +248,11 @@ const notifySlice = createSlice({
       if (notify.type === 'order/completed') {
         notify.sender_info = { ...notify.sender_info, avatar: avatarTemp }
         notify.content = `<b>Hệ thống</b> đã kích hoạt đơn hàng <b>#ORDER_${notify.content}</b> của bạn`
+      }
+      if (notify.type === 'post/candidate_find_job') {
+        notify.jobTitle = notify.content
+        notify.sender_info = { ...notify.sender_info, avatar: jobNotify }
+        notify.content = `Việc làm <b>${notify.content}</b> phù hợp với bạn đang được đăng tuyển`
       }
       state.notifications = [notify, ...state.notifications]
       state.totalNotRead++

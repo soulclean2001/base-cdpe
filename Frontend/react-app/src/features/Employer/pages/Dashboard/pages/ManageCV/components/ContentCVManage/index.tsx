@@ -298,7 +298,7 @@ const ContentCVManage = (props: any) => {
       showSorterTooltip: false
     },
     {
-      title: 'Trạng thái',
+      title: 'Trạng thái ứng tuyển',
       dataIndex: 'status',
       key: 'status',
       sorter: (a, b) => a.status.localeCompare(b.status),
@@ -509,14 +509,22 @@ const ContentCVManage = (props: any) => {
           />
         </Col>
         <Col md={5} sm={8} xs={24} style={{ padding: '5px' }}>
-          <RangePicker
-            style={{ width: '100%' }}
-            size='large'
-            placeholder={['Từ ngày', 'Đến ngày']}
-            format='YYYY-MM-DD'
-            onChange={(_, valueStrings) => setDateFormTo(valueStrings)}
-            // locale={viVN}
-          />
+          <Tooltip title='Ngày nộp CV'>
+            <RangePicker
+              style={{ width: '100%' }}
+              size='large'
+              placeholder={['Từ ngày', 'Đến ngày']}
+              format='YYYY-MM-DD'
+              onChange={(_, valueStrings) =>
+                setDateFormTo(
+                  valueStrings && valueStrings[0] && valueStrings[1]
+                    ? [valueStrings[0] + 'T00:00:00', valueStrings[1] + 'T23:59:59']
+                    : []
+                )
+              }
+              // locale={viVN}
+            />
+          </Tooltip>
         </Col>
         <Col md={4} sm={8} xs={24} style={{ padding: '5px' }}>
           <Select

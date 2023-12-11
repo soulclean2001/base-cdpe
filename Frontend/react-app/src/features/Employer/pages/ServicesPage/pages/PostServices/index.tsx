@@ -130,7 +130,10 @@ const PostServices = () => {
                 ? `${detailService.number_of_days_to_expire} ngày`
                 : `${detailService.value} bài đăng`}{' '}
             </div>
-            <div className='price'>{detailService.price.toLocaleString('vi', { currency: 'VND' })} VNĐ</div>
+            <div className='price'>
+              Giá: {detailService.price.toLocaleString('vi', { currency: 'VND' })} VNĐ{' '}
+              <span style={{ fontSize: '12px' }}>{`(Chưa bao gồm VAT)`}</span>
+            </div>
           </div>
           <div className='descriptions-wapper content-service-wapper'>
             <div className='title'>Mô tả dịch vụ:</div>

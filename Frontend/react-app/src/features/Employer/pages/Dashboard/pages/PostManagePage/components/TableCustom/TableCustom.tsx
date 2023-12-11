@@ -227,7 +227,13 @@ const TableCustom = (props: any) => {
       sorter: (a, b) => a.salary.localeCompare(b.salary),
       sortOrder: sortedInfo.columnKey === 'salary' ? sortedInfo.order : null,
       ellipsis: true,
-      showSorterTooltip: false
+      showSorterTooltip: false,
+      render: (_, record) => (
+        <>
+          {record.salary_range.min.toLocaleString('vi', { currency: 'VND' })} -{' '}
+          {record.salary_range.max.toLocaleString('vi', { currency: 'VND' })}
+        </>
+      )
     },
     // {
     //   title: 'Khu vực',
@@ -524,8 +530,12 @@ const TableCustom = (props: any) => {
               placeholder={['Từ ngày', 'Đến ngày']}
               format='YYYY-MM-DD'
               // locale={viVN}
-              onChange={(_, dateStrings) => {
-                setRangeDate(dateStrings)
+              onChange={(_, valueStrings) => {
+                setRangeDate(
+                  valueStrings && valueStrings[0] && valueStrings[1]
+                    ? [valueStrings[0] + 'T00:00:00', valueStrings[1] + 'T23:59:59']
+                    : []
+                )
               }}
             />
           </Tooltip>

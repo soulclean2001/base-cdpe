@@ -1,5 +1,5 @@
-import { Space, Table, Tabs, Tag, Tooltip } from 'antd'
-
+import { Col, DatePicker, Row, Space, Table, Tabs, Tag, Tooltip } from 'antd'
+const { RangePicker } = DatePicker
 import '~/features/Admin/contents/OrdersManage/style.scss'
 import { BsFillEyeFill, BsFillTrashFill } from 'react-icons/bs'
 import './style.scss'
@@ -51,7 +51,7 @@ const MyOrdersPage = (props: any) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [listOrders, setListOrders] = useState<DataType[]>([])
   const [transactions, setTransactions] = useState([])
-
+  const [dateFormTo, setDateFormTo] = useState<string[]>([])
   const [status, setStatus] = useState('')
   const [totalElement, setTotalElement] = useState(1)
   //   const [date, setDate] = useState('')
@@ -61,13 +61,15 @@ const MyOrdersPage = (props: any) => {
   useEffect(() => {
     setCurrentPage(1)
     fetchGetMyOrders()
-  }, [status])
+  }, [status, dateFormTo])
   const fetchGetMyOrders = async (page?: string) => {
     let request: RequestSearchOrderType = {
       limit: litmit.toString(),
       page: page ? page : '1',
       status: status,
-      sort_by_date: '-1'
+      sort_by_date: '-1',
+      from_date: dateFormTo && dateFormTo[0] ? dateFormTo[0] : '',
+      to_date: dateFormTo && dateFormTo[1] ? dateFormTo[1] : ''
     }
     if (roleType === 'ADMIN_TYPE') {
       await apiAdmin.getAllOrders(request).then((rs) => {
@@ -351,26 +353,34 @@ const MyOrdersPage = (props: any) => {
       <div className='title'>{roleType === 'ADMIN_TYPE' ? 'Quản lý đơn hàng' : 'Quản lý đơn hàng của tôi'}</div>
       <Tabs onChange={onChangeTab} className='tabs-users-manage' defaultActiveKey='tab-all' items={items} />
       <div className='content-wapper'>
-        {/* <Row style={{ gap: '10px', marginBottom: '15px' }}>
-          <Col md={8} sm={16} xs={24}>
+        <Row style={{ gap: '10px', marginBottom: '15px' }}>
+          {/* <Col md={8} sm={16} xs={24}>
             <Input
               className='input-search-services'
               size='large'
               placeholder='ID, tên khách hàng'
               prefix={<FiSearch />}
             />
-          </Col>
+          </Col> */}
           <Col md={6} sm={16} xs={24}>
-            <DatePicker
-              style={{ width: '100%' }}
-              size='large'
-              placeholder={'Ngày đặt hàng'}
-              format='YYYY-MM-DD'
-              // locale={viVN}
-              onChange={(_, string) => setDate(string)}
-            />
+            <Tooltip title='Ngày đặt hàng'>
+              <RangePicker
+                style={{ width: '100%' }}
+                size='large'
+                placeholder={['Từ ngày', 'Đến ngày']}
+                format='YYYY-MM-DD'
+                onChange={(_, valueStrings) =>
+                  setDateFormTo(
+                    valueStrings && valueStrings[0] && valueStrings[1]
+                      ? [valueStrings[0] + 'T00:00:00', valueStrings[1] + 'T23:59:59']
+                      : []
+                  )
+                }
+                // locale={viVN}
+              />
+            </Tooltip>
           </Col>
-        </Row> */}
+        </Row>
 
         <Table
           pagination={{

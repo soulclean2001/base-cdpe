@@ -474,21 +474,9 @@ const CompanyManagePage = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Row justify={'space-between'}>
+          {/* <Row justify={'space-between'}>
             <Col md={16} sm={24} xs={24}>
-              {/* <Form.Item
-                name='address'
-                label={<span style={{ fontWeight: '500' }}>Địa Chỉ Công Ty</span>}
-                rules={[{ required: true, message: 'Vui lòng không để trống địa chỉ công ty' }]}
-              >
-                <Input
-                  size='large'
-                  placeholder='Ví dụ: F3/2 Gò Vấp, TP. Hồ Chí Minh'
-                  onChange={(e) => {
-                    setAddress(e.target.value)
-                  }}
-                />
-              </Form.Item> */}
+              
               <Form.Item
                 name='employerContact'
                 label={<span style={{ fontWeight: '500' }}>Người Liên Hệ</span>}
@@ -506,7 +494,7 @@ const CompanyManagePage = () => {
                 <Input readOnly size='large' placeholder='Nhập số điện thoại' />
               </Form.Item>
             </Col>
-          </Row>
+          </Row> */}
 
           <Form.Item
             label={<span style={{ fontWeight: '500' }}>Lĩnh Vực Công Ty</span>}

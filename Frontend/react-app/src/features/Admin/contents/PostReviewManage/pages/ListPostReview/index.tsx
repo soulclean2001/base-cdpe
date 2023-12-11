@@ -155,12 +155,12 @@ const ListPostReview = () => {
       dataIndex: 'requestDate',
       key: 'requestDate'
     },
-    {
-      ellipsis: true,
-      title: 'Cập nhật gần nhất',
-      key: 'updateDate',
-      dataIndex: 'updateDate'
-    },
+    // {
+    //   ellipsis: true,
+    //   title: 'Cập nhật gần nhất',
+    //   key: 'updateDate',
+    //   dataIndex: 'updateDate'
+    // },
     {
       ellipsis: true,
       title: 'Trạng thái',
@@ -246,7 +246,13 @@ const ListPostReview = () => {
           <Col md={6} sm={16} xs={12}>
             <Tooltip title='Ngày yêu cầu'>
               <RangePicker
-                onChange={(_, dataStr) => setDateFormTo(dataStr)}
+                onChange={(_, valueStrings) =>
+                  setDateFormTo(
+                    valueStrings && valueStrings[0] && valueStrings[1]
+                      ? [valueStrings[0] + 'T00:00:00', valueStrings[1] + 'T23:59:59']
+                      : []
+                  )
+                }
                 style={{ width: '100%' }}
                 size='large'
                 placeholder={['Từ ngày', 'Đến ngày']}

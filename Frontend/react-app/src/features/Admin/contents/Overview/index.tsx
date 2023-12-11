@@ -195,7 +195,7 @@ const AdminOverview = () => {
         </Row>
       </Col>
       <Col md={24} sm={24} xs={24} className='table-top-wapper'>
-        <h2>TOP ĐẶT HÀNG</h2>
+        <h2>TOP MUA HÀNG</h2>
         <div className='top-order-wapper'>
           {dataTopOrders &&
             dataTopOrders.map((comapny: AnyType, index) => (
@@ -210,6 +210,7 @@ const AdminOverview = () => {
                       ? 'icon-top three'
                       : 'icon-top'
                   }
+                  style={{ minHeight: '33px' }}
                 >
                   {index < 3 && <FaCrown />}
                 </div>
@@ -219,7 +220,9 @@ const AdminOverview = () => {
                   shape='circle'
                   style={{ width: '56px', height: '56px' }}
                 />
-                <div className='name'>{comapny.company.company_name ? comapny.company.company_name : ''}</div>
+                <ToolTipAntd title={comapny.company.company_name ? comapny.company.company_name : ''}>
+                  <div className='name'>{comapny.company.company_name ? comapny.company.company_name : ''}</div>
+                </ToolTipAntd>
                 <div className='total'>
                   {comapny.total_price.toLocaleString('vi', {
                     currency: 'VND'
@@ -237,6 +240,7 @@ const AdminOverview = () => {
             dataTopPosts.map((comapny: AnyType, index) => (
               <div key={comapny._id} className='item-company'>
                 <div
+                  style={{ minHeight: '33px' }}
                   className={
                     index === 0
                       ? 'icon-top one'

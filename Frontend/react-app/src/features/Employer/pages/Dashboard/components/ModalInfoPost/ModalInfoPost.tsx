@@ -5,7 +5,7 @@ import { TfiCup } from 'react-icons/tfi'
 import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import { Button, Checkbox, Col, DatePicker, Divider, Form, Input, InputNumber, Modal, Row, Select, Space } from 'antd'
-
+import { NumericFormat } from 'react-number-format'
 import { ImLocation } from 'react-icons/im'
 import { useState, useEffect } from 'react'
 
@@ -106,8 +106,8 @@ export interface WorkingLocation {
 }
 
 interface SalararyRange {
-  min: number
-  max: number
+  min: number | string
+  max: number | string
 }
 
 interface Benefit {
@@ -139,6 +139,7 @@ export interface JobType {
 
 const initLocation: LocationType[] = [{ checked: false, key: 0, selected: '_' }]
 const initValue: DataOptionType[] = []
+
 const ModalInfoPost = (props: any) => {
   const [form] = Form.useForm()
   const dispatch = useDispatch()
@@ -158,6 +159,7 @@ const ModalInfoPost = (props: any) => {
   const [jobDescription, setJobDescription] = useState('')
   const [jobRequirement, setJobRequirement] = useState('')
   const [salaryRange, setSalaryRange] = useState({ min: 0, max: 0 })
+
   const [showSalaryRange, setShowSalaryRange] = useState(true)
   const [quantityAccept, setQuantityAccept] = useState(1)
   const [emailAcceptCV, setEmailAcceptCV] = useState('')
@@ -207,10 +209,11 @@ const ModalInfoPost = (props: any) => {
   useEffect(() => {
     if (!open) {
       getDataWorkLocation()
-    }
-    if (open) {
       handleClearDataForm()
     }
+    // if (open) {
+    //   handleClearDataForm()
+    // }
   }, [open])
   const handleClearDataForm = () => {
     // if (roleType !== 'ADMIN_ROLE') await getDataWorkLocation()
@@ -247,11 +250,13 @@ const ModalInfoPost = (props: any) => {
   }
   const validateMinMax = () => {
     if (salaryRange && salaryRange.min && salaryRange.max) {
-      if (salaryRange.min && salaryRange.max && salaryRange.min > salaryRange.max) {
+      if (
+        parseInt(salaryRange.min.toString().replace(/,/g, ''), 10) >
+        parseInt(salaryRange.max.toString().replace(/,/g, ''), 10)
+      ) {
         return Promise.reject('Vui lòng nhập từ thấp đến cao')
       }
     }
-
     return Promise.resolve()
   }
   //submit modal location
@@ -526,7 +531,7 @@ const ModalInfoPost = (props: any) => {
     if (!idPost) {
       return
     }
-    form.resetFields()
+    // form.resetFields()
     await apiPost.getPostById(idPost).then((response) => {
       const rs: JobTypeFull = response.result as JobTypeFull
       setJobTitle(rs.job_title)
@@ -1117,14 +1122,50 @@ const ModalInfoPost = (props: any) => {
                   rules={[
                     { required: true, message: 'Vui lòng nhập mức lương tối thiểu' },
                     { validator: validateMinMax },
-                    { type: 'number', min: 1, message: 'Mức lương tối thiểu là 1' },
-                    { type: 'number', max: 9999999999, message: 'Mức lương tối đa là 9.999.999.999' }
+                    // {
+                    //   validator: (_, value) =>
+                    //     value.toString().length > 0 && value.toString().length <= 13
+                    //       ? Promise.resolve()
+                    //       : Promise.reject(new Error('Tối thiểu 1 và tối đa 9.999.999.999'))
+                    // }
+                    {
+                      validator: (_, value) =>
+                        value.toString().length > 0 && value.toString().length <= 13
+                          ? !value.toString().includes(',')
+                            ? Number(value) > 0
+                              ? Promise.resolve()
+                              : Promise.reject(new Error('Tối thiểu 1 và tối đa 9.999.999.999'))
+                            : Promise.resolve()
+                          : Promise.reject(new Error('Tối thiểu 1 và tối đa 9.999.999.999'))
+                    }
                   ]}
                 >
-                  <InputNumber
+                  <NumericFormat
+                    size='large'
+                    value={salaryRange.min}
+                    thousandSeparator
+                    customInput={Input}
                     style={{ width: '100%' }}
-                    min={1}
-                    // max={9999999999}
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                        event.preventDefault()
+                      }
+                    }}
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                    placeholder='Tối thiểu'
+                    onChange={(e) => {
+                      console.log('first', e.target.value.includes(','))
+
+                      setSalaryRange({
+                        ...salaryRange,
+                        min: !e.target.value.includes(',')
+                          ? Number(e.target.value)
+                          : parseInt(e.target.value.replace(/,/g, ''), 10)
+                      })
+                    }}
+                  />
+                  {/* <Input
+                    style={{ width: '100%' }}
                     onKeyDown={(event) => {
                       if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
                         event.preventDefault()
@@ -1133,8 +1174,11 @@ const ModalInfoPost = (props: any) => {
                     disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối thiểu'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, min: Number(e) })}
-                  />
+                    onChange={(e) => {
+                      setSalaryRange({ ...salaryRange, min: Number(e.target.value) })
+                      setFormattedMinSalary(formatAmount(Number(e.target.value)))
+                    }}
+                  /> */}
                 </Form.Item>
               </Col>
               <Col md={7} sm={24} xs={24} style={{ display: 'flex', flexDirection: 'column' }}>
@@ -1144,14 +1188,44 @@ const ModalInfoPost = (props: any) => {
                   rules={[
                     { required: true, message: 'Vui lòng nhập mức lương tối đa' },
                     { validator: validateMinMax },
-                    { type: 'number', min: 1, message: 'Mức lương tối thiểu là 1' },
-                    { type: 'number', max: 9999999999, message: 'Mức lương tối đa là 9.999.999.999' }
+                    // { min: 1, message: 'Mức lương tối thiểu là 1' },
+                    // { max: 13, message: 'Mức lương tối đa là 9.999.999.999' }
+                    {
+                      validator: (_, value) =>
+                        value.toString().length > 0 && value.toString().length <= 13
+                          ? !value.toString().includes(',')
+                            ? Number(value) > 0
+                              ? Promise.resolve()
+                              : Promise.reject(new Error('Tối thiểu 1 và tối đa 9.999.999.999'))
+                            : Promise.resolve()
+                          : Promise.reject(new Error('Tối thiểu 1 và tối đa 9.999.999.999'))
+                    }
                   ]}
                 >
-                  <InputNumber
+                  <NumericFormat
+                    size='large'
+                    value={salaryRange.max}
+                    thousandSeparator
+                    customInput={Input}
                     style={{ width: '100%' }}
-                    min={1}
-                    // max={9999999999}
+                    onKeyDown={(event) => {
+                      if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
+                        event.preventDefault()
+                      }
+                    }}
+                    disabled={roleType === 'ADMIN_ROLE' ? true : false}
+                    placeholder='Tối đa'
+                    onChange={(e) => {
+                      setSalaryRange({
+                        ...salaryRange,
+                        max: !e.target.value.includes(',')
+                          ? Number(e.target.value)
+                          : parseInt(e.target.value.replace(/,/g, ''), 10)
+                      })
+                    }}
+                  />
+                  {/* <Input
+                    style={{ width: '100%' }}
                     onKeyDown={(event) => {
                       if (!/[0-9]/.test(event.key) && event.key !== 'Backspace') {
                         event.preventDefault()
@@ -1160,8 +1234,8 @@ const ModalInfoPost = (props: any) => {
                     disabled={roleType === 'ADMIN_ROLE' ? true : false}
                     size='large'
                     placeholder='Tối đa'
-                    onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e) })}
-                  />
+                    onChange={(e) => setSalaryRange({ ...salaryRange, max: Number(e.target.value) })}
+                  /> */}
                 </Form.Item>
               </Col>
               <Col md={6} sm={24} xs={24}>

@@ -28,6 +28,35 @@ export const options = {
     }
   }
 }
+export const options2 = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const
+    },
+    title: {
+      display: true,
+      text: 'Biểu đồ tuyển dụng'
+    }
+  },
+  scales: {
+    y: {
+      min: 0,
+      grace: '100%',
+      ticks: {
+        stepSize: 1
+      }
+    }
+    // x: {
+    //   beginAtZero: true,
+    //   ticks: {
+    //     beginAtZero: true,
+    //     mirror: false,
+    //     suggestedMin: 0
+    //   }
+    // }
+  }
+}
 interface DataType {
   id: string
   jobTitle: string
@@ -46,6 +75,16 @@ const OverviewEmployer = () => {
   const [isShowSeletect, setIsShowSeletect] = useState(true)
   const [typeChart, setTypeChart] = useState('Bar')
   const [year, setYear] = useState(new Date().getFullYear().toString())
+  const [year2, setYear2] = useState(new Date().getFullYear().toString())
+  const [typeChart2, setTypeChart2] = useState('Bar')
+  const [dataStatus0, setDataStatus0] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [dataStatus1, setDataStatus1] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [dataStatus2, setDataStatus2] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [dataStatus3, setDataStatus3] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [dataStatus4, setDataStatus4] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [dataStatus5, setDataStatus5] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  // const [dataStatus6, setDataStatus6] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+  const [dataStatus7, setDataStatus7] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
   const [bottomScell, setBottomScell] = useState<string[]>(labelsOneYear)
   const [dataSales, setDataSales] = useState<string[]>([])
   const [dataTop10, setDataTop10] = useState<DataType[]>([])
@@ -74,6 +113,9 @@ const OverviewEmployer = () => {
     handleSetChartLayout()
     fetchChart()
   }, [isShowSeletect, year])
+  useEffect(() => {
+    fetchChart2()
+  }, [year2])
   const fetchChart = async () => {
     if (isShowSeletect) {
       let tempt: string[] = []
@@ -97,6 +139,40 @@ const OverviewEmployer = () => {
       setDataSales(tempt)
     }
   }
+  const fetchChart2 = async () => {
+    let tempt0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    let tempt1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    let tempt2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    let tempt3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    let tempt4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    let tempt5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    // let tempt6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    let tempt7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for (let i = 1; i < 13; ++i) {
+      let requestOneMonth: RequestOverview = { month: i, year: year2 }
+      await apiOverview.getSummaryJobApplications(requestOneMonth).then((rs) => {
+        if (rs.result && rs.result['0'] !== undefined) {
+          tempt0[i - 1] = rs.result['0']
+          tempt1[i - 1] = rs.result['1']
+          tempt2[i - 1] = rs.result['2']
+          tempt3[i - 1] = rs.result['3']
+          tempt4[i - 1] = rs.result['4']
+          tempt5[i - 1] = rs.result['5']
+          // tempt6[i - 1] = rs.result['6']
+          tempt7[i - 1] = rs.result['7']
+        }
+      })
+    }
+
+    setDataStatus0(tempt0)
+    setDataStatus1(tempt1)
+    setDataStatus2(tempt2)
+    setDataStatus3(tempt3)
+    setDataStatus4(tempt4)
+    setDataStatus5(tempt5)
+    // setDataStatus6(tempt1)
+    setDataStatus7(tempt7)
+  }
   const fetchData = async () => {
     let param: RequestOverview = { month: '', year: '' }
     let temptOverview = {
@@ -106,6 +182,7 @@ const OverviewEmployer = () => {
       totalJobApplications: 0,
       totalCanPost: 0
     }
+
     await apiCompany.getMyCompany().then((rs) => {
       temptOverview = { ...temptOverview, ['totalCanPost']: rs.result.number_of_posts }
     })
@@ -253,9 +330,9 @@ const OverviewEmployer = () => {
         <div className='chart-header'>
           <h2>BIỂU ĐỒ CHI TIÊU</h2>
           <Radio.Group onChange={onChange} value={type}>
-            {dataSales.map((data, index) => (
+            {/* {dataSales.map((data, index) => (
               <div key={index}>{data}</div>
-            ))}
+            ))} */}
             <Radio value={1}>Từng năm</Radio>
             <Radio value={2}>10 năm gần nhất</Radio>
           </Radio.Group>
@@ -338,6 +415,195 @@ const OverviewEmployer = () => {
               }}
             />
           )}
+        </div>
+      </Col>
+      <Col md={24} sm={24} xs={24} className='chart-wapper'>
+        <div className='chart-header'>
+          <h2>BIỂU ĐỒ TUYỂN DỤNG</h2>
+          <Radio.Group onChange={onChange} value={type}>
+            <Radio value={1}>Từng năm</Radio>
+            {/* <Radio value={2}>10 năm gần nhất</Radio> */}
+          </Radio.Group>
+          <div className='select-wapper' style={{ display: 'flex', gap: '10px' }}>
+            <div hidden={!isShowSeletect}>
+              <DatePicker
+                allowClear={false}
+                value={dayjs(`${year2}-01-01`, 'YYYY-MM-DD')}
+                size='large'
+                onChange={(_, string) => setYear2(string ? string : new Date().getFullYear().toString())}
+                picker='year'
+                placeholder='Chọn năm'
+              />
+            </div>
+            <ToolTipAntd title='Loại biểu đồ'>
+              <Select
+                onChange={(value) => setTypeChart2(value)}
+                size='large'
+                defaultValue='Bar'
+                options={[
+                  { value: 'Bar', label: 'Bar' },
+                  { value: 'Line', label: 'Line' }
+                  // { value: 'Area', label: 'Area' }
+                  // { value: 'Pie', label: 'Pie' },
+                  // { value: 'Doughnut', label: 'Doughnut' }
+                ]}
+              />
+            </ToolTipAntd>
+          </div>
+        </div>
+        <div className='chart'>
+          {typeChart2 === 'Bar' && (
+            <Bar
+              options={options2}
+              data={{
+                labels: labelsOneYear,
+                datasets: [
+                  {
+                    label: 'Chờ duyệt',
+                    data: dataStatus0,
+                    backgroundColor: 'rgb(239, 223, 82)',
+                    minBarLength: 3
+                  },
+                  {
+                    label: 'Chấp nhận CV',
+                    data: dataStatus1,
+                    backgroundColor: 'rgb(86, 240, 0)',
+                    minBarLength: 3
+                  },
+                  {
+                    label: 'Từ chối',
+                    data: dataStatus2,
+                    backgroundColor: 'rgb(255, 56, 56)',
+                    minBarLength: 3
+                  },
+                  {
+                    label: 'Tiềm năng',
+                    data: dataStatus3,
+                    backgroundColor: 'rgb(255, 179, 2)',
+                    minBarLength: 3
+                  },
+                  {
+                    label: 'Phỏng vấn',
+                    data: dataStatus4,
+                    backgroundColor: 'rgb(89, 83, 152)',
+                    minBarLength: 3
+                  },
+                  {
+                    label: 'Nhận việc',
+                    data: dataStatus5,
+                    backgroundColor: 'rgb(45, 204, 255)',
+                    minBarLength: 3
+                  },
+
+                  {
+                    label: 'Không thể liên hệ',
+                    data: dataStatus7,
+                    backgroundColor: 'rgb(164, 171, 182)',
+                    minBarLength: 3
+                  }
+                ]
+              }}
+            />
+          )}
+          {typeChart2 === 'Line' && (
+            <Line
+              options={options2}
+              data={{
+                labels: labelsOneYear,
+                datasets: [
+                  {
+                    label: 'Chờ duyệt',
+                    data: dataStatus0,
+                    backgroundColor: 'rgb(239, 223, 82)',
+                    borderColor: 'rgb(239, 223, 82)'
+                  },
+                  {
+                    label: 'Chấp nhận CV',
+                    data: dataStatus1,
+                    backgroundColor: 'rgb(86, 240, 0)',
+                    borderColor: 'rgb(86, 240, 0)'
+                  },
+                  {
+                    label: 'Từ chối',
+                    data: dataStatus2,
+                    backgroundColor: 'rgb(255, 56, 56)',
+                    borderColor: 'rgb(255, 56, 56)'
+                  },
+                  {
+                    label: 'Tiềm năng',
+                    data: dataStatus3,
+                    backgroundColor: 'rgb(255, 179, 2)',
+                    borderColor: 'rgb(255, 179, 2)'
+                  },
+                  {
+                    label: 'Phỏng vấn',
+                    data: dataStatus4,
+                    backgroundColor: 'rgb(89, 83, 152)',
+                    borderColor: 'rgb(89, 83, 152)'
+                  },
+                  {
+                    label: 'Nhận việc',
+                    data: dataStatus5,
+                    backgroundColor: 'rgb(45, 204, 255)',
+                    borderColor: 'rgb(45, 204, 255)'
+                  },
+
+                  {
+                    label: 'Không thể liên hệ',
+                    data: dataStatus7,
+                    backgroundColor: 'rgb(164, 171, 182)',
+                    borderColor: 'rgb(164, 171, 182)'
+                  }
+                ]
+              }}
+            />
+          )}
+          {/* {typeChart2 === 'Area' && (
+            <Line
+              options={options2}
+              data={{
+                labels: labelsOneYear,
+                datasets: [
+                  {
+                    label: 'Chờ duyệt',
+                    data: dataStatus0,
+                    backgroundColor: 'rgb(239, 223, 82)'
+                  },
+                  {
+                    label: 'Chấp nhận CV',
+                    data: dataStatus1,
+                    backgroundColor: 'rgb(143, 243, 89)'
+                  },
+                  {
+                    label: 'Từ chối',
+                    data: dataStatus2,
+                    backgroundColor: 'rgb(255, 56, 56)'
+                  },
+                  {
+                    label: 'Tiềm năng',
+                    data: dataStatus3,
+                    backgroundColor: 'rgb(255, 179, 2)'
+                  },
+                  {
+                    label: 'Phỏng vấn',
+                    data: dataStatus4,
+                    backgroundColor: 'rgb(89, 83, 152)'
+                  },
+                  {
+                    label: 'Nhận việc',
+                    data: dataStatus5,
+                    backgroundColor: 'rgb(45, 204, 255)'
+                  },
+
+                  {
+                    label: 'Không thể liên hệ',
+                    data: dataStatus7,
+                    backgroundColor: 'rgb(164, 171, 182)'
+                  }
+                ]
+              }}
+            />
+          )} */}
         </div>
       </Col>
     </Row>

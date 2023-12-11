@@ -13,6 +13,8 @@ export interface RequestSearchOrderType {
   limit?: string
   page?: string
   sort_by_date?: string
+  from_date?: string
+  to_date?: string
 }
 export class Order {
   public static getAllByMe = async (request: RequestSearchOrderType) => {

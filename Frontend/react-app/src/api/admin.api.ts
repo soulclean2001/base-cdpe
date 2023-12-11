@@ -9,6 +9,8 @@ export interface SearchUserFilter {
   limit?: string
   page?: string
   type?: string //'employer' | 'admin' | 'candidate' | 'all'
+  from_date?: string
+  to_date?: string
 }
 
 export interface JobSearchByAdmin {

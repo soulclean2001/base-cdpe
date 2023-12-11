@@ -129,6 +129,11 @@ const NotifyItem = (props: any) => {
         navigate('/employer/dashboard/my-orders')
         break
       }
+      case 'post/candidate_find_job': {
+        if (!data.jobTitle || !data.jobId) break
+        handleShowDetail(data.jobId, data.jobTitle, 'jobs')
+        break
+      }
       default:
         break
     }

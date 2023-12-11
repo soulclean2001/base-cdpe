@@ -48,6 +48,11 @@ export class Resume {
     const rs: ApiResponse = await client.get(`/job-applications/company/totalJobApplied`)
     return rs
   }
+  public static getSummaryJobApplications = async (request: RequestOverview) => {
+    let filter = filterObject(request)
+    const rs: ApiResponse = await client.get(`/job-applications/summary`, { params: filter })
+    return rs
+  }
   //
 }
 
