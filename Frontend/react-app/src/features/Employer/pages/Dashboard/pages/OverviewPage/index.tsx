@@ -340,10 +340,7 @@ const OverviewEmployer = () => {
             <div hidden={!isShowSeletect}>
               <DatePicker
                 allowClear={false}
-                // defaultValue={dayjs(`${new Date().getFullYear()}-01-01`, 'YYYY-MM-DD')}
-                // value={dayjs(`${year}-01-01`, 'YYYY-MM-DD')}
                 value={dayjs(`${year}-01-01`, 'YYYY-MM-DD')}
-                // defaultPickerValue={dayjs(`${new Date().getFullYear()}-01-01`, 'YYYY-MM-DD')}
                 size='large'
                 onChange={(_, string) => setYear(string ? string : new Date().getFullYear().toString())}
                 picker='year'
