@@ -1094,19 +1094,19 @@ export default class JobService {
     }
 
     if (filter.from_day) {
-      opts['expired_date'] = {
+      opts['posted_date'] = {
         $gte: new Date(filter.from_day)
       }
     }
 
     if (filter.to_day) {
       if (filter.from_day) {
-        opts['expired_date'] = {
+        opts['posted_date'] = {
           $gte: new Date(filter.from_day),
           $lte: new Date(filter.to_day)
         }
       } else {
-        opts['expired_date'] = {
+        opts['posted_date'] = {
           $lte: new Date(filter.to_day)
         }
       }
