@@ -745,6 +745,66 @@ export default class JobService {
           { job_id: job._id }
         )
       }
+
+      //notify candidate turn on find job
+      const job2 = result.value
+
+      const workLocations = job2.working_locations.map((workLocation) => workLocation.city_name)
+
+      const optionsNotify: {
+        [key: string]: any
+      } = {}
+      if (job2.careers && job2.careers.length > 0) {
+        optionsNotify['industry'] = {
+          $in: job2.careers
+        }
+      }
+
+      if (workLocations && workLocations.length > 0) {
+        optionsNotify['work_location'] = {
+          $in: workLocations
+        }
+      }
+
+      if (job2.job_level) {
+        optionsNotify['level'] = job2.job_level
+      }
+
+      const candidates = await databaseServices.candidate
+        .aggregate([
+          {
+            $match: {
+              cv_public: true,
+              ...optionsNotify
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              users: {
+                $push: '$user_id'
+              }
+            }
+          }
+        ])
+        .toArray()
+
+      if (candidates.length > 0) {
+        const userObjectIds: ObjectId[] = candidates[0]?.users || []
+        const userIds = userObjectIds.map((user) => user.toString())
+        if (userIds.length > 0) {
+          await NotificationService.notify(
+            {
+              content: result.value.job_title,
+              object_sent: NotificationObject.Admin,
+              type: 'post/candidate_find_job',
+              object_recieve: NotificationObject.Candidate,
+              recievers: userIds
+            },
+            { job_id: job._id }
+          )
+        }
+      }
     }
 
     return {
@@ -1034,19 +1094,19 @@ export default class JobService {
     }
 
     if (filter.from_day) {
-      opts['expired_date'] = {
+      opts['posted_date'] = {
         $gte: new Date(filter.from_day)
       }
     }
 
     if (filter.to_day) {
       if (filter.from_day) {
-        opts['expired_date'] = {
+        opts['posted_date'] = {
           $gte: new Date(filter.from_day),
           $lte: new Date(filter.to_day)
         }
       } else {
-        opts['expired_date'] = {
+        opts['posted_date'] = {
           $lte: new Date(filter.to_day)
         }
       }

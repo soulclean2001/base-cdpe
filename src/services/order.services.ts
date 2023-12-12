@@ -14,6 +14,8 @@ interface QueryOrder {
   limit?: string
   page?: string
   sort_by_date?: string
+  from_date?: string
+  to_date?: string
 }
 
 class OrderService {
@@ -178,6 +180,25 @@ class OrderService {
 
     if (filter.status && !isNaN(Number(filter.status))) {
       options['status'] = Number(filter.status)
+    }
+
+    if (filter.from_date) {
+      options['created_at'] = {
+        $gte: new Date(filter.from_date)
+      }
+    }
+
+    if (filter.to_date) {
+      if (filter.from_date) {
+        options['created_at'] = {
+          $gte: new Date(filter.from_date),
+          $lte: new Date(filter.to_date)
+        }
+      } else {
+        options['created_at'] = {
+          $lte: new Date(filter.to_date)
+        }
+      }
     }
 
     return options

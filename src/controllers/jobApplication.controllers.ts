@@ -162,6 +162,21 @@ class JobApplicationController {
       result
     })
   }
+
+  async getSummaryAllJobApplications(req: Request<ParamsDictionary, any, any>, res: Response, next: NextFunction) {
+    const { month, year } = req.query
+    const { user_id } = req.decoded_authorization
+
+    const result = await JobApplicationService.getSummaryAllJobApplications(user_id, {
+      month: month as string,
+      year: year as string
+    })
+
+    return res.json({
+      message: '',
+      result
+    })
+  }
 }
 
 export default new JobApplicationController()

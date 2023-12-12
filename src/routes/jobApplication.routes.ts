@@ -79,6 +79,13 @@ jobApplicationRouter.get(
 )
 
 jobApplicationRouter.get(
+  '/summary',
+  accessTokenValidator,
+  isEmployer,
+  wrapAsync(jobApplicationControllers.getSummaryAllJobApplications)
+)
+
+jobApplicationRouter.get(
   '/:job_application_id',
   accessTokenValidator,
   idValidator('job_application_id'),

@@ -900,6 +900,204 @@ class JobApplicationService {
 
     return result[0]?.total_applied || 0
   }
+
+  static async getSummaryAllJobApplications(userId: string, filter: { month?: string; year?: string }) {
+    const options: {
+      [key: string]: any
+    } = {}
+
+    const options2: {
+      [key: string]: any
+    } = {}
+
+    const company = await databaseServices.company.findOne({
+      'users.user_id': new ObjectId(userId)
+    })
+    if (!company)
+      throw new ErrorWithStatus({
+        message: 'company not found',
+        status: 404
+      })
+
+    options['company_id'] = company._id
+
+    if (filter.year && !isNaN(Number(filter.year))) {
+      options2['year'] = Number(filter.year)
+
+      if (filter.month && !isNaN(Number(filter.month))) {
+        options2['month'] = Number(filter.month)
+      }
+    }
+
+    const result = await databaseServices.job
+      .aggregate([
+        {
+          $match: {
+            ...options
+            // visibility: true,
+            // status: 0
+          }
+        },
+        {
+          $lookup: {
+            from: 'job_applications',
+            localField: '_id',
+            foreignField: 'job_post_id',
+            as: 'job_applications'
+          }
+        },
+        {
+          $unwind: {
+            path: '$job_applications'
+          }
+        },
+        {
+          $addFields: {
+            month: {
+              $month: '$job_applications.created_at'
+            },
+            year: {
+              $year: '$job_applications.created_at'
+            }
+          }
+        },
+        {
+          $match: {
+            'job_applications.profile_status': 'available',
+            ...options2
+          }
+        },
+        {
+          $project: {
+            status0: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 0]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status1: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 1]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status2: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 2]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status3: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 3]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status4: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 4]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status5: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 5]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status6: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 6]
+                  },
+                  1,
+                  0
+                ]
+              }
+            },
+            status7: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$job_applications.status', 7]
+                  },
+                  1,
+                  0
+                ]
+              }
+            }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            '0': {
+              $sum: '$status0'
+            },
+            '1': {
+              $sum: '$status1'
+            },
+            '2': {
+              $sum: '$status2'
+            },
+            '3': {
+              $sum: '$status3'
+            },
+            '4': {
+              $sum: '$status4'
+            },
+            '5': {
+              $sum: '$status5'
+            },
+            '6': {
+              $sum: '$status6'
+            },
+            '7': {
+              $sum: '$status7'
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0
+          }
+        }
+      ])
+      .toArray()
+
+    return result.length > 0 ? result[0] : {}
+  }
 }
 
 export default JobApplicationService
