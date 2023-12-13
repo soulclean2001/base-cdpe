@@ -346,7 +346,36 @@ const FindCandidatePage = () => {
                 showSearch
                 placeholder={'Chọn trình độ học vấn'}
                 size='middle'
-                options={listLevel}
+                options={[
+                  {
+                    value: 'Trung học',
+                    label: 'Trung học'
+                  },
+                  {
+                    value: 'Trung cấp',
+                    label: 'Trung cấp'
+                  },
+                  {
+                    value: 'Cao đẳng',
+                    label: 'Cao đẳng'
+                  },
+                  {
+                    value: 'Cử nhân',
+                    label: 'Cử nhân'
+                  },
+                  {
+                    value: 'Thạc sĩ',
+                    label: 'Thạc sĩ'
+                  },
+                  {
+                    value: 'Tiến sĩ',
+                    label: 'Tiến sĩ'
+                  },
+                  {
+                    value: 'Khác',
+                    label: 'Khác'
+                  }
+                ]}
                 onChange={(value) => setEducation(value)}
               />
             </Form.Item>
