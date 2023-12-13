@@ -549,7 +549,9 @@ const ModalInfoPost = (props: any) => {
           selected: `${locationJob.branch_name}, ${locationJob.address}, ${locationJob.district}, ${locationJob.city_name}`
         }
       })
-      setArrLocations(tempLoc)
+      if (tempLoc.length > 0) {
+        setArrLocations(tempLoc)
+      }
 
       for (let i = 0; i < rs.working_locations.length; i++) {
         form.setFieldsValue({
@@ -590,7 +592,10 @@ const ModalInfoPost = (props: any) => {
         })
         return { key: index, value: skill }
       })
-      setArrSkills(mapSkills)
+      if (mapSkills.length > 0) {
+        setArrSkills(mapSkills)
+      }
+
       //
       //set benifit
       const mapBenefits = rs.benefits.map((benefit, index) => {
@@ -600,7 +605,11 @@ const ModalInfoPost = (props: any) => {
         })
         return { key: index, data: benefit }
       })
-      setArrBenefits(mapBenefits)
+
+      if (mapBenefits.length > 0) {
+        setArrBenefits(mapBenefits)
+      }
+
       setStatus(rs.status)
       //
       setSalaryRange(rs.salary_range)

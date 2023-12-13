@@ -20,13 +20,17 @@ import apiHome from '~/api/home.api'
 //   { value: 'Cơ khí/Máy móc/Thiết bị công nghiệp' },
 //   { value: 'Phần mềm CNTT' }
 // ]
+
 const listLevel = [
-  { value: 'Tất cả cấp bậc' },
-  { value: 'Thực tập sinh/Sinh viên' },
-  { value: 'Mới tối nghiệp' },
+  { value: 'Thực tập sinh' },
+  { value: 'Thử việc' },
   { value: 'Nhân viên' },
+  { value: 'Trưởng nhóm' },
+  { value: 'Phó phòng' },
   { value: 'Trưởng phòng' },
-  { value: 'Giám đốc' }
+  { value: 'Phó giám đốc' },
+  { value: 'Giám đốc' },
+  { value: 'Tổng giám đốc' }
 ]
 const listTypeJobs = [
   { value: 'Tất cả loại hình' },
