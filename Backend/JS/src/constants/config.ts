@@ -50,6 +50,7 @@ export const envConfig = {
   port: (process.env.PORT as string) || 8888,
   host: process.env.HOST as string,
   dbName: process.env.DB_NAME as string,
+  dbUri: process.env.DB_URI as string,
   dbUsername: process.env.DB_USERNAME as string,
   dbPassword: process.env.DB_PASSWORD as string,
   dbUsersCollection: process.env.DB_USERS_COLLECTION as string,

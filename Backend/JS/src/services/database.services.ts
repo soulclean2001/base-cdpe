@@ -18,7 +18,7 @@ import ServiceOrder from '~/models/schemas/ServiceOrder.schema'
 import TransactionHistory from '~/models/schemas/TransactionHistory.schema'
 import Notification from '~/models/schemas/Notification.schema'
 
-const uri = 'mongodb+srv://soulclean2001:RNaAUT85kmchXTQR@tuyendung.6etjuzo.mongodb.net/?retryWrites=true&w=majority'
+const uri = envConfig.dbUri
 class DatabaseService {
   private client: MongoClient
   private db: Db
