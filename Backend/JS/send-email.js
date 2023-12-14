@@ -8,8 +8,8 @@ config()
 const sesClient = new SESClient({
   region: 'ap-southeast-1',
   credentials: {
-    secretAccessKey: 'nlqmnE0wVb444r/ZxZmP7ZLR0Z5dN2CRspAgUTtk',
-    accessKeyId: 'AKIAQLAIYA5SGLJRLBCD'
+    secretAccessKey: '',
+    accessKeyId: ''
   }
 })
 
